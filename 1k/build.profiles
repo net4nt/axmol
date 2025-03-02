@@ -58,7 +58,7 @@ min_sdk=17
 
 # The gradle version, @setup.ps1
 # as latest as possible
-gradle=8.11.1
+gradle=8.13
 
 # The android gradle plugin, @setup.ps1
 # as stable as possible, match with build-tools,android-studio
