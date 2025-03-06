@@ -1,4 +1,4 @@
-name: verify
+name: verify-app
 
 on:
   workflow_dispatch:
@@ -10,6 +10,9 @@ on:
         default: ''
         # Input has to be provided for the workflow to run
         required: false
+        
+run-name: verify-app-pr${{ inputs.pr_id }}
+
 env:
   pr_id: '${{ inputs.pr_id }}'
 
