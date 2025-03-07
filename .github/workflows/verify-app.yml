@@ -1,3 +1,4 @@
+# verify axmol cmdline to new & build a empty cpp project
 name: verify-app
 
 on:
@@ -13,8 +14,8 @@ on:
         
 run-name: verify-app-pr${{ inputs.pr_id }}
 
-env:
-  pr_id: '${{ inputs.pr_id }}'
+# env:
+#   pr_id: '${{ inputs.pr_id }}'
 
 jobs:
   win32:
@@ -22,11 +23,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        fetch-depth: '0'
+        ref: 'refs/pull/${{ inputs.pr_id }}/merge'
     - name: Build
       shell: pwsh
       run: |
-        if ($env:pr_id) { git pull origin pull/$env:pr_id/head --rebase ; echo "commits=$(git rev-list --count HEAD)" }
         ./setup.ps1
         axmol new HelloCpp
         axmol -d HelloCpp
@@ -36,11 +36,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        fetch-depth: '0'
+        ref: 'refs/pull/${{ inputs.pr_id }}/merge'
     - name: Build
       shell: pwsh
       run: |
-        if ($env:pr_id) { git pull origin pull/$env:pr_id/head --rebase ; echo "commits=$(git rev-list --count HEAD)" }
         ./setup.ps1
         axmol new HelloCpp
         axmol -d HelloCpp -p winuwp
@@ -52,11 +51,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        fetch-depth: '0'
+        ref: 'refs/pull/${{ inputs.pr_id }}/merge'
     - name: Build
       shell: pwsh
       run: |
-        if ($env:pr_id) { git pull origin pull/$env:pr_id/head --rebase ; echo "commits=$(git rev-list --count HEAD)" }
         ./setup.ps1
         axmol new HelloCpp
         axmol -d HelloCpp -cc clang
@@ -65,10 +63,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        fetch-depth: '0'
-    - name: Merge PR
-      shell: pwsh
-      run:  if ($env:pr_id) { git pull origin pull/$env:pr_id/head --rebase ; echo "commits=$(git rev-list --count HEAD)" }
+        ref: 'refs/pull/${{ inputs.pr_id }}/merge'
     - name: Install deps
       run: |
         echo -e "y" | pwsh ./setup.ps1
@@ -82,11 +77,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        fetch-depth: '0'
+        ref: 'refs/pull/${{ inputs.pr_id }}/merge'
     - name: Build
       shell: pwsh
       run: |
-        if ($env:pr_id) { git pull origin pull/$env:pr_id/head --rebase ; echo "commits=$(git rev-list --count HEAD)" }
         ./setup.ps1
         axmol new HelloCpp
         axmol -d HelloCpp
@@ -95,11 +89,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        fetch-depth: '0'
+        ref: 'refs/pull/${{ inputs.pr_id }}/merge'
     - name: Build
       shell: pwsh
       run: |
-        if ($env:pr_id) { git pull origin pull/$env:pr_id/head --rebase ; echo "commits=$(git rev-list --count HEAD)" }
         ./setup.ps1
         axmol new HelloCpp
         axmol -d HelloCpp
@@ -108,11 +101,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        fetch-depth: '0'
+        ref: 'refs/pull/${{ inputs.pr_id }}/merge'
     - name: Build
       shell: pwsh
       run: |
-        if ($env:pr_id) { git pull origin pull/$env:pr_id/head --rebase ; echo "commits=$(git rev-list --count HEAD)" }
         ./setup.ps1
         axmol new HelloCpp
         axmol -p android -d HelloCpp
@@ -128,11 +120,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        fetch-depth: '0'
+        ref: 'refs/pull/${{ inputs.pr_id }}/merge'
     - name: Build
       shell: pwsh
       run: |
-        if ($env:pr_id) { git pull origin pull/$env:pr_id/head --rebase ; echo "commits=$(git rev-list --count HEAD)" }
         ./setup.ps1
         axmol new HelloCpp
         axmol -p $env:TARGET_OS -a x64 -d HelloCpp
@@ -141,11 +132,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        fetch-depth: '0'
+        ref: 'refs/pull/${{ inputs.pr_id }}/merge'
     - name: Build
       shell: pwsh
       run: |
-        if ($env:pr_id) { git pull origin pull/$env:pr_id/head --rebase ; echo "commits=$(git rev-list --count HEAD)" }
         ./setup.ps1
         axmol new HelloCpp
         axmol -p wasm -d HelloCpp
