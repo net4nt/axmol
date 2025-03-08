@@ -1,4 +1,4 @@
-name: build
+name: ci
 
 on:
   push:
@@ -27,6 +27,8 @@ on:
 
 env:
   __1K_CXXSTD: '${{ inputs.cxxstd }}'
+
+run-name: 'ci@c++${{ inputs.cxxstd || 20 }}'
 
 jobs:
   win32:
