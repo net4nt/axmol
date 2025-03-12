@@ -142,7 +142,7 @@ If you find **Axmol Engine** helpful, please consider donating in [https://axmol
 
 ## Sponsors
 
-#### Titanium Sponsors
+#### Diamond Sponsors
 
 <p align="left">
   <a href="https://scorewarrior.com/?ad=axmol" target=_blank><img

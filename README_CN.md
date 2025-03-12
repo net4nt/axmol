@@ -143,7 +143,7 @@ Axmol 引擎在 Cocos2d-x v4.0 的基础上进行迭代和改进。现在速度�
 
 ## Sponsors
 
-#### Titanium Sponsors
+#### Diamond Sponsors
 <p align="left">
   <a href="https://scorewarrior.com/?ad=axmol" target=_blank><img
     src="https://cdn.prod.website-files.com/633da33305ac754156026dd8/63566f1edf5f0712f94f7f1b_sw-triangle-821890.svg" height="120"
