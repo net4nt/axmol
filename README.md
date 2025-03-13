@@ -78,7 +78,7 @@ Axmol Engine has iterated and improved over the Cocos2d-x v4.0 base. Now is fast
 
 **Supported 2D physics engines** ([more info here](https://github.com/axmolengine/axmol/wiki/2D-Physics-Engines-Information)):
 * Box2D
-* Chipmunk2D
+* Chipmunk2D (Will be removed in axmol-v3)
 
 **Supported 3D physics engines**:
 * Bullet Physics SDK
@@ -142,7 +142,7 @@ If you find **Axmol Engine** helpful, please consider donating in [https://axmol
 
 ## Sponsors
 
-#### Diamond Sponsors
+#### Platinum Sponsors
 
 <p align="left">
   <a href="https://scorewarrior.com/?ad=axmol" target=_blank><img
