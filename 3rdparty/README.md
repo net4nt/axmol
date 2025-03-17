@@ -212,9 +212,10 @@
 
 ## robin-map
 - [![Upstream](https://img.shields.io/github/v/tag/Tessil/robin-map?label=Upstream)](https://github.com/Tessil/robin-map)
-- Version: 1.2.1 with modified for more compatible with stl
+- Version: 1.3.0-054ec5a (until Mar 17, 2025) with modified for stl compatibility
     - Modify `robin_map::iterator->second` to mutable same with `stl map/unordered_map`
     - Forward `robin_map::operator[]` key by `std::forward` same with `stl map/unordered_map`
+    - Improve code compiler compatibility, i.g. `std::max` ==> `(std::max)`
 - License: MIT
 
 ## simdjson
