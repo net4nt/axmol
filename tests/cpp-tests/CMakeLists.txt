@@ -603,7 +603,7 @@ elseif(WINRT)
 endif()
 
 if((NOT IOS) AND (NOT WINRT))
-    message("CMake ${APP_NAME} target_precompile_headers")
+    message(STATUS "CMake ${APP_NAME} target_precompile_headers")
     target_precompile_headers(${APP_NAME} PRIVATE 
       "$<$<COMPILE_LANGUAGE:CXX>:axmol.h>"
     )
