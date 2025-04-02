@@ -881,20 +881,29 @@ $vs_installs = ConvertFrom-Json "$(&$vswhere -version "$vs_major.0" -format 'jso
 $vs_installer = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\setup.exe"
 $vs_path = $vs_installs[0].installationPath
 
+function install_msvc_comp($comp_id) {
+    Write-Host "Installing $comp_id into $vs_path ..."
+    &$vs_installer modify --quiet --installPath $vs_path --add $comp_id | Out-Host
+    if ($?) {
+        Write-Host "Install $comp_id success."
+    }
+    else {
+        Write-Error "Install $comp_id fail!"
+        exit 1
+    }
+}
+
+# msvc
 $vs_arch = @{x64 = 'x86.x64'; x86 = 'x86.x64'; arm64 = 'ARM64'; arm = 'ARM' }[$arch]
 $msvc_comp_id = "Microsoft.VisualStudio.Component.VC.$ver.$vs_ver.$vs_arch" # refer to: https://learn.microsoft.com/en-us/visualstudio/install/workload-component-id-vs-build-tools?view=vs-2022
-Write-Host "Installing $msvc_comp_id ..."
-&$vs_installer modify --quiet --installPath $vs_path --add $msvc_comp_id | Out-Host
+install_msvc_comp $msvc_comp_id
 
-if ($?) {
-    Write-Host "Install $msvc_comp_id success."
-}
-else {
-    Write-Error "Install $msvc_comp_id fail!"
-    exit 1
-}
+# mfc
+$suffix = @{x64 = ''; x86 = ''; arm64 = '.ARM64'; arm = '.ARM' }[$arch]
+$mfc_comp_id = "Microsoft.VisualStudio.Component.VC.$ver.$vs_ver.MFC$suffix"
+install_msvc_comp $mfc_comp_id
 '@
-    $1k.println("Installing $ver', please press YES in UAC dialog, and don't close popup install window ...")
+    $1k.println("Installing $ver, please press YES in UAC dialog, and don't close popup install window ...")
     $__install_script = [System.IO.Path]::GetTempFileName() + '.ps1'
     [System.IO.File]::WriteAllText($__install_script, $__install_code)
     $process = Start-Process powershell -ArgumentList "-File `"`"$__install_script`"`" -ver $ver -arch $arch" -Verb runas -PassThru -Wait
@@ -902,10 +911,10 @@ else {
     [System.IO.File]::Delete($__install_script)
 
     if ($install_ret -eq 0) {
-        $1k.println("Install msvc-$ver' succeed")
+        $1k.println("Install msvc-$ver succeed")
     }
     else {
-        throw "Install msvc-$ver' fail!"
+        throw "Install msvc-$ver fail!"
     }
 }
 
@@ -1454,7 +1463,23 @@ function setup_msvc() {
             if (!$manifest['msvc'].EndsWith('+')) { $dev_cmd_args += " -vcvars_ver=$cl_ver" }
 
             Import-Module "$vs_path\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"
-            Enter-VsDevShell -VsInstanceId $Global:VS_INST.instanceId -SkipAutomaticLocation -DevCmdArguments $dev_cmd_args
+            $1k.println("Enter vs dev shell ...")
+            Enter-VsDevShell -VsInstanceId $Global:VS_INST.instanceId -SkipAutomaticLocation -DevCmdArguments $dev_cmd_args -ErrorAction SilentlyContinue
+            if ($?) {
+                $1k.println('Enter vs dev shell success.')
+            }
+            else {
+                # vs2022 x64,x86 share same msvc component
+                install_msvc $cl_ver 'x64'
+                $1k.println("Enter vs dev shell ...")
+                Enter-VsDevShell -VsInstanceId $Global:VS_INST.instanceId -SkipAutomaticLocation -DevCmdArguments $dev_cmd_args -ErrorAction SilentlyContinue
+                if ($?) {
+                    $1k.println('Enter vs dev shell success.')
+                }
+                else {
+                    throw "Enter vs dev shell fail, please check your vs installation"
+                }
+            }
 
             $cl_prog, $cl_ver = find_prog -name 'msvc' -cmd 'cl' -silent $true -usefv $true
             $1k.println("Using msvc: $cl_prog, version: $cl_ver")
