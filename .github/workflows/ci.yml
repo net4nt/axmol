@@ -63,7 +63,7 @@ jobs:
             submodules: 'recursive'
         - name: Build
           shell: pwsh
-          run: .\tools\cmdline\axmol -p winuwp -a x64 -O0
+          run: .\tools\cmdline\axmol -p winuwp -a x64 -O3
   win32-clang:
         runs-on: windows-latest
         env:
