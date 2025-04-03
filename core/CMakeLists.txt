@@ -364,7 +364,7 @@ if(XCODE OR VS)
     ax_mark_code_files("${_AX_CORE_LIB}")
 endif()
 
-message("CMake ${_AX_CORE_LIB} target_precompile_headers")
+message(STATUS "CMake precompile headers for ${_AX_CORE_LIB}")
 target_precompile_headers(${_AX_CORE_LIB} PRIVATE
   "$<$<COMPILE_LANGUAGE:CXX>:axmol.h>"
 )

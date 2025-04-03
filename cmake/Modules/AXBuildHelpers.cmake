@@ -27,7 +27,7 @@ function(ax_sync_target_res ax_target)
     ax_def_sync_resource_target(${ax_target} ${sync_target_name})
 
     if(NOT TARGET ${sync_target_name})
-        message(WARNING "SyncResource targe for ${ax_target} is not defined")
+        message(AUTHOR_WARNING "SyncResource targe for ${ax_target} is not defined")
         return()
     endif()
 

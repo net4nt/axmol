@@ -41,7 +41,7 @@ if (WINDOWS)
         # refer to:
         #  - https://github.com/axmolengine/axmol/issues/991
         #  - https://github.com/axmolengine/axmol/issues/1246
-        message(WARNING "Forcing set CMAKE_C_STANDARD to 99 when winsdk < 10.0.22000.0")
+        message(AUTHOR_WARNING "Forcing set CMAKE_C_STANDARD to 99 when winsdk < 10.0.22000.0")
         set(CMAKE_C_STANDARD 99)
     endif()
 else()
@@ -235,7 +235,7 @@ enable_language(ASM_NASM OPTIONAL)
 
 if(NOT EXISTS "${CMAKE_ASM_NASM_COMPILER}")
    set(CMAKE_ASM_NASM_COMPILER_LOADED FALSE CACHE BOOL "Does cmake asm nasm compiler loaded" FORCE)
-   message(WARNING "The nasm compiler doesn't present on your system PATH, please download from: https://www.nasm.us/pub/nasm/releasebuilds/2.16.01/")
+   message(AUTHOR_WARNING "The nasm compiler doesn't present on your system PATH, please download from: https://www.nasm.us/pub/nasm/releasebuilds/2.16.01/")
 endif()
 
 # we don't need cmake BUILD_TESTING feature
