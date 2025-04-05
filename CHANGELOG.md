@@ -1,15 +1,31 @@
-## axmo-2.5.0 ?? 2025
+## axmol-2.5.0 Apr.5 2025
 
 ### Bug fixes
 
 - Fix for invalid event listener ID lookup by @rh101 in https://github.com/axmolengine/axmol/pull/2445
 - Fix #2415 c++23 compile error by @halx99
+- Fix #2470 wasm CommandBufferGL::readPixels not work by @halx99
 
 ### Improvements
 
+- Ensure fseeko available on ndk > 23 by @halx99 in https://github.com/axmolengine/axmol/pull/2490
+- Add play .opus audio files support by @halx99 in https://github.com/axmolengine/axmol/pull/2488
+- Auto install missing msvc toolset with specified version by @halx99
+- make some warn message can suppressed by @halx99
+- Fix winuwp ci due to github action vm disk space insufficient by @halx99
+- [Android] FileUtils::listFiles implementation that works with empty folders by @rh101 in https://github.com/axmolengine/axmol/pull/2463
+- [WASM] set _APP_RES_FOLDER if not defined to be able to specify directories of Resources by @AlexandreK38 in https://github.com/axmolengine/axmol/pull/2483
+- Fix setup and BUILD_SHARED_LIBS for Linux by @IamSanjid in https://github.com/axmolengine/axmol/pull/2481
+- Add supporting 'closed' Splines for DrawNode by @aismann in https://github.com/axmolengine/axmol/pull/2476
+- Add GLView::setInteractive by @AlexandreK38 in https://github.com/axmolengine/axmol/pull/2465
+- Fix BUILD_SHARED_LIBS for Android by @IamSanjid in https://github.com/axmolengine/axmol/pull/2462
+- Fix some deprecated methods not available in gradle 9.0 by @halx99
+- Fix #2457 support overwrite build profiles by .axproj by @halx99 in https://github.com/axmolengine/axmol/pull/2460
+- Prevent getCurrentTime() from returning 0 at the end of the audio track playback by @rh101 in https://github.com/axmolengine/axmol/pull/2452
 - Improve RichText XML parsing by @rh101 in https://github.com/axmolengine/axmol/pull/2420
 - Renamed forgotten ccConfig.h to Config.h by @aismann in https://github.com/axmolengine/axmol/pull/2422
 - Allow the use of em and % units for font size in RichText XML by @rh101 in https://github.com/axmolengine/axmol/pull/2421
+- Minor FastTMXLayer performance optimization by @hasikill in https://github.com/axmolengine/axmol/pull/2437
 - Add production ready wasm page by @paulocoutinhox in https://github.com/axmolengine/axmol/pull/2428
 - [Template] Add missing override specifier to destructor by @rh101 in https://github.com/axmolengine/axmol/pull/2433
 - [Android] Ensure c++ object model consistency by @halx99 in https://github.com/axmolengine/axmol/pull/2434
@@ -29,12 +45,15 @@
 ### SDKs & Tools updates
 
 - gradle: 8.11.1 ==> 8.13
+- cmake: 3.31.5 ==> 4.0.0
+- emsdk: 4.0.3 ==> 4.0.6
 
 ### 3rdparty updates
 
 - yasio: 4.3.1 ==> 4.3.2
 - fmtlib: 11.1.3 ==> 11.1.4
 - flatbuffers: 24.3.25 ==> 25.2.10
+- robin_map: 1.2.1 ==> 1.4.0
 
 ## axmol-2.4.0 Feb.23 2025
 
