@@ -1257,12 +1257,12 @@ function setup_android_sdk() {
         $ndk_ver = $ndk_ver.Substring(0, $ndk_ver.Length - 1)
     }
 
-    $my_sdk_root = Join-Path $install_prefix 'adt/sdk'
+    $__1k_sdk_root = Join-Path $install_prefix 'adt/sdk'
 
     $sdk_dirs = @()
     $1k.insert([ref]$sdk_dirs, $env:ANDROID_HOME)
     $1k.insert([ref]$sdk_dirs, $env:ANDROID_SDK_ROOT)
-    $1k.insert([ref]$sdk_dirs, $my_sdk_root)
+    $1k.insert([ref]$sdk_dirs, $__1k_sdk_root)
 
     $ndk_minor_base = [int][char]'a'
 
@@ -1320,6 +1320,9 @@ function setup_android_sdk() {
         $sdk_root = Join-Path $install_prefix 'adt/sdk'
         $1k.mkdirs($sdk_root)
     }
+
+    # C:\Users\halx99\AppData\Roaming\Google\AndroidStudio2024.3\options\android.sdk.path.xml
+    $1k.println("Using android sdk dir: $sdk_root")
 
     $sdk_comps = @()
 
