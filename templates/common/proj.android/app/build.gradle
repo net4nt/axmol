@@ -20,9 +20,9 @@ android {
     }
 
     defaultConfig {
-        applicationId = packageName
-        minSdkVersion = minSdk
-        targetSdkVersion = targetSdk
+        applicationId packageName
+        minSdkVersion minSdk
+        targetSdkVersion targetSdk
         versionCode 1
         versionName "1.0"
 
@@ -35,6 +35,7 @@ android {
         }
 
         ndk {
+            // noinspection ChromeOsAbiSupport
             abiFilters = __1K_ARCHS.split(':').collect{it as String}
         }
     }
