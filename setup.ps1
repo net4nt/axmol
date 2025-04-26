@@ -259,7 +259,12 @@ else {
     }
     else { # traits undetermined shell as bash
         if (!$IsMacOS) {
-            updateUnixProfile ~/.bashrc
+            # preferred .profile to ensure GUI app works
+            if (Test-Path ~/.profile) {
+                updateUnixProfile ~/.profile
+            } else {
+                updateUnixProfile ~/.bashrc
+            }
         } else {
             updateUnixProfile ~/.bash_profile
         }
@@ -458,7 +463,7 @@ if ($IsLinux -and (Test-Path '/etc/wsl.conf' -PathType Leaf)) {
     }
 }
 
-$1k.pause("setup successfully, please restart the terminal to make added system variables take effect")
+$1k.pause("setup successfully, please restart the terminal(on linux, need reboot or relogin) to make added system variables take effect")
 
 # Powershell End -------------------------------------------------------
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
