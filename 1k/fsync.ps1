@@ -62,8 +62,11 @@ if ($linkOnly) {
         cmd.exe /c mklink /J $destPath $srcPath
     }
     else {
-        # ln -s $srcPath $destPath
-        New-Item -ItemType SymbolicLink -Path $destPath -Target $srcPath 2>$null
+        if($IsWin) {
+            New-Item -ItemType SymbolicLink -Path $destPath -Target $srcPath 2>$null
+        } else {
+            sudo ln -s $srcPath $destPath
+        }
     }
 }
 else { # copy
