@@ -12,7 +12,7 @@ mkdir -p $cacheDir
 
 pwsh_ver=$1
 if [ "$pwsh_ver" = "" ] ; then
-    pwsh_ver='7.5.0'
+    pwsh_ver='7.5.1'
 fi
 
 pwsh_min_ver=$2
@@ -57,13 +57,15 @@ if [ $HOST_OS = 'Darwin' ] ; then
     sudo installer -pkg "$pwsh_pkg_out" -target /
 elif [ $HOST_OS = 'Linux' ] ; then
     if command -v dpkg > /dev/null; then  # Linux distro: deb (ubuntu)
+        sudo_cmd=$(which sudo)
+        $sudo_cmd apt update
+        $sudo_cmd apt install curl
         check_pwsh $pwsh_min_ver $preferred_ver
         pwsh_pkg="powershell_$pwsh_ver-1.deb_amd64.deb"
         pwsh_pkg_out="$cacheDir/$pwsh_pkg"
         if [ ! -f  "$pwsh_pkg_out" ] ; then
             curl -L "https://github.com/PowerShell/PowerShell/releases/download/v$pwsh_ver/$pwsh_pkg" -o "$pwsh_pkg_out"
         fi
-        sudo_cmd=$(which sudo)
         $sudo_cmd dpkg -i --ignore-depends=libicu72 "$pwsh_pkg_out"
         $sudo_cmd apt-get install -f powershell
     elif command -v pacman > /dev/null; then # Linux distro: Arch
