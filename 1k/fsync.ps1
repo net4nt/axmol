@@ -63,9 +63,18 @@ if ($linkOnly) {
     }
     else {
         if($IsWin) {
-            New-Item -ItemType SymbolicLink -Path $destPath -Target $srcPath 2>$null
+            try {
+                New-Item -ItemType SymbolicLink -Path $destPath -Target $srcPath 2>$null
+            } catch {
+                # Try again with runas
+                $instruction = "New-Item -ItemType SymbolicLink -Path '$destPath' -Target '$srcPath' 2>`$null"
+                Start-Process powershell -ArgumentList '-Command', $instruction -WorkingDirectory $PSScriptRoot -WindowStyle Hidden -Wait -Verb runas
+            }
         } else {
-            sudo ln -s $srcPath $destPath
+            ln -s $srcPath $destPath
+            if(!$?) {
+                sudo ln -s $srcPath $destPath
+            }
         }
     }
 }
