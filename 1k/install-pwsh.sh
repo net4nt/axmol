@@ -59,15 +59,20 @@ elif [ $HOST_OS = 'Linux' ] ; then
     if command -v dpkg > /dev/null; then  # Linux distro: deb (ubuntu)
         sudo_cmd=$(which sudo)
         $sudo_cmd apt update
-        $sudo_cmd apt install curl
+        $sudo_cmd apt --fix-broken install
         check_pwsh $pwsh_min_ver $preferred_ver
-        pwsh_pkg="powershell_$pwsh_ver-1.deb_amd64.deb"
-        pwsh_pkg_out="$cacheDir/$pwsh_pkg"
-        if [ ! -f  "$pwsh_pkg_out" ] ; then
-            curl -L "https://github.com/PowerShell/PowerShell/releases/download/v$pwsh_ver/$pwsh_pkg" -o "$pwsh_pkg_out"
+        if uname -a | grep -q "Ubuntu"; then
+            $sudo_cmd snap install powershell --classic
+        else
+            $sudo_cmd apt install curl
+            pwsh_pkg="powershell_$pwsh_ver-1.deb_amd64.deb"
+            pwsh_pkg_out="$cacheDir/$pwsh_pkg"
+            if [ ! -f  "$pwsh_pkg_out" ] ; then
+                curl -L "https://github.com/PowerShell/PowerShell/releases/download/v$pwsh_ver/$pwsh_pkg" -o "$pwsh_pkg_out"
+            fi
+            $sudo_cmd dpkg -i --ignore-depends=libicu72 "$pwsh_pkg_out"
+            $sudo_cmd apt install -f powershell
         fi
-        $sudo_cmd dpkg -i --ignore-depends=libicu72 "$pwsh_pkg_out"
-        $sudo_cmd apt-get install -f powershell
     elif command -v pacman > /dev/null; then # Linux distro: Arch
         # refer: https://ephos.github.io/posts/2018-9-17-Pwsh-ArchLinux
         # available pwsh version, refer to: https://aur.archlinux.org/packages/powershell-bin
