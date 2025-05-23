@@ -1,4 +1,4 @@
-## axmol-2.6.0 ?? 2025
+## axmol-2.6.0 May.23 2025
 
 ### Significant changes relative to 2.5.0:
 
@@ -7,7 +7,8 @@
 
 ### Bug fixes
 
-- Fix https://github.com/axmolengine/axmol/issues/2545 install pwsh fail on ubuntu-25.04 by @halx99
+- Fix #2548 Downloader-curl may crash or hang in download thread in https://github.com/axmolengine/axmol/pull/2549 by @halx99
+- Fix #2545 install pwsh fail on ubuntu-25.04 by @halx99
 - Fix wasm build fail on windows by @halx99 in https://github.com/axmolengine/axmol/pull/2511
 - Fix PNG_ARM_NEON_OPT flag by @halx99 in https://github.com/axmolengine/axmol/pull/2512
 - Fix #2504 play opus audio fail when build with Apple OpenAL.framework by @halx99 in https://github.com/axmolengine/axmol/pull/2506
@@ -44,6 +45,7 @@
 - Move simd intrinsics detection from 3rd into core by @halx99
 - Add minimum version to build docs support by @halx99, now the ci will only build & deploy axmol-2.3+ docs
 - Remove deprecated DSL config: renderscriptDebuggable by @halx99 in https://github.com/axmolengine/axmol/pull/2546
+- Implement ui::MediaPlayer::getVirtualRenderer by @halx99
 
 ### SDKs & Tools updates
 

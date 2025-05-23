@@ -10,7 +10,7 @@ axslcc=1.9.6+
 
 # The cmake, @gradle @axmol-cmdline
 # as latest as possible
-cmake=3.30.0~4.0.0+
+cmake=3.30.0~4.0.2+
 
 # The ninja
 ninja=1.10.0~1.12.1+
@@ -34,7 +34,7 @@ llvm=17.0.6~19.1.7+
 # region platform:android
 
 # The microsoft openjdk, @axmol-cmdline
-jdk=17.0.10~17.0.13+
+jdk=17.0.10~17.0.15+
 
 # The android cmdline-tools aka sdkmanager, as stable as possible
 cmdlinetools=12.0
@@ -70,7 +70,7 @@ buildtools=35.0.0
 
 # The android studio, @hint
 # as latest as possible, but match with agp, build-tools
-androidstudio=2024.2.1+
+androidstudio=2024.3.2+
 
 # The android dependencies managed by @gradle 
 appcompat=1.7.0

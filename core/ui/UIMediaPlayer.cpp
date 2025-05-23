@@ -1137,7 +1137,7 @@ void MediaPlayer::draw(Renderer* renderer, const Mat4& transform, uint32_t flags
     if (!vrender || !engine)
         return;
 
-    if (vrender->isVisible() && isPlaying())
+    if (isPlaying())
     {  // render 1 video sample if avaiable
         engine->transferVideoFrame();
     }
