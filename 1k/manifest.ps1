@@ -18,6 +18,7 @@ $manifest['ndk'] = $build_profiles['ndk']
 $manifest['cmake'] = $build_profiles['cmake']
 $manifest['vs'] = $build_profiles['vs']
 $manifest['llvm'] = $build_profiles['llvm']
+$manifest['cmdlinetools'] = $build_profiles['cmdlinetools']
 
 $Global:build_profiles = $build_profiles
 
