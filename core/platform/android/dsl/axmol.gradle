@@ -370,6 +370,7 @@ class AxmolUtils {
         options.add('"-DANDROID_TOOLCHAIN=clang"')
         options.add('"-DANDROID_ARM_NEON=TRUE"')
         options.add('"-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"')
+        options.add('"-DANDROID_USE_LEGACY_TOOLCHAIN_FILE=false"')
         options.add("\"-D_AX_ANDROID_PROJECT_DIR=${androidProjDir}\"")
         buildProfiles['cmakeOptions'] = options.toString()
     }
