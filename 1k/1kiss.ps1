@@ -1197,8 +1197,16 @@ function setup_unzip() {
     if ($IsWin) { return }
     $unzip_cmd_info = Get-Command 'unzip' -ErrorAction SilentlyContinue
     if (!$unzip_cmd_info) {
-        elseif ($IsLinux) {
-            if ($(which dpkg)) { sudo apt install unzip }
+        if ($IsLinux) {
+            if ($(which dpkg)) { 
+                sudo apt install unzip
+            }
+            elseif($(which pacman)) {
+                sudo pacman -S --needed --noconfirm unzip
+            }
+            else {
+                Write-Warning 'Current linux distro is not official supported'
+            }
         }
         elseif ($IsMacOS) {
             brew install unzip
