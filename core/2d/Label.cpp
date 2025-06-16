@@ -1126,40 +1126,50 @@ bool Label::alignText()
         _lengthOfString    = 0;
         _textDesiredHeight = 0.f;
         _linesWidth.clear();
+
+        const auto currentFontSize = getRenderingFontSize();
+
+        const auto atMinimumFontSizeLimit = currentFontSize <= 1.f;
+
+        bool redoProcess;
         if (_maxLineWidth > 0.f && !_lineBreakWithoutSpaces)
         {
-            multilineTextWrapByWord();
+            redoProcess = !multilineTextWrapByWord(atMinimumFontSizeLimit);
         }
         else
         {
-            multilineTextWrapByChar();
+            redoProcess = !multilineTextWrapByChar(atMinimumFontSizeLimit);
         }
-        computeAlignmentOffset();
 
-        if (_overflow == Overflow::SHRINK)
+        if (!redoProcess && _overflow == Overflow::SHRINK && !atMinimumFontSizeLimit)
         {
-            float fontSize = this->getRenderingFontSize();
-
-            if (fontSize > 0 && isVerticalClamp())
+            if (isVerticalClamp() || isHorizontalClamp())
             {
-                this->shrinkLabelToContentSize(AX_CALLBACK_0(Label::isVerticalClamp, this));
+                redoProcess = true;
             }
         }
 
-        if (!updateQuads())
+        if (redoProcess)
         {
-            ret = false;
-            if (_overflow == Overflow::SHRINK)
+            auto newFontSize = currentFontSize - 1;
+            if (newFontSize >= 1)
             {
-                this->shrinkLabelToContentSize(AX_CALLBACK_0(Label::isHorizontalClamp, this));
+                scaleFontSize(newFontSize);
+                continue;
             }
-            break;
         }
 
-        updateLabelLetters();
+        break;
 
-        updateColor();
-    } while (0);
+    } while (true);
+
+    computeAlignmentOffset();
+
+    updateQuads();
+
+    updateLabelLetters();
+
+    updateColor();
 
     return ret;
 }
@@ -1181,10 +1191,12 @@ bool Label::computeHorizontalKernings(const std::u32string& stringToRender)
         return true;
 }
 
-bool Label::isHorizontalClamped(float letterPositionX, float letterWidth, int lineIndex)
+bool Label::isLetterHorizontallyClamped(float letterPositionX, float letterWidth, int lineIndex, float offsetX)
 {
-    auto wordWidth       = this->_linesWidth[lineIndex];
-    bool letterOverClamp = ((letterPositionX + letterWidth) > _contentSize.width || (letterPositionX + letterWidth / 2) < 0);
+    const auto wordWidth       = this->_linesWidth[lineIndex];
+    const auto minPos          = offsetX < 0 ? letterPositionX - offsetX : letterPositionX;
+    const auto maxPos          = letterPositionX + letterWidth;
+    const auto letterOverClamp = maxPos >= _contentSize.width || minPos < 0;
     if (!_enableWrap)
     {
         return letterOverClamp;
@@ -1205,16 +1217,17 @@ bool Label::updateQuads()
 
     for (int ctr = 0; ctr < _lengthOfString; ++ctr)
     {
-        if (_lettersInfo[ctr].valid)
+        auto& letterInfo = _lettersInfo[ctr];
+        if (letterInfo.valid)
         {
-            auto& letterDef = _fontAtlas->_letterDefinitions[_lettersInfo[ctr].utf32Char];
+            auto& letterDef = _fontAtlas->_letterDefinitions[letterInfo.utf32Char];
 
             _reusedRect.size.height = letterDef.height;
             _reusedRect.size.width  = letterDef.width;
             _reusedRect.origin.x    = letterDef.U;
             _reusedRect.origin.y    = letterDef.V;
 
-            auto py = _lettersInfo[ctr].positionY + _letterOffsetY;
+            auto py = letterInfo.positionY + _letterOffsetY;
             if (_labelHeight > 0.f)
             {
                 if (py > _tailoredTopY)
@@ -1230,28 +1243,17 @@ bool Label::updateQuads()
                 }
             }
 
-            auto lineIndex = _lettersInfo[ctr].lineIndex;
-            auto px        = _lettersInfo[ctr].positionX + _linesOffsetX[lineIndex];
+            auto lineIndex = letterInfo.lineIndex;
+            auto px        = letterInfo.positionX + _linesOffsetX[lineIndex];
+            auto offsetX   = letterInfo.offsetX;
 
             if (_labelWidth > 0.f)
             {
-                if (this->isHorizontalClamped(px, letterDef.width * _fontScale, lineIndex))
+                if (this->isLetterHorizontallyClamped(px, letterDef.width * _fontScale, lineIndex, offsetX))
                 {
                     if (_overflow == Overflow::CLAMP)
                     {
                         _reusedRect.size.width = 0;
-                    }
-                    else if (_overflow == Overflow::SHRINK)
-                    {
-                        if (_contentSize.width > letterDef.width)
-                        {
-                            ret = false;
-                            break;
-                        }
-                        else
-                        {
-                            _reusedRect.size.width = 0;
-                        }
                     }
                 }
             }
@@ -1259,10 +1261,10 @@ bool Label::updateQuads()
             if (_reusedRect.size.height > 0.f && _reusedRect.size.width > 0.f)
             {
                 _reusedLetter->setTextureRect(_reusedRect, letterDef.rotated, _reusedRect.size);
-                float letterPositionX = _lettersInfo[ctr].positionX + _linesOffsetX[_lettersInfo[ctr].lineIndex];
+                float letterPositionX = letterInfo.positionX + _linesOffsetX[lineIndex];
                 _reusedLetter->setPosition(letterPositionX, py);
                 auto index = static_cast<int>(_batchNodes.at(letterDef.textureID)->getTextureAtlas()->getTotalQuads());
-                _lettersInfo[ctr].atlasIndex = index;
+                letterInfo.atlasIndex = index;
 
                 this->updateLetterSpriteScale(_reusedLetter);
 
@@ -1358,7 +1360,7 @@ void Label::scaleFontSize(float fontSize)
 
     if (shouldUpdateContent)
     {
-        this->updateContent();
+        this->clearTextures();
     }
 }
 
@@ -1704,7 +1706,7 @@ void Label::setCameraMask(unsigned short mask, bool applyChildren)
     }
 }
 
-void Label::updateContent()
+void Label::clearTextures()
 {
     if (_systemFontDirty)
     {
@@ -1722,7 +1724,6 @@ void Label::updateContent()
 
     AX_SAFE_RELEASE_NULL(_textSprite);
     AX_SAFE_RELEASE_NULL(_shadowNode);
-    bool updateFinished = true;
 
     if (_fontAtlas)
     {
@@ -1733,6 +1734,16 @@ void Label::updateContent()
         }
 
         computeHorizontalKernings(_utf32Text);
+    }
+}
+
+void Label::updateContent()
+{
+    clearTextures();
+    bool updateFinished = true;
+
+    if (_fontAtlas)
+    {
         updateFinished = alignText();
     }
     else
@@ -2868,7 +2879,7 @@ void Label::updateFontScale()
     }
 }
 
-bool Label::multilineTextWrap(const std::function<int(const std::u32string&, int, int)>& nextTokenLen)
+bool Label::multilineTextWrap(bool breakOnChar, bool ignoreOverflow)
 {
     int textLen               = getStringLength();
     int lineIndex             = 0;
@@ -2904,7 +2915,31 @@ bool Label::multilineTextWrap(const std::function<int(const std::u32string&, int
             continue;
         }
 
-        auto tokenLen         = nextTokenLen(_utf32Text, index, textLen);
+        int tokenLen;
+        if (breakOnChar)
+        {
+            tokenLen = getFirstCharLen(_utf32Text, index, textLen);
+        }
+        else
+        {
+            tokenLen = getFirstWordLen(_utf32Text, index, textLen);
+            if (!ignoreOverflow && _overflow == Overflow::SHRINK && !_lineBreakWithoutSpaces && tokenLen > 0 &&
+                (index + tokenLen) < textLen)
+            {
+                auto tokenLastChar = _utf32Text[index + tokenLen - 1];
+                if (!StringUtils::isCJKUnicode(tokenLastChar) && !StringUtils::isUnicodeSpace(tokenLastChar))
+                {
+                    // Work out if this token is valid based on the desired output
+                    auto nextChar = _utf32Text[index + tokenLen];
+                    if (!StringUtils::isUnicodeSpace(nextChar) && !StringUtils::isCJKUnicode(nextChar))
+                    {
+                        // No point continuing here
+                        return false;
+                    }
+                }
+            }
+        }
+
         float tokenHighestY   = highestY;
         float tokenLowestY    = lowestY;
         float tokenRight      = letterRight;
@@ -2956,7 +2991,7 @@ bool Label::multilineTextWrap(const std::function<int(const std::u32string&, int
                 letterPosition.x = letterX;
             }
             letterPosition.y = (nextTokenY - letterDef.offsetY * _fontScale) / contentScaleFactor;
-            recordLetterInfo(letterPosition, character, letterIndex, lineIndex);
+            recordLetterInfo(letterPosition, character, letterIndex, lineIndex, letterDef.offsetX, letterDef.offsetY);
 
             if (nextChangeSize)
             {
@@ -2979,10 +3014,8 @@ bool Label::multilineTextWrap(const std::function<int(const std::u32string&, int
             }
             nextChangeSize = true;
 
-            if (tokenHighestY < letterPosition.y)
-                tokenHighestY = letterPosition.y;
-            if (tokenLowestY > letterPosition.y - letterDef.height * _fontScale)
-                tokenLowestY = letterPosition.y - letterDef.height * _fontScale;
+            tokenHighestY = std::max(tokenHighestY, letterPosition.y);
+            tokenLowestY = std::min(tokenLowestY, letterPosition.y - letterDef.height * _fontScale);
         }
 
         if (newLine)
@@ -2992,10 +3025,8 @@ bool Label::multilineTextWrap(const std::function<int(const std::u32string&, int
 
         nextTokenX  = nextLetterX;
         letterRight = tokenRight;
-        if (highestY < tokenHighestY)
-            highestY = tokenHighestY;
-        if (lowestY > tokenLowestY)
-            lowestY = tokenLowestY;
+        highestY = std::max(highestY, tokenHighestY);
+        lowestY = std::min(lowestY, tokenLowestY);
 
         index += tokenLen;
     }
@@ -3010,40 +3041,46 @@ bool Label::multilineTextWrap(const std::function<int(const std::u32string&, int
         _linesWidth.emplace_back(letterRight - nextWhitespaceWidth);
         for (auto&& lineWidth : _linesWidth)
         {
-            if (longestLine < lineWidth)
-                longestLine = lineWidth;
+            longestLine = std::max(longestLine, lineWidth);
         }
     }
 
     _numberOfLines     = lineIndex + 1;
     _textDesiredHeight = (_numberOfLines * _lineHeight * _fontScale) / contentScaleFactor;
+
     if (_numberOfLines > 1)
         _textDesiredHeight += (_numberOfLines - 1) * _lineSpacing;  // ?? use scaled lineSpacing
+
     Vec2 contentSize(_labelWidth, _labelHeight);
+
     if (_labelWidth <= 0.f)
         contentSize.width = longestLine;
+
     if (_labelHeight <= 0.f)
         contentSize.height = _textDesiredHeight;
+
     setContentSize(contentSize);
 
     _tailoredTopY    = contentSize.height;
     _tailoredBottomY = 0.f;
+
     if (highestY > 0.f)
         _tailoredTopY = contentSize.height + highestY;
+
     if (lowestY < -_textDesiredHeight)
         _tailoredBottomY = _textDesiredHeight + lowestY;
 
     return true;
 }
 
-bool Label::multilineTextWrapByWord()
+bool Label::multilineTextWrapByWord(bool ignoreOverflow)
 {
-    return multilineTextWrap(AX_CALLBACK_3(Label::getFirstWordLen, this));
+    return multilineTextWrap(false, ignoreOverflow);
 }
 
-bool Label::multilineTextWrapByChar()
+bool Label::multilineTextWrapByChar(bool ignoreOverflow)
 {
-    return multilineTextWrap(AX_CALLBACK_3(Label::getFirstCharLen, this));
+    return multilineTextWrap(true, ignoreOverflow);
 }
 
 bool Label::isVerticalClamp()
@@ -3068,7 +3105,7 @@ bool Label::isHorizontalClamp()
         {
             auto& letterDef = _fontAtlas->_letterDefinitions[_lettersInfo[ctr].utf32Char];
 
-            auto px        = _lettersInfo[ctr].positionX + letterDef.width / 2 * _fontScale;
+            auto px        = _lettersInfo[ctr].positionX + letterDef.width * _fontScale;
             auto lineIndex = _lettersInfo[ctr].lineIndex;
 
             if (_labelWidth > 0.f)
@@ -3097,52 +3134,7 @@ bool Label::isHorizontalClamp()
     return letterClamp;
 }
 
-void Label::shrinkLabelToContentSize(const std::function<bool(void)>& lambda)
-{
-    float fontSize = this->getRenderingFontSize();
-
-    int i                     = 0;
-    auto letterDefinition     = _fontAtlas->_letterDefinitions;
-    auto tempLetterDefinition = letterDefinition;
-    float originalLineHeight  = _lineHeight;
-    bool flag                 = true;
-    while (lambda())
-    {
-        ++i;
-        float newFontSize = fontSize - i;
-        flag              = false;
-        if (newFontSize <= 0)
-        {
-            break;
-        }
-        float scale = newFontSize / fontSize;
-        std::swap(_fontAtlas->_letterDefinitions, tempLetterDefinition);
-        _fontAtlas->scaleFontLetterDefinition(scale);
-        this->setLineHeight(originalLineHeight * scale);
-        if (_maxLineWidth > 0.f && !_lineBreakWithoutSpaces)
-        {
-            multilineTextWrapByWord();
-        }
-        else
-        {
-            multilineTextWrapByChar();
-        }
-        computeAlignmentOffset();
-        tempLetterDefinition = letterDefinition;
-    }
-    this->setLineHeight(originalLineHeight);
-    std::swap(_fontAtlas->_letterDefinitions, letterDefinition);
-
-    if (!flag)
-    {
-        if (fontSize - i >= 0)
-        {
-            this->scaleFontSize(fontSize - i);
-        }
-    }
-}
-
-void Label::recordLetterInfo(const ax::Vec2& point, char32_t utf32Char, int letterIndex, int lineIndex)
+void Label::recordLetterInfo(const ax::Vec2& point, char32_t utf32Char, int letterIndex, int lineIndex, float offsetX, float offsetY)
 {
     if (static_cast<std::size_t>(letterIndex) >= _lettersInfo.size())
     {
@@ -3155,6 +3147,8 @@ void Label::recordLetterInfo(const ax::Vec2& point, char32_t utf32Char, int lett
     _lettersInfo[letterIndex].positionX  = point.x;
     _lettersInfo[letterIndex].positionY  = point.y;
     _lettersInfo[letterIndex].atlasIndex = -1;
+    _lettersInfo[letterIndex].offsetX    = offsetX;
+    _lettersInfo[letterIndex].offsetY    = offsetY;
 }
 
 void Label::recordPlaceholderInfo(int letterIndex, char32_t utf32Char)
