@@ -114,7 +114,7 @@
 ## lua
 - plainlua
   - [![Upstream](https://img.shields.io/github/v/release/lua/lua?label=Upstream)](https://github.com/lua/lua) http://www.lua.org/
-  - Version: 5.4.7
+  - Version: 5.4.8
   - License: MIT (http://www.lua.org/license.html)
   
 - sol2
@@ -165,7 +165,7 @@
 ## ogg
 - ogg
   - [![Upstream](https://img.shields.io/github/v/release/xiph/ogg?label=Upstream)](https://github.com/xiph/ogg)
-  - Version: 1.3.5
+  - Version: 1.3.6
   - License: BSD-3-Clause
 
 - opus
