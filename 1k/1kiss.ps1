@@ -1083,7 +1083,7 @@ function setup_cmake($skipOS = $false) {
             }
         }
         elseif ($IsLinux) {
-            if ($option.scope -ne 'global') {
+            if ($options.scope -ne 'global') {
                 $1k.mkdirs($cmake_root)
                 & "$cmake_pkg_path" '--skip-license' '--exclude-subdir' "--prefix=$cmake_root" 1>$null 2>$null
             }
