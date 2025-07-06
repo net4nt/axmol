@@ -1,10 +1,21 @@
-# axmol-2.7.0 ?? 2025
+# axmol-2.7.0 Jul.6 2025
+
+## Significant changes relative to 2.6.x
+
+- The minimum required version of Android Studio has been updated to 2025.1.1
+- Add mouse events listener for Widgets by @AlexandreK38 in https://github.com/axmolengine/axmol/pull/2580 (the callback function return type was changed from `void` to `bool`)
+- Refactor imgui axmol backend by @halx99 in https://github.com/axmolengine/axmol/pull/2584, now both andorid and PC platform backends share it.
+- The `ImGuiPresenter`'s APIs `mergeFontGlyphs`,`clearGlyphRanges`,`removeGlyphRanges`,`addGlyphRanges`,`getGlyphRangesId` have been removed(no longer needed), benefit from imgui-1.92.0 dynamic font atlas support, see imgui 1.92.0 release notes: https://github.com/ocornut/imgui/releases/tag/v1.92.0
+- Add `ImGuiPresenter::getMainScale`, mark `ImGuiPresenter::getContentZoomFactor` as DEPRECATED
+- Remove all overload stubs of API `ImGuiPresenter::addFont`, now only `void ImGuiPresenter::addFont(std::string_view fontFile, float fontSize = DEFAULT_FONT_SIZE);` available
 
 ## Bug fixes
 
 - Fix Calling Label::setString after Label::getLetter causes layout issues by @halx99 in https://github.com/axmolengine/axmol/pull/2572
 - Fix Label wrapping, overflow and alignment issues by @rh101 in https://github.com/axmolengine/axmol/pull/2567
 - Fix https://github.com/axmolengine/axmol/issues/2569 build fail on ubuntu-22.04 by @halx99
+- Fix statsLabel not show after Director::restart() by @remtori in https://github.com/axmolengine/axmol/pull/2581
+- Fix linux crash on exiting cpp-tests after running Scene3DTest by @halx99 in https://github.com/axmolengine/axmol/pull/2582
 
 ## Improvements
 
@@ -15,6 +26,18 @@
 - Update 3rdparty README.md (Clipper2 1.5.4) by @aismann in https://github.com/axmolengine/axmol/pull/2564
 - Update and re-enable Scene3D test by @rh101 in https://github.com/axmolengine/axmol/pull/2562
 - Update SDFGen.cpp (fix typo) by @aismann in https://github.com/axmolengine/axmol/pull/2565
+- Change wasm initial memory to 128MB, allow memory increase by @AlexandreK38 in https://github.com/axmolengine/axmol/pull/2575
+- Add locating visual studio build tools without full vs installed by @martinking71 in https://github.com/axmolengine/axmol/pull/2576
+- Add click listener for WASM (without touches AKA on desktop) to cancel the current 'touches' by @AlexandreK38 in https://github.com/axmolengine/axmol/pull/2577
+- `WASM` Option to use main loop timing 'timeout' instead of 'requestAnimationFrame' (RAF) by @AlexandreK38 in https://github.com/axmolengine/axmol/pull/2578
+- Remove Director redundant release statements by @halx99,@remtori
+- Add close code and reason for Websocket close / onClose by @AlexandreK38 https://github.com/axmolengine/axmol/pull/2579
+- Fix typo for 1kiss.ps1 by @halx99
+
+## SDKs & Tools updates
+
+- AGP: 8.10.0 => 8.11.1
+- gradle: 8.13 => 8.14.3
 
 ## 3rdparty updates
 
@@ -113,7 +136,7 @@
 
 ## SDKs & Tools updates
 
-- agp: 8.7.3 => 8.10.0
+- AGP: 8.7.3 => 8.10.0
 - android target sdk: 35 => 36
 - android sdk build tools: 34.0.0 => 35.0.0
 
