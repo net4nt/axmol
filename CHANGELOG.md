@@ -4,7 +4,7 @@
 
 - The minimum required version of Android Studio has been updated to 2025.1.1
 - Add mouse events listener for Widgets by @AlexandreK38 in https://github.com/axmolengine/axmol/pull/2580 (the callback function return type was changed from `void` to `bool`)
-- Refactor imgui axmol backend by @halx99 in https://github.com/axmolengine/axmol/pull/2584, now both andorid and PC platform backends share it.
+- Refactor imgui axmol backend by @halx99 in https://github.com/axmolengine/axmol/pull/2584, now both android and PC platform backends share it.
 - The `ImGuiPresenter`'s APIs `mergeFontGlyphs`,`clearGlyphRanges`,`removeGlyphRanges`,`addGlyphRanges`,`getGlyphRangesId` have been removed(no longer needed), benefit from imgui-1.92.0 dynamic font atlas support, see imgui 1.92.0 release notes: https://github.com/ocornut/imgui/releases/tag/v1.92.0
 - Add `ImGuiPresenter::getMainScale`, mark `ImGuiPresenter::getContentZoomFactor` as DEPRECATED
 - Remove all overload stubs of API `ImGuiPresenter::addFont`, now only `void ImGuiPresenter::addFont(std::string_view fontFile, float fontSize = DEFAULT_FONT_SIZE);` available
@@ -36,7 +36,7 @@
 
 ## SDKs & Tools updates
 
-- AGP: 8.10.0 => 8.11.1
+- AGP: 8.10.0 => 8.11.0
 - gradle: 8.13 => 8.14.3
 
 ## 3rdparty updates
