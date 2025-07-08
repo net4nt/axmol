@@ -42,7 +42,7 @@
 ## 3rdparty updates
 
 - Clipper2: 1.5.3 => 1.5.4
-- libpng: 1.6.48 => 1.6.49
+- libpng: 1.6.48 => 1.6.50
 - imgui: 1.91.6 => 1.92.0
 - jpeg-turbo: 3.1.0 => 3.1.1
 - ogg: 1.3.5 => 1.3.6

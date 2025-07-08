@@ -1,7 +1,10 @@
 # The ImGui extension for axmol
-Sync from https://github.com/Xrysnow/cocos2d-x-imgui and do a little changes
+Sync from https://github.com/Xrysnow/cocos2d-x-imgui and do some improvements
 
 ## Improvements
+
+* Refactor imgui axmol render backend
+* Add android platform backend support
 * Simplify API, use add/remove renderLoop present ImGui GUI widgets
 * Optimize call pipeline flow, support add/remove Node to Scene at ImGui render loop without container iterator damage
 * Calculate deltaTime at ```ImGui_ImplCocos2dx_NewFrame``` to avoid error when ```cc.Director``` paused
