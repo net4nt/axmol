@@ -1,5 +1,6 @@
 # The ImGui extension for axmol
-Sync from https://github.com/Xrysnow/cocos2d-x-imgui and do some improvements
+
+forked from https://github.com/Xrysnow/cocos2d-x-imgui and add many improvements
 
 ## Improvements
 
@@ -17,6 +18,7 @@ and then specify the glyph ranges id while calling `addFont`
 to use those with specific font.
 
 ## How to use
+
 ```cpp
 #include "ImGui/ImGuiPresenter.h"
 using namespace ax;
@@ -52,12 +54,16 @@ public:
 More about use imgui widgets, please see: https://github.com/ocornut/imgui
 
 ## Tested devices
+
 * win32
 * macOS
+* Android
 
 ## Known issues
+
 * Can't enable muti-viewports on macOS, so we disable this feature for macOS.
 
 ## Other resources of ImGui
+
 * https://github.com/ocornut/imgui/wiki/Bindings
 * https://github.com/CedricGuillemet/ImGuizmo
