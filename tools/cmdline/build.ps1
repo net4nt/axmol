@@ -96,7 +96,7 @@ if (!(Test-Path $1k_script -PathType Leaf)) {
 
 $source_proj_dir = if ($options.d) { $options.d } else { $workDir }
 $Global:is_axmol_engine = ($source_proj_dir -eq $AX_ROOT)
-$Global:is_axmol_app = !!(Get-ChildItem (Join-Path $source_proj_dir '.axproj*'))
+$Global:is_axmol_app = !!(Get-ChildItem (Join-Path $source_proj_dir '.axproj*') -Force)
 $is_android = $options.p -eq 'android'
 
 if($Global:is_axmol_app) {
