@@ -207,6 +207,9 @@ if(MSVC)
     target_compile_options(${_AX_LUA_LIB} PRIVATE /bigobj)
 endif()
 
+ax_config_pred(${_AX_LUA_LIB} AX_ENABLE_EXT_SPINE)
+ax_config_pred(${_AX_LUA_LIB} AX_ENABLE_EXT_FAIRYGUI)
+
 get_target_property(lua_ext_depend 3rdparty AX_LUA_DEPEND)
 target_link_libraries(${_AX_LUA_LIB} ${lua_ext_depend})
 
