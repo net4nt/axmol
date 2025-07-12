@@ -111,16 +111,6 @@ function repair_directories ($Source, $Destination) {
     }
 }
 
-# actionParam
-#   rep
-#     from
-#     to
-#     files
-#   cp
-#     from
-#     to
-#   del:
-#     files
 function perform_action($actionParam) {
     $from = if ($actionParam.from){ . (Invoke-Expression "{ ""$($actionParam.from)"" }") } else { $actionParam.pattern } # expand envs/vars
     $to = . (Invoke-Expression "{ ""$($actionParam.to)"" } ") # expand envs/vars
@@ -167,7 +157,11 @@ function perform_action($actionParam) {
             }
         }
         'ren' {
-            Rename-Item $from $to -Force
+            if (!$repair -or !(Test-Path $to)) {
+                Rename-Item $from $to -Force
+            } else {
+                println "Skipping repairing: $to, already exists."
+            }
         }
         'del' {
             foreach($filepath in $actionParam.files) {
@@ -219,13 +213,38 @@ if($isolated) {
     }
 }
 
-# write .axproj
+# updating .axproj
 $proj_file = Join-Path $projectDir '.axproj'
-if (!$repair -or !(Test-Path $proj_file -PathType Leaf)) {
-    $axprojInfo = "package_name=$packageName`nengine_version=$axmolVersion`nproject_type=$lang"
-    Set-Content -Path $proj_file -Value $axprojInfo
+
+. $(Join-Path $AX_ROOT '1k/extensions.ps1')
+if (Test-Path $proj_file -PathType Leaf) {
+    $proj_props = ConvertFrom-Props (Get-Content $proj_file)
 } else {
-    println "Skipping repairing: $proj_file, already exists."
+    $proj_props = @{}
+}
+
+$Script:update_axproj_mods = 0
+function update_axproj_prop($props, $prop_name, $prop_val) {
+    if($props.Contains($prop_name)) {
+        $old_val = $props[$prop_name]
+        if($old_val -ne $prop_val) {
+            $props[$prop_name] = $prop_val
+            ++$Script:update_axproj_mods
+            println "Update .axproj '$prop_name': $old_val => $prop_val"
+        }
+    }
+    else {
+        $props[$prop_name] = $prop_val
+        ++$Script:update_axproj_mods
+    }
+}
+
+update_axproj_prop $proj_props 'package_name' $packageName
+update_axproj_prop $proj_props 'engine_version' $axmolVersion
+update_axproj_prop $proj_props 'project_type' $lang
+
+if ($update_axproj_mods) {
+    Set-Content -Path $proj_file -Value (ConvertTo-Props $proj_props)
 }
 
 if(!$repair) {
