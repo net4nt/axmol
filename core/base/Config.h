@@ -266,13 +266,6 @@ THE SOFTWARE.
 #    endif
 #endif  // defined(AX_ENABLE_PHYSICS)
 
-#if defined(AX_ENABLE_3D_PHYSICS)
-/** Use bullet physics engine. */
-#    ifndef AX_ENABLE_BULLET_INTEGRATION
-#        define AX_ENABLE_BULLET_INTEGRATION 1
-#    endif
-#endif
-
 /** Use culling or not. */
 #ifndef AX_USE_CULLING
 #    define AX_USE_CULLING 1
