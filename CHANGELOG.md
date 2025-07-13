@@ -1,3 +1,26 @@
+# axmol-2.7.1 Jul.? 2025
+
+## Bug fixes
+
+- Fix .axproj not load on non windows platforms by @halx99
+- Fix missing extensions spine,fairygui preprocessors for axlua by @halx99
+
+## Improvements
+
+- Improve plainlua CMakeLists.txt, make it compatibile with lua-5.1~5.5 by @halx99
+- Remove unnecessary preprocessor: `AX_ENABLE_BULLET_INTEGRATION` by @halx99
+- Ensure package name consistent for `axmol new -r` by @halx99
+- Add parameter `-r` for `axmol new` command to regenerates the missing common and platform spec files by @halx99 in https://github.com/axmolengine/axmol/pull/2590
+- Remove redundant `cc` prefix by @halx99 in https://github.com/axmolengine/axmol/pull/2587
+- Improve android sdk root selection strategy by @halx99
+- Improve android sdk setup by @halx99 in https://github.com/axmolengine/axmol/pull/2588, load `sdk.dir` from `proj.android/local.properties` as preferred android sdk root if it's present
+- Improve lua bindings generator, make it can works with ndk versions: r23~latest by @halx99 in https://github.com/axmolengine/axmol/pull/2592
+- Update imgui to 1.92.1 & tidy sources structure by @halx99 in https://github.com/axmolengine/axmol/pull/2593
+
+## 3rdparty updates
+
+- webp: 1.5.0 => 1.6.0
+
 # axmol-2.7.0 Jul.6 2025
 
 ## Significant changes relative to 2.6.x
