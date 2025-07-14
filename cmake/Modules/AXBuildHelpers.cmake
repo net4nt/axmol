@@ -403,6 +403,18 @@ function(get_target_compiled_shaders output_list target)
     set(${output_list} ${shaders} PARENT_SCOPE)
 endfunction()
 
+function (ax_add_delay_load_options target)
+    if(NOT WIN32)
+        return()
+    endif()
+
+    target_link_options(${target} PRIVATE "LINKER:/DELAYLOAD:mf.dll" "LINKER:/DELAYLOAD:mfplat.dll")
+
+    if (CMAKE_GENERATOR MATCHES "Ninja")
+        target_link_libraries(${target} delayimp)
+    endif()
+endfunction()
+
 # setup a ax application
 function(ax_setup_app_config app_name)
     set(options CONSOLE)
@@ -441,17 +453,16 @@ function(ax_setup_app_config app_name)
         set(_win32_console_app FALSE)
 
         if (NOT opt_CONSOLE OR WINRT)
-            set(_win32_linker_flags "/SUBSYSTEM:WINDOWS")
+            set(_win32_linker_flags "LINKER:/SUBSYSTEM:WINDOWS")
         else()
-            set(_win32_linker_flags "/SUBSYSTEM:CONSOLE")
+            set(_win32_linker_flags "LINKER:/SUBSYSTEM:CONSOLE")
             set(_win32_console_app TRUE)
         endif()
 
-        if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-            set(_win32_linker_flags "-Xlinker ${_win32_linker_flags}")
+        if(AX_ENABLE_MFMEDIA AND NOT WINRT AND NOT BUILD_SHARED_LIBS)
+            ax_add_delay_load_options(${app_name})
         endif()
-
-        set_property(TARGET ${app_name} APPEND PROPERTY LINK_FLAGS "${_win32_linker_flags}")
+        target_link_options(${APP_NAME} PRIVATE ${_win32_linker_flags})
         if (_win32_console_app)
             set_source_files_properties(proj.win32/main.cpp PROPERTIES COMPILE_DEFINITIONS _CONSOLE=1)
         endif()
