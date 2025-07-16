@@ -122,6 +122,7 @@
 
 - Update android devenv to support android 16 by @halx99 in https://github.com/axmolengine/axmol/pull/2546
 - Update Android Studio minimum required version to `2024.3.2`
+- **Downgrade emsdk from `4.0.6` to `3.1.73` due to axmol apps can't be debugging via chrome properly when build with emsdk-4.0+, the breakpoint can't be trigger by default, or triggerd, but can't watch any variables even through build with -O0**
 
 ## Bug fixes
 
@@ -170,6 +171,7 @@
 - AGP: 8.7.3 => 8.10.0
 - android target sdk: 35 => 36
 - android sdk build tools: 34.0.0 => 35.0.0
+- emsdk: 4.0.6 => 3.1.73
 
 ## 3rdparty updates
 
