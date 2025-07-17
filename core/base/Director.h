@@ -175,6 +175,11 @@ public:
      */
     void setRenderView(RenderView* renderView);
 
+#ifndef AX_CORE_PROFILE
+    AX_DEPRECATED(2.8) RenderView* getGLView() { return getRenderView(); }
+    AX_DEPRECATED(2.8) void setGLView(RenderView* renderView) { setRenderView(renderView); }
+#endif
+
     /*
      * Gets singleton of TextureCache.
      */
