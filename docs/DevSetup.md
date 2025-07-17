@@ -250,4 +250,5 @@ Build & Run/Debug
 2. Execute `axmol run -p wasm -O2` or `axmol run -p wasm -O0` in your axmol project root
 3. Now you can debug axmol apps via Chrome DevTools, for more details, refer to: [Debug C/C++ WebAssembly](https://developer.chrome.com/docs/devtools/wasm)
 
-*Note: When build axmol wasm apps with emsdk-4.0+, can't debug properly on windows, due to many developer works on windows (`linux` or `macos` no this issue), so axmol set emsdk default version to `3.1.73` in `1k/build.profiles` ensure developer can debug axmol wasm apps properly. if you use `linux` or `macos`, you can set emsdk to 4.0+ in your `.axproj`, for example `emsdk=4.0.11`.*
+*Note: Axmol set the `emsdk` default version to `3.1.73` in `1k/build.profiles` to ensure that the developer can debug axmol wasm apps properly on all platforms. If you use linux or macos, you can set and use without issue a higher `emsdk version (4.0+)` in your `.axproj`, for example `emsdk=4.0.11`. 
+If you use  windows you won’t be able to debug the app properly on higher versions than `3.1.73`*

@@ -122,7 +122,8 @@
 
 - Update android devenv to support android 16 by @halx99 in https://github.com/axmolengine/axmol/pull/2546
 - Update Android Studio minimum required version to `2024.3.2`
-- **Downgrade emsdk from `4.0.6` to `3.1.73` due to axmol apps can't be debugging via chrome properly on windows when build with emsdk-4.0+, the debugger will always report `No debug information for function "<func_name_signature>"`, and can't watch any variables even through build with `-O0`**
+- **Downgrade emsdk from `4.0.6` to `3.1.73` to ensure that the developer can debug axmol wasm apps properly on all platforms. If you use linux or macos, you can set and use without issue a higher `emsdk version (4.0+)` in your `.axproj`, for example `emsdk=4.0.11`. 
+If you use  windows you won’t be able to debug the app properly on higher versions than `3.1.73`**
 
 ## Bug fixes
 
