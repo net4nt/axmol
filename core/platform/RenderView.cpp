@@ -105,7 +105,7 @@ void RenderView::setGfxContextAttrs(GfxContextAttrs& gfxContextAttrs)
     _gfxContextAttrs = gfxContextAttrs;
 }
 
-GLContextAttrs& RenderView::getGfxContextAttrs()
+GfxContextAttrs& RenderView::getGfxContextAttrs()
 {
     return _gfxContextAttrs;
 }
