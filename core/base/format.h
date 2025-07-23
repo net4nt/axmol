@@ -42,7 +42,7 @@ inline std::string_view format_to_z(char (&out)[_Size], format_string<_Args...> 
     static_assert(_Size > 1, "Buffer size must be greater than 1");
     const auto result = fmt::format_to_n(out, _Size - 1, fmt, std::forward<_Args>(args)...);
     *result.out       = '\0';
-    return std::string_view(out, std::min(result.size, static_cast<size_t>(_Size - 1)));
+    return std::string_view(out, (std::min)(result.size, static_cast<size_t>(_Size - 1)));
 }
 }  // namespace fmt
 
