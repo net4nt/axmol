@@ -538,7 +538,16 @@ bool DriverGL::checkForFeatureSupported(FeatureType feature)
         featureSupported = hasExtension("GL_OES_depth24"sv);
         break;
     case FeatureType::ASTC:
+#if AX_TARGET_PLATFORM != AX_PLATFORM_WASM
         featureSupported = checkASTCRenderability();
+#else
+        // On WebAssembly platforms running Safari on iOS < 15, attempting to test for ASTC support
+        // via speculative ASTC texture uploads may cause uncatchable exceptions, leading to a
+        // "context lost" error. This occurs even if all GL errors are properly handled inside
+        // checkASTCRenderability(), making the approach unreliable on affected devices.
+        // see also: https://github.com/axmolengine/axmol/issues/2484
+        featureSupported = _textureCompressionAstc;
+#endif
         break;
     default:
         break;
