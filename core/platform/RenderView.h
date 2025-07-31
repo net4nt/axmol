@@ -72,9 +72,9 @@ enum class ResolutionPolicy
     UNKNOWN,
 };
 
-/** @struct GLContextAttrs
+/** @struct GfxContextAttrs
  *
- * There are six opengl Context Attrs.
+ * The graphics context attributes.
  */
 struct GfxContextAttrs
 {
