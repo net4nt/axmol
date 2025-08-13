@@ -42,7 +42,7 @@ using namespace ax;
 #include "base/EventType.h"
 #include "2d/Camera.h"
 #include "platform/Image.h"
-#include "3d/3DProgramInfo.h"
+#include "3d/shaderinfos.h"
 #include "base/Utils.h"
 
 namespace ax
@@ -164,7 +164,7 @@ void Terrain::draw(ax::Renderer* renderer, const ax::Mat4& transform, uint32_t f
     {
         int hasLightMap = 0;
         _programState->setUniform(_lightMapCheckLocation, &hasLightMap, sizeof(hasLightMap));
-#ifdef AX_USE_METAL
+#if AX_RENDER_API == AX_RENDER_API_MTL || AX_RENDER_API == AX_RENDER_API_D3D
         _programState->setTexture(_lightMapLocation, 5, _dummyTexture->getBackendTexture());
 #endif
     }
@@ -266,7 +266,7 @@ Terrain::Terrain()
         EventListenerCustom::create(EVENT_RENDERER_RECREATED, [this](EventCustom*) { reload(); });
     _director->getEventDispatcher()->addEventListenerWithFixedPriority(_backToForegroundListener, 1);
 #endif
-#ifdef AX_USE_METAL
+#if AX_RENDER_API == AX_RENDER_API_MTL || AX_RENDER_API == AX_RENDER_API_D3D
     auto image          = new Image();
     bool AX_UNUSED isOK = image->initWithRawData(ax_2x2_white_image, sizeof(ax_2x2_white_image), 2, 2, 8);
     AXASSERT(isOK, "The 2x2 empty texture was created unsuccessfully.");
@@ -736,7 +736,7 @@ Terrain::ChunkIndices Terrain::insertIndicesLOD(int neighborLod[4], int selfLod,
     lodIndices._relativeLod[4]     = selfLod;
     lodIndices._chunkIndices._size = size;
 
-    auto buffer = backend::DriverBase::getInstance()->newBuffer(sizeof(uint16_t) * size, backend::BufferType::INDEX,
+    auto buffer = backend::DriverBase::getInstance()->createBuffer(sizeof(uint16_t) * size, backend::BufferType::INDEX,
                                                             backend::BufferUsage::STATIC);
     buffer->updateData(indices, sizeof(uint16_t) * size);
 
@@ -774,7 +774,7 @@ Terrain::ChunkIndices Terrain::insertIndicesLODSkirt(int selfLod, uint16_t* indi
     skirtIndices._selfLod            = selfLod;
     skirtIndices._chunkIndices._size = size;
 
-    auto buffer = backend::DriverBase::getInstance()->newBuffer(sizeof(uint16_t) * size, backend::BufferType::INDEX,
+    auto buffer = backend::DriverBase::getInstance()->createBuffer(sizeof(uint16_t) * size, backend::BufferType::INDEX,
                                                             backend::BufferUsage::STATIC);
     buffer->updateData(indices, sizeof(uint16_t) * size);
 
@@ -913,7 +913,7 @@ void Terrain::Chunk::finish()
     // frequently
 
     AX_SAFE_RELEASE_NULL(_buffer);
-    _buffer = backend::DriverBase::getInstance()->newBuffer(sizeof(TerrainVertexData) * _originalVertices.size(),
+    _buffer = backend::DriverBase::getInstance()->createBuffer(sizeof(TerrainVertexData) * _originalVertices.size(),
                                                         backend::BufferType::VERTEX, backend::BufferUsage::DYNAMIC);
 
     _buffer->updateData(&_originalVertices[0], sizeof(TerrainVertexData) * _originalVertices.size());

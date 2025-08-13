@@ -203,22 +203,27 @@ void Renderer::init()
     _vertexBuffer = _triangleCommandBufferManager.getVertexBuffer();
     _indexBuffer  = _triangleCommandBufferManager.getIndexBuffer();
 
-    auto driver    = backend::DriverBase::getInstance();
-    _commandBuffer = driver->newCommandBuffer();
+    auto driver = backend::DriverBase::getInstance();
+#if AX_RENDER_API == AX_RENDER_API_D3D
+    auto mainWindowHandle = Director::getInstance()->getRenderView()->getWin32Window();
+    _commandBuffer        = driver->createCommandBuffer(mainWindowHandle);
+#else
+    _commandBuffer = driver->createCommandBuffer(nullptr);
+#endif
     _dsDesc.flags = DepthStencilFlags::ALL;
-    _defaultRT    = driver->newDefaultRenderTarget();
+    _currentRT = _defaultRT = driver->createDefaultRenderTarget();
+    _commandBuffer->setScreenRenderTarget(_defaultRT);
 
-    _currentRT      = _defaultRT;
-    _renderPipeline = driver->newRenderPipeline();
+    _renderPipeline = driver->createRenderPipeline();
     _commandBuffer->setRenderPipeline(_renderPipeline);
 
-    _depthStencilState = driver->newDepthStencilState();
+    _depthStencilState = driver->createDepthStencilState();
     _commandBuffer->setDepthStencilState(_depthStencilState);
 }
 
 backend::RenderTarget* Renderer::getOffscreenRenderTarget() {
     if (_offscreenRT != nullptr) return _offscreenRT;
-    return (_offscreenRT = backend::DriverBase::getInstance()->newRenderTarget());
+    return (_offscreenRT = backend::DriverBase::getInstance()->createRenderTarget());
 }
 
 void Renderer::addCallbackCommand(std::function<void()> func, float globalZOrder)
@@ -309,7 +314,7 @@ void Renderer::processRenderCommand(RenderCommand* command)
             drawBatchedTriangles();
 
             _queuedTotalIndexCount = _queuedTotalVertexCount = 0;
-#ifdef AX_USE_METAL
+#if AX_RENDER_API == AX_RENDER_API_MTL
             _queuedIndexCount = _queuedVertexCount = 0;
             _triangleCommandBufferManager.prepareNextBuffer();
             _vertexBuffer = _triangleCommandBufferManager.getVertexBuffer();
@@ -319,7 +324,7 @@ void Renderer::processRenderCommand(RenderCommand* command)
 
         // queue it
         _queuedTriangleCommands.emplace_back(cmd);
-#ifdef AX_USE_METAL
+#if AX_RENDER_API == AX_RENDER_API_MTL
         _queuedIndexCount += cmd->getIndexCount();
         _queuedVertexCount += cmd->getVertexCount();
 #endif
@@ -428,7 +433,7 @@ void Renderer::endFrame()
 {
     _commandBuffer->endFrame();
 
-#ifdef AX_USE_METAL
+#if AX_RENDER_API == AX_RENDER_API_MTL
     _triangleCommandBufferManager.putbackAllBuffers();
     _vertexBuffer = _triangleCommandBufferManager.getVertexBuffer();
     _indexBuffer  = _triangleCommandBufferManager.getIndexBuffer();
@@ -611,7 +616,7 @@ void Renderer::drawBatchedTriangles()
         return;
 
         /************** 1: Setup up vertices/indices *************/
-#ifdef AX_USE_METAL
+#if AX_RENDER_API == AX_RENDER_API_MTL
     unsigned int vertexBufferFillOffset = _queuedTotalVertexCount - _queuedVertexCount;
     unsigned int indexBufferFillOffset  = _queuedTotalIndexCount - _queuedIndexCount;
 #else
@@ -675,7 +680,7 @@ void Renderer::drawBatchedTriangles()
         firstCommand   = false;
     }
     batchesTotal++;
-#ifdef AX_USE_METAL
+#if AX_RENDER_API == AX_RENDER_API_MTL
     _vertexBuffer->updateSubData(_verts, vertexBufferFillOffset * sizeof(_verts[0]), _filledVertex * sizeof(_verts[0]));
     _indexBuffer->updateSubData(_indices, indexBufferFillOffset * sizeof(_indices[0]),
                                 _filledIndex * sizeof(_indices[0]));
@@ -708,7 +713,7 @@ void Renderer::drawBatchedTriangles()
     /************** 3: Cleanup *************/
     _queuedTriangleCommands.clear();
 
-#ifdef AX_USE_METAL
+#if AX_RENDER_API == AX_RENDER_API_MTL
     _queuedIndexCount  = 0;
     _queuedVertexCount = 0;
 #endif
@@ -838,6 +843,12 @@ void Renderer::readPixels(backend::RenderTarget* rt,
     _commandBuffer->readPixels(rt, std::move(callback));
 }
 
+void Renderer::resizeSwapChain(uint32_t width, uint32_t height)
+{
+    if (_commandBuffer)
+        _commandBuffer->resizeSwapChain(width, height);
+}
+
 void Renderer::beginRenderPass()
 {
     _commandBuffer->beginRenderPass(_currentRT, _renderPassDesc);
@@ -846,10 +857,9 @@ void Renderer::beginRenderPass()
     auto depthStencil = _dsDesc;
     if (!_currentRT->isDefaultRenderTarget())
     {
-        if (!_currentRT->_depth)
-            depthStencil.removeFlag(DepthStencilFlags::DEPTH_TEST | DepthStencilFlags::DEPTH_WRITE);
-        if (!_currentRT->_stencil)
-            depthStencil.removeFlag(DepthStencilFlags::STENCIL_TEST);
+        if (!_currentRT->_depthStencil)
+            depthStencil.removeFlag(DepthStencilFlags::DEPTH_TEST | DepthStencilFlags::DEPTH_WRITE |
+                                    DepthStencilFlags::STENCIL_TEST);
     }
 
     _commandBuffer->updateDepthStencilState(depthStencil);
@@ -1005,12 +1015,12 @@ void Renderer::TriangleCommandBufferManager::createBuffer()
     // This change does fix the Android/OpenGL ES performance problem
     // If for some reason we get reports of performance issues on OpenGL implementations,
     // then we can just add pre-processor checks for OpenGL and have the updateData() allocate the full size after buffer creation.
-    auto vertexBuffer = driver->newBuffer(Renderer::VBO_SIZE * sizeof(_verts[0]), backend::BufferType::VERTEX,
+    auto vertexBuffer = driver->createBuffer(Renderer::VBO_SIZE * sizeof(_verts[0]), backend::BufferType::VERTEX,
                                           backend::BufferUsage::DYNAMIC);
     if (!vertexBuffer)
         return;
 
-    auto indexBuffer = driver->newBuffer(Renderer::INDEX_VBO_SIZE * sizeof(_indices[0]), backend::BufferType::INDEX,
+    auto indexBuffer = driver->createBuffer(Renderer::INDEX_VBO_SIZE * sizeof(_indices[0]), backend::BufferType::INDEX,
                                          backend::BufferUsage::DYNAMIC);
     if (!indexBuffer)
     {

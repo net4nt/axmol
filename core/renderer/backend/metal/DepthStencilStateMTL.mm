@@ -27,7 +27,7 @@
 #include "../RenderTarget.h"
 #include "xxhash.h"
 
-NS_AX_BACKEND_BEGIN
+namespace ax::backend {
 
 namespace
 {
@@ -144,7 +144,7 @@ void DepthStencilStateMTL::update(const DepthStencilDescriptor& dsDesc)
     MTLDepthStencilDescriptor* mtlDescriptor = [[MTLDepthStencilDescriptor alloc] init];
 
     if (bitmask::any(dsDesc.flags, DepthStencilFlags::DEPTH_TEST))
-        mtlDescriptor.depthCompareFunction = toMTLCompareFunction(_depthStencilInfo.depthCompareFunction);
+        mtlDescriptor.depthCompareFunction = toMTLCompareFunction(_dsDesc.depthCompareFunction);
     else
         mtlDescriptor.depthCompareFunction = MTLCompareFunctionAlways;
 
@@ -152,8 +152,8 @@ void DepthStencilStateMTL::update(const DepthStencilDescriptor& dsDesc)
 
     if (bitmask::any(dsDesc.flags, DepthStencilFlags::STENCIL_TEST))
     {
-        setMTLStencilDescriptor(mtlDescriptor.frontFaceStencil, _depthStencilInfo.frontFaceStencil);
-        setMTLStencilDescriptor(mtlDescriptor.backFaceStencil, _depthStencilInfo.backFaceStencil);
+        setMTLStencilDescriptor(mtlDescriptor.frontFaceStencil, _dsDesc.frontFaceStencil);
+        setMTLStencilDescriptor(mtlDescriptor.backFaceStencil, _dsDesc.backFaceStencil);
     }
 
     _mtlDepthStencilState = [_mtlDevice newDepthStencilStateWithDescriptor:mtlDescriptor];
@@ -172,4 +172,4 @@ DepthStencilStateMTL::~DepthStencilStateMTL()
     _mtlStateCache.clear();
 }
 
-NS_AX_BACKEND_END
+}

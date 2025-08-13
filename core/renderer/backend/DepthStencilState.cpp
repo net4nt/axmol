@@ -25,7 +25,7 @@
 #include "DepthStencilState.h"
 #include "RenderTarget.h"
 
-NS_AX_BACKEND_BEGIN
+namespace ax::backend {
 
 bool StencilDescriptor::operator==(const StencilDescriptor& rhs) const
 {
@@ -39,8 +39,8 @@ DepthStencilState::~DepthStencilState() {}
 
 void DepthStencilState::update(const DepthStencilDescriptor& dsDesc)
 {
-    _depthStencilInfo        = dsDesc;
+    _dsDesc        = dsDesc;
     _isBackFrontStencilEqual = dsDesc.backFaceStencil == dsDesc.frontFaceStencil;
 }
 
-NS_AX_BACKEND_END
+}

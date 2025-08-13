@@ -217,7 +217,7 @@ void MotionStreak::setTexture(Texture2D* texture)
         AX_SAFE_RELEASE(_texture);
         _texture = texture;
 
-        setProgramStateWithRegistry(backend::ProgramType::POSITION_TEXTURE_COLOR, _texture);
+        setProgramStateWithRegistry(backend::ProgramType::TRAIL_2D, _texture);
     }
 }
 
@@ -231,27 +231,29 @@ bool MotionStreak::setProgramState(backend::ProgramState* programState, bool own
 
         _mvpMatrixLocaiton = _programState->getUniformLocation("u_MVPMatrix");
 
+        #if 0
         // setup custom vertex layout for V2F_T2F_C4B
-        const auto& attributeInfo = _programState->getProgram()->getActiveAttributes();
-        auto iter                 = attributeInfo.find("a_position");
+        const auto& vertexInputs = _programState->getProgram()->getActiveVertexInputs();
+        auto iter                = vertexInputs.find("a_position");
         auto layout               = _programState->getMutableVertexLayout();
-        if (iter != attributeInfo.end())
+        if (iter != vertexInputs.end())
         {
-            layout->setAttrib("a_position", iter->second.location, backend::VertexFormat::FLOAT2, 0, false);
+            layout->setAttrib("a_position", &iter->second, backend::VertexFormat::FLOAT2, 0, false);
         }
-        iter = attributeInfo.find("a_texCoord");
-        if (iter != attributeInfo.end())
+        iter = vertexInputs.find("a_texCoord");
+        if (iter != vertexInputs.end())
         {
-            layout->setAttrib("a_texCoord", iter->second.location, backend::VertexFormat::FLOAT2, sizeof(Vec2), false);
+            layout->setAttrib("a_texCoord", &iter->second, backend::VertexFormat::FLOAT2, sizeof(Vec2), false);
         }
-        iter = attributeInfo.find("a_color");
-        if (iter != attributeInfo.end())
+        iter = vertexInputs.find("a_color");
+        if (iter != vertexInputs.end())
         {
-            layout->setAttrib("a_color", iter->second.location, backend::VertexFormat::UBYTE4, sizeof(Vec2) * 2, true);
+            layout->setAttrib("a_color", &iter->second, backend::VertexFormat::UBYTE4, sizeof(Vec2) * 2, true);
         }
 
         constexpr size_t vertexSize = sizeof(_vertices[0]);
         layout->setStride(vertexSize);
+        #endif
 
         updateProgramStateTexture(_texture);
         return true;

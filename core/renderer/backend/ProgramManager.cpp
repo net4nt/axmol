@@ -33,7 +33,7 @@
 #include "xxhash.h"
 #include <inttypes.h>
 
-NS_AX_BACKEND_BEGIN
+namespace ax::backend {
 
 ProgramManager* ProgramManager::_sharedProgramManager = nullptr;
 
@@ -148,9 +148,9 @@ bool ProgramManager::init()
                     colorNormalTexture_frag, VertexLayoutType::Unspec);
     registerProgram(ProgramType::POSITION_NORMAL_TEXTURE_3D, positionNormalTexture_vert, colorNormalTexture_frag,
                     VertexLayoutType::Unspec);
-    registerProgram(ProgramType::POSITION_TEXTURE_3D, positionTexture3D_vert, colorTexture_frag,
+    registerProgram(ProgramType::UNLIT, unlit_vert, colorTexture_frag,
                     VertexLayoutType::Unspec);
-    registerProgram(ProgramType::POSITION_TEXTURE_3D_INSTANCE, positionTextureInstance_vert, colorTexture_frag,
+    registerProgram(ProgramType::UNLIT_INSTANCE, unlit_instance_vert, colorTexture_frag,
                     VertexLayoutType::Instanced);
     registerProgram(ProgramType::POSITION_3D, position_vert, color_frag, VertexLayoutType::Unspec);
     registerProgram(ProgramType::POSITION_NORMAL_3D, positionNormalTexture_vert, colorNormal_frag,
@@ -175,6 +175,8 @@ bool ProgramManager::init()
                     VertexLayoutType::Sprite);
     registerProgram(ProgramType::VIDEO_TEXTURE_I420, positionTextureColor_vert, videoTextureI420_frag,
                     VertexLayoutType::Sprite);
+
+    registerProgram(ProgramType::TRAIL_2D, trail_2d_vert, positionTextureColor_frag, VertexLayoutType::Sprite2D);
 
     // The builtin dual sampler shader registry
     ProgramStateRegistry::getInstance()->registerProgram(ProgramType::POSITION_TEXTURE_COLOR,
@@ -231,7 +233,7 @@ Program* ProgramManager::loadProgram(std::string_view vsName,
     auto fragFile   = fileUtils->fullPathForFilename(fsName);
     auto vertSource = fileUtils->getStringFromFile(vertFile);
     auto fragSource = fileUtils->getStringFromFile(fragFile);
-    auto program    = backend::DriverBase::getInstance()->newProgram(vertSource, fragSource);
+    auto program    = backend::DriverBase::getInstance()->createProgram(vertSource, fragSource);
 
     if (program)
     {
@@ -327,4 +329,4 @@ void ProgramManager::unloadAllPrograms()
     _cachedPrograms.clear();
 }
 
-NS_AX_BACKEND_END
+}

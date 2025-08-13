@@ -128,7 +128,7 @@ bool Box2DTestDebugDrawNode::initWithWorld(b2WorldId worldId)
         auto program = backend::ProgramManager::getInstance()->loadProgram("custom/circle_vs", "custom/circle_fs");
         pipelinePS   = new backend::ProgramState(program);
         auto vfmt    = pipelinePS->getMutableVertexLayout();
-        vfmt->setAttrib("a_localPosition", program->getAttributeLocation("a_localPosition"),
+        vfmt->setAttrib("a_localPosition", program->getVertexInputDesc("a_localPosition"),
                         backend::VertexFormat::FLOAT2, 0, false);
         vfmt->setStride(sizeof(Vec2));
         cmd.createVertexBuffer(sizeof(Vec2), 6, CustomCommand::BufferUsage::STATIC);
@@ -138,13 +138,11 @@ bool Box2DTestDebugDrawNode::initWithWorld(b2WorldId worldId)
         cmd.setVertexDrawInfo(0, 6);
 
         // instanced attributes
-        auto vfmtInstanced = pipelinePS->getMutableVertexLayout(true);
-
-        vfmtInstanced->setAttrib("a_instanceColor", program->getAttributeLocation("a_instanceColor"),
-                                 backend::VertexFormat::FLOAT4, offsetof(CircleData, rgba), false);
-        vfmtInstanced->setAttrib("a_instancePosAndRadius", program->getAttributeLocation("a_instancePosAndRadius"),
-                                backend::VertexFormat::FLOAT4, offsetof(CircleData, position), false);
-        vfmtInstanced->setStride(sizeof(CircleData));
+        vfmt->setAttrib("a_instanceColor", program->getVertexInputDesc("a_instanceColor"),
+                                 backend::VertexFormat::FLOAT4, offsetof(CircleData, rgba), false, 1);
+        vfmt->setAttrib("a_instancePosAndRadius", program->getVertexInputDesc("a_instancePosAndRadius"),
+                                backend::VertexFormat::FLOAT4, offsetof(CircleData, position), false, 1);
+        vfmt->setInstanceStride(sizeof(CircleData));
 
         cmd.setPrimitiveType(CustomCommand::PrimitiveType::TRIANGLE);
         cmd.setDrawType(CustomCommand::DrawType::ARRAY_INSTANCED);
@@ -161,7 +159,7 @@ bool Box2DTestDebugDrawNode::initWithWorld(b2WorldId worldId)
             backend::ProgramManager::getInstance()->loadProgram("custom/solid_circle_vs", "custom/solid_circle_fs");
         pipelinePS = new backend::ProgramState(program);
         auto vfmt  = pipelinePS->getMutableVertexLayout();
-        vfmt->setAttrib("a_localPosition", program->getAttributeLocation("a_localPosition"),
+        vfmt->setAttrib("a_localPosition", program->getVertexInputDesc("a_localPosition"),
                         backend::VertexFormat::FLOAT2, 0, false);
         vfmt->setStride(sizeof(Vec2));
         cmd.createVertexBuffer(sizeof(Vec2), 6, CustomCommand::BufferUsage::STATIC);
@@ -171,14 +169,13 @@ bool Box2DTestDebugDrawNode::initWithWorld(b2WorldId worldId)
         cmd.setVertexDrawInfo(0, 6);
 
         // instanced attributes
-        auto vfmtInstanced = pipelinePS->getMutableVertexLayout(true);
-        vfmtInstanced->setAttrib("a_instanceTransform", program->getAttributeLocation("a_instanceTransform"),
-                                 backend::VertexFormat::FLOAT4, offsetof(SolidCircleData, transform), false);
-        vfmtInstanced->setAttrib("a_instanceColor", program->getAttributeLocation("a_instanceColor"),
-                                 backend::VertexFormat::FLOAT4, offsetof(SolidCircleData, rgba), false);
-        vfmtInstanced->setAttrib("a_instanceRadius", program->getAttributeLocation("a_instanceRadius"),
-                                 backend::VertexFormat::FLOAT4, offsetof(SolidCircleData, radius), false);
-        vfmtInstanced->setStride(sizeof(SolidCircleData));
+        vfmt->setAttrib("a_instanceTransform", program->getVertexInputDesc("a_instanceTransform"),
+                        backend::VertexFormat::FLOAT4, offsetof(SolidCircleData, transform), false, 1);
+        vfmt->setAttrib("a_instanceColor", program->getVertexInputDesc("a_instanceColor"),
+                        backend::VertexFormat::FLOAT4, offsetof(SolidCircleData, rgba), false, 1);
+        vfmt->setAttrib("a_instanceRadius", program->getVertexInputDesc("a_instanceRadius"),
+                                 backend::VertexFormat::FLOAT4, offsetof(SolidCircleData, radius), false, 1);
+        vfmt->setInstanceStride(sizeof(SolidCircleData));
 
         cmd.setPrimitiveType(CustomCommand::PrimitiveType::TRIANGLE);
         cmd.setDrawType(CustomCommand::DrawType::ARRAY_INSTANCED);
@@ -195,7 +192,7 @@ bool Box2DTestDebugDrawNode::initWithWorld(b2WorldId worldId)
             backend::ProgramManager::getInstance()->loadProgram("custom/solid_capsule_vs", "custom/solid_capsule_fs");
         pipelinePS = new backend::ProgramState(program);
         auto vfmt  = pipelinePS->getMutableVertexLayout();
-        vfmt->setAttrib("a_localPosition", program->getAttributeLocation("a_localPosition"),
+        vfmt->setAttrib("a_localPosition", program->getVertexInputDesc("a_localPosition"),
                         backend::VertexFormat::FLOAT2, 0, false);
         vfmt->setStride(sizeof(Vec2));
         cmd.createVertexBuffer(sizeof(Vec2), 6, CustomCommand::BufferUsage::STATIC);
@@ -205,14 +202,13 @@ bool Box2DTestDebugDrawNode::initWithWorld(b2WorldId worldId)
         cmd.setVertexDrawInfo(0, 6);
 
         // instanced attributes
-        auto vfmtInstanced = pipelinePS->getMutableVertexLayout(true);
-        vfmtInstanced->setAttrib("a_instanceTransform", program->getAttributeLocation("a_instanceTransform"),
-                                 backend::VertexFormat::FLOAT4, offsetof(CapsuleData, transform), false);
-        vfmtInstanced->setAttrib("a_instanceColor", program->getAttributeLocation("a_instanceColor"),
-                                 backend::VertexFormat::FLOAT4, offsetof(CapsuleData, rgba), false);
-        vfmtInstanced->setAttrib("a_instanceRadiusAndLength", program->getAttributeLocation("a_instanceRadiusAndLength"),
-                                 backend::VertexFormat::FLOAT4, offsetof(CapsuleData, radius), false);
-        vfmtInstanced->setStride(sizeof(CapsuleData));
+        vfmt->setAttrib("a_instanceTransform", program->getVertexInputDesc("a_instanceTransform"),
+                                 backend::VertexFormat::FLOAT4, offsetof(CapsuleData, transform), false, 1);
+        vfmt->setAttrib("a_instanceColor", program->getVertexInputDesc("a_instanceColor"),
+                                 backend::VertexFormat::FLOAT4, offsetof(CapsuleData, rgba), false, 1);
+        vfmt->setAttrib("a_instanceRadiusAndLength", program->getVertexInputDesc("a_instanceRadiusAndLength"),
+                                 backend::VertexFormat::FLOAT4, offsetof(CapsuleData, radius), false, 1);
+        vfmt->setInstanceStride(sizeof(CapsuleData));
 
         cmd.setPrimitiveType(CustomCommand::PrimitiveType::TRIANGLE);
         cmd.setDrawType(CustomCommand::DrawType::ARRAY_INSTANCED);

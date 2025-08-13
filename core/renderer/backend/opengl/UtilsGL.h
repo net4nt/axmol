@@ -26,10 +26,10 @@
 
 #include "base/Macros.h"
 #include "platform/GL.h"
-#include "renderer/backend/Types.h"
+#include "renderer/backend/BaseDefs.h"
 #include "renderer/backend/PixelBufferDescriptor.h"
 
-NS_AX_BACKEND_BEGIN
+namespace ax::backend {
 /**
  * @addtogroup _opengl
  * @{
@@ -98,8 +98,7 @@ struct UtilsGL
     static void toGLTypes(PixelFormat textureFormat,
                           GLint& internalFormat,
                           GLuint& format,
-                          GLenum& type,
-                          bool& isCompressed);
+                          GLenum& type);
 
     /**
      * Convert compare function to GLenum. i.e. convert CompareFunction::NEVER to GL_NEVER.
@@ -159,4 +158,4 @@ struct UtilsGL
 };
 // end of _opengl group
 /// @}
-NS_AX_BACKEND_END
+}

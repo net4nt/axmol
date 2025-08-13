@@ -28,39 +28,36 @@
 #include "base/Macros.h"
 #include "DriverMTL.h"
 
-NS_AX_BACKEND_BEGIN
+namespace ax::backend {
 namespace
 {
 // constexpr std::string_view metalSpecificDefine = "#define METAL\n"sv;
 }
 
-ProgramMTL::ProgramMTL(std::string_view vertexShader, std::string_view fragmentShader)
+ProgramImpl::ProgramImpl(std::string_view vertexShader, std::string_view fragmentShader)
     : Program(vertexShader, fragmentShader)
 {
-    _vertexShader = static_cast<ShaderModuleMTL*>(ShaderCache::getInstance()->newVertexShaderModule(vertexShader));
-    _fragmentShader = static_cast<ShaderModuleMTL*>(ShaderCache::getInstance()->newFragmentShaderModule(fragmentShader));
-
-    AX_SAFE_RETAIN(_vertexShader);
-    AX_SAFE_RETAIN(_fragmentShader);
+    _vertexShader = static_cast<ShaderModuleImpl*>(ShaderCache::getInstance()->acquireVertexShaderModule(_vsSource));
+    _fragmentShader = static_cast<ShaderModuleImpl*>(ShaderCache::getInstance()->acquireFragmentShaderModule(_fsSource));
 }
 
-ProgramMTL::~ProgramMTL()
+ProgramImpl::~ProgramImpl()
 {
     AX_SAFE_RELEASE(_vertexShader);
     AX_SAFE_RELEASE(_fragmentShader);
 }
 
-int ProgramMTL::getAttributeLocation(Attribute name) const
+const VertexInputDesc* ProgramImpl::getVertexInputDesc(VertexInputKind name) const
 {
-    return _vertexShader->getAttributeLocation(name);
+    return _vertexShader->getVertexInputDesc(name);
 }
 
-int ProgramMTL::getAttributeLocation(std::string_view name) const
+const VertexInputDesc* ProgramImpl::getVertexInputDesc(std::string_view name) const
 {
-    return _vertexShader->getAttributeLocation(name);
+    return _vertexShader->getVertexInputDesc(name);
 }
 
-UniformLocation ProgramMTL::getUniformLocation(backend::Uniform name) const
+UniformLocation ProgramImpl::getUniformLocation(backend::Uniform name) const
 {
     auto& vert = _vertexShader->getUniformInfo(name);
     auto& frag = _fragmentShader->getUniformInfo(name);
@@ -71,7 +68,7 @@ UniformLocation ProgramMTL::getUniformLocation(backend::Uniform name) const
     };
 }
 
-UniformLocation ProgramMTL::getUniformLocation(std::string_view uniform) const
+UniformLocation ProgramImpl::getUniformLocation(std::string_view uniform) const
 {
     auto& vert = _vertexShader->getUniformInfo(uniform);
     auto& frag = _fragmentShader->getUniformInfo(uniform);
@@ -86,22 +83,22 @@ UniformLocation ProgramMTL::getUniformLocation(std::string_view uniform) const
     };
 }
 
-int ProgramMTL::getMaxVertexLocation() const
+int ProgramImpl::getMaxVertexLocation() const
 {
     return _vertexShader->getMaxLocation();
 }
 
-int ProgramMTL::getMaxFragmentLocation() const
+int ProgramImpl::getMaxFragmentLocation() const
 {
     return _fragmentShader->getMaxLocation();
 }
 
-const hlookup::string_map<AttributeBindInfo>& ProgramMTL::getActiveAttributes() const
+const hlookup::string_map<VertexInputDesc>& ProgramImpl::getActiveVertexInputs() const
 {
-    return _vertexShader->getAttributeInfo();
+    return _vertexShader->getActiveVertexInputs();
 }
 
-std::size_t ProgramMTL::getUniformBufferSize(ShaderStage stage) const
+std::size_t ProgramImpl::getUniformBufferSize(ShaderStage stage) const
 {
     switch (stage)
     {
@@ -116,17 +113,17 @@ std::size_t ProgramMTL::getUniformBufferSize(ShaderStage stage) const
     return 0;
 }
 
-const hlookup::string_map<UniformInfo>& ProgramMTL::getAllActiveUniformInfo(ShaderStage stage) const
+const hlookup::string_map<UniformInfo>& ProgramImpl::getActiveUniformInfos(ShaderStage stage) const
 {
     switch (stage)
     {
     case ShaderStage::VERTEX:
-        return _vertexShader->getAllActiveUniformInfo();
+        return _vertexShader->getActiveUniformInfos();
     case ShaderStage::FRAGMENT:
-        return _fragmentShader->getAllActiveUniformInfo();
+        return _fragmentShader->getActiveUniformInfos();
     default:
         AXASSERT(false, "Invalid shader stage.");
     }
 }
 
-NS_AX_BACKEND_END
+}

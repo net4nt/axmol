@@ -1,10 +1,9 @@
 #pragma once
 #include "base/Data.h"
 
-#include "Macros.h"
-#include "Types.h"
+#include "BaseDefs.h"
 
-NS_AX_BACKEND_BEGIN
+namespace ax::backend {
 
 struct PixelBufferDescriptor
 {
@@ -21,4 +20,4 @@ struct PixelBufferDescriptor
     int _height = 0;
 };
 
-NS_AX_BACKEND_END
+}

@@ -25,15 +25,14 @@
 
 #pragma once
 
-#include "../Macros.h"
-#include "../Types.h"
+#include "../BaseDefs.h"
 #include "../PixelBufferDescriptor.h"
 #import <Metal/Metal.h>
 #include <functional>
 
-NS_AX_BACKEND_BEGIN
+namespace ax::backend {
 
-class TextureBackend;
+class Texture;
 
 /**
  * @addtogroup _metal
@@ -100,4 +99,4 @@ private:
 
 // end of _metal group
 /// @}
-NS_AX_BACKEND_END
+}

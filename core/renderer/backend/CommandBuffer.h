@@ -29,8 +29,7 @@
 #include "base/Object.h"
 #include "base/Data.h"
 
-#include "Macros.h"
-#include "Types.h"
+#include "BaseDefs.h"
 #include "RenderPassDescriptor.h"
 #include "PixelBufferDescriptor.h"
 #include "platform/StdC.h"
@@ -45,13 +44,13 @@ namespace ax
 struct PipelineDescriptor;
 }
 
-NS_AX_BACKEND_BEGIN
+namespace ax::backend {
 
 class RenderPass;
 class RenderPipeline;
 class Buffer;
 class DepthStencilState;
-class TextureBackend;
+class Texture;
 class RenderTarget;
 struct DepthStencilDescriptor;
 
@@ -67,6 +66,8 @@ struct DepthStencilDescriptor;
 class CommandBuffer : public ax::Object
 {
 public:
+    void setScreenRenderTarget(RenderTarget* rt) { _screenRT = rt; }
+
     /**
      * Set depthStencil status once
      * @param depthStencilState Specifies the depth and stencil status
@@ -233,20 +234,16 @@ public:
      */
     void setStencilReferenceValue(unsigned int value);
 
-    /**
-     * Update stencil reference value.
-     * @param frontRef Specifies front stencil reference value.
-     * @param backRef Specifies back stencil reference value.
-     */
-    void setStencilReferenceValue(unsigned int frontRef, unsigned int backRef);
+    virtual bool resizeSwapChain(uint32_t width, uint32_t height);
 
 protected:
     virtual ~CommandBuffer() = default;
 
-    unsigned int _stencilReferenceValueFront = 0;  ///< front stencil reference value.
-    unsigned int _stencilReferenceValueBack  = 0;  ///< back stencil reference value.
+    const RenderTarget* _screenRT{nullptr}; // weak ref (managed by Renderer)
+    const RenderTarget* _currentRT{nullptr};  // weak ref (managed by Renderer)
+    unsigned int _stencilReferenceValue = 0;  ///< front stencil reference value
 };
 
 // end of _backend group
 /// @}
-NS_AX_BACKEND_END
+}

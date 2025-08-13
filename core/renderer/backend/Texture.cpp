@@ -26,11 +26,11 @@
 #include "Texture.h"
 #include "PixelFormatUtils.h"
 #include <cassert>
-NS_AX_BACKEND_BEGIN
+namespace ax::backend {
 
-TextureBackend::~TextureBackend() {}
+Texture::~Texture() {}
 
-void TextureBackend::updateTextureDescriptor(const ax::backend::TextureDescriptor& descriptor, int /*index*/)
+void Texture::updateTextureDescriptor(const ax::backend::TextureDescriptor& descriptor, int /*index*/)
 {
     _bitsPerPixel  = PixelFormatUtils::getBitsPerPixel(descriptor.textureFormat);
     _textureType   = descriptor.textureType;
@@ -45,4 +45,4 @@ void TextureBackend::updateTextureDescriptor(const ax::backend::TextureDescripto
     }
 }
 
-NS_AX_BACKEND_END
+}

@@ -27,12 +27,11 @@
 #include <array>
 #include <vector>
 
-#include "Macros.h"
-#include "Types.h"
+#include "BaseDefs.h"
 
-NS_AX_BACKEND_BEGIN
+namespace ax::backend {
 
-class TextureBackend;
+class Texture;
 /**
  * @addtogroup _backend
  * @{
@@ -76,4 +75,4 @@ struct RenderPassDescriptor
 };
 // end of _backend group
 /// @}
-NS_AX_BACKEND_END
+}

@@ -29,12 +29,11 @@
 #include "RenderPipelineMTL.h"
 #include "TextureMTL.h"
 #include "UtilsMTL.h"
-#include "../Macros.h"
 #include "BufferManager.h"
 #include "DepthStencilStateMTL.h"
 #include "RenderTargetMTL.h"
 
-NS_AX_BACKEND_BEGIN
+namespace ax::backend {
 
 namespace
 {
@@ -135,23 +134,14 @@ static MTLRenderPassDescriptor* toMTLRenderPassDescriptor(const RenderTarget* rt
     return mtlDescritpor;
 }
 
-static id<MTLTexture> getMTLTexture(TextureBackend* texture, int index)
+static id<MTLTexture> getMTLTexture(Texture* texture, int index)
 {
-    return reinterpret_cast<id<MTLTexture>>(texture->getHandler(index));
+    return static_cast<TextureImpl*>(texture)->internalHandle(index);
 }
 
-static id<MTLSamplerState> getMTLSamplerState(TextureBackend* texture)
+static id<MTLSamplerState> getMTLSamplerState(Texture* texture)
 {
-    switch (texture->getTextureType())
-    {
-    case TextureType::TEXTURE_2D:
-        return static_cast<TextureMTL*>(texture)->getMTLSamplerState();
-    case TextureType::TEXTURE_CUBE:
-        return static_cast<TextureCubeMTL*>(texture)->getMTLSamplerState();
-    default:
-        assert(false);
-        return nil;
-    }
+    return static_cast<TextureImpl*>(texture)->internalSampler();
 }
 
 inline int clamp(int value, int min, int max)
@@ -454,8 +444,8 @@ void CommandBufferMTL::prepareDrawing() const
     if (mtlDepthStencilState)
     {
         [_mtlRenderEncoder setDepthStencilState:mtlDepthStencilState];
-        [_mtlRenderEncoder setStencilFrontReferenceValue:_stencilReferenceValueFront
-                                      backReferenceValue:_stencilReferenceValueBack];
+        [_mtlRenderEncoder setStencilFrontReferenceValue:_stencilReferenceValue
+                                      backReferenceValue:_stencilReferenceValue];
     }
 }
 
@@ -556,14 +546,14 @@ void CommandBufferMTL::setScissorRect(bool isEnabled, float x, float y, float wi
     [_mtlRenderEncoder setScissorRect:scissorRect];
 }
 
-void CommandBufferMTL::readPixels(TextureBackend* texture,
+void CommandBufferMTL::readPixels(Texture* texture,
                                   std::size_t origX,
                                   std::size_t origY,
                                   std::size_t rectWidth,
                                   std::size_t rectHeight,
                                   PixelBufferDescriptor& pbd)
 {
-    CommandBufferMTL::readPixels(reinterpret_cast<id<MTLTexture>>(texture->getHandler()), origX, origY, rectWidth,
+    CommandBufferMTL::readPixels(static_cast<TextureImpl*>(texture)->internalHandle(), origX, origY, rectWidth,
                                  rectHeight, pbd);
 }
 
@@ -623,4 +613,4 @@ void CommandBufferMTL::readPixels(id<MTLTexture> texture,
     [commandBuffer waitUntilCompleted];
 }
 
-NS_AX_BACKEND_END
+}

@@ -38,32 +38,13 @@
 #include "DriverGL.h"
 #include <algorithm>
 
-NS_AX_BACKEND_BEGIN
+namespace ax::backend {
 
 #if AX_GLES_PROFILE != 200 && AX_TARGET_PLATFORM != AX_PLATFORM_WASM
 #    define AX_HAVE_MAP_BUFFER_RANGE 1
 #else
 #    define AX_HAVE_MAP_BUFFER_RANGE 0
 #endif
-
-namespace
-{
-void applyTexture(TextureBackend* texture, int slot, int index)
-{
-    switch (texture->getTextureType())
-    {
-    case TextureType::TEXTURE_2D:
-        static_cast<Texture2DGL*>(texture)->apply(slot, index);
-        break;
-    case TextureType::TEXTURE_CUBE:
-        static_cast<TextureCubeGL*>(texture)->apply(slot, index);
-        break;
-    default:
-        assert(false);
-        return;
-    }
-}
-}  // namespace
 
 CommandBufferGL::CommandBufferGL() {}
 
@@ -186,6 +167,24 @@ void CommandBufferGL::setWinding(Winding winding)
     __gl->winding(winding);
 }
 
+void CommandBufferGL::setProgramState(ProgramState* programState)
+{
+    AX_SAFE_RETAIN(programState);
+    AX_SAFE_RELEASE(_programState);
+    _programState = programState;
+}
+
+void CommandBufferGL::setVertexBuffer(Buffer* buffer)
+{
+    assert(buffer != nullptr);
+    if (buffer == nullptr || _vertexBuffer == buffer)
+        return;
+
+    buffer->retain();
+    AX_SAFE_RELEASE(_vertexBuffer);
+    _vertexBuffer = static_cast<BufferGL*>(buffer);
+}
+
 void CommandBufferGL::setIndexBuffer(Buffer* buffer)
 {
     assert(buffer != nullptr);
@@ -206,24 +205,6 @@ void CommandBufferGL::setInstanceBuffer(Buffer* buffer)
     buffer->retain();
     AX_SAFE_RELEASE(_instanceBuffer);
     _instanceBuffer = static_cast<BufferGL*>(buffer);
-}
-
-void CommandBufferGL::setVertexBuffer(Buffer* buffer)
-{
-    assert(buffer != nullptr);
-    if (buffer == nullptr || _vertexBuffer == buffer)
-        return;
-
-    buffer->retain();
-    AX_SAFE_RELEASE(_vertexBuffer);
-    _vertexBuffer = static_cast<BufferGL*>(buffer);
-}
-
-void CommandBufferGL::setProgramState(ProgramState* programState)
-{
-    AX_SAFE_RETAIN(programState);
-    AX_SAFE_RELEASE(_programState);
-    _programState = programState;
 }
 
 void CommandBufferGL::drawArrays(PrimitiveType primitiveType, std::size_t start, std::size_t count, bool wireframe)
@@ -320,7 +301,9 @@ void CommandBufferGL::endRenderPass()
     AX_SAFE_RELEASE_NULL(_instanceBuffer);
 }
 
-void CommandBufferGL::endFrame() {}
+void CommandBufferGL::endFrame()
+{
+}
 
 void CommandBufferGL::prepareDrawing() const
 {
@@ -336,7 +319,7 @@ void CommandBufferGL::prepareDrawing() const
 
     // Set depth/stencil state.
     if (_depthStencilStateGL->isEnabled())
-        _depthStencilStateGL->apply(_stencilReferenceValueFront, _stencilReferenceValueBack);
+        _depthStencilStateGL->apply(_stencilReferenceValue);
     else
         DepthStencilStateGL::reset();
 
@@ -349,42 +332,37 @@ void CommandBufferGL::prepareDrawing() const
 
 void CommandBufferGL::bindVertexBuffer(uint32_t& usedBits) const
 {
+    auto vertexLayout = _programState->getVertexLayout();
+
+    if (!vertexLayout->isValid())
+        return;
+
     // Bind vertex buffers and set the attributes.
     {
-        auto vertexLayout = _programState->getVertexLayout();
-
-        const auto& attributes = vertexLayout->getAttributes();
-        if (!vertexLayout->isValid())
-            return;
-
         // Bind VAO, engine share 1 VAO for all vertexLayouts aka vfmts
         // optimize proposal: create VAO per vertexLayout, just need bind VAO
         __gl->bindBuffer(BufferType::ARRAY_BUFFER, _vertexBuffer->getHandler());
 
+        const auto& attributes = vertexLayout->getBindings();
         for (const auto& attributeInfo : attributes)
         {
             const auto& attribute = attributeInfo.second;
             __gl->enableVertexAttribArray(attribute.index);
             glVertexAttribPointer(attribute.index, UtilsGL::getGLAttributeSize(attribute.format),
-                                  UtilsGL::toGLAttributeType(attribute.format), attribute.needToBeNormallized,
-                                  vertexLayout->getStride(), (GLvoid*)attribute.offset);
+                                    UtilsGL::toGLAttributeType(attribute.format), attribute.needToBeNormallized,
+                                    vertexLayout->getStride(), (GLvoid*)attribute.offset);
             // non-instance attrib not use divisor, so clear to 0
             __gl->clearVertexAttribDivisor(attribute.index);
             usedBits |= (1 << attribute.index);
         }
     }
 
-    // Bind instanced vertex buffer
-    // if we have an instance buffer pointer then we must be rendering in instance mode.
+    // Bind vertex instance buffer and set attributes
     if (_instanceBuffer)
     {
-        auto vertexLayout      = _programState->getVertexLayout(true);
-        const auto& attributes = vertexLayout->getAttributes();
-        if (!vertexLayout->isValid())
-            return;
-
         __gl->bindBuffer(BufferType::ARRAY_BUFFER, _instanceBuffer->getHandler());
-
+        const auto instanceStride = vertexLayout->getInstanceStride();
+        const auto& attributes    = vertexLayout->getInstanceBindings();
         for (const auto& attributeInfo : attributes)
         {
             const auto& attribute = attributeInfo.second;
@@ -396,7 +374,7 @@ void CommandBufferGL::bindVertexBuffer(uint32_t& usedBits) const
                     auto elementLoc = attribute.index + i;
                     __gl->enableVertexAttribArray(elementLoc);
                     glVertexAttribPointer(elementLoc, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 16,
-                                          (void*)(sizeof(float) * 4 * i));
+                                            (void*)(sizeof(float) * 4 * i));
                     __gl->setVertexAttribDivisor(elementLoc);
                     usedBits |= (1 << elementLoc);
                 }
@@ -404,8 +382,8 @@ void CommandBufferGL::bindVertexBuffer(uint32_t& usedBits) const
             default:
                 __gl->enableVertexAttribArray(attribute.index);
                 glVertexAttribPointer(attribute.index, UtilsGL::getGLAttributeSize(attribute.format),
-                                      UtilsGL::toGLAttributeType(attribute.format), attribute.needToBeNormallized,
-                                      vertexLayout->getStride(), (GLvoid*)attribute.offset);
+                                        UtilsGL::toGLAttributeType(attribute.format), attribute.needToBeNormallized,
+                                        instanceStride, (GLvoid*)attribute.offset);
                 __gl->setVertexAttribDivisor(attribute.index);
                 usedBits |= (1 << attribute.index);
             }
@@ -423,7 +401,7 @@ void CommandBufferGL::bindUniforms(ProgramGL* program) const
         for (auto&& cb : callbacks)
             cb.second(_programState, cb.first);
 
-        auto& uniformInfos = program->getAllActiveUniformInfo(ShaderStage::VERTEX);
+        auto& uniformInfos = program->getActiveUniformInfos(ShaderStage::VERTEX);
 
         std::size_t bufferSize = 0;
         auto buffer            = _programState->getVertexUniformBuffer(bufferSize);
@@ -448,7 +426,7 @@ void CommandBufferGL::bindUniforms(ProgramGL* program) const
             int i = 0;
             for (const auto& texture : textures)
             {
-                applyTexture(texture, slots[i], indexs[i]);
+                static_cast<TextureImpl*>(texture)->apply(slots[i], indexs[i]);
                 ++i;
             }
 
@@ -564,4 +542,4 @@ void CommandBufferGL::readPixels(RenderTarget* rt,
         rtGL->unbindFrameBuffer();
 }
 
-NS_AX_BACKEND_END
+}

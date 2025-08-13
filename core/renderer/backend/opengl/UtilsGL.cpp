@@ -26,11 +26,10 @@
 #include "UtilsGL.h"
 #include "ProgramGL.h"
 #include "TextureGL.h"
-#include "renderer/backend/Types.h"
 #include "renderer/backend/PixelFormatUtils.h"
 #include "platform/GL.h"
 
-NS_AX_BACKEND_BEGIN
+namespace ax::backend {
 
 struct GPUTextureFormatInfo
 {
@@ -289,16 +288,14 @@ GLint UtilsGL::toGLAddressMode(SamplerAddressMode addressMode, bool isPow2)
 void UtilsGL::toGLTypes(PixelFormat textureFormat,
                         GLint& internalFormat,
                         GLuint& format,
-                        GLenum& type,
-                        bool& isCompressed)
+                        GLenum& type)
 {
-    if (AX_LIKELY(textureFormat < PixelFormat::COUNT))
+    if (textureFormat < PixelFormat::COUNT) [[likely]]
     {
         auto& info     = s_textureFormats[(int)textureFormat];
         internalFormat = info.internalFmt;
         format         = info.fmt;
         type           = info.type;
-        isCompressed   = PixelFormatUtils::isCompressed(textureFormat);
     }
 }
 
@@ -495,4 +492,4 @@ GLenum UtilsGL::toGLCullMode(CullMode mode)
         return GL_FRONT;
 }
 
-NS_AX_BACKEND_END
+}

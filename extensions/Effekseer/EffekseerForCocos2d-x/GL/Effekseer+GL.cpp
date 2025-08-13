@@ -1,5 +1,5 @@
 #include "../EffekseerForCocos2d-x.h"
-#ifndef AX_USE_METAL
+#if AX_RENDER_API == AX_RENDER_API_GL
 
 #include "../../EffekseerRendererCommon/ModelLoader.h"
 #include "../../EffekseerRendererGL/EffekseerRendererGL.h"
@@ -146,11 +146,11 @@ Effekseer::ModelLoaderRef CreateModelLoader(Effekseer::FileInterfaceRef effectFi
 
 void UpdateTextureData(::Effekseer::TextureRef textureData, cocos2d::Texture2D* texture)
 {
-	auto textureGL = static_cast<cocos2d::backend::Texture2DGL*>(texture->getBackendTexture());
+	auto textureGL = static_cast<ax::backend::TextureImpl*>(texture->getBackendTexture());
 
 	auto device = EffekseerGraphicsDevice::create().DownCast<::EffekseerRendererGL::Backend::GraphicsDevice>();
 
-	auto backend = device->CreateTexture(textureGL->getHandler(), texture->hasMipmaps(), []() -> void {});
+	auto backend = device->CreateTexture(textureGL->internalHandle(), texture->hasMipmaps(), []() -> void {});
 	textureData->SetBackend(backend);
 }
 

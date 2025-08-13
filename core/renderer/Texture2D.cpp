@@ -69,7 +69,8 @@ Texture2D::Texture2D()
 {
     backend::TextureDescriptor textureDescriptor;
     textureDescriptor.textureFormat = PixelFormat::NONE;
-    _texture = static_cast<backend::Texture2DBackend*>(backend::DriverBase::getInstance()->newTexture(textureDescriptor));
+    _texture =
+        static_cast<backend::Texture*>(backend::DriverBase::getInstance()->createTexture(textureDescriptor));
 }
 
 Texture2D::~Texture2D()
@@ -99,7 +100,7 @@ int Texture2D::getPixelsHigh() const
     return _pixelsHigh;
 }
 
-backend::TextureBackend* Texture2D::getBackendTexture() const
+backend::Texture* Texture2D::getBackendTexture() const
 {
     return _texture;
 }
@@ -217,7 +218,7 @@ bool Texture2D::updateWithImage(Image* image, backend::PixelFormat format, int i
     backend::PixelFormat imagePixelFormat = image->getPixelFormat();
     size_t tempDataLen                    = image->getDataLen();
 
-#ifdef AX_USE_METAL
+#if AX_RENDER_API == AX_RENDER_API_MTL
     //! override renderFormat, since some render format is not supported by metal
     switch (renderFormat)
     {
@@ -229,6 +230,17 @@ bool Texture2D::updateWithImage(Image* image, backend::PixelFormat format, int i
 #    endif
     case PixelFormat::R8:
     case PixelFormat::RG8:
+    case PixelFormat::RGB8:
+        // Note: conversion to RGBA8 will happends
+        renderFormat = PixelFormat::RGBA8;
+        break;
+    default:
+        break;
+    }
+#elif AX_RENDER_API == AX_RENDER_API_D3D
+    //! override renderFormat, since some render format is not supported by d3d
+    switch (renderFormat)
+    {
     case PixelFormat::RGB8:
         // Note: conversion to RGBA8 will happends
         renderFormat = PixelFormat::RGBA8;
@@ -306,7 +318,7 @@ bool Texture2D::updateWithMipmaps(MipmapInfo* mipmaps,
     if (!pfd.bpp)
     {
         AXLOGW("WARNING: unsupported pixelformat: {:x}", (uint32_t)pixelFormat);
-#ifdef AX_USE_METAL
+#if AX_RENDER_API == AX_RENDER_API_MTL
         AXASSERT(false, "pixeformat not found in _pixelFormatInfoTables, register required!");
 #endif
         return false;
@@ -359,7 +371,7 @@ bool Texture2D::updateWithMipmaps(MipmapInfo* mipmaps,
         {
             auto convertedFormat = backend::PixelFormatUtils::convertDataToFormat(data, dataLen, oriPixelFormat,
                                                                                   renderFormat, &outData, &outDataLen);
-#ifdef AX_USE_METAL
+#if AX_RENDER_API == AX_RENDER_API_MTL
             AXASSERT(convertedFormat == renderFormat, "PixelFormat convert failed!");
 #endif
             if (convertedFormat == renderFormat)

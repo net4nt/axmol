@@ -24,10 +24,9 @@
 
 #pragma once
 
-#include "Macros.h"
+#include "BaseDefs.h"
 #include "base/Object.h"
 #include "platform/PlatformMacros.h"
-#include "Types.h"
 #include "ShaderCache.h"
 
 #include <functional>
@@ -35,7 +34,7 @@
 #include <vector>
 #include <unordered_map>
 
-NS_AX_BACKEND_BEGIN
+namespace ax::backend {
 
 class ShaderModule;
 class VertexLayout;
@@ -53,6 +52,7 @@ enum class VertexLayoutType
     Texture,     // T2F
     PosUvColor,  // V3F_T2F_C4F
     Sprite,      // V3F_T2F_C4B
+    Sprite2D,    // V2F_T2F_C4B
     DrawNode,    // V2F_T2F_C4F
     DrawNode3D,  // V3F_C4F
     SkyBox,      // V3F
@@ -99,14 +99,14 @@ public:
      * @param name Specifies the attribute name.
      * @return The attribute location.
      */
-    virtual int getAttributeLocation(std::string_view name) const = 0;
+    virtual const VertexInputDesc* getVertexInputDesc(std::string_view name) const = 0;
 
     /**
      * Get attribute location by engine built-in attribute enum name.
      * @param name Specifies the engine built-in attribute enum name.
      * @return The attribute location.
      */
-    virtual int getAttributeLocation(backend::Attribute name) const = 0;
+    virtual const VertexInputDesc* getVertexInputDesc(backend::VertexInputKind name) const = 0;
 
     /**
      * Get maximum vertex location.
@@ -124,19 +124,19 @@ public:
      * Get active vertex attributes.
      * @return Active vertex attributes. key is active attribute name, Value is corresponding attribute info.
      */
-    virtual const hlookup::string_map<AttributeBindInfo>& getActiveAttributes() const = 0;
+    virtual const hlookup::string_map<VertexInputDesc>& getActiveVertexInputs() const = 0;
 
     /**
      * Get vertex shader.
      * @return Vertex shader.
      */
-    std::string_view getVertexShader() const { return _vertexShader; }
+    std::string_view getVertexShaderSource() const { return _vsSource; }
 
     /**
      * Get fragment shader.
      * @ Fragment shader.
      */
-    std::string_view getFragmentShader() const { return _fragmentShader; }
+    std::string_view getFragmentShaderSource() const { return _fsSource; }
 
     /**
     * Define the program shared vertex layout type, see: VertexLayoutType
@@ -166,9 +166,9 @@ public:
      * Get all uniformInfos.
      * @return The uniformInfos.
      */
-    virtual const hlookup::string_map<UniformInfo>& getAllActiveUniformInfo(ShaderStage stage) const = 0;
+    virtual const hlookup::string_map<UniformInfo>& getActiveUniformInfos(ShaderStage stage) const = 0;
 
-    inline VertexLayout* getVertexLayout(bool instanced = false) const { return !instanced ? _vertexLayout[0] : _vertexLayout[1]; }
+    inline VertexLayout* getVertexLayout() const { return _vertexLayout; }
 
 protected:
 
@@ -210,9 +210,9 @@ protected:
 #endif
     friend class ProgramManager;
 
-    std::string _vertexShader;                            ///< Vertex shader.
-    std::string _fragmentShader;                          ///< Fragment shader.
-    VertexLayout* _vertexLayout[2] = {};
+    std::string _vsSource;                            ///< Vertex shader.
+    std::string _fsSource;                          ///< Fragment shader.
+    VertexLayout* _vertexLayout{nullptr};
     uint32_t _programType = ProgramType::CUSTOM_PROGRAM;  ///< built-in program type, initial value is CUSTOM_PROGRAM.
     uint64_t _programId   = 0;
 
@@ -223,4 +223,4 @@ protected:
 
 // end of _backend group
 /// @}
-NS_AX_BACKEND_END
+}

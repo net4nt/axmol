@@ -27,30 +27,30 @@
 #include "base/Macros.h"
 #include <cassert>
 
-NS_AX_BACKEND_BEGIN
+namespace ax::backend
+{
 
 void VertexLayout::setAttrib(std::string_view name,
-                                std::size_t index,
-                                VertexFormat format,
-                                std::size_t offset,
-                                bool needToBeNormallized)
+                             const VertexInputDesc* desc,
+                             VertexFormat format,
+                             std::size_t offset,
+                             bool needToBeNormallized,
+                             uint8_t instanceStepRate)
 {
-    if (index == -1)
+    if (!desc)
     {
-        AXLOGW("The vertex attribute '{}' vfmt={} not exist, unused/optimized?", name, static_cast<int>(format));
+        AXLOGW("The vertex input '{}' vfmt={} not exist, unused/optimized?", name, static_cast<int>(format));
         return;
     }
 
-    // FIXME 2021/12/25 TODO: store name key is enough
-    hlookup::set_item(
-        _attributes, name,
-        Attribute{name, index, format, offset,
-                  needToBeNormallized});  // _attributes[name] = {name, index, format, offset, needToBeNormallized};
+    if (!instanceStepRate)
+        hlookup::set_item(
+            _bindings, name,
+            InputBindingDesc{desc->semantic, desc->location, format, offset, needToBeNormallized, instanceStepRate});
+    else
+        hlookup::set_item(
+            _instanceBindings, name,
+            InputBindingDesc{desc->semantic, desc->location, format, offset, needToBeNormallized, instanceStepRate});
 }
 
-void VertexLayout::setStride(std::size_t stride)
-{
-    _stride = stride;
-}
-
-NS_AX_BACKEND_END
+}  // namespace ax::backend

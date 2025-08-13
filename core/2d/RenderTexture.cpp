@@ -40,7 +40,7 @@ THE SOFTWARE.
 #include "renderer/backend/DriverBase.h"
 #include "renderer/backend/Texture.h"
 #include "renderer/backend/RenderTarget.h"
-#if defined(AX_USE_GL)
+#if AX_RENDER_API == AX_RENDER_API_GL
 #    include "renderer/backend/opengl/CommandBufferGL.h"
 #endif
 
@@ -213,17 +213,15 @@ bool RenderTexture::initWithWidthAndHeight(int w,
         }
         else
         {
-            _renderTarget = backend::DriverBase::getInstance()->newRenderTarget(
+            _renderTarget = backend::DriverBase::getInstance()->createRenderTarget(
                 _texture2D ? _texture2D->getBackendTexture() : nullptr,
-                _depthStencilTexture ? _depthStencilTexture->getBackendTexture() : nullptr,
                 _depthStencilTexture ? _depthStencilTexture->getBackendTexture() : nullptr);
         }
 
         _renderTarget->setColorAttachment(_texture2D ? _texture2D->getBackendTexture() : nullptr);
 
         auto depthStencilTexture = _depthStencilTexture ? _depthStencilTexture->getBackendTexture() : nullptr;
-        _renderTarget->setDepthAttachment(depthStencilTexture);
-        _renderTarget->setStencilAttachment(depthStencilTexture);
+        _renderTarget->setDepthStencilAttachment(depthStencilTexture);
 
         clearColorAttachment();
 
@@ -235,7 +233,7 @@ bool RenderTexture::initWithWidthAndHeight(int w,
         _sprite->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
         _sprite->setPosition(Vec2(w, h) / 2);
 
-#if defined(AX_USE_GL)
+#if AX_RENDER_API == AX_RENDER_API_GL
         _sprite->setFlippedY(true);
 #endif
 
@@ -553,7 +551,7 @@ void RenderTexture::newImage(std::function<void(RefPtr<Image>)> imageCallback, b
         else
             imageCallback(nullptr);
     };
-#if defined(AX_USE_GL)
+#if AX_RENDER_API == AX_RENDER_API_GL
     if (eglCacheHint)
     {
         auto colorAttachment = _renderTarget->_color[0].texture;

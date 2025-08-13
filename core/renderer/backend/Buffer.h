@@ -24,8 +24,7 @@
 
 #pragma once
 
-#include "Macros.h"
-#include "Types.h"
+#include "BaseDefs.h"
 #include "base/Object.h"
 
 namespace ax
@@ -35,7 +34,7 @@ class MeshVertexData;
 class MeshIndexData;
 }  // namespace ax
 
-NS_AX_BACKEND_BEGIN
+namespace ax::backend {
 
 /**
  * @addtogroup _backend
@@ -99,4 +98,4 @@ protected:
 
 // end of _backend group
 /// @}
-NS_AX_BACKEND_END
+}

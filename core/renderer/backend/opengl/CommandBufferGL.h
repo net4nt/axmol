@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include "../Macros.h"
+#include "../BaseDefs.h"
 #include "../CommandBuffer.h"
 #include "base/EventListenerCustom.h"
 #include "platform/GL.h"
@@ -34,7 +34,7 @@
 
 #include <vector>
 
-NS_AX_BACKEND_BEGIN
+namespace ax::backend {
 
 class BufferGL;
 class RenderPipelineGL;
@@ -245,4 +245,4 @@ protected:
 
 // end of _opengl group
 /// @}
-NS_AX_BACKEND_END
+}

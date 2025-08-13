@@ -26,7 +26,7 @@
 
 #include "../DepthStencilState.h"
 
-NS_AX_BACKEND_BEGIN
+namespace ax::backend {
 /**
  * @addtogroup _opengl
  * @{
@@ -51,8 +51,8 @@ public:
      * @param stencilReferenceValueFront Specifies front stencil reference value.
      * @param stencilReferenceValueBack Specifies back stencil reference value.
      */
-    void apply(unsigned int stencilReferenceValueFront, unsigned int stencilReferenceValueBack) const;
+    void apply(unsigned int stencilReferenceValue) const;
 };
 // end of _opengl group
 /// @}
-NS_AX_BACKEND_END
+}

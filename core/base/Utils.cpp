@@ -46,7 +46,6 @@ THE SOFTWARE.
 #include "renderer/Renderer.h"
 #include "renderer/TextureCache.h"
 #include "renderer/RenderState.h"
-#include "renderer/backend/Types.h"
 #include "renderer/backend/PixelBufferDescriptor.h"
 
 #include "platform/Image.h"
@@ -106,7 +105,7 @@ void captureScreen(std::function<void(RefPtr<Image>)> imageCallback)
     auto eventDispatcher = director->getEventDispatcher();
 
     // !!!Metal: needs setFrameBufferOnly before draw
-#if defined(AX_USE_METAL)
+#if AX_RENDER_API == AX_RENDER_API_MTL
     s_captureScreenListener =
         eventDispatcher->addCustomEventListener(Director::EVENT_BEFORE_DRAW, [=](EventCustom* /*event*/) {
 #else
