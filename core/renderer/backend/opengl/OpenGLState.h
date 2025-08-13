@@ -106,7 +106,7 @@ struct UniformBufferBaseBindState
     GLuint handle;
 };
 
-struct OpenGLState
+struct AX_DLL OpenGLState
 {
     constexpr static GLenum BufferTargets[] = {
         GL_ARRAY_BUFFER,          // VERTEX of VAO
@@ -195,6 +195,8 @@ struct OpenGLState
     using UtilsGL  = backend::UtilsGL;
 
     static void reset();
+
+    OpenGLState();
 
     void viewport(const Viewport& v) { try_callf(glViewport, _viewPort, v, v.x, v.y, v.width, v.height); }
     void winding(Winding v) { try_callf(glFrontFace, _winding, v, UtilsGL::toGLFrontFace(v)); }
@@ -367,12 +369,7 @@ struct OpenGLState
         const auto mask = 1 << index;
         if (!(_divisorBits & mask))
         {
-#if defined(__ANDROID__) && AX_GLES_PROFILE == 200
-            if (glVertexAttribDivisor)
-                glVertexAttribDivisor(index, 1);
-#else
             glVertexAttribDivisor(index, 1);
-#endif
             _divisorBits |= mask;
         }
     }
@@ -382,17 +379,13 @@ struct OpenGLState
         const auto mask = 1 << index;
         if (_divisorBits & mask)
         {
-#if defined(__ANDROID__) && AX_GLES_PROFILE == 200
-            if (glVertexAttribDivisor)
-                glVertexAttribDivisor(index, 0);
-#else
             glVertexAttribDivisor(index, 0);
-#endif
             _divisorBits &= ~mask;
         }
     }
 
 private:
+    GLuint _defaultVAO{0};
     uint32_t _attribBits{0}; // vertexAttribArray bitset
     uint32_t _divisorBits{0}; // divisor bitset
     std::optional<GLuint> _bufferBindings[(int)BufferType::COUNT];
