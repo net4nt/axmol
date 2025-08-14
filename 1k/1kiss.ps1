@@ -995,6 +995,11 @@ function setup_axslcc() {
         return $axslcc_prog
     }
 
+    $axslcc_prog = (Join-Path $axslcc_bin "axslcc$EXE_SUFFIX")
+    if($1k.isfile($axslcc_prog)) {
+        $1k.del($axslcc_prog)
+    }
+
     $suffix = @('win64.zip', 'linux.tar.gz', 'osx{0}.tar.gz')[$HOST_OS_INT]
     if ($IsMacOS) {
         if ([System.VersionEx]$axslcc_ver -ge [System.VersionEx]'1.9.4.1') {
@@ -1008,7 +1013,6 @@ function setup_axslcc() {
     $glscc_base_url = $mirror_current.axslcc
     fetch_pkg "$mirror_url_base$glscc_base_url/v$axslcc_ver/axslcc-$axslcc_ver-$suffix" -exrep "axslcc"
 
-    $axslcc_prog = (Join-Path $axslcc_bin "axslcc$EXE_SUFFIX")
     if ($1k.isfile($axslcc_prog)) {
         $1k.println("Using axslcc: $axslcc_prog, version: $axslcc_ver")
     } else {
