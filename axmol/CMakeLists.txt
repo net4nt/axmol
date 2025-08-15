@@ -93,7 +93,8 @@ if(_GLES_PROFILE)
   set(AX_GLES_PROFILE ${_GLES_PROFILE} CACHE STRING "")
 
   if(AX_GLES_PROFILE LESS 300)
-    message(FATAL_ERROR "${MACOSX} Invalid GLES profile ${AX_GLES_PROFILE}, must be 300 or later, default ${_GLES_PROFILE}")
+    set(AX_GLES_PROFILE ${_GLES_PROFILE} CACHE STRING "" FORCE)
+    message(AUTHOR_WARNING "Forcing GLES profile to ${_GLES_PROFILE} for OpenGL ES")
   endif()
 else() # force disable GLES profile
   set(AX_GLES_PROFILE 0 CACHE STRING "" FORCE)

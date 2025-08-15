@@ -24,7 +24,7 @@ struct instance_data_st {
     vec4 color;
     float radius;
 };
-layout(std140, binding = 1) buffer vs_inst {
+layout(std140, binding = 1) readonly buffer vs_inst {
     instance_data_st instances[];
 };
 #endif

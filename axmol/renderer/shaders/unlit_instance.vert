@@ -12,7 +12,7 @@ layout(std140, binding = 0) uniform vs_ub {
 };
 
 #if defined(AXSLC_TARGET_MSL)
-layout(std140, binding = 1) buffer vs_inst {
+layout(std140, binding = 1) readonly buffer vs_inst {
     mat4 u_instance[];
 };
 #endif
