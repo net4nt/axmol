@@ -43,7 +43,7 @@ class Optional
 
 public:
     Optional() {}
-    Optional(T d) : _isSet(true), _data(d) {}
+    explicit Optional(T d) : _isSet(true), _data(d) {}
     Optional(const Optional& t) : _isSet(t._isSet), _data(t._data) {}
 
     // bool isNull()       const { return !_isSet; }

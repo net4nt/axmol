@@ -65,7 +65,7 @@ static D3D11_DEPTH_STENCILOP_DESC make_op_desc(const StencilDescriptor& s)
 
 void DepthStencilStateImpl::update(const DepthStencilDescriptor& desc)
 {
-    if (_state && memcmp(&desc, &_dsDesc, sizeof(desc) == 0))
+    if (_state && memcmp(&desc, &_dsDesc, sizeof(desc)) == 0)
     {
         return;
     }
@@ -115,7 +115,6 @@ void DepthStencilStateImpl::reset(ID3D11DeviceContext* ctx)
 
         dsDesc.StencilEnable = FALSE;
 
-        ID3D11DepthStencilState* pDSStateDisable = nullptr;
         _device->CreateDepthStencilState(&dsDesc, _disableState.GetAddressOf());
     }
 

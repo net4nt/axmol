@@ -418,8 +418,6 @@ void TextureImpl::updateFaceData(TextureCubeFace side, void* data, int index)
     //-------------------------------------------------------------------
     // 2. compute RowPitch / SlicePitch
     //-------------------------------------------------------------------
-    const uint32_t pixelSize        = PixelFormatUtils::getBitsPerPixel(_textureRes._descriptor.textureFormat) / 8;
-    const uint32_t rowPitchVerified = _textureRes._descriptor.width * pixelSize;
     const uint32_t rowPitch =
         PixelFormatUtils::computeRowPitch(_textureFormat, static_cast<uint32_t>(_textureRes._descriptor.width));
     const uint32_t slicePitch = _textureRes._descriptor.height * rowPitch;

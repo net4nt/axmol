@@ -894,9 +894,10 @@ bool Bundle3D::loadMaterialsBinary(MaterialDatas& materialdatas)
 {
     if (!seekToFirstType(BUNDLE_TYPE_MATERIAL))
         return false;
-    unsigned int materialnum = 1;
+    
     try
     {
+        unsigned int materialnum = 1;
         _binaryReader.read_blob(materialnum);
         for (unsigned int i = 0; i < materialnum; ++i)
         {

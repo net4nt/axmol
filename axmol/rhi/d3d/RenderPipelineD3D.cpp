@@ -144,7 +144,7 @@ static UINT toD3DColorWriteMask(ColorWriteMask mask)
     return result;
 }
 
-static uint64_t hashBlendDesc(const BlendDescriptor& bd)
+static uint32_t hashBlendDesc(const BlendDescriptor& bd)
 {
     struct PODBlend
     {
@@ -157,7 +157,7 @@ static uint64_t hashBlendDesc(const BlendDescriptor& bd)
         uint8_t destinationRGBBlendFactor;
         uint8_t sourceAlphaBlendFactor;
         uint8_t destinationAlphaBlendFactor;
-        uint8_t pad1[4];
+        uint32_t pad1;
     } pod{static_cast<uint32_t>(bd.writeMask),
           static_cast<uint8_t>(bd.blendEnabled),
           static_cast<uint8_t>(bd.rgbBlendOperation),
@@ -167,16 +167,16 @@ static uint64_t hashBlendDesc(const BlendDescriptor& bd)
           static_cast<uint8_t>(bd.destinationRGBBlendFactor),
           static_cast<uint8_t>(bd.sourceAlphaBlendFactor),
           static_cast<uint8_t>(bd.destinationAlphaBlendFactor),
-          {0, 0, 0, 0}};
+          0};
 
-    return XXH64(&pod, sizeof(pod), 0);
+    return XXH32(&pod, sizeof(pod), 0);
 }
 
 void RenderPipelineImpl::update(const RenderTarget*, const PipelineDescriptor& desc)
 {
     ComPtr<ID3D11BlendState> blendState;
 
-    uint64_t key = hashBlendDesc(desc.blendDescriptor);
+    auto key = hashBlendDesc(desc.blendDescriptor);
     auto it      = _blendCache.find(key);
 
     if (it != _blendCache.end())
