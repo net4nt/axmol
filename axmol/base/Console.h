@@ -158,7 +158,7 @@ public:
     bool listenOnTCP(int port);
 
     /** starts listening to specified file descriptor */
-    bool listenOnFileDescriptor(int fd);
+    bool listenOnFileDesc(int fd);
 
     /** stops the Console. 'stop' will be called at destruction time as well */
     void stop();

@@ -36,13 +36,13 @@ int StencilStateManager::s_layer = -1;
 
 StencilStateManager::StencilStateManager()
 {
-    auto& pipelineDescriptor        = _customCommand.getPipelineDescriptor();
+    auto& pipelineDesc        = _customCommand.getPipelineDesc();
     auto* program                   = axpm->getBuiltinProgram(rhi::ProgramType::POSITION_UCOLOR);
     _programState                   = new rhi::ProgramState(program);
-    pipelineDescriptor.programState = _programState;
+    pipelineDesc.programState = _programState;
 
-    _mvpMatrixLocaiton    = pipelineDescriptor.programState->getUniformLocation("u_MVPMatrix");
-    _colorUniformLocation = pipelineDescriptor.programState->getUniformLocation("u_color");
+    _mvpMatrixLocaiton    = pipelineDesc.programState->getUniformLocation("u_MVPMatrix");
+    _colorUniformLocation = pipelineDesc.programState->getUniformLocation("u_color");
 
     Vec2 vertices[4] = {Vec2(-1.0f, -1.0f), Vec2(1.0f, -1.0f), Vec2(1.0f, 1.0f), Vec2(-1.0f, 1.0f)};
     _customCommand.createVertexBuffer(sizeof(Vec2), 4, CustomCommand::BufferUsage::STATIC);
@@ -53,7 +53,7 @@ StencilStateManager::StencilStateManager()
     _customCommand.updateIndexBuffer(indices, sizeof(indices));
 
     Color color(1, 1, 1, 1);
-    pipelineDescriptor.programState->setUniform(_colorUniformLocation, &color, sizeof(color));
+    pipelineDesc.programState->setUniform(_colorUniformLocation, &color, sizeof(color));
 }
 
 StencilStateManager::~StencilStateManager()
@@ -117,12 +117,12 @@ void StencilStateManager::onBeforeDrawQuadCmd()
     // manually save the stencil state
     _currentStencilEnabled       = renderer->getStencilTest();
     _currentStencilWriteMask     = renderer->getStencilWriteMask();
-    _currentStencilFunc          = renderer->getStencilCompareFunction();
+    _currentStencilFunc          = renderer->getStencilCompareFunc();
     _currentStencilRef           = renderer->getStencilReferenceValue();
     _currentStencilReadMask      = renderer->getStencilReadMask();
-    _currentStencilFail          = renderer->getStencilFailureOperation();
-    _currentStencilPassDepthFail = renderer->getStencilPassDepthFailureOperation();
-    _currentStencilPassDepthPass = renderer->getStencilDepthPassOperation();
+    _currentStencilFail          = renderer->getStencilFailureOp();
+    _currentStencilPassDepthFail = renderer->getStencilPassDepthFailureOp();
+    _currentStencilPassDepthPass = renderer->getStencilDepthPassOp();
 
     // enable stencil use
     renderer->setStencilTest(true);
@@ -150,18 +150,18 @@ void StencilStateManager::onBeforeDrawQuadCmd()
     //     never draw it into the frame buffer
     //     if not in inverted mode: set the current layer value to 0 in the stencil buffer
     //     if in inverted mode: set the current layer value to 1 in the stencil buffer
-    renderer->setStencilCompareFunction(rhi::CompareFunction::NEVER, _currentLayerMask, _currentLayerMask);
-    renderer->setStencilOperation(!_inverted ? rhi::StencilOperation::ZERO : rhi::StencilOperation::REPLACE,
-                                  rhi::StencilOperation::KEEP, rhi::StencilOperation::KEEP);
+    renderer->setStencilCompareFunc(rhi::CompareFunc::NEVER, _currentLayerMask, _currentLayerMask);
+    renderer->setStencilOp(!_inverted ? rhi::StencilOp::ZERO : rhi::StencilOp::REPLACE,
+                                  rhi::StencilOp::KEEP, rhi::StencilOp::KEEP);
 }
 
 void StencilStateManager::onAfterDrawQuadCmd()
 {
     auto renderer = Director::getInstance()->getRenderer();
-    renderer->setStencilCompareFunction(rhi::CompareFunction::NEVER, _currentLayerMask, _currentLayerMask);
+    renderer->setStencilCompareFunc(rhi::CompareFunc::NEVER, _currentLayerMask, _currentLayerMask);
 
-    renderer->setStencilOperation(!_inverted ? rhi::StencilOperation::REPLACE : rhi::StencilOperation::ZERO,
-                                  rhi::StencilOperation::KEEP, rhi::StencilOperation::KEEP);
+    renderer->setStencilOp(!_inverted ? rhi::StencilOp::REPLACE : rhi::StencilOp::ZERO,
+                                  rhi::StencilOp::KEEP, rhi::StencilOp::KEEP);
 }
 
 void StencilStateManager::onAfterDrawStencil()
@@ -183,10 +183,10 @@ void StencilStateManager::onAfterDrawStencil()
     //         draw the pixel and keep the current layer in the stencil buffer
     //     else
     //         do not draw the pixel but keep the current layer in the stencil buffer
-    renderer->setStencilCompareFunction(rhi::CompareFunction::EQUAL, _mask_layer_le, _mask_layer_le);
+    renderer->setStencilCompareFunc(rhi::CompareFunc::EQUAL, _mask_layer_le, _mask_layer_le);
 
-    renderer->setStencilOperation(rhi::StencilOperation::KEEP, rhi::StencilOperation::KEEP,
-                                  rhi::StencilOperation::KEEP);
+    renderer->setStencilOp(rhi::StencilOp::KEEP, rhi::StencilOp::KEEP,
+                                  rhi::StencilOp::KEEP);
 
     // draw (according to the stencil test function) this node and its children
 }
@@ -198,9 +198,9 @@ void StencilStateManager::onAfterVisit()
 
     // manually restore the stencil state
     auto renderer = Director::getInstance()->getRenderer();
-    renderer->setStencilCompareFunction(_currentStencilFunc, _currentStencilRef, _currentStencilReadMask);
+    renderer->setStencilCompareFunc(_currentStencilFunc, _currentStencilRef, _currentStencilReadMask);
 
-    renderer->setStencilOperation(_currentStencilFail, _currentStencilPassDepthFail, _currentStencilPassDepthPass);
+    renderer->setStencilOp(_currentStencilFail, _currentStencilPassDepthFail, _currentStencilPassDepthPass);
 
     renderer->setStencilWriteMask(_currentStencilWriteMask);
     if (!_currentStencilEnabled)

@@ -56,22 +56,22 @@ namespace ax
 
 namespace
 {
-void updateBlend(rhi::BlendDescriptor& blendDescriptor, BlendFunc blendFunc)
+void updateBlend(rhi::BlendDesc& blendDesc, BlendFunc blendFunc)
 {
-    blendDescriptor.blendEnabled = true;
+    blendDesc.blendEnabled = true;
     if (blendFunc == BlendFunc::ALPHA_NON_PREMULTIPLIED)
     {
-        blendDescriptor.sourceRGBBlendFactor        = rhi::BlendFactor::SRC_ALPHA;
-        blendDescriptor.destinationRGBBlendFactor   = rhi::BlendFactor::ONE_MINUS_SRC_ALPHA;
-        blendDescriptor.sourceAlphaBlendFactor      = rhi::BlendFactor::SRC_ALPHA;
-        blendDescriptor.destinationAlphaBlendFactor = rhi::BlendFactor::ONE_MINUS_SRC_ALPHA;
+        blendDesc.sourceRGBBlendFactor        = rhi::BlendFactor::SRC_ALPHA;
+        blendDesc.destinationRGBBlendFactor   = rhi::BlendFactor::ONE_MINUS_SRC_ALPHA;
+        blendDesc.sourceAlphaBlendFactor      = rhi::BlendFactor::SRC_ALPHA;
+        blendDesc.destinationAlphaBlendFactor = rhi::BlendFactor::ONE_MINUS_SRC_ALPHA;
     }
     else
     {
-        blendDescriptor.sourceRGBBlendFactor        = rhi::BlendFactor::ONE;
-        blendDescriptor.destinationRGBBlendFactor   = rhi::BlendFactor::ONE_MINUS_SRC_ALPHA;
-        blendDescriptor.sourceAlphaBlendFactor      = rhi::BlendFactor::ONE;
-        blendDescriptor.destinationAlphaBlendFactor = rhi::BlendFactor::ONE_MINUS_SRC_ALPHA;
+        blendDesc.sourceRGBBlendFactor        = rhi::BlendFactor::ONE;
+        blendDesc.destinationRGBBlendFactor   = rhi::BlendFactor::ONE_MINUS_SRC_ALPHA;
+        blendDesc.sourceAlphaBlendFactor      = rhi::BlendFactor::ONE;
+        blendDesc.destinationAlphaBlendFactor = rhi::BlendFactor::ONE_MINUS_SRC_ALPHA;
     }
 }
 }  // namespace
@@ -204,24 +204,24 @@ Label::BatchCommand::BatchCommand()
 
 Label::BatchCommand::~BatchCommand()
 {
-    AX_SAFE_RELEASE(textCommand.getPipelineDescriptor().programState);
-    AX_SAFE_RELEASE(shadowCommand.getPipelineDescriptor().programState);
-    AX_SAFE_RELEASE(outLineCommand.getPipelineDescriptor().programState);
+    AX_SAFE_RELEASE(textCommand.getPipelineDesc().programState);
+    AX_SAFE_RELEASE(shadowCommand.getPipelineDesc().programState);
+    AX_SAFE_RELEASE(outLineCommand.getPipelineDesc().programState);
 }
 
 void Label::BatchCommand::setProgramState(rhi::ProgramState* programState)
 {
     assert(programState);
 
-    auto& programStateText = textCommand.getPipelineDescriptor().programState;
+    auto& programStateText = textCommand.getPipelineDesc().programState;
     AX_SAFE_RELEASE(programStateText);
     programStateText = programState->clone();
 
-    auto& programStateShadow = shadowCommand.getPipelineDescriptor().programState;
+    auto& programStateShadow = shadowCommand.getPipelineDesc().programState;
     AX_SAFE_RELEASE(programStateShadow);
     programStateShadow = programState->clone();
 
-    auto& programStateOutline = outLineCommand.getPipelineDescriptor().programState;
+    auto& programStateOutline = outLineCommand.getPipelineDesc().programState;
     AX_SAFE_RELEASE(programStateOutline);
     programStateOutline = programState->clone();
 }
@@ -686,7 +686,7 @@ bool Label::setProgramState(rhi::ProgramState* programState, bool ownPS /*= fals
 
         setVertexLayout();
 
-        auto& quadPipeline        = _quadCommand.getPipelineDescriptor();
+        auto& quadPipeline        = _quadCommand.getPipelineDesc();
         quadPipeline.programState = _programState;
 
         return true;
@@ -745,7 +745,7 @@ void Label::updateShaderProgram()
     for (auto&& batch : _batchCommands)
         updateBatchCommand(batch);
 
-    auto& quadPipeline        = _quadCommand.getPipelineDescriptor();
+    auto& quadPipeline        = _quadCommand.getPipelineDesc();
     quadPipeline.programState = _programState;
 }
 
@@ -1912,7 +1912,7 @@ void Label::updateEffectUniforms(BatchCommand& batch,
     {
         updateBuffer(textureAtlas, batch.shadowCommand);
         auto shadowMatrix = matrixProjection * _shadowTransform;
-        batch.shadowCommand.getPipelineDescriptor().programState->setUniform(_mvpMatrixLocation, shadowMatrix.m,
+        batch.shadowCommand.getPipelineDesc().programState->setUniform(_mvpMatrixLocation, shadowMatrix.m,
                                                                              sizeof(shadowMatrix.m));
     }
 
@@ -1928,7 +1928,7 @@ void Label::updateEffectUniforms(BatchCommand& batch,
             if (_shadowEnabled)
             {
                 effectType               = 2;
-                auto* programStateShadow = batch.shadowCommand.getPipelineDescriptor().programState;
+                auto* programStateShadow = batch.shadowCommand.getPipelineDesc().programState;
                 programStateShadow->setUniform(_effectColorLocation, &_shadowColor, sizeof(ax::Color));
                 programStateShadow->setUniform(_effectTypeLocation, &effectType, sizeof(effectType));
                 batch.shadowCommand.init(_globalZOrder);
@@ -1938,7 +1938,7 @@ void Label::updateEffectUniforms(BatchCommand& batch,
             if (_useDistanceField)
             {  // distance outline
                 effectColor.w = _outlineSize > 0 ? _outlineSize : _fontConfig.outlineSize;
-                batch.textCommand.getPipelineDescriptor().programState->setUniform(_effectColorLocation, &effectColor,
+                batch.textCommand.getPipelineDesc().programState->setUniform(_effectColorLocation, &effectColor,
                                                                                    sizeof(ax::Color));
             }
             else
@@ -1947,7 +1947,7 @@ void Label::updateEffectUniforms(BatchCommand& batch,
                 {
                     effectType = 1;
                     updateBuffer(textureAtlas, batch.outLineCommand);
-                    auto* programStateOutline = batch.outLineCommand.getPipelineDescriptor().programState;
+                    auto* programStateOutline = batch.outLineCommand.getPipelineDesc().programState;
                     programStateOutline->setUniform(_effectColorLocation, &effectColor, sizeof(Vec4));
                     programStateOutline->setUniform(_effectTypeLocation, &effectType, sizeof(effectType));
                     batch.outLineCommand.init(_globalZOrder);
@@ -1957,7 +1957,7 @@ void Label::updateEffectUniforms(BatchCommand& batch,
                 // draw text
                 {
                     effectType             = 0;
-                    auto* programStateText = batch.textCommand.getPipelineDescriptor().programState;
+                    auto* programStateText = batch.textCommand.getPipelineDesc().programState;
 
                     programStateText->setUniform(_effectColorLocation, &effectColor, sizeof(effectColor));
                     programStateText->setUniform(_effectTypeLocation, &effectType, sizeof(effectType));
@@ -1969,7 +1969,7 @@ void Label::updateEffectUniforms(BatchCommand& batch,
         {
             if (_shadowEnabled)
             {
-                auto* programStateShadow = batch.shadowCommand.getPipelineDescriptor().programState;
+                auto* programStateShadow = batch.shadowCommand.getPipelineDesc().programState;
                 programStateShadow->setUniform(_textColorLocation, &_shadowColor, sizeof(Vec4));
                 batch.shadowCommand.init(_globalZOrder);
                 renderer->addCommand(&batch.shadowCommand);
@@ -1981,14 +1981,14 @@ void Label::updateEffectUniforms(BatchCommand& batch,
             // draw shadow
             if (_shadowEnabled)
             {
-                auto* programStateShadow = batch.shadowCommand.getPipelineDescriptor().programState;
+                auto* programStateShadow = batch.shadowCommand.getPipelineDesc().programState;
                 programStateShadow->setUniform(_textColorLocation, &_shadowColor, sizeof(Vec4));
                 programStateShadow->setUniform(_effectColorLocation, &_shadowColor, sizeof(Vec4));
                 batch.shadowCommand.init(_globalZOrder);
                 renderer->addCommand(&batch.shadowCommand);
             }
 
-            batch.textCommand.getPipelineDescriptor().programState->setUniform(_effectColorLocation, &_effectColor,
+            batch.textCommand.getPipelineDesc().programState->setUniform(_effectColorLocation, &_effectColor,
                                                                                sizeof(Vec4));
         }
         break;
@@ -2057,7 +2057,7 @@ void Label::draw(Renderer* renderer, const Mat4& transform, uint32_t flags)
                 return;
 
             auto texture       = textureAtlas->getTexture();
-            auto& pipelineQuad = _quadCommand.getPipelineDescriptor();
+            auto& pipelineQuad = _quadCommand.getPipelineDesc();
             pipelineQuad.programState->setUniform(_mvpMatrixLocation, matrixProjection.m, sizeof(matrixProjection.m));
             pipelineQuad.programState->setTexture(texture->getBackendTexture());
             _quadCommand.init(_globalZOrder, texture, _blendFunc, textureAtlas->getQuads(),
@@ -2091,13 +2091,13 @@ void Label::draw(Renderer* renderer, const Mat4& transform, uint32_t flags)
                 auto& batch = _batchCommands[i++];
                 for (auto&& command : batch.getCommandArray())
                 {
-                    auto* programState = command->getPipelineDescriptor().programState;
+                    auto* programState = command->getPipelineDesc().programState;
                     programState->setUniform(_textColorLocation, &_textColor, sizeof(_textColor));
                     programState->setTexture(textureAtlas->getTexture()->getBackendTexture());
                 }
-                batch.textCommand.getPipelineDescriptor().programState->setUniform(_mvpMatrixLocation, matrixMVP.m,
+                batch.textCommand.getPipelineDesc().programState->setUniform(_mvpMatrixLocation, matrixMVP.m,
                                                                                    sizeof(matrixMVP.m));
-                batch.outLineCommand.getPipelineDescriptor().programState->setUniform(_mvpMatrixLocation, matrixMVP.m,
+                batch.outLineCommand.getPipelineDesc().programState->setUniform(_mvpMatrixLocation, matrixMVP.m,
                                                                                       sizeof(matrixMVP.m));
                 updateEffectUniforms(batch, textureAtlas, renderer, transform);
             }
@@ -2112,11 +2112,11 @@ void Label::updateBlendState()
     {
         for (auto&& command : batch.getCommandArray())
         {
-            auto& blendDescriptor = command->getPipelineDescriptor().blendDescriptor;
-            updateBlend(blendDescriptor, _blendFunc);
+            auto& blendDesc = command->getPipelineDesc().blendDesc;
+            updateBlend(blendDesc, _blendFunc);
         }
     }
-    updateBlend(_quadCommand.getPipelineDescriptor().blendDescriptor, _blendFunc);
+    updateBlend(_quadCommand.getPipelineDesc().blendDesc, _blendFunc);
 }
 
 void Label::visit(Renderer* renderer, const Mat4& parentTransform, uint32_t parentFlags)

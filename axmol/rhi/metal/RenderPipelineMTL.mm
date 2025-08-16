@@ -36,7 +36,7 @@ namespace ax::rhi::mtl {
 
 namespace
 {
-MTLVertexStepFunction toMTLVertexStepFunction(VertexStepMode vertexStepMode)
+static MTLVertexStepFunction toMTLVertexStepFunc(VertexStepMode vertexStepMode)
 {
     if (VertexStepMode::VERTEX == vertexStepMode)
         return MTLVertexStepFunctionPerVertex;
@@ -44,7 +44,7 @@ MTLVertexStepFunction toMTLVertexStepFunction(VertexStepMode vertexStepMode)
         return MTLVertexStepFunctionPerInstance;
 }
 
-MTLVertexFormat toMTLVertexFormat(VertexFormat vertexFormat, bool needNormalize)
+static MTLVertexFormat toMTLVertexFormat(VertexFormat vertexFormat, bool needNormalize)
 {
     MTLVertexFormat ret = MTLVertexFormatFloat4;
     switch (vertexFormat)
@@ -92,7 +92,7 @@ MTLVertexFormat toMTLVertexFormat(VertexFormat vertexFormat, bool needNormalize)
     return ret;
 }
 
-MTLColorWriteMask toMTLColorWriteMask(ColorWriteMask mask)
+static MTLColorWriteMask toMTLColorWriteMask(ColorWriteMask mask)
 {
     switch (mask)
     {
@@ -111,7 +111,7 @@ MTLColorWriteMask toMTLColorWriteMask(ColorWriteMask mask)
     }
 }
 
-MTLBlendFactor toMTLBlendFactor(BlendFactor factor)
+static MTLBlendFactor toMTLBlendFactor(BlendFactor factor)
 {
     switch (factor)
     {
@@ -144,15 +144,15 @@ MTLBlendFactor toMTLBlendFactor(BlendFactor factor)
     }
 }
 
-MTLBlendOperation toMTLBlendOperation(BlendOperation operation)
+static MTLBlendOperation toMTLBlendOp(BlendOp operation)
 {
     switch (operation)
     {
-    case BlendOperation::ADD:
+    case BlendOp::ADD:
         return MTLBlendOperationAdd;
-    case BlendOperation::SUBTRACT:
+    case BlendOp::SUBTRACT:
         return MTLBlendOperationSubtract;
-    case BlendOperation::REVERSE_SUBTRACT:
+    case BlendOp::REVERSE_SUBTRACT:
         return MTLBlendOperationReverseSubtract;
     default:
         return MTLBlendOperationAdd;
@@ -162,7 +162,7 @@ MTLBlendOperation toMTLBlendOperation(BlendOperation operation)
 
 RenderPipelineImpl::RenderPipelineImpl(id<MTLDevice> mtlDevice) : _mtlDevice(mtlDevice) {}
 
-void RenderPipelineImpl::update(const RenderTarget* renderTarget, const PipelineDescriptor& pipelineDescriptor)
+void RenderPipelineImpl::update(const RenderTarget* renderTarget, const PipelineDesc& pipelineDesc)
 {
     struct
     {
@@ -173,8 +173,8 @@ void RenderPipelineImpl::update(const RenderTarget* renderTarget, const Pipeline
         rhi::PixelFormat depthStencilPF;
         bool blendEnabled;
         unsigned int writeMask;
-        unsigned int rgbBlendOperation;
-        unsigned int alphaBlendOperation;
+        unsigned int rgbBlendOp;
+        unsigned int alphaBlendOp;
         unsigned int sourceRGBBlendFactor;
         unsigned int destinationRGBBlendFactor;
         unsigned int sourceAlphaBlendFactor;
@@ -182,23 +182,23 @@ void RenderPipelineImpl::update(const RenderTarget* renderTarget, const Pipeline
     } hashMe;
 
     memset(&hashMe, 0, sizeof(hashMe));
-    const auto& blendDescriptor = pipelineDescriptor.blendDescriptor;
+    const auto& blendDesc = pipelineDesc.blendDesc;
     chooseAttachmentFormat(renderTarget, _colorAttachmentsFormat, _depthStencilPF);
-    auto program              = static_cast<ProgramImpl*>(pipelineDescriptor.programState->getProgram());
+    auto program              = static_cast<ProgramImpl*>(pipelineDesc.programState->getProgram());
     hashMe.vertexShaderHash   = program->getVertexShader()->getHashValue();
     hashMe.fragmentShaderHash = program->getFragmentShader()->getHashValue();
     memcpy(&hashMe.colorAttachment, &_colorAttachmentsFormat, sizeof(_colorAttachmentsFormat));
     hashMe.depthStencilPF             = _depthStencilPF;
-    hashMe.blendEnabled                = blendDescriptor.blendEnabled;
-    hashMe.writeMask                   = (unsigned int)blendDescriptor.writeMask;
-    hashMe.rgbBlendOperation           = (unsigned int)blendDescriptor.rgbBlendOperation;
-    hashMe.alphaBlendOperation         = (unsigned int)blendDescriptor.alphaBlendOperation;
-    hashMe.sourceRGBBlendFactor        = (unsigned int)blendDescriptor.sourceRGBBlendFactor;
-    hashMe.destinationRGBBlendFactor   = (unsigned int)blendDescriptor.destinationRGBBlendFactor;
-    hashMe.sourceAlphaBlendFactor      = (unsigned int)blendDescriptor.sourceAlphaBlendFactor;
-    hashMe.destinationAlphaBlendFactor = (unsigned int)blendDescriptor.destinationAlphaBlendFactor;
+    hashMe.blendEnabled                = blendDesc.blendEnabled;
+    hashMe.writeMask                   = (unsigned int)blendDesc.writeMask;
+    hashMe.rgbBlendOp           = (unsigned int)blendDesc.rgbBlendOp;
+    hashMe.alphaBlendOp         = (unsigned int)blendDesc.alphaBlendOp;
+    hashMe.sourceRGBBlendFactor        = (unsigned int)blendDesc.sourceRGBBlendFactor;
+    hashMe.destinationRGBBlendFactor   = (unsigned int)blendDesc.destinationRGBBlendFactor;
+    hashMe.sourceAlphaBlendFactor      = (unsigned int)blendDesc.sourceAlphaBlendFactor;
+    hashMe.destinationAlphaBlendFactor = (unsigned int)blendDesc.destinationAlphaBlendFactor;
     int index                          = 0;
-    auto vertexLayout                  = pipelineDescriptor.programState->getVertexLayout();
+    auto vertexLayout                  = pipelineDesc.programState->getVertexLayout();
     for (const auto& [_, bindingDesc] : vertexLayout->getBindings())
     {
         /*
@@ -219,20 +219,20 @@ void RenderPipelineImpl::update(const RenderTarget* renderTarget, const Pipeline
         return;
     }
 
-    _mtlRenderPipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
+    _mtlRenderPipelineDesc = [[MTLRenderPipelineDescriptor alloc] init];
 
-    setShaderModules(pipelineDescriptor);
-    setVertexLayout(_mtlRenderPipelineDescriptor, pipelineDescriptor);
+    setShaderModules(pipelineDesc);
+    setVertexLayout(_mtlRenderPipelineDesc, pipelineDesc);
 
-    setBlendStateAndFormat(pipelineDescriptor.blendDescriptor);
+    setBlendStateAndFormat(pipelineDesc.blendDesc);
 
     NSError* error          = nil;
-    _mtlRenderPipelineState = [_mtlDevice newRenderPipelineStateWithDescriptor:_mtlRenderPipelineDescriptor
+    _mtlRenderPipelineState = [_mtlDevice newRenderPipelineStateWithDescriptor:_mtlRenderPipelineDesc
                                                                          error:&error];
     if (error)
         NSLog(@"Can not create renderpipeline state: %@", error);
 
-    [_mtlRenderPipelineDescriptor release];
+    [_mtlRenderPipelineDesc release];
 
     _mtlStateCache.emplace(hash, _mtlRenderPipelineState);
 }
@@ -243,18 +243,18 @@ RenderPipelineImpl::~RenderPipelineImpl()
         [item.second release];
 }
 
-void RenderPipelineImpl::setVertexLayout(MTLRenderPipelineDescriptor* mtlDescriptor,
-                                        const PipelineDescriptor& descriptor)
+void RenderPipelineImpl::setVertexLayout(MTLRenderPipelineDescriptor* mtlDesc,
+                                        const PipelineDesc& desc)
 {
-    auto vertexLayout = descriptor.programState->getVertexLayout();
+    auto vertexLayout = desc.programState->getVertexLayout();
     if (!vertexLayout->isValid())
         return;
 
     int stride = static_cast<int>(vertexLayout->getStride());
-    auto vertexDesc = mtlDescriptor.vertexDescriptor;
+    auto vertexDesc = mtlDesc.vertexDescriptor;
     vertexDesc.layouts[DriverImpl::DEFAULT_ATTRIBS_BINDING_INDEX].stride = stride;
     vertexDesc.layouts[DriverImpl::DEFAULT_ATTRIBS_BINDING_INDEX].stepFunction =
-        toMTLVertexStepFunction(vertexLayout->getVertexStepMode());
+        toMTLVertexStepFunc(vertexLayout->getVertexStepMode());
 
     for (const auto& [_, bindingDesc] : vertexLayout->getBindings())
     {
@@ -267,29 +267,29 @@ void RenderPipelineImpl::setVertexLayout(MTLRenderPipelineDescriptor* mtlDescrip
     }
 }
 
-void RenderPipelineImpl::setBlendState(MTLRenderPipelineColorAttachmentDescriptor* colorAttachmentDescriptor,
-                                      const BlendDescriptor& blendDescriptor)
+void RenderPipelineImpl::setBlendState(MTLRenderPipelineColorAttachmentDescriptor* colorAttachmentDesc,
+                                      const BlendDesc& blendDesc)
 {
-    colorAttachmentDescriptor.blendingEnabled = blendDescriptor.blendEnabled;
-    colorAttachmentDescriptor.writeMask       = toMTLColorWriteMask(blendDescriptor.writeMask);
+    colorAttachmentDesc.blendingEnabled = blendDesc.blendEnabled;
+    colorAttachmentDesc.writeMask       = toMTLColorWriteMask(blendDesc.writeMask);
 
-    colorAttachmentDescriptor.rgbBlendOperation   = toMTLBlendOperation(blendDescriptor.rgbBlendOperation);
-    colorAttachmentDescriptor.alphaBlendOperation = toMTLBlendOperation(blendDescriptor.alphaBlendOperation);
+    colorAttachmentDesc.rgbBlendOperation   = toMTLBlendOp(blendDesc.rgbBlendOp);
+    colorAttachmentDesc.alphaBlendOperation = toMTLBlendOp(blendDesc.alphaBlendOp);
 
-    colorAttachmentDescriptor.sourceRGBBlendFactor      = toMTLBlendFactor(blendDescriptor.sourceRGBBlendFactor);
-    colorAttachmentDescriptor.destinationRGBBlendFactor = toMTLBlendFactor(blendDescriptor.destinationRGBBlendFactor);
-    colorAttachmentDescriptor.sourceAlphaBlendFactor    = toMTLBlendFactor(blendDescriptor.sourceAlphaBlendFactor);
-    colorAttachmentDescriptor.destinationAlphaBlendFactor =
-        toMTLBlendFactor(blendDescriptor.destinationAlphaBlendFactor);
+    colorAttachmentDesc.sourceRGBBlendFactor      = toMTLBlendFactor(blendDesc.sourceRGBBlendFactor);
+    colorAttachmentDesc.destinationRGBBlendFactor = toMTLBlendFactor(blendDesc.destinationRGBBlendFactor);
+    colorAttachmentDesc.sourceAlphaBlendFactor    = toMTLBlendFactor(blendDesc.sourceAlphaBlendFactor);
+    colorAttachmentDesc.destinationAlphaBlendFactor =
+        toMTLBlendFactor(blendDesc.destinationAlphaBlendFactor);
 }
 
-void RenderPipelineImpl::setShaderModules(const PipelineDescriptor& descriptor)
+void RenderPipelineImpl::setShaderModules(const PipelineDesc& descriptor)
 {
     auto vertexShaderModule = static_cast<ProgramImpl*>(descriptor.programState->getProgram())->getVertexShader();
-    _mtlRenderPipelineDescriptor.vertexFunction = vertexShaderModule->getMTLFunction();
+    _mtlRenderPipelineDesc.vertexFunction = vertexShaderModule->getMTLFunction();
 
     auto fragShaderModule = static_cast<ProgramImpl*>(descriptor.programState->getProgram())->getFragmentShader();
-    _mtlRenderPipelineDescriptor.fragmentFunction = fragShaderModule->getMTLFunction();
+    _mtlRenderPipelineDesc.fragmentFunction = fragShaderModule->getMTLFunction();
 }
 
 void RenderPipelineImpl::chooseAttachmentFormat(const RenderTarget* renderTarget,
@@ -304,24 +304,24 @@ void RenderPipelineImpl::chooseAttachmentFormat(const RenderTarget* renderTarget
     depthStencilFormat   = rtMTL->getDepthStencilAttachmentPixelFormat();
 }
 
-void RenderPipelineImpl::setBlendStateAndFormat(const BlendDescriptor& blendDescriptor)
+void RenderPipelineImpl::setBlendStateAndFormat(const BlendDesc& blendDesc)
 {
     for (int i = 0; i < MAX_COLOR_ATTCHMENT; ++i)
     {
         if (PixelFormat::NONE == _colorAttachmentsFormat[i])
         {
-            _mtlRenderPipelineDescriptor.colorAttachments[i].pixelFormat = MTLPixelFormat::MTLPixelFormatInvalid;
+            _mtlRenderPipelineDesc.colorAttachments[i].pixelFormat = MTLPixelFormat::MTLPixelFormatInvalid;
             continue;
         }
 
-        _mtlRenderPipelineDescriptor.colorAttachments[i].pixelFormat =
+        _mtlRenderPipelineDesc.colorAttachments[i].pixelFormat =
             UtilsMTL::toMTLPixelFormat(_colorAttachmentsFormat[i]);
-        setBlendState(_mtlRenderPipelineDescriptor.colorAttachments[i], blendDescriptor);
+        setBlendState(_mtlRenderPipelineDesc.colorAttachments[i], blendDesc);
     }
 
     auto nativePF = UtilsMTL::toMTLPixelFormat(_depthStencilPF);
-    _mtlRenderPipelineDescriptor.depthAttachmentPixelFormat   = nativePF;
-    _mtlRenderPipelineDescriptor.stencilAttachmentPixelFormat = nativePF;
+    _mtlRenderPipelineDesc.depthAttachmentPixelFormat   = nativePF;
+    _mtlRenderPipelineDesc.stencilAttachmentPixelFormat = nativePF;
 }
 
 }

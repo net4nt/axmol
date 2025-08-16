@@ -79,19 +79,19 @@ public:
      * Begin a render pass, initial color, depth and stencil attachment.
      * @param descriptor Specifies a group of render targets that hold the results of a render pass.
      */
-    void beginRenderPass(const RenderTarget* rt, const RenderPassDescriptor& descriptor) override;
+    void beginRenderPass(const RenderTarget* rt, const RenderPassDesc& descriptor) override;
 
     /**
      * Update depthStencil status, improvment: for metal backend cache it
      * @param depthStencilState Specifies the depth and stencil status
      */
-    void updateDepthStencilState(const DepthStencilDescriptor& descriptor) override;
+    void updateDepthStencilState(const DepthStencilDesc& descriptor) override;
 
     /**
      * Update render pipeline status
      * @param depthStencilState Specifies the depth and stencil status
      */
-    void updatePipelineState(const RenderTarget* rt, const PipelineDescriptor& descriptor) override;
+    void updatePipelineState(const RenderTarget* rt, const PipelineDesc& descriptor) override;
 
     /**
      * Fixed-function state
@@ -209,7 +209,7 @@ public:
      * Get a screen snapshot
      * @param callback A callback to deal with screen snapshot image.
      */
-    void readPixels(RenderTarget* rt, std::function<void(const PixelBufferDescriptor&)> callback) override;
+    void readPixels(RenderTarget* rt, std::function<void(const PixelBufferDesc&)> callback) override;
 
     /**
      * For internal use only
@@ -221,7 +221,7 @@ public:
                     uint32_t height,
                     uint32_t bytesPerRow,
                     bool eglCacheHint,
-                    PixelBufferDescriptor& pbd);
+                    PixelBufferDesc& pbd);
 
 protected:
     void prepareDrawing() const;

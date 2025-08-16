@@ -38,20 +38,6 @@ namespace ax::rhi {
  */
 
 /**
- * Store texture description.
- */
-struct TextureDescriptor
-{
-    TextureType textureType   = TextureType::TEXTURE_2D;
-    PixelFormat textureFormat = PixelFormat::RGBA8;
-    TextureUsage textureUsage = TextureUsage::READ;
-    uint32_t width            = 0;
-    uint32_t height           = 0;
-    uint32_t depth            = 0;
-    SamplerDescriptor samplerDescriptor;
-};
-
-/**
  * A base texture
  */
 class Texture : public Object
@@ -61,7 +47,7 @@ public:
      * Update sampler
      * @param sampler Specifies the sampler descriptor.
      */
-    virtual void updateSamplerDescriptor(const SamplerDescriptor& sampler) = 0;
+    virtual void updateSamplerDesc(const SamplerDesc& sampler) = 0;
 
     /// Generate mipmaps.
     virtual void generateMipmaps() = 0;
@@ -70,7 +56,7 @@ public:
      * Update texture description.
      * @param descriptor Specifies texture and sampler descriptor.
      */
-    virtual void updateTextureDescriptor(const TextureDescriptor& descriptor, int index = 0);
+    virtual void updateTextureDesc(const TextureDesc& descriptor, int index = 0);
 
     /**
      * Get texture format.

@@ -76,26 +76,26 @@ public:
     bool beginFrame() override;
 
     /**
-     * Create a MTLRenderCommandEncoder object for graphics rendering to an attachment in a RenderPassDescriptor.
-     * MTLRenderCommandEncoder is cached if current RenderPassDescriptor is identical to previous one.
+     * Create a MTLRenderCommandEncoder object for graphics rendering to an attachment in a RenderPassDesc.
+     * MTLRenderCommandEncoder is cached if current RenderPassDesc is identical to previous one.
      * @param descriptor Specifies a group of render targets that hold the results of a render pass.
      */
-    void beginRenderPass(const RenderTarget* renderTarget, const RenderPassDescriptor& descriptor) override;
+    void beginRenderPass(const RenderTarget* renderTarget, const RenderPassDesc& descriptor) override;
 
     /**
      * Update depthStencil status, improvment: for metal backend cache it
      * @param depthStencilState Specifies the depth and stencil status
      */
-    void updateDepthStencilState(const DepthStencilDescriptor& descriptor) override;
+    void updateDepthStencilState(const DepthStencilDesc& descriptor) override;
 
     /**
      * Update render pipeline status
      * Building a programmable pipeline involves an expensive evaluation of GPU state.
      * So a new render pipeline object will be created only if it hasn't been created before.
      * @param rt Specifies the render target.
-     * @param pipelineDescriptor Specifies the pipeline descriptor.
+     * @param desc Specifies the pipeline descriptor.
      */
-    void updatePipelineState(const RenderTarget* rt, const PipelineDescriptor& descriptor) override;
+    void updatePipelineState(const RenderTarget* rt, const PipelineDesc& desc) override;
 
     /**
      * Fixed-function state
@@ -204,7 +204,7 @@ public:
      * Read pixels from RenderTarget
      * @param callback A callback to deal with pixel data read.
      */
-    void readPixels(RenderTarget* rt, std::function<void(const PixelBufferDescriptor&)> callback) override;
+    void readPixels(RenderTarget* rt, std::function<void(const PixelBufferDesc&)> callback) override;
 
     id<MTLRenderCommandEncoder> getRenderCommandEncoder() const { return _mtlRenderEncoder; }
 
@@ -226,13 +226,13 @@ protected:
                            std::size_t origY,
                            std::size_t rectWidth,
                            std::size_t rectHeight,
-                           PixelBufferDescriptor& pbd);
+                           PixelBufferDesc& pbd);
     static void readPixels(id<MTLTexture> texture,
                            std::size_t origX,
                            std::size_t origY,
                            std::size_t rectWidth,
                            std::size_t rectHeight,
-                           PixelBufferDescriptor& pbd);
+                           PixelBufferDesc& pbd);
 
 private:
     void prepareDrawing() const;
@@ -242,7 +242,7 @@ private:
     void afterDraw();
     void flush();
     void flushCaptureCommands();
-    void updateRenderCommandEncoder(const RenderTarget* renderTarget, const RenderPassDescriptor& renderPassParams);
+    void updateRenderCommandEncoder(const RenderTarget* renderTarget, const RenderPassDesc& renderPassParams);
 
     id<MTLCommandBuffer> _mtlCommandBuffer        = nil;
     id<MTLCommandQueue> _mtlCommandQueue          = nil;
@@ -259,10 +259,10 @@ private:
 
     dispatch_semaphore_t _frameBoundarySemaphore;
     const RenderTarget* _currentRenderTarget = nil;  // weak ref
-    RenderPassDescriptor _currentRenderPassDesc;
+    RenderPassDesc _currentRenderPassDesc;
     NSAutoreleasePool* _autoReleasePool         = nil;
 
-    std::vector<std::pair<Texture*, std::function<void(const PixelBufferDescriptor&)>>> _captureCallbacks;
+    std::vector<std::pair<Texture*, std::function<void(const PixelBufferDesc&)>>> _captureCallbacks;
 };
 
 // end of _metal group

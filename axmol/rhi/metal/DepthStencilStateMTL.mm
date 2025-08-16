@@ -31,33 +31,33 @@ namespace ax::rhi::mtl {
 
 namespace
 {
-MTLCompareFunction toMTLCompareFunction(CompareFunction compareFunction)
+static MTLCompareFunction toMTLCompareFunc(CompareFunc func)
 {
     MTLCompareFunction ret = MTLCompareFunctionNever;
-    switch (compareFunction)
+    switch (func)
     {
-    case CompareFunction::NEVER:
+    case CompareFunc::NEVER:
         ret = MTLCompareFunctionNever;
         break;
-    case CompareFunction::LESS:
+    case CompareFunc::LESS:
         ret = MTLCompareFunctionLess;
         break;
-    case CompareFunction::LESS_EQUAL:
+    case CompareFunc::LESS_EQUAL:
         ret = MTLCompareFunctionLessEqual;
         break;
-    case CompareFunction::GREATER:
+    case CompareFunc::GREATER:
         ret = MTLCompareFunctionGreater;
         break;
-    case CompareFunction::GREATER_EQUAL:
+    case CompareFunc::GREATER_EQUAL:
         ret = MTLCompareFunctionGreaterEqual;
         break;
-    case CompareFunction::EQUAL:
+    case CompareFunc::EQUAL:
         ret = MTLCompareFunctionEqual;
         break;
-    case CompareFunction::NOT_EQUAL:
+    case CompareFunc::NOT_EQUAL:
         ret = MTLCompareFunctionNotEqual;
         break;
-    case CompareFunction::ALWAYS:
+    case CompareFunc::ALWAYS:
         ret = MTLCompareFunctionAlways;
         break;
     default:
@@ -67,27 +67,27 @@ MTLCompareFunction toMTLCompareFunction(CompareFunction compareFunction)
     return ret;
 }
 
-MTLStencilOperation toMTLStencilOperation(StencilOperation operation)
+static MTLStencilOperation toMTLStencilOp(StencilOp op)
 {
     MTLStencilOperation ret = MTLStencilOperationKeep;
-    switch (operation)
+    switch (op)
     {
-    case StencilOperation::KEEP:
+    case StencilOp::KEEP:
         ret = MTLStencilOperationKeep;
         break;
-    case StencilOperation::ZERO:
+    case StencilOp::ZERO:
         ret = MTLStencilOperationZero;
         break;
-    case StencilOperation::REPLACE:
+    case StencilOp::REPLACE:
         ret = MTLStencilOperationReplace;
         break;
-    case StencilOperation::INVERT:
+    case StencilOp::INVERT:
         ret = MTLStencilOperationInvert;
         break;
-    case StencilOperation::INCREMENT_WRAP:
+    case StencilOp::INCREMENT_WRAP:
         ret = MTLStencilOperationIncrementWrap;
         break;
-    case StencilOperation::DECREMENT_WRAP:
+    case StencilOp::DECREMENT_WRAP:
         ret = MTLStencilOperationDecrementWrap;
         break;
     default:
@@ -97,26 +97,26 @@ MTLStencilOperation toMTLStencilOperation(StencilOperation operation)
     return ret;
 }
 
-void setMTLStencilDescriptor(MTLStencilDescriptor* stencilDescriptor, const StencilDescriptor& descriptor)
+static void setMTLStencilDesc(MTLStencilDescriptor* stencilDesc, const StencilDesc& desc)
 {
-    stencilDescriptor.stencilFailureOperation   = toMTLStencilOperation(descriptor.stencilFailureOperation);
-    stencilDescriptor.depthFailureOperation     = toMTLStencilOperation(descriptor.depthFailureOperation);
-    stencilDescriptor.depthStencilPassOperation = toMTLStencilOperation(descriptor.depthStencilPassOperation);
-    stencilDescriptor.stencilCompareFunction    = toMTLCompareFunction(descriptor.stencilCompareFunction);
-    stencilDescriptor.readMask                  = descriptor.readMask;
-    stencilDescriptor.writeMask                 = descriptor.writeMask;
+    stencilDesc.stencilFailureOperation   = toMTLStencilOp(desc.stencilFailureOp);
+    stencilDesc.depthFailureOperation     = toMTLStencilOp(desc.depthFailureOp);
+    stencilDesc.depthStencilPassOperation = toMTLStencilOp(desc.depthStencilPassOp);
+    stencilDesc.stencilCompareFunction    = toMTLCompareFunc(desc.stencilCompareFunc);
+    stencilDesc.readMask                  = desc.readMask;
+    stencilDesc.writeMask                 = desc.writeMask;
 }
 }
 
 DepthStencilStateImpl::DepthStencilStateImpl(id<MTLDevice> mtlDevice) : _mtlDevice(mtlDevice)
 {
     // By default MTLDepthStencilDescriptor disables depth and stencil access
-    MTLDepthStencilDescriptor* mtlDescriptor = [MTLDepthStencilDescriptor new];
-    _mtlDepthStencilDisabledState = [mtlDevice newDepthStencilStateWithDescriptor:mtlDescriptor];
-    [mtlDescriptor release];
+    MTLDepthStencilDescriptor* mtlDesc = [MTLDepthStencilDescriptor new];
+    _mtlDepthStencilDisabledState = [mtlDevice newDepthStencilStateWithDescriptor:mtlDesc];
+    [mtlDesc release];
 }
 
-void DepthStencilStateImpl::update(const DepthStencilDescriptor& dsDesc)
+void DepthStencilStateImpl::update(const DepthStencilDesc& dsDesc)
 {
     DepthStencilState::update(dsDesc);
 
@@ -126,12 +126,12 @@ void DepthStencilStateImpl::update(const DepthStencilDescriptor& dsDesc)
         return;
     }
 
-    DepthStencilDescriptor hashMe;
+    DepthStencilDesc hashMe;
     memset(&hashMe, 0, sizeof(hashMe));
-    hashMe.depthCompareFunction = dsDesc.depthCompareFunction;
-    hashMe.backFaceStencil      = dsDesc.backFaceStencil;
-    hashMe.frontFaceStencil     = dsDesc.frontFaceStencil;
-    hashMe.flags                = dsDesc.flags;
+    hashMe.depthCompareFunc = dsDesc.depthCompareFunc;
+    hashMe.backFaceStencil  = dsDesc.backFaceStencil;
+    hashMe.frontFaceStencil = dsDesc.frontFaceStencil;
+    hashMe.flags            = dsDesc.flags;
 
     auto key = XXH32((const void*)&hashMe, sizeof(hashMe), 0);
     auto it  = _mtlStateCache.find(key);
@@ -141,23 +141,23 @@ void DepthStencilStateImpl::update(const DepthStencilDescriptor& dsDesc)
         return;
     }
 
-    MTLDepthStencilDescriptor* mtlDescriptor = [[MTLDepthStencilDescriptor alloc] init];
+    MTLDepthStencilDescriptor* mtlDesc = [[MTLDepthStencilDescriptor alloc] init];
 
     if (bitmask::any(dsDesc.flags, DepthStencilFlags::DEPTH_TEST))
-        mtlDescriptor.depthCompareFunction = toMTLCompareFunction(_dsDesc.depthCompareFunction);
+        mtlDesc.depthCompareFunction = toMTLCompareFunc(_dsDesc.depthCompareFunc);
     else
-        mtlDescriptor.depthCompareFunction = MTLCompareFunctionAlways;
+        mtlDesc.depthCompareFunction = MTLCompareFunctionAlways;
 
-    mtlDescriptor.depthWriteEnabled = bitmask::any(dsDesc.flags, DepthStencilFlags::DEPTH_WRITE);
+    mtlDesc.depthWriteEnabled = bitmask::any(dsDesc.flags, DepthStencilFlags::DEPTH_WRITE);
 
     if (bitmask::any(dsDesc.flags, DepthStencilFlags::STENCIL_TEST))
     {
-        setMTLStencilDescriptor(mtlDescriptor.frontFaceStencil, _dsDesc.frontFaceStencil);
-        setMTLStencilDescriptor(mtlDescriptor.backFaceStencil, _dsDesc.backFaceStencil);
+        setMTLStencilDesc(mtlDesc.frontFaceStencil, _dsDesc.frontFaceStencil);
+        setMTLStencilDesc(mtlDesc.backFaceStencil, _dsDesc.backFaceStencil);
     }
 
-    _mtlDepthStencilState = [_mtlDevice newDepthStencilStateWithDescriptor:mtlDescriptor];
-    [mtlDescriptor release];
+    _mtlDepthStencilState = [_mtlDevice newDepthStencilStateWithDescriptor:mtlDesc];
+    [mtlDesc release];
 
     // emplace to state cache
     _mtlStateCache.emplace(key, _mtlDepthStencilState);

@@ -90,7 +90,7 @@ void Physics3DDebugDrawer::draw(Renderer* renderer)
     _programState->setUniform(_locMVP, transform.m, sizeof(transform.m));
     _customCommand.init(0, Mat4::IDENTITY, 0);
 
-    auto& blend                  = _customCommand.getPipelineDescriptor().blendDescriptor;
+    auto& blend                  = _customCommand.getPipelineDesc().blendDesc;
     blend.blendEnabled           = true;
     blend.sourceAlphaBlendFactor = blend.sourceRGBBlendFactor = _blendFunc.src;
     blend.destinationAlphaBlendFactor = blend.destinationRGBBlendFactor = _blendFunc.dst;
@@ -134,7 +134,7 @@ void Physics3DDebugDrawer::init()
 
     _buffer.reserve(512);
 
-    _customCommand.getPipelineDescriptor().programState = _programState;
+    _customCommand.getPipelineDesc().programState = _programState;
     _customCommand.setPrimitiveType(CustomCommand::PrimitiveType::LINE);
     _customCommand.setDrawType(CustomCommand::DrawType::ARRAY);
     _customCommand.setBeforeCallback(AX_CALLBACK_0(Physics3DDebugDrawer::onBeforeDraw, this));

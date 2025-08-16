@@ -55,7 +55,7 @@ bool isMipmapEnabled(GLint filter)
 }  // namespace
 
 /// CLASS TextureInfoGL
-void TextureInfoGL::applySampler(const SamplerDescriptor& descriptor, bool isPow2, bool hasMipmaps)
+void TextureInfoGL::applySampler(const SamplerDesc& descriptor, bool isPow2, bool hasMipmaps)
 {
     if (descriptor.magFilter != SamplerFilter::DONT_CARE)
     {
@@ -133,10 +133,10 @@ void TextureInfoGL::onRendererRecreated()
 }
 
 /// CLASS TextureImpl
-TextureImpl::TextureImpl(const TextureDescriptor& descriptor)
+TextureImpl::TextureImpl(const TextureDesc& descriptor)
 {
     _textureType = descriptor.textureType;
-    updateTextureDescriptor(descriptor);
+    updateTextureDesc(descriptor);
 
 #if AX_ENABLE_CACHE_TEXTURE_DATA
     // Listen this event to restored texture id after coming to foreground on GLES.
@@ -149,17 +149,17 @@ TextureImpl::TextureImpl(const TextureDescriptor& descriptor)
 #endif
 }
 
-void TextureImpl::updateTextureDescriptor(const TextureDescriptor& descriptor, int index)
+void TextureImpl::updateTextureDesc(const TextureDesc& descriptor, int index)
 {
     _textureInfo.target = _textureType == rhi::TextureType::TEXTURE_2D ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP;
 
     assert(descriptor.textureType == rhi::TextureType::TEXTURE_2D || _width == _height);
 
-    Texture::updateTextureDescriptor(descriptor, index);
+    Texture::updateTextureDesc(descriptor, index);
 
     UtilsGL::toGLTypes(descriptor.textureFormat, _textureInfo.internalFormat, _textureInfo.format, _textureInfo.type);
 
-    updateSamplerDescriptor(descriptor.samplerDescriptor);
+    updateSamplerDesc(descriptor.samplerDesc);
 
     const bool useForRT = descriptor.textureUsage == TextureUsage::RENDER_TARGET;
 #if AX_ENABLE_CACHE_TEXTURE_DATA
@@ -189,7 +189,7 @@ TextureImpl::~TextureImpl()
     _textureInfo.destroy();
 }
 
-void TextureImpl::updateSamplerDescriptor(const SamplerDescriptor& sampler)
+void TextureImpl::updateSamplerDesc(const SamplerDesc& sampler)
 {
     bool isPow2 = ISPOW2(_width) && ISPOW2(_height);
     _textureInfo.applySampler(sampler, isPow2, _hasMipmaps);

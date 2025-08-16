@@ -61,10 +61,10 @@ struct RenderPassFlags
 /**
  * Store values about color, depth and stencil attachment.
  */
-struct RenderPassDescriptor
+struct RenderPassDesc
 {
-    RenderPassDescriptor& operator=(const RenderPassDescriptor& descriptor) = default;
-    bool operator==(const RenderPassDescriptor& descriptor) const;
+    RenderPassDesc& operator=(const RenderPassDesc& descriptor) = default;
+    bool operator==(const RenderPassDesc& descriptor) const;
 
     float clearDepthValue   = 0.f;
     float clearStencilValue = 0.f;

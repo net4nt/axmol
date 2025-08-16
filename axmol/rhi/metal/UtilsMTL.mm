@@ -160,15 +160,15 @@ void UtilsMTL::resizeDefaultAttachmentTexture(std::size_t width, std::size_t hei
 
 id<MTLTexture> UtilsMTL::createDepthStencilAttachmentTexture()
 {
-    auto CAMetalLayer                       = DriverImpl::getCAMetalLayer();
-    MTLTextureDescriptor* textureDescriptor = [[MTLTextureDescriptor alloc] init];
-    textureDescriptor.width                 = CAMetalLayer.drawableSize.width;
-    textureDescriptor.height                = CAMetalLayer.drawableSize.height;
-    textureDescriptor.pixelFormat           = s_textureFormats[(int)PixelFormat::D24S8].fmt;
-    textureDescriptor.resourceOptions       = MTLResourceStorageModePrivate;
-    textureDescriptor.usage                 = MTLTextureUsageRenderTarget;
-    auto ret                                = [CAMetalLayer.device newTextureWithDescriptor:textureDescriptor];
-    [textureDescriptor release];
+    auto CAMetalLayer                 = DriverImpl::getCAMetalLayer();
+    MTLTextureDescriptor* textureDesc = [[MTLTextureDescriptor alloc] init];
+    textureDesc.width                 = CAMetalLayer.drawableSize.width;
+    textureDesc.height                = CAMetalLayer.drawableSize.height;
+    textureDesc.pixelFormat           = s_textureFormats[(int)PixelFormat::D24S8].fmt;
+    textureDesc.resourceOptions       = MTLResourceStorageModePrivate;
+    textureDesc.usage                 = MTLTextureUsageRenderTarget;
+    auto ret                          = [CAMetalLayer.device newTextureWithDescriptor:textureDesc];
+    [textureDesc release];
 
     return ret;
 }

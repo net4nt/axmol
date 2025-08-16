@@ -67,11 +67,11 @@ bool Skybox::init()
     // create and set our custom shader
     setProgramStateByProgramId(rhi::ProgramType::SKYBOX_3D);
 
-    auto& pipelineDescriptor = _customCommand.getPipelineDescriptor();
+    auto& pipelineDesc = _customCommand.getPipelineDesc();
 
-    pipelineDescriptor.programState = _programState;
+    pipelineDesc.programState = _programState;
     // disable blend
-    pipelineDescriptor.blendDescriptor.blendEnabled = false;
+    pipelineDesc.blendDesc.blendEnabled = false;
 
     _uniformColorLoc     = _programState->getUniformLocation("u_color");
     _uniformCameraRotLoc = _programState->getUniformLocation("u_cameraRot");
@@ -176,11 +176,11 @@ void Skybox::onBeforeDraw()
     auto* renderer = _director->getRenderer();
 
     _rendererDepthTestEnabled = renderer->getDepthTest();
-    _rendererDepthCmpFunc     = renderer->getDepthCompareFunction();
+    _rendererDepthCmpFunc     = renderer->getDepthCompareFunc();
     _rendererCullMode         = renderer->getCullMode();
 
     renderer->setDepthTest(true);
-    renderer->setDepthCompareFunction(rhi::CompareFunction::LESS_EQUAL);
+    renderer->setDepthCompareFunc(rhi::CompareFunc::LESS_EQUAL);
     renderer->setCullMode(CullMode::BACK);
 }
 
@@ -188,7 +188,7 @@ void Skybox::onAfterDraw()
 {
     auto* renderer = _director->getRenderer();
     renderer->setDepthTest(_rendererDepthTestEnabled);
-    renderer->setDepthCompareFunction(_rendererDepthCmpFunc);
+    renderer->setDepthCompareFunc(_rendererDepthCmpFunc);
     renderer->setCullMode(_rendererCullMode);
 }
 

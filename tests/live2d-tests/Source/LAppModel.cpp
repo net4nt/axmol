@@ -646,7 +646,7 @@ void LAppModel::SetupTextures()
         // テクスチャが読めていなければバインド処理をスキップ
         if(!texture) continue;
 
-        const SamplerDescriptor texParams = {
+        const SamplerDesc texParams = {
           SamplerFilter::LINEAR_MIPMAP_LINEAR,
           SamplerFilter::LINEAR,
           SamplerAddressMode::CLAMP_TO_EDGE,

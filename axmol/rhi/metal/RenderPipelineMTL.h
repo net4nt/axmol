@@ -50,7 +50,7 @@ public:
      */
     RenderPipelineImpl(id<MTLDevice> mtlDevice);
     ~RenderPipelineImpl();
-    void update(const RenderTarget* renderTarget, const PipelineDescriptor&) override;
+    void update(const RenderTarget* renderTarget, const PipelineDesc&) override;
 
     /**
      * Get a MTLRenderPipelineState object.
@@ -59,10 +59,10 @@ public:
     inline id<MTLRenderPipelineState> getMTLRenderPipelineState() const { return _mtlRenderPipelineState; }
 
 private:
-    void setVertexLayout(MTLRenderPipelineDescriptor*, const PipelineDescriptor&);
-    void setBlendState(MTLRenderPipelineColorAttachmentDescriptor*, const BlendDescriptor&);
-    void setShaderModules(const PipelineDescriptor&);
-    void setBlendStateAndFormat(const BlendDescriptor&);
+    void setVertexLayout(MTLRenderPipelineDescriptor*, const PipelineDesc&);
+    void setBlendState(MTLRenderPipelineColorAttachmentDescriptor*, const BlendDesc&);
+    void setShaderModules(const PipelineDesc&);
+    void setBlendStateAndFormat(const BlendDesc&);
     void chooseAttachmentFormat(const RenderTarget* renderTarget,
                                 PixelFormat colorAttachmentsFormat[MAX_COLOR_ATTCHMENT],
                                 PixelFormat&);
@@ -70,7 +70,7 @@ private:
     id<MTLRenderPipelineState> _mtlRenderPipelineState = nil;
     id<MTLDevice> _mtlDevice                           = nil;
 
-    MTLRenderPipelineDescriptor* _mtlRenderPipelineDescriptor = nil;
+    MTLRenderPipelineDescriptor* _mtlRenderPipelineDesc = nil;
     PixelFormat _colorAttachmentsFormat[MAX_COLOR_ATTCHMENT]  = {PixelFormat::NONE};
     PixelFormat _depthStencilPF                        = PixelFormat::NONE;
 

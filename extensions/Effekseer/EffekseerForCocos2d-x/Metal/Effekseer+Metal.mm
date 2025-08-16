@@ -21,7 +21,7 @@ void SetMTLObjectsFromCocos2d(Effekseer::RefPtr<EffekseerRenderer::CommandList> 
 
     // use render pass descriptor from Cocos and add depth test
     // auto descriptor = d->getRenderPassDescriptor();
-//    ax::rhi::RenderPassDescriptor descriptor;
+//    ax::rhi::RenderPassDesc descriptor;
 //    descriptor.flags.clear = true;
     // using axmol render pass
     auto target = renderer->getRenderTarget();

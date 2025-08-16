@@ -1111,7 +1111,7 @@ void DemoLoopAnimation::onEnter()
     _emitter->addAnimationIndex("particle_anim_8.png");
     _emitter->addAnimationIndex("particle_anim_9.png");
 
-    _emitter->setAnimationDescriptor(0, 1, 0.5F, {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+    _emitter->setAnimationDesc(0, 1, 0.5F, {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
 
     setEmitterPosition();
 }
@@ -1169,7 +1169,7 @@ void DemoLoopAnimationReversed::onEnter()
     _emitter->addAnimationIndex("particle_anim_8.png");
     _emitter->addAnimationIndex("particle_anim_9.png");
 
-    _emitter->setAnimationDescriptor(0, 1, 0.5F, {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, true /* Reversed animation descriptor */);
+    _emitter->setAnimationDesc(0, 1, 0.5F, {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, true /* Reversed animation descriptor */);
 
     setEmitterPosition();
 }
@@ -1282,7 +1282,7 @@ void DemoEmitterAnimationDescriptor::onEnter()
     _emitter->addAnimationIndex("particle_anim_8.png");
     _emitter->addAnimationIndex("particle_anim_9.png");
 
-    _emitter->setAnimationDescriptor(0, 1, 0.5F, {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+    _emitter->setAnimationDesc(0, 1, 0.5F, {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
 
     setEmitterPosition();
 }
@@ -1340,9 +1340,9 @@ void DemoLoopAnimationMultiDescriptor::onEnter()
     _emitter->addAnimationIndex("particle_anim_8.png");
     _emitter->addAnimationIndex("particle_anim_9.png");
 
-    _emitter->setAnimationDescriptor(0, 1, 0.5F, {1, 3, 8});
-    _emitter->setAnimationDescriptor(1, 1, 0.5F, {0, 1});
-    _emitter->setAnimationDescriptor(2, 1, 0.5F, {0, 9});
+    _emitter->setAnimationDesc(0, 1, 0.5F, {1, 3, 8});
+    _emitter->setAnimationDesc(1, 1, 0.5F, {0, 1});
+    _emitter->setAnimationDesc(2, 1, 0.5F, {0, 9});
 
     setEmitterPosition();
 }

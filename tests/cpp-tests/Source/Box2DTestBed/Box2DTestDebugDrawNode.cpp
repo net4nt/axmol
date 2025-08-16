@@ -121,7 +121,7 @@ bool Box2DTestDebugDrawNode::initWithWorld(b2WorldId worldId)
     /// circle shader
     {
         auto& cmd        = _customCommandCircle;
-        auto& pipelinePS = cmd.getPipelineDescriptor().programState;
+        auto& pipelinePS = cmd.getPipelineDesc().programState;
         AX_SAFE_RELEASE(pipelinePS);
 
         // vertex attributes
@@ -151,7 +151,7 @@ bool Box2DTestDebugDrawNode::initWithWorld(b2WorldId worldId)
     /// solid circle shader
     {
         auto& cmd        = _customCommandSolidCircle;
-        auto& pipelinePS = cmd.getPipelineDescriptor().programState;
+        auto& pipelinePS = cmd.getPipelineDesc().programState;
         AX_SAFE_RELEASE(pipelinePS);
 
         // vertex attributes
@@ -183,7 +183,7 @@ bool Box2DTestDebugDrawNode::initWithWorld(b2WorldId worldId)
     /// solid capsule shader
     {
         auto& cmd        = _customCommandCapsule;
-        auto& pipelinePS = cmd.getPipelineDescriptor().programState;
+        auto& pipelinePS = cmd.getPipelineDesc().programState;
         AX_SAFE_RELEASE(pipelinePS);
 
         // vertex attributes
@@ -398,14 +398,14 @@ void Box2DTestDebugDrawNode::draw(Renderer* renderer, const Mat4& transform, uin
 
 void Box2DTestDebugDrawNode::submitDrawCommand(Renderer* renderer, CustomCommand& cmd, const Mat4& transform)
 {
-    rhi::BlendDescriptor& blendDescriptor   = cmd.getPipelineDescriptor().blendDescriptor;
+    rhi::BlendDesc& blendDescriptor   = cmd.getPipelineDesc().blendDesc;
     blendDescriptor.blendEnabled                = true;
     blendDescriptor.sourceRGBBlendFactor        = rhi::BlendFactor::SRC_ALPHA;
     blendDescriptor.destinationRGBBlendFactor   = rhi::BlendFactor::ONE_MINUS_SRC_ALPHA;
     blendDescriptor.sourceAlphaBlendFactor      = rhi::BlendFactor::SRC_ALPHA;
     blendDescriptor.destinationAlphaBlendFactor = rhi::BlendFactor::ONE_MINUS_SRC_ALPHA;
 
-    auto& pipelineDescriptor = cmd.getPipelineDescriptor();
+    auto& pipelineDescriptor = cmd.getPipelineDesc();
     const auto& matrixP      = _director->getMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION);
     Mat4 matrixMVP           = matrixP * transform;
     auto mvpLocation         = pipelineDescriptor.programState->getUniformLocation("u_MVPMatrix");

@@ -40,7 +40,7 @@ namespace ax::rhi::gl
  */
 struct TextureInfoGL
 {
-    void applySampler(const SamplerDescriptor& desc, bool isPow2, bool hasMipmaps);
+    void applySampler(const SamplerDesc& desc, bool isPow2, bool hasMipmaps);
     void setCurrentTexParameters();
 
     TextureInfoGL() { textures.fill(0); }
@@ -107,7 +107,7 @@ public:
     /**
      * @param descriptor Specifies the texture description.
      */
-    TextureImpl(const TextureDescriptor& descriptor);
+    TextureImpl(const TextureDesc& descriptor);
     ~TextureImpl();
 
     /**
@@ -184,7 +184,7 @@ public:
      * Update sampler
      * @param sampler Specifies the sampler descriptor.
      */
-    void updateSamplerDescriptor(const SamplerDescriptor& sampler) override;
+    void updateSamplerDesc(const SamplerDesc& sampler) override;
 
     /**
      * Generate mipmaps.
@@ -195,7 +195,7 @@ public:
      * Update texture description.
      * @param descriptor Specifies texture and sampler descriptor.
      */
-    void updateTextureDescriptor(const TextureDescriptor& descriptor, int index = 0) override;
+    void updateTextureDesc(const TextureDesc& descriptor, int index = 0) override;
 
     /**
      * Get internal texture object handle.

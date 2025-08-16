@@ -20,14 +20,14 @@ CubismCommandBuffer_Cocos2dx::DrawCommandBuffer::DrawCommand::~DrawCommand()
 {
 }
 
-ax::rhi::BlendDescriptor* CubismCommandBuffer_Cocos2dx::DrawCommandBuffer::DrawCommand::GetBlendDescriptor()
+ax::rhi::BlendDesc* CubismCommandBuffer_Cocos2dx::DrawCommandBuffer::DrawCommand::GetBlendDescriptor()
 {
-    return &_command.getPipelineDescriptor().blendDescriptor;
+    return &_command.getPipelineDesc().blendDesc;
 }
 
-ax::PipelineDescriptor* CubismCommandBuffer_Cocos2dx::DrawCommandBuffer::DrawCommand::GetPipelineDescriptor()
+ax::PipelineDesc* CubismCommandBuffer_Cocos2dx::DrawCommandBuffer::DrawCommand::GetPipelineDescriptor()
 {
-    return &_command.getPipelineDescriptor();
+    return &_command.getPipelineDesc();
 }
 
 ax::CustomCommand* CubismCommandBuffer_Cocos2dx::DrawCommandBuffer::DrawCommand::GetCommand()

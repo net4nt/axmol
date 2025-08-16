@@ -328,7 +328,7 @@ protected:
 
     // renderer state cache variables
     bool _rendererDepthTestEnabled                 = true;
-    rhi::CompareFunction _rendererDepthCmpFunc = rhi::CompareFunction::LESS;
+    rhi::CompareFunc _rendererDepthCmpFunc = rhi::CompareFunc::LESS;
     rhi::CullMode _rendererCullMode            = rhi::CullMode::BACK;
     rhi::Winding _rendererWinding              = rhi::Winding::COUNTER_CLOCK_WISE;
     bool _rendererDepthWrite                       = false;

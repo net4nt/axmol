@@ -50,7 +50,7 @@ bool SkeletonNode::init()
     updateVertices();
 
     // init _customCommand
-    auto& pipelineDescriptor = _customCommand.getPipelineDescriptor();
+    auto& pipelineDescriptor = _customCommand.getPipelineDesc();
     auto* program = axpm->getBuiltinProgram(ax::rhi::ProgramType::POSITION_COLOR);  // TODO: noMVP?
     setProgramState(new ax::rhi::ProgramState(program), true);
     pipelineDescriptor.programState = _programState;
@@ -64,7 +64,7 @@ bool SkeletonNode::init()
     _customCommand.updateIndexBuffer(indices, sizeof(indices));
 
     // init _batchBoneCommand
-    _batchBoneCommand.getPipelineDescriptor().programState = _programState;
+    _batchBoneCommand.getPipelineDesc().programState = _programState;
 
     _rootSkeleton = this;
     return true;

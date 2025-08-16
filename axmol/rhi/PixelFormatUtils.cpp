@@ -31,7 +31,7 @@ namespace ax::rhi
 namespace PixelFormatUtils
 {
 
-static const PixelFormatDescriptor s_pixelFormatDescriptors[] = {
+static const PixelFormatDesc s_pixelFormatDescriptors[] = {
     //  +--------------------------------------------- bpp
     //  |   +----------------------------------------- block width
     //  |   |  +-------------------------------------- block height
@@ -84,13 +84,13 @@ static_assert(AX_ARRAYSIZE(s_pixelFormatDescriptors) == (int)PixelFormat::COUNT,
 
 //////////////////////////////////////////////////////////////////////////
 // pixel format helper functions
-const PixelFormatDescriptor& getFormatDescriptor(PixelFormat format)
+const PixelFormatDesc& getFormatDesc(PixelFormat format)
 {
     if (AX_LIKELY(format < PixelFormat::COUNT))
         return s_pixelFormatDescriptors[(uint32_t)format];
 
-    static const PixelFormatDescriptor s_invalidDescriptor = {};
-    return s_invalidDescriptor;
+    static const PixelFormatDesc s_invalidDesc = {};
+    return s_invalidDesc;
 }
 
 uint32_t computeRowPitch(PixelFormat format, uint32_t width)

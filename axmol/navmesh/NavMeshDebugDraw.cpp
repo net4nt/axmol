@@ -63,10 +63,10 @@ void NavMeshDebugDraw::initCustomCommand(CustomCommand& command)
     command.setTransparent(true);
     command.init(0, Mat4::IDENTITY, Node::FLAGS_RENDER_AS_3D);
     command.setDrawType(CustomCommand::DrawType::ARRAY);
-    auto& pipelineDescriptor        = command.getPipelineDescriptor();
-    pipelineDescriptor.programState = _programState;
+    auto& pipelineDesc        = command.getPipelineDesc();
+    pipelineDesc.programState = _programState;
 
-    auto& blend                = pipelineDescriptor.blendDescriptor;
+    auto& blend                = pipelineDesc.blendDesc;
     blend.blendEnabled         = true;
     blend.sourceRGBBlendFactor = blend.sourceAlphaBlendFactor = BlendFunc::ALPHA_NON_PREMULTIPLIED.src;
     blend.destinationRGBBlendFactor = blend.destinationAlphaBlendFactor = BlendFunc::ALPHA_NON_PREMULTIPLIED.dst;
@@ -228,7 +228,7 @@ void NavMeshDebugDraw::onBeforeVisitCmd()
     auto* renderer = Director::getInstance()->getRenderer();
 
     _rendererDepthTestEnabled = renderer->getDepthTest();
-    _rendererDepthCmpFunc     = renderer->getDepthCompareFunction();
+    _rendererDepthCmpFunc     = renderer->getDepthCompareFunc();
     _rendererCullMode         = renderer->getCullMode();
 
     _rendererDepthWrite = renderer->getDepthWrite();
@@ -242,7 +242,7 @@ void NavMeshDebugDraw::onAfterVisitCmd()
 {
     auto* renderer = Director::getInstance()->getRenderer();
     renderer->setDepthTest(_rendererDepthTestEnabled);
-    renderer->setDepthCompareFunction(_rendererDepthCmpFunc);
+    renderer->setDepthCompareFunc(_rendererDepthCmpFunc);
     renderer->setCullMode(_rendererCullMode);
     renderer->setDepthWrite(_rendererDepthWrite);
     renderer->setWinding(_rendererWinding);

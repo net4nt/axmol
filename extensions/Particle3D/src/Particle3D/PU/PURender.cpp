@@ -296,9 +296,9 @@ void PUParticle3DQuadRender::render(Renderer* renderer, const Mat4& transform, P
 void PUParticle3DEntityRender::onBeforeDraw()
 {
     auto* renderer            = Director::getInstance()->getRenderer();
-    auto& pipelineDescriptor  = _meshCommand.getPipelineDescriptor();
+    auto& pipelineDescriptor  = _meshCommand.getPipelineDesc();
     _rendererDepthTestEnabled = renderer->getDepthTest();
-    _rendererDepthCmpFunc     = renderer->getDepthCompareFunction();
+    _rendererDepthCmpFunc     = renderer->getDepthCompareFunc();
     _rendererCullMode         = renderer->getCullMode();
     _rendererDepthWrite       = renderer->getDepthWrite();
     _rendererWinding          = renderer->getWinding();
@@ -310,7 +310,7 @@ void PUParticle3DEntityRender::onAfterDraw()
 {
     auto* renderer = Director::getInstance()->getRenderer();
     renderer->setDepthTest(_rendererDepthTestEnabled);
-    renderer->setDepthCompareFunction(_rendererDepthCmpFunc);
+    renderer->setDepthCompareFunc(_rendererDepthCmpFunc);
     renderer->setCullMode(_rendererCullMode);
     renderer->setDepthWrite(_rendererDepthWrite);
     renderer->setWinding(_rendererWinding);
@@ -632,7 +632,7 @@ bool PUParticle3DEntityRender::initRender(std::string_view texFile)
         _programState = new rhi::ProgramState(program);
     }
 
-    auto& pipelineDescriptor        = _meshCommand.getPipelineDescriptor();
+    auto& pipelineDescriptor        = _meshCommand.getPipelineDesc();
     pipelineDescriptor.programState = _programState;
 
     _locColor   = _programState->getUniformLocation("u_color");

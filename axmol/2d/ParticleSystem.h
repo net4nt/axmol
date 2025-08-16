@@ -77,16 +77,16 @@ struct EmissionShape
  * Particle emission mask descriptor.
  * @since axmol-1.0.0b8
  */
-struct ParticleEmissionMaskDescriptor
+struct ParticleEmissionMaskDesc
 {
     Vec2 size;
     std::vector<ax::Vec2> points;
 };
 
-/** @struct ParticleAnimationDescriptor
+/** @struct ParticleAnimationDesc
 Structure that contains animation description
 */
-struct ParticleAnimationDescriptor
+struct ParticleAnimationDesc
 {
     float animationSpeed;
     float animationSpeedVariance;
@@ -94,10 +94,10 @@ struct ParticleAnimationDescriptor
     bool reverseIndices;
 };
 
-/** @struct ParticleFrameDescriptor
+/** @struct ParticleFrameDesc
 Structure that contains frame description
 */
-struct ParticleFrameDescriptor
+struct ParticleFrameDesc
 {
     ax::Rect rect;
     bool isRotated;
@@ -284,13 +284,13 @@ public:
      *
      * @param fourccId The unsigned integer id of the mask.
      */
-    const ParticleEmissionMaskDescriptor& getEmissionMask(uint32_t fourccId);
+    const ParticleEmissionMaskDesc& getEmissionMask(uint32_t fourccId);
 
     /** Returns a baked mask with the specified name if it exists. otherwise, it will return a dummy mask.
      *
      * @param maskId The id of the mask, FOURCC starts with '#', such as "#abcd"
      */
-    const ParticleEmissionMaskDescriptor& getEmissionMask(std::string_view maskId);
+    const ParticleEmissionMaskDesc& getEmissionMask(std::string_view maskId);
 
     /** Removes a baked mask and releases the data from memory with the specified name if it exists.
      *
@@ -302,7 +302,7 @@ public:
     void removeAllMasks();
 
 private:
-    std::unordered_map<uint32_t, ParticleEmissionMaskDescriptor> masks;
+    std::unordered_map<uint32_t, ParticleEmissionMaskDesc> masks;
 
 };
 
@@ -1172,14 +1172,14 @@ public:
 
     /** Add a particle animation descriptor with an index.
      *
-     * @param indexOfDescriptor Index of the animation to be added, adding to the same index will just override the
+     * @param indexOfDesc Index of the animation to be added, adding to the same index will just override the
      * pervious animation descriptor
      * @param time length of the animation in seconds
      * @param timeVariance Time randomly selected for each different particle added on the animation length
      * @param indices An array of the indicies
      * @param reverse Should the animation indicies be played backwards? (default: false)
      */
-    void setAnimationDescriptor(unsigned short indexOfDescriptor,
+    void setAnimationDesc(unsigned short indexOfDesc,
                                 float time,
                                 float timeVariance,
                                 const std::vector<unsigned short>& indices,
@@ -1190,9 +1190,9 @@ public:
      * @param indices An array of the indicies
      * @param reverse Should the animation indicies be played backwards? (default: false)
      */
-    void setAnimationDescriptor(const std::vector<unsigned short>& indices, bool reverse = false)
+    void setAnimationDesc(const std::vector<unsigned short>& indices, bool reverse = false)
     {
-        setAnimationDescriptor(0, 0, 0, indices, reverse);
+        setAnimationDesc(0, 0, 0, indices, reverse);
     };
 
     /** Sets wether the animation descriptors should follow the time scale of the system or not.
@@ -1633,9 +1633,9 @@ protected:
     /** wether to start from first or last when using life animation */
     bool _isAnimationReversed;
     /** A map that stores particle animation index coords */
-    std::unordered_map<unsigned short, ParticleFrameDescriptor> _animationIndices;
+    std::unordered_map<unsigned short, ParticleFrameDesc> _animationIndices;
     /** A map that stores particle animation descriptors */
-    std::unordered_map<unsigned short, ParticleAnimationDescriptor> _animations;
+    std::unordered_map<unsigned short, ParticleAnimationDesc> _animations;
     /** A vector that stores ids of animation descriptors that are choosen at random */
     std::vector<unsigned short> _randomAnimations;
     /** Wether the animation goes with the time scale of the system or is independent. */

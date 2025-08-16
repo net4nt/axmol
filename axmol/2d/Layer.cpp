@@ -369,7 +369,7 @@ LayerRadialGradient* LayerRadialGradient::create()
 
 LayerRadialGradient::LayerRadialGradient()
 {
-    auto& pipelinePS = _customCommand.getPipelineDescriptor().programState;
+    auto& pipelinePS = _customCommand.getPipelineDesc().programState;
     auto* program    = axpm->getBuiltinProgram(rhi::ProgramType::LAYER_RADIA_GRADIENT);
     //!!! LayerRadialGradient private programState don't want affect by Node::_programState, so store at _customCommand
     pipelinePS          = new rhi::ProgramState(program);
@@ -388,7 +388,7 @@ LayerRadialGradient::LayerRadialGradient()
 
 LayerRadialGradient::~LayerRadialGradient()
 {
-    AX_SAFE_RELEASE_NULL(_customCommand.getPipelineDescriptor().programState);
+    AX_SAFE_RELEASE_NULL(_customCommand.getPipelineDesc().programState);
 }
 
 bool LayerRadialGradient::initWithColor(const ax::Color32& startColor,
@@ -426,7 +426,7 @@ void LayerRadialGradient::draw(Renderer* renderer, const Mat4& transform, uint32
     renderer->addCommand(&_customCommand);
 
     const auto& projectionMat = _director->getMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION);
-    auto programState         = _customCommand.getPipelineDescriptor().programState;
+    auto programState         = _customCommand.getPipelineDesc().programState;
     Mat4 finalMat             = projectionMat * transform;
     programState->setUniform(_mvpMatrixLocation, finalMat.m, sizeof(finalMat.m));
 

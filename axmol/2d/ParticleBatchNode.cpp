@@ -49,7 +49,7 @@ namespace ax
 
 ParticleBatchNode::ParticleBatchNode()
 {
-    auto& pipelinePS = _customCommand.getPipelineDescriptor().programState;
+    auto& pipelinePS = _customCommand.getPipelineDesc().programState;
     auto* program    = axpm->getBuiltinProgram(rhi::ProgramType::POSITION_TEXTURE_COLOR);
     //!!! ParticleBatchNode private programState don't want affect by Node::_programState, so store at _customCommand
     //!!! support etc1 with alpha?
@@ -65,7 +65,7 @@ ParticleBatchNode::ParticleBatchNode()
 ParticleBatchNode::~ParticleBatchNode()
 {
     AX_SAFE_RELEASE(_textureAtlas);
-    AX_SAFE_RELEASE(_customCommand.getPipelineDescriptor().programState);
+    AX_SAFE_RELEASE(_customCommand.getPipelineDesc().programState);
 }
 /*
  * creation with Texture2D
@@ -436,7 +436,7 @@ void ParticleBatchNode::draw(Renderer* renderer, const Mat4& transform, uint32_t
     // Texture is set in TextureAtlas.
     const ax::Mat4& projectionMat = _director->getMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION);
     Mat4 finalMat                      = projectionMat * transform;
-    auto programState                  = _customCommand.getPipelineDescriptor().programState;
+    auto programState                  = _customCommand.getPipelineDesc().programState;
     programState->setUniform(_mvpMatrixLocaiton, finalMat.m, sizeof(finalMat.m));
     if (_textureAtlas->isDirty())
     {
@@ -540,7 +540,7 @@ void ParticleBatchNode::updateProgramStateTexture()
     auto texture = _textureAtlas->getTexture();
     if (!texture)
         return;
-    auto programState = _customCommand.getPipelineDescriptor().programState;
+    auto programState = _customCommand.getPipelineDesc().programState;
     programState->setTexture(texture->getBackendTexture());
     // If the new texture has No premultiplied alpha, AND the blendFunc hasn't been changed, then update it
     if (!texture->hasPremultipliedAlpha() && (_blendFunc.src == AX_BLEND_SRC && _blendFunc.dst == AX_BLEND_DST))

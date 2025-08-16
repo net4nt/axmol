@@ -255,7 +255,7 @@ void Director::setGLDefaultValues()
     AXASSERT(_renderView, "opengl view should not be null");
 
     _renderer->setDepthTest(false);
-    _renderer->setDepthCompareFunction(rhi::CompareFunction::LESS_EQUAL);
+    _renderer->setDepthCompareFunc(rhi::CompareFunc::LESS_EQUAL);
     setProjection(_projection);
 }
 

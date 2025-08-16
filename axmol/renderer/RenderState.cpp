@@ -52,10 +52,10 @@ void RenderState::bindPass(Pass* pass, MeshCommand* command)
     assert(pass->_technique && pass->_technique->_material);
     auto* technique          = pass->_technique;
     auto* material           = technique->_material;
-    auto& pipelineDescriptor = command->getPipelineDescriptor();
+    auto& pipelineDesc = command->getPipelineDesc();
 
     // need reset all state
-    // pipelineDescriptor.blendDescriptor.blendEnabled = true;
+    // pipelineDesc.blendDesc.blendEnabled = true;
 
     // Get the combined modified state bits for our RenderState hierarchy.
     int32_t overrideBits = _state._modifiedBits;
@@ -63,11 +63,11 @@ void RenderState::bindPass(Pass* pass, MeshCommand* command)
     overrideBits |= material->getStateBlock()._modifiedBits;
 
     // Restore renderer state to its default, except for explicitly specified states
-    RenderState::StateBlock::restoreUnmodifiedStates(overrideBits, &pipelineDescriptor);
+    RenderState::StateBlock::restoreUnmodifiedStates(overrideBits, &pipelineDesc);
 
-    material->getStateBlock().apply(&pipelineDescriptor);
-    technique->getStateBlock().apply(&pipelineDescriptor);
-    _state.apply(&pipelineDescriptor);
+    material->getStateBlock().apply(&pipelineDesc);
+    technique->getStateBlock().apply(&pipelineDesc);
+    _state.apply(&pipelineDesc);
 }
 
 RenderState::StateBlock& RenderState::getStateBlock() const
@@ -75,24 +75,24 @@ RenderState::StateBlock& RenderState::getStateBlock() const
     return _state;
 }
 
-void RenderState::StateBlock::bind(PipelineDescriptor* pipelineDescriptor)
+void RenderState::StateBlock::bind(PipelineDesc* pipelineDesc)
 {
     // When the public bind() is called with no RenderState object passed in,
     // we assume we are being called to bind the state of a single StateBlock,
     // irrespective of whether it belongs to a hierarchy of RenderStates.
     // Therefore, we call restore() here with only this StateBlock's override
     // bits to restore state before applying the new state.
-    StateBlock::restoreUnmodifiedStates(_modifiedBits, pipelineDescriptor);
+    StateBlock::restoreUnmodifiedStates(_modifiedBits, pipelineDesc);
 
-    apply(pipelineDescriptor);
+    apply(pipelineDesc);
 }
 
-void RenderState::StateBlock::apply(PipelineDescriptor* pipelineDescriptor)
+void RenderState::StateBlock::apply(PipelineDesc* pipelineDesc)
 {
     // AX_ASSERT(_globalState);
 
     auto renderer = Director::getInstance()->getRenderer();
-    auto& blend   = pipelineDescriptor->blendDescriptor;
+    auto& blend   = pipelineDesc->blendDesc;
 
     // Update any state that differs from _globalState and flip _globalState bits
     if ((_modifiedBits & RS_BLEND))
@@ -133,14 +133,14 @@ void RenderState::StateBlock::apply(PipelineDescriptor* pipelineDescriptor)
 
     if ((_modifiedBits & RS_DEPTH_FUNC))
     {
-        renderer->setDepthCompareFunction(_depthFunction);
+        renderer->setDepthCompareFunc(_depthFunction);
     }
 }
 
-void RenderState::StateBlock::restoreUnmodifiedStates(int32_t overrideBits, PipelineDescriptor* programState)
+void RenderState::StateBlock::restoreUnmodifiedStates(int32_t overrideBits, PipelineDesc* programState)
 {
     auto renderer = Director::getInstance()->getRenderer();
-    auto& blend   = programState->blendDescriptor;
+    auto& blend   = programState->blendDesc;
 
     // Update any state that differs from _globalState and flip _globalState bits
     if (!(overrideBits & RS_BLEND))
@@ -181,7 +181,7 @@ void RenderState::StateBlock::restoreUnmodifiedStates(int32_t overrideBits, Pipe
 
     if (!(overrideBits & RS_DEPTH_FUNC))
     {
-        renderer->setDepthCompareFunction(DepthFunction::LESS);
+        renderer->setDepthCompareFunc(DepthFunc::LESS);
     }
 }
 
@@ -229,32 +229,32 @@ static rhi::BlendFactor parseBlend(std::string_view value)
     }
 }
 
-static DepthFunction parseDepthFunc(std::string_view value)
+static DepthFunc parseDepthFunc(std::string_view value)
 {
     // Convert string to uppercase for comparison
     std::string upper(value);
     std::transform(upper.begin(), upper.end(), upper.begin(), (int (*)(int))toupper);
     if (upper == "NEVER")
-        return DepthFunction::NEVER;
+        return DepthFunc::NEVER;
     else if (upper == "LESS")
-        return DepthFunction::LESS;
+        return DepthFunc::LESS;
     else if (upper == "EQUAL")
-        return DepthFunction::EQUAL;
+        return DepthFunc::EQUAL;
     else if (upper == "LEQUAL")
-        return DepthFunction::LESS_EQUAL;
+        return DepthFunc::LESS_EQUAL;
     else if (upper == "GREATER")
-        return DepthFunction::GREATER;
+        return DepthFunc::GREATER;
     else if (upper == "NOTEQUAL")
-        return DepthFunction::NOT_EQUAL;
+        return DepthFunc::NOT_EQUAL;
     else if (upper == "GEQUAL")
-        return DepthFunction::GREATER_EQUAL;
+        return DepthFunc::GREATER_EQUAL;
     else if (upper == "ALWAYS")
-        return DepthFunction::ALWAYS;
+        return DepthFunc::ALWAYS;
     else
     {
         AXLOGW("Unsupported depth function value ({}). Will default to DEPTH_LESS if errors are treated as warnings)",
               value);
-        return DepthFunction::LESS;
+        return DepthFunc::LESS;
     }
 }
 
@@ -331,7 +331,7 @@ void RenderState::StateBlock::setState(std::string_view name, std::string_view v
     }
     else if (name.compare("depthFunc") == 0)
     {
-        setDepthFunction(parseDepthFunc(value));
+        setDepthFunc(parseDepthFunc(value));
     }
     else
     {
@@ -405,7 +405,7 @@ void RenderState::StateBlock::setDepthWrite(bool enabled)
     _modifiedBits |= RS_DEPTH_WRITE;
 }
 
-void RenderState::StateBlock::setDepthFunction(DepthFunction func)
+void RenderState::StateBlock::setDepthFunc(DepthFunc func)
 {
     _depthFunction = func;
     _modifiedBits |= RS_DEPTH_FUNC;

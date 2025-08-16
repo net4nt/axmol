@@ -26,8 +26,8 @@
 
 #include "axmol/rhi/RHITypes.h"
 #include "axmol/base/Object.h"
-#include "axmol/renderer/PipelineDescriptor.h"
-#include "axmol/rhi/RenderPassDescriptor.h"
+#include "axmol/renderer/PipelineDesc.h"
+#include "axmol/rhi/RenderPassDesc.h"
 
 namespace ax::rhi {
 /**
@@ -42,7 +42,7 @@ class RenderTarget;
 class RenderPipeline : public ax::Object
 {
 public:
-    virtual void update(const RenderTarget*, const PipelineDescriptor& desc) = 0;
+    virtual void update(const RenderTarget*, const PipelineDesc& desc) = 0;
 
 protected:
     virtual ~RenderPipeline() = default;

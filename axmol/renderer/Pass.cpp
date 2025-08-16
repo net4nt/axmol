@@ -191,7 +191,7 @@ void Pass::draw(MeshCommand* meshCommand,
     meshCommand->setIndexBuffer(indexBuffer, indexFormat);
     meshCommand->setVertexBuffer(vertexBuffer);
     meshCommand->setIndexDrawInfo(0, indexCount);
-    meshCommand->getPipelineDescriptor().programState = _programState;
+    meshCommand->getPipelineDesc().programState = _programState;
 
     auto* renderer = Director::getInstance()->getRenderer();
 
@@ -226,7 +226,7 @@ void Pass::onBeforeVisitCmd(MeshCommand* command)
 
     // save renderer states
     _rendererDepthTestEnabled = renderer->getDepthTest();
-    _rendererDepthCmpFunc     = renderer->getDepthCompareFunction();
+    _rendererDepthCmpFunc     = renderer->getDepthCompareFunc();
     _rendererCullMode         = renderer->getCullMode();
     _rendererDepthWrite       = renderer->getDepthWrite();
     _rendererWinding          = renderer->getWinding();
@@ -241,7 +241,7 @@ void Pass::onAfterVisitCmd(MeshCommand* command)
     auto* renderer = Director::getInstance()->getRenderer();
     // restore renderer states
     renderer->setDepthTest(_rendererDepthTestEnabled);
-    renderer->setDepthCompareFunction(_rendererDepthCmpFunc);
+    renderer->setDepthCompareFunc(_rendererDepthCmpFunc);
     renderer->setCullMode(_rendererCullMode);
     renderer->setDepthWrite(_rendererDepthWrite);
     renderer->setWinding(_rendererWinding);

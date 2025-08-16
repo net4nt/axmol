@@ -32,7 +32,7 @@ namespace ax::rhi
 {
 namespace PixelFormatUtils
 {
-struct PixelFormatDescriptor
+struct PixelFormatDesc
 {
     uint8_t bpp;  // bitsPerPixel: !!!regard bpp=0 as invalid pixel format
     uint8_t blockWidth;
@@ -44,11 +44,11 @@ struct PixelFormatDescriptor
     const char* name;
 };
 
-const PixelFormatDescriptor& getFormatDescriptor(PixelFormat format);
+const PixelFormatDesc& getFormatDesc(PixelFormat format);
 uint32_t computeRowPitch(PixelFormat format, uint32_t width);
 inline uint8_t getBitsPerPixel(PixelFormat format)
 {
-    return getFormatDescriptor(format).bpp;
+    return getFormatDesc(format).bpp;
 }
 inline bool isCompressed(PixelFormat format)
 {

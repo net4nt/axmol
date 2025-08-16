@@ -185,7 +185,7 @@ protected:
     {
         uint32_t stencilWriteMask            = 0;
         bool depthTest                       = true;
-        rhi::CompareFunction compareFunc = rhi::CompareFunction::ALWAYS;
+        rhi::CompareFunc compareFunc = rhi::CompareFunc::ALWAYS;
     } _stateBlock;
 };
 
@@ -317,7 +317,7 @@ private:
     {
         bool depthTest                     = true;
         bool depthWrite                    = true;
-        rhi::CompareFunction depthFunc = rhi::CompareFunction::ALWAYS;
+        rhi::CompareFunc depthFunc = rhi::CompareFunc::ALWAYS;
         rhi::CullMode cullMode         = rhi::CullMode::BACK;
     } _stateBlock;
 };

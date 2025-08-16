@@ -46,16 +46,16 @@ const char kProgressTextureCoords = 0x4b;
 
 namespace
 {
-rhi::ProgramState* initPipelineDescriptor(ax::CustomCommand& command,
+rhi::ProgramState* initPipelineDesc(ax::CustomCommand& command,
                                               bool ridal,
                                               rhi::UniformLocation& locMVP,
                                               rhi::UniformLocation& locTexture)
 {
-    auto& pipelieDescriptor = command.getPipelineDescriptor();
+    auto& pipelieDesc = command.getPipelineDesc();
     auto* program           = axpm->getBuiltinProgram(rhi::ProgramType::POSITION_TEXTURE_COLOR);
     auto programState       = new rhi::ProgramState(program);
-    AX_SAFE_RELEASE(pipelieDescriptor.programState);
-    pipelieDescriptor.programState = programState;
+    AX_SAFE_RELEASE(pipelieDesc.programState);
+    pipelieDesc.programState = programState;
 
     // set custom vertexLayout according to V2F_T2F_C4F structure
     auto vertexLayout = programState->getMutableVertexLayout();
@@ -109,8 +109,8 @@ bool ProgressTimer::initWithSprite(Sprite* sp)
 
     // TODO: Use ProgramState Vector to Node
     AX_SAFE_RELEASE(_programState2);
-    setProgramState(initPipelineDescriptor(_customCommand, true, _locMVP1, _locTex1), true);
-    _programState2 = initPipelineDescriptor(_customCommand2, false, _locMVP2, _locTex2);
+    setProgramState(initPipelineDesc(_customCommand, true, _locMVP1, _locTex1), true);
+    _programState2 = initPipelineDesc(_customCommand2, false, _locMVP2, _locTex2);
 
     return true;
 }

@@ -55,7 +55,7 @@ void TrianglesCommand::init(float globalOrder,
     }
     _mv = mv;
 
-    auto batchId = _pipelineDescriptor.programState->getBatchId();
+    auto batchId = _pipelineDesc.programState->getBatchId();
     if (_batchId != batchId || _texture != texture->getBackendTexture() || _blendType != blendType)
     {
         _batchId   = batchId;
@@ -63,12 +63,12 @@ void TrianglesCommand::init(float globalOrder,
         _blendType = blendType;
 
         // TODO: minggo set it in Node?
-        auto& blendDescriptor                = _pipelineDescriptor.blendDescriptor;
-        blendDescriptor.blendEnabled         = true;
-        blendDescriptor.sourceRGBBlendFactor = blendDescriptor.sourceAlphaBlendFactor = blendType.src;
-        blendDescriptor.destinationRGBBlendFactor = blendDescriptor.destinationAlphaBlendFactor = blendType.dst;
+        auto& blendDesc                = _pipelineDesc.blendDesc;
+        blendDesc.blendEnabled         = true;
+        blendDesc.sourceRGBBlendFactor = blendDesc.sourceAlphaBlendFactor = blendType.src;
+        blendDesc.destinationRGBBlendFactor = blendDesc.destinationAlphaBlendFactor = blendType.dst;
 
-        if (!_pipelineDescriptor.programState->isBatchable())
+        if (!_pipelineDesc.programState->isBatchable())
             setSkipBatching(true);
 
         if (!isSkipBatching())

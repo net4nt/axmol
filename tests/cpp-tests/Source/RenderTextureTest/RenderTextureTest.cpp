@@ -564,14 +564,14 @@ void RenderTextureTestDepthStencil::onBeforeStencil()
 {
     //! mark sprite quad into stencil buffer
     _renderer->setStencilTest(true);
-    _renderer->setStencilCompareFunction(rhi::CompareFunction::NEVER, 1, 0xFF);
-    _renderer->setStencilOperation(rhi::StencilOperation::REPLACE, rhi::StencilOperation::REPLACE,
-                                   rhi::StencilOperation::REPLACE);
+    _renderer->setStencilCompareFunc(rhi::CompareFunc::NEVER, 1, 0xFF);
+    _renderer->setStencilOp(rhi::StencilOp::REPLACE, rhi::StencilOp::REPLACE,
+                                   rhi::StencilOp::REPLACE);
 }
 
 void RenderTextureTestDepthStencil::onBeforeDraw()
 {
-    _renderer->setStencilCompareFunction(rhi::CompareFunction::NOT_EQUAL, 1, 0xFF);
+    _renderer->setStencilCompareFunc(rhi::CompareFunc::NOT_EQUAL, 1, 0xFF);
 }
 
 void RenderTextureTestDepthStencil::onAfterDraw()

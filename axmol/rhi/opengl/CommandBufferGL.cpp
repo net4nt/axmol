@@ -59,7 +59,7 @@ bool CommandBufferImpl::beginFrame()
     return true;
 }
 
-void CommandBufferImpl::beginRenderPass(const RenderTarget* rt, const RenderPassDescriptor& descriptor)
+void CommandBufferImpl::beginRenderPass(const RenderTarget* rt, const RenderPassDesc& descriptor)
 {
     auto rtGL = static_cast<const RenderTargetImpl*>(rt);
 
@@ -139,7 +139,7 @@ void CommandBufferImpl::setRenderPipeline(RenderPipeline* renderPipeline)
  * Update depthStencil status, improvment: for metal backend cache it
  * @param depthStencilState Specifies the depth and stencil status
  */
-void CommandBufferImpl::updateDepthStencilState(const DepthStencilDescriptor& descriptor)
+void CommandBufferImpl::updateDepthStencilState(const DepthStencilDesc& descriptor)
 {
     _depthStencilStateImpl->update(descriptor);
 }
@@ -148,7 +148,7 @@ void CommandBufferImpl::updateDepthStencilState(const DepthStencilDescriptor& de
  * Update render pipeline status
  * @param depthStencilState Specifies the depth and stencil status
  */
-void CommandBufferImpl::updatePipelineState(const RenderTarget* rt, const PipelineDescriptor& descriptor)
+void CommandBufferImpl::updatePipelineState(const RenderTarget* rt, const PipelineDesc& descriptor)
 {
     _renderPipeline->update(rt, descriptor);
 }
@@ -453,9 +453,9 @@ void CommandBufferImpl::setScissorRect(bool isEnabled, float x, float y, float w
         __state->disableScissor();
 }
 
-void CommandBufferImpl::readPixels(RenderTarget* rt, std::function<void(const PixelBufferDescriptor&)> callback)
+void CommandBufferImpl::readPixels(RenderTarget* rt, std::function<void(const PixelBufferDesc&)> callback)
 {
-    PixelBufferDescriptor pbd;
+    PixelBufferDesc pbd;
     if (rt->isDefaultRenderTarget())
     {  // read pixels from screen
         readPixels(rt, _viewPort.x, _viewPort.y, _viewPort.width, _viewPort.height, _viewPort.width * 4, false, pbd);
@@ -480,7 +480,7 @@ void CommandBufferImpl::readPixels(RenderTarget* rt,
                                  uint32_t height,
                                  uint32_t bytesPerRow,
                                  bool eglCacheHint,
-                                 PixelBufferDescriptor& pbd)
+                                 PixelBufferDesc& pbd)
 {
     auto rtGL = static_cast<RenderTargetImpl*>(rt);
     rtGL->bindFrameBuffer();

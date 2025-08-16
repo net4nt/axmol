@@ -116,13 +116,13 @@ namespace spine {
 		_mv = mv;
 
 		if (_blendType.src != blendType.src || _blendType.dst != blendType.dst ||
-			_texture != texture->getBackendTexture() || _pipelineDescriptor.programState != _programState) {
+			_texture != texture->getBackendTexture() || _pipelineDesc.programState != _programState) {
 			_texture = texture->getBackendTexture();
 			_blendType = blendType;
 
 			_prog = _programState->getProgram();
 
-			auto &blendDescriptor = _pipelineDescriptor.blendDescriptor;
+			auto &blendDescriptor = _pipelineDesc.blendDesc;
 			blendDescriptor.blendEnabled = true;
 			blendDescriptor.sourceRGBBlendFactor = blendDescriptor.sourceAlphaBlendFactor = blendType.src;
 			blendDescriptor.destinationRGBBlendFactor = blendDescriptor.destinationAlphaBlendFactor = blendType.dst;
@@ -139,7 +139,7 @@ namespace spine {
 		}
 
 		bool needsUpdateStateLayout = false;
-		auto &pipelinePS = _pipelineDescriptor.programState;
+		auto &pipelinePS = _pipelineDesc.programState;
 		if (programState != nullptr) {
 			if (_programState != programState) {
 				AX_SAFE_RELEASE(_programState);

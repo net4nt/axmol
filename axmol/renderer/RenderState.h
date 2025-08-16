@@ -36,7 +36,7 @@
 #include "axmol/base/Types.h"
 #include "axmol/base/Vector.h"
 
-#include "axmol/renderer/PipelineDescriptor.h"
+#include "axmol/renderer/PipelineDesc.h"
 #include "axmol/renderer/MeshCommand.h"
 
 namespace ax
@@ -48,7 +48,7 @@ class MeshCommand;
 
 using CullFaceSide  = rhi::CullMode;
 using FrontFace     = rhi::Winding;
-using DepthFunction = rhi::CompareFunction;
+using DepthFunc = rhi::CompareFunc;
 
 /**
  * Defines the rendering state of the graphics device.
@@ -98,7 +98,7 @@ public:
          * This method handles both setting and restoring of render states to ensure that
          * only the state explicitly defined by this StateBlock is applied to the renderer.
          */
-        void bind(PipelineDescriptor* programState);
+        void bind(PipelineDesc* programState);
 
         /**
          * Explicitly sets the source and destination used in the blend function for this render state.
@@ -183,7 +183,7 @@ public:
          *
          * @param func The depth function.
          */
-        void setDepthFunction(DepthFunction func);
+        void setDepthFunc(DepthFunc func);
 
         /**
          * Sets a render state from the given name and value strings.
@@ -223,14 +223,14 @@ public:
         /**
          * update internal states of ProgramState
          */
-        void apply(PipelineDescriptor* pipelineDescriptor);
+        void apply(PipelineDesc* pipelineDesc);
 
-        static void restoreUnmodifiedStates(int32_t flags, PipelineDescriptor* pipelineDescriptor);
+        static void restoreUnmodifiedStates(int32_t flags, PipelineDesc* pipelineDesc);
 
         bool _cullFaceEnabled          = false;
         bool _depthTestEnabled         = true;
         bool _depthWriteEnabled        = false;
-        DepthFunction _depthFunction   = DepthFunction::LESS;
+        DepthFunc _depthFunction   = DepthFunc::LESS;
         bool _blendEnabled             = true;
         rhi::BlendFactor _blendSrc = rhi::BlendFactor::ONE;
         rhi::BlendFactor _blendDst = rhi::BlendFactor::ZERO;

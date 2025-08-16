@@ -228,7 +228,7 @@ void Skin::draw(Renderer* renderer, const Mat4& /*transform*/, uint32_t flags)
 {
     auto mv = Director::getInstance()->getMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
 
-    auto& pipelineDescriptor        = _quadCommand.getPipelineDescriptor();
+    auto& pipelineDescriptor        = _quadCommand.getPipelineDesc();
     pipelineDescriptor.programState = getProgramState();
 
     // TODO: implement z order

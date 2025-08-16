@@ -12,7 +12,7 @@ public:
     struct Attachment
     {
         ID3D11Texture2D* texure;
-        TextureDescriptor desc;
+        TextureDesc desc;
     };
     RenderTargetImpl(ID3D11Device* device, bool defaultRenderTarget);
     ~RenderTargetImpl();

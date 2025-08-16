@@ -50,7 +50,7 @@ public:
     DepthStencilStateImpl(id<MTLDevice> mtlDevice);
     ~DepthStencilStateImpl();
 
-    void update(const DepthStencilDescriptor& dsDesc) override;
+    void update(const DepthStencilDesc& dsDesc) override;
 
     /// @name Setters & Getters
     /**

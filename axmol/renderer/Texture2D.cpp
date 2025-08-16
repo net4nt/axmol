@@ -67,10 +67,10 @@ Texture2D::Texture2D()
     , _ninePatchInfo(nullptr)
     , _valid(true)
 {
-    rhi::TextureDescriptor textureDescriptor;
-    textureDescriptor.textureFormat = PixelFormat::NONE;
+    rhi::TextureDesc textureDesc;
+    textureDesc.textureFormat = PixelFormat::NONE;
     _texture =
-        static_cast<rhi::Texture*>(rhi::DriverBase::getInstance()->createTexture(textureDescriptor));
+        static_cast<rhi::Texture*>(rhi::DriverBase::getInstance()->createTexture(textureDesc));
 }
 
 Texture2D::~Texture2D()
@@ -314,7 +314,7 @@ bool Texture2D::updateWithMipmaps(MipmapInfo* mipmaps,
         return false;
     }
 
-    auto& pfd = rhi::PixelFormatUtils::getFormatDescriptor(pixelFormat);
+    auto& pfd = rhi::PixelFormatUtils::getFormatDesc(pixelFormat);
     if (!pfd.bpp)
     {
         AXLOGW("WARNING: unsupported pixelformat: {:x}", (uint32_t)pixelFormat);
@@ -338,21 +338,21 @@ bool Texture2D::updateWithMipmaps(MipmapInfo* mipmaps,
     VolatileTextureMgr::getOrAddVolatileTexture(this);
 #endif
 
-    rhi::TextureDescriptor textureDescriptor;
-    textureDescriptor.width  = pixelsWide;
-    textureDescriptor.height = pixelsHigh;
+    rhi::TextureDesc textureDesc;
+    textureDesc.width  = pixelsWide;
+    textureDesc.height = pixelsHigh;
 
-    textureDescriptor.samplerDescriptor.magFilter =
+    textureDesc.samplerDesc.magFilter =
         (_flags & TextureFlag::ANTIALIAS_ENABLED) ? rhi::SamplerFilter::LINEAR : rhi::SamplerFilter::NEAREST;
     if (mipmapsNum == 1)
     {
-        textureDescriptor.samplerDescriptor.minFilter = (_flags & TextureFlag::ANTIALIAS_ENABLED)
+        textureDesc.samplerDesc.minFilter = (_flags & TextureFlag::ANTIALIAS_ENABLED)
                                                             ? rhi::SamplerFilter::LINEAR
                                                             : rhi::SamplerFilter::NEAREST;
     }
     else
     {
-        textureDescriptor.samplerDescriptor.minFilter = (_flags & TextureFlag::ANTIALIAS_ENABLED)
+        textureDesc.samplerDesc.minFilter = (_flags & TextureFlag::ANTIALIAS_ENABLED)
                                                             ? rhi::SamplerFilter::LINEAR_MIPMAP_NEAREST
                                                             : rhi::SamplerFilter::NEAREST_MIPMAP_NEAREST;
     }
@@ -378,11 +378,11 @@ bool Texture2D::updateWithMipmaps(MipmapInfo* mipmaps,
                 pixelFormat = renderFormat;
         }
 
-        textureDescriptor.textureFormat = pixelFormat;
-        AXASSERT(textureDescriptor.textureFormat != rhi::PixelFormat::NONE, "PixelFormat should not be NONE");
+        textureDesc.textureFormat = pixelFormat;
+        AXASSERT(textureDesc.textureFormat != rhi::PixelFormat::NONE, "PixelFormat should not be NONE");
 
-        if (_texture->getTextureFormat() != textureDescriptor.textureFormat)
-            _texture->updateTextureDescriptor(textureDescriptor, index);
+        if (_texture->getTextureFormat() != textureDesc.textureFormat)
+            _texture->updateTextureDesc(textureDesc, index);
 
         if (compressed)
         {
@@ -572,11 +572,11 @@ bool Texture2D::initWithString(std::string_view text, const FontDefinition& text
     return ret;
 }
 
-bool Texture2D::updateTextureDescriptor(const rhi::TextureDescriptor& descriptor, bool preMultipliedAlpha)
+bool Texture2D::updateTextureDesc(const rhi::TextureDesc& descriptor, bool preMultipliedAlpha)
 {
     AX_ASSERT(_texture);
 
-    _texture->updateTextureDescriptor(descriptor);
+    _texture->updateTextureDesc(descriptor);
     _pixelsWide = _contentSize.width = _texture->getWidth();
     _pixelsHigh = _contentSize.height = _texture->getHeight();
     setPremultipliedAlpha(preMultipliedAlpha);
@@ -612,13 +612,13 @@ void Texture2D::setAliasTexParameters()
 
     _flags &= ~TextureFlag::ANTIALIAS_ENABLED;
 
-    rhi::SamplerDescriptor descriptor(rhi::SamplerFilter::NEAREST,  // magFilter
+    rhi::SamplerDesc descriptor(rhi::SamplerFilter::NEAREST,  // magFilter
                                           (_texture->hasMipmaps()) ? rhi::SamplerFilter::NEAREST_MIPMAP_NEAREST
                                                                    : rhi::SamplerFilter::NEAREST,  // minFilter
                                           rhi::SamplerAddressMode::DONT_CARE,                      // sAddressMode
                                           rhi::SamplerAddressMode::DONT_CARE                       // tAddressMode
     );
-    _texture->updateSamplerDescriptor(descriptor);
+    _texture->updateSamplerDesc(descriptor);
 }
 
 void Texture2D::setAntiAliasTexParameters()
@@ -630,23 +630,23 @@ void Texture2D::setAntiAliasTexParameters()
     }
     _flags |= TextureFlag::ANTIALIAS_ENABLED;
 
-    rhi::SamplerDescriptor descriptor(rhi::SamplerFilter::LINEAR,  // magFilter
+    rhi::SamplerDesc descriptor(rhi::SamplerFilter::LINEAR,  // magFilter
                                           (_texture->hasMipmaps()) ? rhi::SamplerFilter::LINEAR_MIPMAP_NEAREST
                                                                    : rhi::SamplerFilter::LINEAR,  // minFilter
                                           rhi::SamplerAddressMode::DONT_CARE,                     // sAddressMode
                                           rhi::SamplerAddressMode::DONT_CARE                      // tAddressMode
     );
-    _texture->updateSamplerDescriptor(descriptor);
+    _texture->updateSamplerDesc(descriptor);
 }
 
 const char* Texture2D::getStringForFormat() const
 {
-    return rhi::PixelFormatUtils::getFormatDescriptor(_pixelFormat).name;
+    return rhi::PixelFormatUtils::getFormatDesc(_pixelFormat).name;
 }
 
 unsigned int Texture2D::getBitsPerPixelForFormat(rhi::PixelFormat format) const
 {
-    return rhi::PixelFormatUtils::getFormatDescriptor(format).bpp;
+    return rhi::PixelFormatUtils::getFormatDesc(format).bpp;
 }
 
 unsigned int Texture2D::getBitsPerPixelForFormat() const
@@ -711,7 +711,7 @@ void Texture2D::removeSpriteFrameCapInset(SpriteFrame* spriteFrame)
 
 void Texture2D::setTexParameters(const Texture2D::TexParams& desc)
 {
-    _texture->updateSamplerDescriptor(desc);
+    _texture->updateSamplerDesc(desc);
 }
 
 void Texture2D::generateMipmap()
@@ -727,14 +727,14 @@ void Texture2D::initProgram()
     if (_programState != nullptr)
         return;
 
-    auto& pipelineDescriptor = _customCommand.getPipelineDescriptor();
+    auto& pipelineDesc = _customCommand.getPipelineDesc();
     // create program state
     auto* program      = axpm->getBuiltinProgram(rhi::ProgramType::POSITION_TEXTURE);
     _programState      = new ax::rhi::ProgramState(program);
     _mvpMatrixLocation = _programState->getUniformLocation("u_MVPMatrix");
     _textureLocation   = _programState->getUniformLocation("u_tex0");
 
-    pipelineDescriptor.programState = _programState;
+    pipelineDesc.programState = _programState;
 
     // create vertex buffer
     _customCommand.setDrawType(CustomCommand::DrawType::ARRAY);
@@ -752,10 +752,10 @@ void Texture2D::initProgram()
         blendFunc = BlendFunc::ALPHA_NON_PREMULTIPLIED;
     }
 
-    auto& blendDescriptor                = pipelineDescriptor.blendDescriptor;
-    blendDescriptor.blendEnabled         = true;
-    blendDescriptor.sourceRGBBlendFactor = blendDescriptor.sourceAlphaBlendFactor = blendFunc.src;
-    blendDescriptor.destinationRGBBlendFactor = blendDescriptor.destinationAlphaBlendFactor = blendFunc.dst;
+    auto& blendDesc                = pipelineDesc.blendDesc;
+    blendDesc.blendEnabled         = true;
+    blendDesc.sourceRGBBlendFactor = blendDesc.sourceAlphaBlendFactor = blendFunc.src;
+    blendDesc.destinationRGBBlendFactor = blendDesc.destinationAlphaBlendFactor = blendFunc.dst;
 
     _programState->setTexture(_textureLocation, 0, _texture);
 }

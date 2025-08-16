@@ -125,13 +125,13 @@ static MTLCullMode toMTLCullMode(CullMode mode)
     }
 }
 
-static MTLRenderPassDescriptor* toMTLRenderPassDescriptor(const RenderTarget* rt, const RenderPassDescriptor& desc)
+static MTLRenderPassDescriptor* toMTLRenderPassDesc(const RenderTarget* rt, const RenderPassDesc& desc)
 {
-    MTLRenderPassDescriptor* mtlDescritpor = [MTLRenderPassDescriptor renderPassDescriptor];
+    MTLRenderPassDescriptor* mtlDesc = [MTLRenderPassDescriptor renderPassDescriptor];
 
     auto rtMTL = static_cast<const RenderTargetImpl*>(rt);
-    rtMTL->applyRenderPassAttachments(desc, mtlDescritpor);
-    return mtlDescritpor;
+    rtMTL->applyRenderPassAttachments(desc, mtlDesc);
+    return mtlDesc;
 }
 
 static id<MTLTexture> getMTLTexture(Texture* texture, int index)
@@ -191,7 +191,7 @@ bool CommandBufferImpl::beginFrame()
 }
 
 void CommandBufferImpl::updateRenderCommandEncoder(const RenderTarget* renderTarget,
-                                                  const RenderPassDescriptor& renderPassDesc)
+                                                  const RenderPassDesc& renderPassDesc)
 {
     if (_mtlRenderEncoder != nil && _currentRenderPassDesc == renderPassDesc && _currentRenderTarget == renderTarget &&
         !renderTarget->isDirty())
@@ -209,25 +209,25 @@ void CommandBufferImpl::updateRenderCommandEncoder(const RenderTarget* renderTar
         _mtlRenderEncoder = nil;
     }
 
-    auto mtlDescriptor  = toMTLRenderPassDescriptor(renderTarget, renderPassDesc);
-    _renderTargetWidth  = (unsigned int)mtlDescriptor.colorAttachments[0].texture.width;
-    _renderTargetHeight = (unsigned int)mtlDescriptor.colorAttachments[0].texture.height;
-    _mtlRenderEncoder   = [_mtlCommandBuffer renderCommandEncoderWithDescriptor:mtlDescriptor];
+    auto mtlDesc  = toMTLRenderPassDesc(renderTarget, renderPassDesc);
+    _renderTargetWidth  = (unsigned int)mtlDesc.colorAttachments[0].texture.width;
+    _renderTargetHeight = (unsigned int)mtlDesc.colorAttachments[0].texture.height;
+    _mtlRenderEncoder   = [_mtlCommandBuffer renderCommandEncoderWithDescriptor:mtlDesc];
     [_mtlRenderEncoder retain];
 }
 
-void CommandBufferImpl::beginRenderPass(const RenderTarget* renderTarget, const RenderPassDescriptor& renderPassDesc)
+void CommandBufferImpl::beginRenderPass(const RenderTarget* renderTarget, const RenderPassDesc& renderPassDesc)
 {
     updateRenderCommandEncoder(renderTarget, renderPassDesc);
     //    [_mtlRenderEncoder setFrontFacingWinding:MTLWindingCounterClockwise];
 }
 
-void CommandBufferImpl::updateDepthStencilState(const DepthStencilDescriptor& descriptor)
+void CommandBufferImpl::updateDepthStencilState(const DepthStencilDesc& descriptor)
 {
     _depthStencilStateImpl->update(descriptor);
 }
 
-void CommandBufferImpl::updatePipelineState(const RenderTarget* rt, const PipelineDescriptor& descriptor)
+void CommandBufferImpl::updatePipelineState(const RenderTarget* rt, const PipelineDesc& descriptor)
 {
     _renderPipelineImpl->update(rt, descriptor);
     [_mtlRenderEncoder setRenderPipelineState:_renderPipelineImpl->getMTLRenderPipelineState()];
@@ -331,7 +331,7 @@ void CommandBufferImpl::endRenderPass()
     afterDraw();
 }
 
-void CommandBufferImpl::readPixels(RenderTarget* rt, std::function<void(const PixelBufferDescriptor&)> callback)
+void CommandBufferImpl::readPixels(RenderTarget* rt, std::function<void(const PixelBufferDesc&)> callback)
 {
     auto rtMTL = static_cast<RenderTargetImpl*>(rt);
 
@@ -396,7 +396,7 @@ void CommandBufferImpl::flushCaptureCommands()
         // !!!Notes, MTL is mutli-threading, all GPU handler is dispatch at GPU threads
         [_mtlCommandBuffer waitUntilCompleted];
 
-        PixelBufferDescriptor screenPixelData;
+        PixelBufferDesc screenPixelData;
         for (auto& cb : _captureCallbacks)
         {
             if (cb.first == nil)
@@ -412,7 +412,7 @@ void CommandBufferImpl::flushCaptureCommands()
             }
             else
             {
-                PixelBufferDescriptor pixelData;
+                PixelBufferDesc pixelData;
                 auto texture = cb.first;
                 assert(texture != nullptr);
                 CommandBufferImpl::readPixels(texture, 0, 0, texture->getWidth(), texture->getHeight(), pixelData);
@@ -551,7 +551,7 @@ void CommandBufferImpl::readPixels(Texture* texture,
                                   std::size_t origY,
                                   std::size_t rectWidth,
                                   std::size_t rectHeight,
-                                  PixelBufferDescriptor& pbd)
+                                  PixelBufferDesc& pbd)
 {
     CommandBufferImpl::readPixels(static_cast<TextureImpl*>(texture)->internalHandle(), origX, origY, rectWidth,
                                  rectHeight, pbd);
@@ -562,20 +562,20 @@ void CommandBufferImpl::readPixels(id<MTLTexture> texture,
                                   std::size_t origY,
                                   std::size_t rectWidth,
                                   std::size_t rectHeight,
-                                  PixelBufferDescriptor& pbd)
+                                  PixelBufferDesc& pbd)
 {
     NSUInteger texWidth   = texture.width;
     NSUInteger texHeight  = texture.height;
     MTLRegion region      = MTLRegionMake2D(0, 0, texWidth, texHeight);
     MTLRegion imageRegion = MTLRegionMake2D(origX, origY, rectWidth, rectHeight);
 
-    MTLTextureDescriptor* textureDescriptor =
+    MTLTextureDescriptor* textureDesc =
         [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:[texture pixelFormat]
                                                            width:texWidth
                                                           height:texHeight
                                                        mipmapped:NO];
     id<MTLDevice> device             = static_cast<DriverImpl*>(DriverBase::getInstance())->getMTLDevice();
-    id<MTLTexture> readPixelsTexture = [device newTextureWithDescriptor:textureDescriptor];
+    id<MTLTexture> readPixelsTexture = [device newTextureWithDescriptor:textureDesc];
 
     id<MTLCommandQueue> commandQueue = static_cast<DriverImpl*>(DriverBase::getInstance())->getMTLCommandQueue();
     auto commandBuffer               = [commandQueue commandBuffer];

@@ -69,7 +69,7 @@ bool BoneNode::init()
     updateVertices();
     updateColor();
 
-    auto& pipelineDescriptor = _customCommand.getPipelineDescriptor();
+    auto& pipelineDescriptor = _customCommand.getPipelineDesc();
     auto* program = axpm->getBuiltinProgram(ax::rhi::ProgramType::POSITION_COLOR);  // TODO: noMVP?
     setProgramState(new ax::rhi::ProgramState(program), true);
     pipelineDescriptor.programState = _programState;

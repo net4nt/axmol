@@ -90,7 +90,7 @@ public:
     /**
      * Extension to set the Min / Mag filter
      */
-    using TexParams = rhi::SamplerDescriptor;
+    using TexParams = rhi::SamplerDesc;
 
 public:
     /**
@@ -254,7 +254,7 @@ public:
     bool initWithString(std::string_view text, const FontDefinition& textDefinition);
 
     //!!Used for render buffer, such depth stencil attachment
-    bool updateTextureDescriptor(const rhi::TextureDescriptor& descriptor, bool preMultipliedAlpha = false);
+    bool updateTextureDesc(const rhi::TextureDesc& descriptor, bool preMultipliedAlpha = false);
 
     void setRenderTarget(bool renderTarget);
     inline bool isRenderTarget() const { return _flags & TextureFlag::RENDERTARGET; }

@@ -66,12 +66,12 @@ private:
 
     bool _currentStencilEnabled                            = false;
     unsigned int _currentStencilWriteMask                  = ~0;
-    rhi::CompareFunction _currentStencilFunc           = rhi::CompareFunction::ALWAYS;
+    rhi::CompareFunc _currentStencilFunc           = rhi::CompareFunc::ALWAYS;
     unsigned int _currentStencilRef                        = 0;
     unsigned int _currentStencilReadMask                   = ~0;
-    rhi::StencilOperation _currentStencilFail          = rhi::StencilOperation::KEEP;
-    rhi::StencilOperation _currentStencilPassDepthFail = rhi::StencilOperation::KEEP;
-    rhi::StencilOperation _currentStencilPassDepthPass = rhi::StencilOperation::KEEP;
+    rhi::StencilOp _currentStencilFail          = rhi::StencilOp::KEEP;
+    rhi::StencilOp _currentStencilPassDepthFail = rhi::StencilOp::KEEP;
+    rhi::StencilOp _currentStencilPassDepthPass = rhi::StencilOp::KEEP;
     bool _currentDepthWriteMask                            = true;
 
     unsigned int _mask_layer_le = 0;

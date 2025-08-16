@@ -30,7 +30,7 @@ namespace ax::rhi {
 
 Texture::~Texture() {}
 
-void Texture::updateTextureDescriptor(const TextureDescriptor& descriptor, int /*index*/)
+void Texture::updateTextureDesc(const TextureDesc& descriptor, int /*index*/)
 {
     _bitsPerPixel  = PixelFormatUtils::getBitsPerPixel(descriptor.textureFormat);
     _textureType   = descriptor.textureType;

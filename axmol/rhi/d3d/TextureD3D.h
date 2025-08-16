@@ -55,8 +55,7 @@ struct TextureResource
 
     TextureHandle ensure(int index);
 
-    void recreateSampler(const SamplerDescriptor& desc);
-
+    void recreateSampler(const SamplerDesc& desc);
     void destroy()
     {
         foreachTextures([this](TextureHandle& tex, int) {
@@ -70,7 +69,7 @@ struct TextureResource
 
     ID3D11Device* _device;
 
-    TextureDescriptor _descriptor;
+    TextureDesc _desc;
 
     std::array<TextureHandle, AX_META_TEXTURES + 1> _textures;
     ID3D11SamplerState* _samplerState = nullptr;
@@ -92,7 +91,7 @@ public:
     /**
      * @param descriptor Specifies the texture description.
      */
-    TextureImpl(ID3D11Device* device, const TextureDescriptor& descriptor);
+    TextureImpl(ID3D11Device* device, const TextureDesc& descriptor);
     TextureImpl(ID3D11Device* device, ID3D11Texture2D* texture);
     ~TextureImpl();
 
@@ -171,7 +170,7 @@ public:
      * Update sampler
      * @param sampler Specifies the sampler descriptor.
      */
-    void updateSamplerDescriptor(const SamplerDescriptor& sampler) override;
+    void updateSamplerDesc(const SamplerDesc& sampler) override;
 
     /**
      * Generate mipmaps.
@@ -182,7 +181,7 @@ public:
      * Update texture description.
      * @param descriptor Specifies texture and sampler descriptor.
      */
-    void updateTextureDescriptor(const TextureDescriptor& descriptor, int index = 0) override;
+    void updateTextureDesc(const TextureDesc& descriptor, int index = 0) override;
 
     /**
      * Get texture object.
@@ -192,7 +191,7 @@ public:
 
     ID3D11SamplerState* getSamplerState() const { return _textureRes._samplerState;  }
 
-    const TextureDescriptor& getDesc() const { return _textureRes._descriptor; }
+    const TextureDesc& getDesc() const { return _textureRes._desc; }
 
     int getCount() const override { return _textureRes._maxIdx + 1; }
 

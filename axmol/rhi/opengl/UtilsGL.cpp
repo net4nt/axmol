@@ -294,33 +294,33 @@ void UtilsGL::toGLTypes(PixelFormat textureFormat,
     }
 }
 
-GLenum UtilsGL::toGLComareFunction(CompareFunction compareFunction)
+GLenum UtilsGL::toGLCompareFunc(CompareFunc compareFunction)
 {
     GLenum ret = GL_ALWAYS;
     switch (compareFunction)
     {
-    case CompareFunction::NEVER:
+    case CompareFunc::NEVER:
         ret = GL_NEVER;
         break;
-    case CompareFunction::LESS:
+    case CompareFunc::LESS:
         ret = GL_LESS;
         break;
-    case CompareFunction::LESS_EQUAL:
+    case CompareFunc::LESS_EQUAL:
         ret = GL_LEQUAL;
         break;
-    case CompareFunction::GREATER:
+    case CompareFunc::GREATER:
         ret = GL_GREATER;
         break;
-    case CompareFunction::GREATER_EQUAL:
+    case CompareFunc::GREATER_EQUAL:
         ret = GL_GEQUAL;
         break;
-    case CompareFunction::NOT_EQUAL:
+    case CompareFunc::NOT_EQUAL:
         ret = GL_NOTEQUAL;
         break;
-    case CompareFunction::EQUAL:
+    case CompareFunc::EQUAL:
         ret = GL_EQUAL;
         break;
-    case CompareFunction::ALWAYS:
+    case CompareFunc::ALWAYS:
         ret = GL_ALWAYS;
         break;
     default:
@@ -329,27 +329,27 @@ GLenum UtilsGL::toGLComareFunction(CompareFunction compareFunction)
     return ret;
 }
 
-GLenum UtilsGL::toGLStencilOperation(StencilOperation stencilOperation)
+GLenum UtilsGL::toGLStencilOp(StencilOp stencilOp)
 {
     GLenum ret = GL_KEEP;
-    switch (stencilOperation)
+    switch (stencilOp)
     {
-    case StencilOperation::KEEP:
+    case StencilOp::KEEP:
         ret = GL_KEEP;
         break;
-    case StencilOperation::ZERO:
+    case StencilOp::ZERO:
         ret = GL_ZERO;
         break;
-    case StencilOperation::REPLACE:
+    case StencilOp::REPLACE:
         ret = GL_REPLACE;
         break;
-    case StencilOperation::INVERT:
+    case StencilOp::INVERT:
         ret = GL_INVERT;
         break;
-    case StencilOperation::INCREMENT_WRAP:
+    case StencilOp::INCREMENT_WRAP:
         ret = GL_INCR_WRAP;
         break;
-    case StencilOperation::DECREMENT_WRAP:
+    case StencilOp::DECREMENT_WRAP:
         ret = GL_DECR_WRAP;
         break;
     default:
@@ -358,18 +358,18 @@ GLenum UtilsGL::toGLStencilOperation(StencilOperation stencilOperation)
     return ret;
 }
 
-GLenum UtilsGL::toGLBlendOperation(BlendOperation blendOperation)
+GLenum UtilsGL::toGLBlendOp(BlendOp blendOp)
 {
     GLenum ret = GL_FUNC_ADD;
-    switch (blendOperation)
+    switch (blendOp)
     {
-    case BlendOperation::ADD:
+    case BlendOp::ADD:
         ret = GL_FUNC_ADD;
         break;
-    case BlendOperation::SUBTRACT:
+    case BlendOp::SUBTRACT:
         ret = GL_FUNC_SUBTRACT;
         break;
-    case BlendOperation::REVERSE_SUBTRACT:
+    case BlendOp::REVERSE_SUBTRACT:
         ret = GL_FUNC_REVERSE_SUBTRACT;
         break;
     default:

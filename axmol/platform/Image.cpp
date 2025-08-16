@@ -924,12 +924,12 @@ Image::Format Image::detectFormat(const uint8_t* data, ssize_t dataLen)
 
 int Image::getBitPerPixel()
 {
-    return rhi::PixelFormatUtils::getFormatDescriptor(_pixelFormat).bpp;
+    return rhi::PixelFormatUtils::getFormatDesc(_pixelFormat).bpp;
 }
 
 bool Image::hasAlpha()
 {
-    return rhi::PixelFormatUtils::getFormatDescriptor(_pixelFormat).alpha;
+    return rhi::PixelFormatUtils::getFormatDesc(_pixelFormat).alpha;
 }
 
 bool Image::isCompressed()
@@ -1535,7 +1535,7 @@ bool Image::initWithPVRv2Data(uint8_t* data, ssize_t dataLen, bool ownData)
     }
 
     auto pixelFormat = getDevicePVRPixelFormat(v2_pixel_formathash.at(formatFlags));
-    auto& info       = rhi::PixelFormatUtils::getFormatDescriptor(pixelFormat);
+    auto& info       = rhi::PixelFormatUtils::getFormatDesc(pixelFormat);
     int bpp          = info.bpp;
     if (!bpp)
     {
@@ -1687,7 +1687,7 @@ bool Image::initWithPVRv3Data(uint8_t* data, ssize_t dataLen, bool ownData)
     }
 
     auto finalPixelFormat = getDevicePVRPixelFormat(v3_pixel_formathash.at(pixelFormat));
-    auto& info            = rhi::PixelFormatUtils::getFormatDescriptor(finalPixelFormat);
+    auto& info            = rhi::PixelFormatUtils::getFormatDesc(finalPixelFormat);
     int bpp               = info.bpp;
     if (!info.bpp)
     {

@@ -73,7 +73,7 @@ void DrawNode3D::ensureCapacity(int count)
 bool DrawNode3D::init()
 {
     _blendFunc        = BlendFunc::ALPHA_PREMULTIPLIED;
-    auto& pd          = _customCommand.getPipelineDescriptor();
+    auto& pd          = _customCommand.getPipelineDesc();
     auto program      = axpm->getBuiltinProgram(rhi::ProgramType::LINE_COLOR_3D);
     _programStateLine = new rhi::ProgramState(program);
     pd.programState   = _programStateLine;
@@ -134,7 +134,7 @@ void DrawNode3D::updateCommand(ax::Renderer* renderer, const Mat4& transform, ui
 
     _programStateLine->setUniform(_locMVPMatrix, mvp.m, sizeof(mvp.m));
 
-    auto& blend                = _customCommand.getPipelineDescriptor().blendDescriptor;
+    auto& blend                = _customCommand.getPipelineDesc().blendDesc;
     blend.blendEnabled         = true;
     blend.sourceRGBBlendFactor = blend.sourceAlphaBlendFactor = _blendFunc.src;
     blend.destinationRGBBlendFactor = blend.destinationAlphaBlendFactor = _blendFunc.dst;

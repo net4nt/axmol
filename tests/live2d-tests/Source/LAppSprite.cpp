@@ -25,8 +25,8 @@ void LAppSprite::RenderImmidiate(Csm::Rendering::CubismCommandBuffer_Cocos2dx* c
                                  float uvVertex[8]) const
 {
     Csm::Rendering::CubismCommandBuffer_Cocos2dx::DrawCommandBuffer* drawCommandBuffer = CSM_NEW Csm::Rendering::CubismCommandBuffer_Cocos2dx::DrawCommandBuffer();
-    PipelineDescriptor* pipelineDescriptor = drawCommandBuffer->GetCommandDraw()->GetPipelineDescriptor();
-    rhi::BlendDescriptor* blendDescriptor = drawCommandBuffer->GetCommandDraw()->GetBlendDescriptor();
+    PipelineDesc* pipelineDescriptor = drawCommandBuffer->GetCommandDraw()->GetPipelineDescriptor();
+    rhi::BlendDesc* blendDescriptor = drawCommandBuffer->GetCommandDraw()->GetBlendDescriptor();
     rhi::ProgramState* programState = pipelineDescriptor->programState;
 
     drawCommandBuffer->GetCommandDraw()->GetCommand()->setDrawType(ax::CustomCommand::DrawType::ELEMENT);

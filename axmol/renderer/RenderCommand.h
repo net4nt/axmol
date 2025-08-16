@@ -27,7 +27,7 @@
 
 #include "axmol/platform/PlatformMacros.h"
 #include "axmol/base/Types.h"
-#include "axmol/renderer/PipelineDescriptor.h"
+#include "axmol/renderer/PipelineDesc.h"
 
 /**
  * @addtogroup renderer
@@ -99,7 +99,7 @@ public:
     /**Set wireframe render mode for this command.*/
     void setWireframe(bool value) { _isWireframe = value; }
     /// Can use the result to change the descriptor content.
-    inline PipelineDescriptor& getPipelineDescriptor() { return _pipelineDescriptor; }
+    inline PipelineDesc& getPipelineDesc() { return _pipelineDesc; }
 
     const Mat4& getMV() const { return _mv; }
 
@@ -137,7 +137,7 @@ protected:
 
     Mat4 _mv;
 
-    PipelineDescriptor _pipelineDescriptor;
+    PipelineDesc _pipelineDesc;
 };
 
 }

@@ -108,7 +108,7 @@ id<MTLTexture> TextureInfoMTL::ensure(int index)
         id<MTLTexture>& mtlTexture = _mtlTextures[index];
         if (mtlTexture)
             return mtlTexture;
-        mtlTexture = createTexture(_mtlDevice, _descriptor);
+        mtlTexture = createTexture(_mtlDevice, _desc);
         if (_maxIdx < index)
             _maxIdx = index;
         return mtlTexture;
@@ -134,23 +134,23 @@ void TextureInfoMTL::destroy()
     _maxIdx = -1;
 }
 
-id<MTLTexture> TextureInfoMTL::createTexture(id<MTLDevice> mtlDevice, const TextureDescriptor& descriptor)
+id<MTLTexture> TextureInfoMTL::createTexture(id<MTLDevice> mtlDevice, const TextureDesc& descriptor)
 {
     MTLPixelFormat pixelFormat = UtilsMTL::toMTLPixelFormat(descriptor.textureFormat);
     if (pixelFormat == MTLPixelFormatInvalid)
         return nil;
 
-    MTLTextureDescriptor* textureDescriptor = nil;
+    MTLTextureDescriptor* textureDesc = nil;
     switch (descriptor.textureType)
     {
     case TextureType::TEXTURE_2D:
-        textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat
+        textureDesc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat
                                                                                width:descriptor.width
                                                                               height:descriptor.height
                                                                            mipmapped:YES];
         break;
     case TextureType::TEXTURE_CUBE:
-        textureDescriptor = [MTLTextureDescriptor textureCubeDescriptorWithPixelFormat:pixelFormat
+        textureDesc = [MTLTextureDescriptor textureCubeDescriptorWithPixelFormat:pixelFormat
                                                                                   size:descriptor.width
                                                                              mipmapped:YES];
         break;
@@ -163,28 +163,28 @@ id<MTLTexture> TextureInfoMTL::createTexture(id<MTLDevice> mtlDevice, const Text
         // DepthStencil, and Multisample textures must be allocated with the MTLResourceStorageModePrivate resource
         // option
         if (PixelFormat::D24S8 == descriptor.textureFormat && descriptor.textureType == TextureType::TEXTURE_2D)
-            textureDescriptor.resourceOptions = MTLResourceStorageModePrivate;
-        textureDescriptor.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
+            textureDesc.resourceOptions = MTLResourceStorageModePrivate;
+        textureDesc.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
     }
 
-    return [mtlDevice newTextureWithDescriptor:textureDescriptor];
+    return [mtlDevice newTextureWithDescriptor:textureDesc];
 }
 
-void TextureInfoMTL::recreateSampler(const SamplerDescriptor& descriptor)
+void TextureInfoMTL::recreateSampler(const SamplerDesc& descriptor)
 {
-    MTLSamplerDescriptor* mtlDescriptor = [MTLSamplerDescriptor new];
-    mtlDescriptor.sAddressMode          = descriptor.sAddressMode == SamplerAddressMode::DONT_CARE
+    MTLSamplerDescriptor* mtlDesc = [MTLSamplerDescriptor new];
+    mtlDesc.sAddressMode          = descriptor.sAddressMode == SamplerAddressMode::DONT_CARE
                                               ? _sAddressMode
                                               : toMTLSamplerAddressMode(descriptor.sAddressMode);
-    mtlDescriptor.tAddressMode          = descriptor.tAddressMode == SamplerAddressMode::DONT_CARE
+    mtlDesc.tAddressMode          = descriptor.tAddressMode == SamplerAddressMode::DONT_CARE
                                               ? _tAddressMode
                                               : toMTLSamplerAddressMode(descriptor.tAddressMode);
 
-    mtlDescriptor.minFilter =
+    mtlDesc.minFilter =
         descriptor.minFilter == SamplerFilter::DONT_CARE ? _minFilter : toMTLSamplerMinMagFilter(descriptor.minFilter);
-    mtlDescriptor.magFilter =
+    mtlDesc.magFilter =
         descriptor.magFilter == SamplerFilter::DONT_CARE ? _magFilter : toMTLSamplerMinMagFilter(descriptor.magFilter);
-    mtlDescriptor.mipFilter =
+    mtlDesc.mipFilter =
         descriptor.magFilter == SamplerFilter::DONT_CARE ? _mipFilter : toMTLSamplerMipFilter(descriptor.magFilter);
 
     if (_mtlSamplerState)
@@ -193,42 +193,42 @@ void TextureInfoMTL::recreateSampler(const SamplerDescriptor& descriptor)
         _mtlSamplerState = nil;
     }
 
-    _sAddressMode = mtlDescriptor.sAddressMode;
-    _tAddressMode = mtlDescriptor.tAddressMode;
-    _minFilter    = mtlDescriptor.minFilter;
-    _magFilter    = mtlDescriptor.magFilter;
-    _mipFilter    = mtlDescriptor.mipFilter;
+    _sAddressMode = mtlDesc.sAddressMode;
+    _tAddressMode = mtlDesc.tAddressMode;
+    _minFilter    = mtlDesc.minFilter;
+    _magFilter    = mtlDesc.magFilter;
+    _mipFilter    = mtlDesc.mipFilter;
 
-    _mtlSamplerState = [_mtlDevice newSamplerStateWithDescriptor:mtlDescriptor];
+    _mtlSamplerState = [_mtlDevice newSamplerStateWithDescriptor:mtlDesc];
 
-    [mtlDescriptor release];
+    [mtlDesc release];
 }
 
 /// CLASS TextureImpl
-TextureImpl::TextureImpl(id<MTLDevice> mtlDevice, const TextureDescriptor& descriptor) : _textureInfo(mtlDevice)
+TextureImpl::TextureImpl(id<MTLDevice> mtlDevice, const TextureDesc& descriptor) : _textureInfo(mtlDevice)
 {
-    updateTextureDescriptor(descriptor);
+    updateTextureDesc(descriptor);
 }
 
 TextureImpl::~TextureImpl() {}
 
-void TextureImpl::updateSamplerDescriptor(const SamplerDescriptor& sampler)
+void TextureImpl::updateSamplerDesc(const SamplerDesc& sampler)
 {
     _textureInfo.recreateSampler(sampler);
 }
 
-void TextureImpl::updateTextureDescriptor(const TextureDescriptor& descriptor, int index)
+void TextureImpl::updateTextureDesc(const TextureDesc& desc, int index)
 {
-    Texture::updateTextureDescriptor(descriptor, index);
+    Texture::updateTextureDesc(desc, index);
 
-    _textureInfo._descriptor = descriptor;
+    _textureInfo._desc = desc;
     _textureInfo.ensure(index);
-    updateSamplerDescriptor(descriptor.samplerDescriptor);
+    updateSamplerDesc(desc.samplerDesc);
 
-    _textureInfo._bytesPerRow = PixelFormatUtils::computeRowPitch(descriptor.textureFormat, descriptor.width);
+    _textureInfo._bytesPerRow = PixelFormatUtils::computeRowPitch(desc.textureFormat, desc.width);
 
-    if (descriptor.textureType == TextureType::TEXTURE_CUBE) {
-        _region                   = MTLRegionMake2D(0, 0, descriptor.width, descriptor.height);
+    if (desc.textureType == TextureType::TEXTURE_CUBE) {
+        _region                   = MTLRegionMake2D(0, 0, desc.width, desc.height);
     }
 }
 
@@ -303,7 +303,7 @@ void TextureImpl::updateFaceData(TextureCubeFace side, void* data, int index)
     if (!mtlTexture)
         return;
 
-    auto slicePitch = _textureInfo._bytesPerRow * _textureInfo._descriptor.height;
+    auto slicePitch = _textureInfo._bytesPerRow * _textureInfo._desc.height;
     [mtlTexture replaceRegion:_region
                   mipmapLevel:0
                         slice:slice

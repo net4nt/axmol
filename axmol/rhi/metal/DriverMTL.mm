@@ -467,7 +467,7 @@ Buffer* DriverImpl::createBuffer(std::size_t size, BufferType type, BufferUsage 
     return new BufferImpl(_mtlDevice, size, type, usage);
 }
 
-Texture* DriverImpl::createTexture(const TextureDescriptor& descriptor)
+Texture* DriverImpl::createTexture(const TextureDesc& descriptor)
 {
     return new TextureImpl(_mtlDevice, descriptor);
 }

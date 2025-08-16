@@ -48,8 +48,8 @@ struct TextureInfoMTL
     id<MTLTexture> ensure(int index);
     void destroy();
 
-    id<MTLTexture> createTexture(id<MTLDevice> mtlDevice, const TextureDescriptor& descriptor);
-    void recreateSampler(const SamplerDescriptor& descriptor);
+    id<MTLTexture> createTexture(id<MTLDevice> mtlDevice, const TextureDesc& descriptor);
+    void recreateSampler(const SamplerDesc& descriptor);
 
     MTLSamplerAddressMode _sAddressMode;
     MTLSamplerAddressMode _tAddressMode;
@@ -61,7 +61,7 @@ struct TextureInfoMTL
     std::array<id<MTLTexture>, AX_META_TEXTURES + 1> _mtlTextures;
     int _maxIdx = -1;
 
-    TextureDescriptor _descriptor;
+    TextureDesc _desc;
 
     id<MTLSamplerState> _mtlSamplerState = nil;
     unsigned int _bytesPerRow            = 0;
@@ -77,7 +77,7 @@ public:
      * @param mtlDevice The device for which MTLTexture and MTLSamplerState object was created.
      * @param descriptor Specify texture and sampler description.
      */
-    TextureImpl(id<MTLDevice> mtlDevice, const TextureDescriptor& descriptor);
+    TextureImpl(id<MTLDevice> mtlDevice, const TextureDesc& descriptor);
     ~TextureImpl();
 
     /**
@@ -150,9 +150,9 @@ public:
 
     /**
      * Update sampler
-     * @param sampler Specifies the sampler descriptor.
+     * @param desc Specifies the sampler descriptor.
      */
-    void updateSamplerDescriptor(const SamplerDescriptor& sampler) override;
+    void updateSamplerDesc(const SamplerDesc& desc) override;
 
     /**
      * Generate mipmaps.
@@ -161,9 +161,9 @@ public:
 
     /**
      * Update texture description.
-     * @param descriptor Specifies texture and sampler descriptor.
+     * @param desc Specifies texture and sampler descriptor.
      */
-    void updateTextureDescriptor(const TextureDescriptor& descriptor, int index = 0) override;
+    void updateTextureDesc(const TextureDesc& desc, int index = 0) override;
 
     /**
      * Update texutre cube data in give slice side.

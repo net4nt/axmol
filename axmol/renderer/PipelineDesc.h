@@ -1,5 +1,6 @@
 /****************************************************************************
  Copyright (c) 2019 Xiamen Yaji Software Co., Ltd.
+ Copyright (c) 2019-present Axmol Engine contributors (see AUTHORS.md).
 
  https://axmol.dev/
 
@@ -27,7 +28,7 @@
 #include "axmol/rhi/DepthStencilState.h"
 #include "axmol/rhi/Texture.h"
 #include "axmol/rhi/VertexLayout.h"
-#include "axmol/rhi/RenderPassDescriptor.h"
+#include "axmol/rhi/RenderPassDesc.h"
 #include "axmol/rhi/ProgramState.h"
 
 #include <string>
@@ -39,10 +40,10 @@
 namespace ax
 {
 
-struct PipelineDescriptor
+struct PipelineDesc
 {
     rhi::ProgramState* programState{nullptr};
-    rhi::BlendDescriptor blendDescriptor;
+    rhi::BlendDesc blendDesc;
 };
 
 // end of renderer group

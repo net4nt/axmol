@@ -27,7 +27,7 @@
 #include "axmol/base/Macros.h"
 #include "axmol/platform/GL.h"
 #include "axmol/rhi/RHITypes.h"
-#include "axmol/rhi/PixelBufferDescriptor.h"
+#include "axmol/rhi/PixelBufferDesc.h"
 
 namespace ax::rhi::gl {
 /**
@@ -101,25 +101,25 @@ struct UtilsGL
                           GLenum& type);
 
     /**
-     * Convert compare function to GLenum. i.e. convert CompareFunction::NEVER to GL_NEVER.
+     * Convert compare function to GLenum. i.e. convert CompareFunc::NEVER to GL_NEVER.
      * @param compareFunction Specifies the compare function to convert.
      * @return Compare function.
      */
-    static GLenum toGLComareFunction(CompareFunction compareFunction);
+    static GLenum toGLCompareFunc(CompareFunc compareFunc);
 
     /**
-     * Convert stencil operation to GLenum. i.e. convert StencilOperation::KEEP to GL_KEEP.
-     * @param stencilOperation Specifies stencil operation.
+     * Convert stencil operation to GLenum. i.e. convert StencilOp::KEEP to GL_KEEP.
+     * @param b([a-z_][A-Za-z0-9_]*)Opb Specifies stencil operation.
      * @return Stencil operation.
      */
-    static GLenum toGLStencilOperation(StencilOperation stencilOperation);
+    static GLenum toGLStencilOp(StencilOp stencilOp);
 
     /**
-     * Convert blend operation to GLenum. i.e. convert BlendOperation::ADD to GL_FUNC_ADD.
-     * @param blendOperation Specifies blend function to convert.
+     * Convert blend operation to GLenum. i.e. convert BlendOp::ADD to GL_FUNC_ADD.
+     * @param blendOp Specifies blend function to convert.
      * @return Blend operation.
      */
-    static GLenum toGLBlendOperation(BlendOperation blendOperation);
+    static GLenum toGLBlendOp(BlendOp blendOp);
 
     /**
      * Convert blend factor to GLenum. i.e. convert BlendFactor::ZERO to GL_ZERO.

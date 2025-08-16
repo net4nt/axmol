@@ -35,23 +35,23 @@ Copyright (c) 2019-present Axmol Engine contributors (see AUTHORS.md).
 
 namespace ax::rhi::gl {
 
-void RenderPipelineImpl::update(const RenderTarget*, const PipelineDescriptor& pipelineDescriptor)
+void RenderPipelineImpl::update(const RenderTarget*, const PipelineDesc& pipelineDesc)
 {
-    if (_programImpl != pipelineDescriptor.programState->getProgram())
+    if (_programImpl != pipelineDesc.programState->getProgram())
     {
         AX_SAFE_RELEASE(_programImpl);
-        _programImpl = static_cast<ProgramImpl*>(pipelineDescriptor.programState->getProgram());
+        _programImpl = static_cast<ProgramImpl*>(pipelineDesc.programState->getProgram());
         AX_SAFE_RETAIN(_programImpl);
     }
 
-    updateBlendState(pipelineDescriptor.blendDescriptor);
+    updateBlendState(pipelineDesc.blendDesc);
 }
 
-void RenderPipelineImpl::updateBlendState(const BlendDescriptor& descriptor)
+void RenderPipelineImpl::updateBlendState(const BlendDesc& descriptor)
 {
     auto blendEnabled                = descriptor.blendEnabled;
-    auto rgbBlendOperation           = UtilsGL::toGLBlendOperation(descriptor.rgbBlendOperation);
-    auto alphaBlendOperation         = UtilsGL::toGLBlendOperation(descriptor.alphaBlendOperation);
+    auto rgbBlendOp           = UtilsGL::toGLBlendOp(descriptor.rgbBlendOp);
+    auto alphaBlendOp         = UtilsGL::toGLBlendOp(descriptor.alphaBlendOp);
     auto sourceRGBBlendFactor        = UtilsGL::toGLBlendFactor(descriptor.sourceRGBBlendFactor);
     auto destinationRGBBlendFactor   = UtilsGL::toGLBlendFactor(descriptor.destinationRGBBlendFactor);
     auto sourceAlphaBlendFactor      = UtilsGL::toGLBlendFactor(descriptor.sourceAlphaBlendFactor);
@@ -65,7 +65,7 @@ void RenderPipelineImpl::updateBlendState(const BlendDescriptor& descriptor)
     {
         __state->enableBlend();
 
-        __state->blendEquationSeparate(rgbBlendOperation, alphaBlendOperation);
+        __state->blendEquationSeparate(rgbBlendOp, alphaBlendOp);
         __state->blendFuncSeparate(sourceRGBBlendFactor, destinationRGBBlendFactor, sourceAlphaBlendFactor,
                                destinationAlphaBlendFactor);
     }

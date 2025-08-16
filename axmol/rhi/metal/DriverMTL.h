@@ -147,7 +147,7 @@ public:
      * @param descriptor Specifies texture description.
      * @return A Texture object.
      */
-    Texture* createTexture(const TextureDescriptor& descriptor) override;
+    Texture* createTexture(const TextureDesc& descriptor) override;
 
     RenderTarget* createDefaultRenderTarget() override;
     RenderTarget* createRenderTarget(Texture* colorAttachment,

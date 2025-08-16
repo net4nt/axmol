@@ -6825,15 +6825,15 @@ static int lua_collect_PolygonInfo(lua_State* tolua_S)
 
 int axlua_get_PipelineDescriptor_programState(lua_State* tolua_S)
 {
-    ax::PipelineDescriptor* cobj = nullptr;
+    ax::PipelineDesc* cobj = nullptr;
 
 #if _AX_DEBUG >= 1
     tolua_Error tolua_err;
-    if (!tolua_isusertype(tolua_S, 1, "ax.PipelineDescriptor", 0, &tolua_err))
+    if (!tolua_isusertype(tolua_S, 1, "ax.PipelineDesc", 0, &tolua_err))
         goto tolua_lerror;
 #endif
 
-    cobj = (ax::PipelineDescriptor*)tolua_tousertype(tolua_S, 1, 0);
+    cobj = (ax::PipelineDesc*)tolua_tousertype(tolua_S, 1, 0);
 #if _AX_DEBUG >= 1
     if (nullptr == cobj)
     {
@@ -6855,15 +6855,15 @@ tolua_lerror:
 int axlua_set_PipelineDescriptor_programState(lua_State* tolua_S)
 {
     int argc                          = 0;
-    ax::PipelineDescriptor* self = nullptr;
+    ax::PipelineDesc* self = nullptr;
 
 #if _AX_DEBUG >= 1
     tolua_Error tolua_err;
-    if (!tolua_isusertype(tolua_S, 1, "ax.PipelineDescriptor", 0, &tolua_err))
+    if (!tolua_isusertype(tolua_S, 1, "ax.PipelineDesc", 0, &tolua_err))
         goto tolua_lerror;
 #endif
 
-    self = (ax::PipelineDescriptor*)tolua_tousertype(tolua_S, 1, 0);
+    self = (ax::PipelineDesc*)tolua_tousertype(tolua_S, 1, 0);
 #if _AX_DEBUG >= 1
     if (nullptr == self)
     {
@@ -6915,7 +6915,7 @@ static void extendPolygonInfo(lua_State* tolua_S)
 
 static void extendPipelineDescriptor(lua_State* tolua_S)
 {
-    lua_pushstring(tolua_S, "ax.PipelineDescriptor");
+    lua_pushstring(tolua_S, "ax.PipelineDesc");
     lua_rawget(tolua_S, LUA_REGISTRYINDEX);
     if (lua_istable(tolua_S, -1))
     {

@@ -218,7 +218,7 @@ bool CommandBufferImpl::beginFrame()
     return true;
 }
 
-void CommandBufferImpl::beginRenderPass(const RenderTarget* renderTarget, const RenderPassDescriptor& renderPassDesc)
+void CommandBufferImpl::beginRenderPass(const RenderTarget* renderTarget, const RenderPassDesc& renderPassDesc)
 {
     auto context = _driverImpl->getContext();
 
@@ -254,12 +254,12 @@ void CommandBufferImpl::beginRenderPass(const RenderTarget* renderTarget, const 
                                        static_cast<UINT8>(renderPassDesc.clearStencilValue));
 }
 
-void CommandBufferImpl::updateDepthStencilState(const DepthStencilDescriptor& desc)
+void CommandBufferImpl::updateDepthStencilState(const DepthStencilDesc& desc)
 {
     _depthStencilState->update(desc);
 }
 
-void CommandBufferImpl::updatePipelineState(const RenderTarget* rt, const PipelineDescriptor& desc)
+void CommandBufferImpl::updatePipelineState(const RenderTarget* rt, const PipelineDesc& desc)
 {
     _renderPipeline->update(rt, desc);
 }
@@ -595,6 +595,6 @@ void CommandBufferImpl::endFrame()
     }
 }
 
-void CommandBufferImpl::readPixels(RenderTarget* rt, std::function<void(const PixelBufferDescriptor&)> callback) {}
+void CommandBufferImpl::readPixels(RenderTarget* rt, std::function<void(const PixelBufferDesc&)> callback) {}
 
 }  // namespace ax::rhi::d3d

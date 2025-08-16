@@ -11,7 +11,7 @@ class DepthStencilStateImpl : public DepthStencilState
 public:
     explicit DepthStencilStateImpl(ID3D11Device* device) : _device(device) {}
 
-    void update(const DepthStencilDescriptor& desc) override;
+    void update(const DepthStencilDesc& desc) override;
 
     void apply(ID3D11DeviceContext* ctx, UINT stencilRef = 0) const;
 

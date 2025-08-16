@@ -39,26 +39,26 @@ class RenderTarget;
 /**
  * Stencil descriptor.
  */
-struct StencilDescriptor
+struct StencilDesc
 {
-    bool operator==(const StencilDescriptor& rhs) const;
+    bool operator==(const StencilDesc& rhs) const;
 
-    StencilOperation stencilFailureOperation   = StencilOperation::KEEP;
-    StencilOperation depthFailureOperation     = StencilOperation::KEEP;
-    StencilOperation depthStencilPassOperation = StencilOperation::KEEP;
-    CompareFunction stencilCompareFunction     = CompareFunction::ALWAYS;
-    unsigned int readMask                      = 0;
-    unsigned int writeMask                     = 0;
+    StencilOp stencilFailureOp   = StencilOp::KEEP;
+    StencilOp depthFailureOp     = StencilOp::KEEP;
+    StencilOp depthStencilPassOp = StencilOp::KEEP;
+    CompareFunc stencilCompareFunc  = CompareFunc::ALWAYS;
+    unsigned int readMask               = 0;
+    unsigned int writeMask              = 0;
 };
 
 /**
  * Depth and stencil descriptor.
  */
-struct DepthStencilDescriptor
+struct DepthStencilDesc
 {
-    CompareFunction depthCompareFunction = CompareFunction::LESS;
-    StencilDescriptor backFaceStencil;
-    StencilDescriptor frontFaceStencil;
+    CompareFunc depthCompareFunc = CompareFunc::LESS;
+    StencilDesc backFaceStencil;
+    StencilDesc frontFaceStencil;
     void addFlag(DepthStencilFlags flag) { this->flags |= flag; }
     void removeFlag(DepthStencilFlags flag) { this->flags &= ~flag; }
     DepthStencilFlags flags = DepthStencilFlags::ALL;
@@ -70,8 +70,8 @@ struct DepthStencilDescriptor
 class DepthStencilState : public ax::Object
 {
 public:
-    virtual void update(const DepthStencilDescriptor& desc);
-    const DepthStencilDescriptor& getDepthStencilDesc() const { return _dsDesc; }
+    virtual void update(const DepthStencilDesc& desc);
+    const DepthStencilDesc& getDepthStencilDesc() const { return _dsDesc; }
     bool isEnabled() const { return bitmask::any(_dsDesc.flags, DepthStencilFlags::DEPTH_STENCIL_TEST); }
 
 protected:
@@ -81,7 +81,7 @@ protected:
     DepthStencilState() = default;
     virtual ~DepthStencilState();
 
-    DepthStencilDescriptor _dsDesc{};  ///< depth and stencil descriptor.
+    DepthStencilDesc _dsDesc{};  ///< depth and stencil descriptor.
     bool _isBackFrontStencilEqual = false;       ///< Does front stencil status equals to back stencil's.
 };
 

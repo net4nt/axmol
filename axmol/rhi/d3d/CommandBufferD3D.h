@@ -71,26 +71,26 @@ public:
     bool beginFrame() override;
 
     /**
-     * Create a MTLRenderCommandEncoder object for graphics rendering to an attachment in a RenderPassDescriptor.
-     * MTLRenderCommandEncoder is cached if current RenderPassDescriptor is identical to previous one.
+     * Create a MTLRenderCommandEncoder object for graphics rendering to an attachment in a RenderPassDesc.
+     * MTLRenderCommandEncoder is cached if current RenderPassDesc is identical to previous one.
      * @param descriptor Specifies a group of render targets that hold the results of a render pass.
      */
-    void beginRenderPass(const RenderTarget* renderTarget, const RenderPassDescriptor& descriptor) override;
+    void beginRenderPass(const RenderTarget* renderTarget, const RenderPassDesc& descriptor) override;
 
     /**
      * Update depthStencil status, improvment: for metal backend cache it
      * @param depthStencilState Specifies the depth and stencil status
      */
-    void updateDepthStencilState(const DepthStencilDescriptor& descriptor) override;
+    void updateDepthStencilState(const DepthStencilDesc& descriptor) override;
 
     /**
      * Update render pipeline status
      * Building a programmable pipeline involves an expensive evaluation of GPU state.
      * So a new render pipeline object will be created only if it hasn't been created before.
      * @param rt Specifies the render target.
-     * @param pipelineDescriptor Specifies the pipeline descriptor.
+     * @param pipelineDesc Specifies the pipeline descriptor.
      */
-    void updatePipelineState(const RenderTarget* rt, const PipelineDescriptor& descriptor) override;
+    void updatePipelineState(const RenderTarget* rt, const PipelineDesc& descriptor) override;
 
     /**
      * Fixed-function state
@@ -197,7 +197,7 @@ public:
      * Read pixels from RenderTarget
      * @param callback A callback to deal with pixel data read.
      */
-    void readPixels(RenderTarget* rt, std::function<void(const PixelBufferDescriptor&)> callback) override;
+    void readPixels(RenderTarget* rt, std::function<void(const PixelBufferDesc&)> callback) override;
 
 protected:
     void updateRasterizerState();
@@ -219,7 +219,7 @@ protected:
     UINT _renderTargetHeight{0};
     UINT _screenWidth{0};
     UINT _screenHeight{0};
-    RenderPassDescriptor _renderPassDesc{};
+    RenderPassDesc _renderPassDesc{};
 
     axstd::pod_vector<ID3D11ShaderResourceView*> _nullSRVs;
     UINT _textureBounds{0};

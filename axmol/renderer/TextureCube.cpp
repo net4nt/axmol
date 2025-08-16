@@ -208,15 +208,15 @@ bool TextureCube::init(std::string_view positive_x,
         }
     }
 
-    rhi::TextureDescriptor textureDescriptor;
-    textureDescriptor.width = textureDescriptor.height = imageSize;
-    textureDescriptor.textureType                      = rhi::TextureType::TEXTURE_CUBE;
-    textureDescriptor.samplerDescriptor.minFilter      = rhi::SamplerFilter::LINEAR;
-    textureDescriptor.samplerDescriptor.magFilter      = rhi::SamplerFilter::LINEAR;
-    textureDescriptor.samplerDescriptor.sAddressMode   = rhi::SamplerAddressMode::CLAMP_TO_EDGE;
-    textureDescriptor.samplerDescriptor.tAddressMode   = rhi::SamplerAddressMode::CLAMP_TO_EDGE;
+    rhi::TextureDesc textureDesc;
+    textureDesc.width = textureDesc.height = imageSize;
+    textureDesc.textureType                      = rhi::TextureType::TEXTURE_CUBE;
+    textureDesc.samplerDesc.minFilter      = rhi::SamplerFilter::LINEAR;
+    textureDesc.samplerDesc.magFilter      = rhi::SamplerFilter::LINEAR;
+    textureDesc.samplerDesc.sAddressMode   = rhi::SamplerAddressMode::CLAMP_TO_EDGE;
+    textureDesc.samplerDesc.tAddressMode   = rhi::SamplerAddressMode::CLAMP_TO_EDGE;
     _texture =
-        static_cast<rhi::Texture*>(rhi::DriverBase::getInstance()->createTexture(textureDescriptor));
+        static_cast<rhi::Texture*>(rhi::DriverBase::getInstance()->createTexture(textureDesc));
     AXASSERT(_texture != nullptr, "TextureCubemap: texture can not be nullptr");
 
     for (int i = 0; i < 6; i++)
@@ -264,7 +264,7 @@ bool TextureCube::init(std::string_view positive_x,
 
 void TextureCube::setTexParameters(const Texture2D::TexParams& texParams)
 {
-    _texture->updateSamplerDescriptor(texParams);
+    _texture->updateSamplerDesc(texParams);
 }
 
 bool TextureCube::reloadTexture()

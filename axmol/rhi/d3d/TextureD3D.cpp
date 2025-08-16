@@ -5,7 +5,7 @@
 
 namespace ax::rhi::d3d
 {
-static void translateSamplerDesc(const SamplerDescriptor& in, D3D11_SAMPLER_DESC& out)
+static void translateSamplerDesc(const SamplerDesc& in, D3D11_SAMPLER_DESC& out)
 {
     bool minLinear = in.minFilter == SamplerFilter::LINEAR;
     bool magLinear = in.magFilter == SamplerFilter::LINEAR;
@@ -36,7 +36,7 @@ static void translateSamplerDesc(const SamplerDescriptor& in, D3D11_SAMPLER_DESC
 
     out.AddressU       = toAddrMode(in.sAddressMode);
     out.AddressV       = toAddrMode(in.tAddressMode);
-    out.AddressW       = D3D11_TEXTURE_ADDRESS_WRAP;  // SamplerDescriptor
+    out.AddressW       = D3D11_TEXTURE_ADDRESS_WRAP;  // SamplerDesc
     out.MipLODBias     = 0.0f;
     out.MaxAnisotropy  = 1;
     out.ComparisonFunc = D3D11_COMPARISON_NEVER;
@@ -67,7 +67,7 @@ static void translateUsage(TextureUsage usage, D3D11_TEXTURE2D_DESC& outDesc)
     }
 }
 
-static void translateTexDesc(const TextureDescriptor& desc, D3D11_TEXTURE2D_DESC& outDesc)
+static void translateTexDesc(const TextureDesc& desc, D3D11_TEXTURE2D_DESC& outDesc)
 {
     outDesc.Width              = desc.width;
     outDesc.Height             = desc.height;
@@ -99,7 +99,7 @@ static void translateTexDesc(const TextureDescriptor& desc, D3D11_TEXTURE2D_DESC
     }
 }
 
-static void fromD3DTexDesc(TextureDescriptor& td, const D3D11_TEXTURE2D_DESC& desc)
+static void fromD3DTexDesc(TextureDesc& td, const D3D11_TEXTURE2D_DESC& desc)
 {
     td.textureType = TextureType::TEXTURE_2D;
 
@@ -130,16 +130,16 @@ static void fromD3DTexDesc(TextureDescriptor& td, const D3D11_TEXTURE2D_DESC& de
         td.textureUsage = TextureUsage::READ;
 
     // TODO:
-    // td.samplerDescriptor.filter   = SamplerFilter::LINEAR;
-    // td.samplerDescriptor.addressU = SamplerAddressMode::CLAMP;
-    // td.samplerDescriptor.addressV = SamplerAddressMode::CLAMP;
-    // td.samplerDescriptor.addressW = SamplerAddressMode::CLAMP;
+    // td.samplerDesc.filter   = SamplerFilter::LINEAR;
+    // td.samplerDesc.addressU = SamplerAddressMode::CLAMP;
+    // td.samplerDesc.addressV = SamplerAddressMode::CLAMP;
+    // td.samplerDesc.addressW = SamplerAddressMode::CLAMP;
 }
 
 TextureHandle TextureResource::createTexture(UINT mipLevels)
 {
     D3D11_TEXTURE2D_DESC texDesc{};
-    translateTexDesc(_descriptor, texDesc);
+    translateTexDesc(_desc, texDesc);
 
     texDesc.MipLevels = mipLevels;
 
@@ -149,11 +149,11 @@ TextureHandle TextureResource::createTexture(UINT mipLevels)
         texDesc.BindFlags |= D3D11_BIND_RENDER_TARGET;
     }
 
-    auto fmtInfo = UtilsD3D::toDxgiFormatInfo(_descriptor.textureFormat);
+    auto fmtInfo = UtilsD3D::toDxgiFormatInfo(_desc.textureFormat);
     assert(fmtInfo);
     if (fmtInfo->format == DXGI_FORMAT_UNKNOWN)
     {
-        AXLOGE("axmol: D3D not support pixel format: {}", (int)_descriptor.textureFormat);
+        AXLOGE("axmol: D3D not support pixel format: {}", (int)_desc.textureFormat);
         return TextureHandle{};
     }
 
@@ -168,7 +168,7 @@ TextureHandle TextureResource::createTexture(UINT mipLevels)
 
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc{};
     srvDesc.Format = fmtInfo->fmtSrv;
-    switch (_descriptor.textureType)
+    switch (_desc.textureType)
     {
     case TextureType::TEXTURE_CUBE:
         srvDesc.ViewDimension               = D3D11_SRV_DIMENSION_TEXTURECUBE;
@@ -206,7 +206,7 @@ TextureHandle TextureResource::ensure(int index)
     return _textures[index];
 }
 
-void TextureResource::recreateSampler(const SamplerDescriptor& desc)
+void TextureResource::recreateSampler(const SamplerDesc& desc)
 {
     D3D11_SAMPLER_DESC sd{};
     translateSamplerDesc(desc, sd);
@@ -222,12 +222,12 @@ void TextureResource::recreateSampler(const SamplerDescriptor& desc)
 // ------------------------------------------------------------
 // ctor / dtor
 // ------------------------------------------------------------
-TextureImpl::TextureImpl(ID3D11Device* device, const TextureDescriptor& descriptor) : _textureRes(device)
+TextureImpl::TextureImpl(ID3D11Device* device, const TextureDesc& descriptor) : _textureRes(device)
 {
-    updateTextureDescriptor(descriptor);
+    updateTextureDesc(descriptor);
     // TODO:
     // _rendererRecreatedListener = EventDispatcher::addListener(
-    //     EventType::RENDERER_RECREATED, [this](auto&&) { updateTextureDescriptor(this->_textureDescriptor); });
+    //     EventType::RENDERER_RECREATED, [this](auto&&) { updateTextureDesc(this->_textureDesc); });
 }
 
 TextureImpl::TextureImpl(ID3D11Device* device, ID3D11Texture2D* texture) : _textureRes(device)
@@ -238,9 +238,9 @@ TextureImpl::TextureImpl(ID3D11Device* device, ID3D11Texture2D* texture) : _text
 
     D3D11_TEXTURE2D_DESC desc;
     texture->GetDesc(&desc);
-    fromD3DTexDesc(_textureRes._descriptor, desc);
+    fromD3DTexDesc(_textureRes._desc, desc);
 
-    Texture::updateTextureDescriptor(_textureRes._descriptor);
+    Texture::updateTextureDesc(_textureRes._desc);
 }
 
 TextureImpl::~TextureImpl()
@@ -251,24 +251,24 @@ TextureImpl::~TextureImpl()
 }
 
 // ------------------------------------------------------------
-// updateSamplerDescriptor
+// updateSamplerDesc
 // ------------------------------------------------------------
-void TextureImpl::updateSamplerDescriptor(const SamplerDescriptor& sampler)
+void TextureImpl::updateSamplerDesc(const SamplerDesc& sampler)
 {
     _textureRes.recreateSampler(sampler);
 }
 
 // ------------------------------------------------------------
-// updateTextureDescriptor
+// updateTextureDesc
 // ------------------------------------------------------------
-void TextureImpl::updateTextureDescriptor(const TextureDescriptor& descriptor, int index /*=0*/)
+void TextureImpl::updateTextureDesc(const TextureDesc& descriptor, int index /*=0*/)
 {
 
-    _textureRes._descriptor = descriptor;
+    _textureRes._desc = descriptor;
 
-    Texture::updateTextureDescriptor(descriptor);
+    Texture::updateTextureDesc(descriptor);
 
-    updateSamplerDescriptor(descriptor.samplerDescriptor);
+    updateSamplerDesc(descriptor.samplerDesc);
 
     if (descriptor.textureFormat != PixelFormat::NONE)
         _textureRes.ensure(index);
@@ -287,7 +287,7 @@ void TextureImpl::generateMipmaps()
         _hasMipmaps  = true;
         auto context = static_cast<DriverImpl*>(DriverBase::getInstance())->getContext();
 
-        // FIXME: consider add a member mipLevels to TextureDescriptor to avoid recreate texture
+        // FIXME: consider add a member mipLevels to TextureDesc to avoid recreate texture
         //
         _textureRes.foreachTextures([context, this](TextureHandle& h, int) {
             if (h && h.srv)
@@ -419,8 +419,8 @@ void TextureImpl::updateFaceData(TextureCubeFace side, void* data, int index)
     // 2. compute RowPitch / SlicePitch
     //-------------------------------------------------------------------
     const uint32_t rowPitch =
-        PixelFormatUtils::computeRowPitch(_textureFormat, static_cast<uint32_t>(_textureRes._descriptor.width));
-    const uint32_t slicePitch = _textureRes._descriptor.height * rowPitch;
+        PixelFormatUtils::computeRowPitch(_textureFormat, static_cast<uint32_t>(_textureRes._desc.width));
+    const uint32_t slicePitch = _textureRes._desc.height * rowPitch;
 
     //-------------------------------------------------------------------
     // 3. update

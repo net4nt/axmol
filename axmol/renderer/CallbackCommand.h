@@ -24,7 +24,7 @@
  ****************************************************************************/
 #pragma once
 
-#include "axmol/rhi/PixelBufferDescriptor.h"
+#include "axmol/rhi/PixelBufferDesc.h"
 #include "axmol/renderer/RenderCommand.h"
 #include "axmol/base/RefPtr.h"
 

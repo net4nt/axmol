@@ -186,13 +186,13 @@ bool RenderTexture::initWithWidthAndHeight(int w,
             powH = utils::nextPOT(h);
         }
 
-        rhi::TextureDescriptor descriptor;
+        rhi::TextureDesc descriptor;
         descriptor.width         = powW;
         descriptor.height        = powH;
         descriptor.textureUsage  = TextureUsage::RENDER_TARGET;
         descriptor.textureFormat = PixelFormat::RGBA8;
         _texture2D               = new Texture2D();
-        _texture2D->updateTextureDescriptor(descriptor, !!AX_ENABLE_PREMULTIPLIED_ALPHA);
+        _texture2D->updateTextureDesc(descriptor, !!AX_ENABLE_PREMULTIPLIED_ALPHA);
 
         if (PixelFormat::D24S8 == depthStencilFormat || sharedRenderTarget)
         {
@@ -201,7 +201,7 @@ bool RenderTexture::initWithWidthAndHeight(int w,
             AX_SAFE_RELEASE(_depthStencilTexture);
 
             _depthStencilTexture = new Texture2D();
-            _depthStencilTexture->updateTextureDescriptor(descriptor);
+            _depthStencilTexture->updateTextureDesc(descriptor);
         }
 
         AX_SAFE_RELEASE(_renderTarget);
@@ -541,7 +541,7 @@ void RenderTexture::newImage(std::function<void(RefPtr<Image>)> imageCallback, b
     int savedBufferHeight      = (int)s.height;
     bool hasPremultipliedAlpha = _texture2D->hasPremultipliedAlpha();
 
-    auto callback = [hasPremultipliedAlpha, imageCallback](const rhi::PixelBufferDescriptor& pbd) {
+    auto callback = [hasPremultipliedAlpha, imageCallback](const rhi::PixelBufferDesc& pbd) {
         if (pbd)
         {
             auto image = utils::makeInstance<Image>(&Image::initWithRawData, pbd._data.getBytes(), pbd._data.getSize(),
@@ -557,7 +557,7 @@ void RenderTexture::newImage(std::function<void(RefPtr<Image>)> imageCallback, b
         auto colorAttachment = _renderTarget->_color[0].texture;
         if (colorAttachment)
         {
-            rhi::PixelBufferDescriptor pbd;
+            rhi::PixelBufferDesc pbd;
             static_cast<rhi::gl::CommandBufferImpl*>(_director->getRenderer()->getCommandBuffer())
                 ->readPixels(_renderTarget, 0, 0, colorAttachment->getWidth(), colorAttachment->getHeight(),
                              colorAttachment->getWidth() * 4, true, pbd);

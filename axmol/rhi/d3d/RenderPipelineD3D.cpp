@@ -4,15 +4,15 @@
 
 namespace ax::rhi::d3d
 {
-static D3D11_BLEND_OP toD3DBlendOp(BlendOperation op)
+static D3D11_BLEND_OP toD3DBlendOp(BlendOp op)
 {
     switch (op)
     {
-    case BlendOperation::ADD:
+    case BlendOp::ADD:
         return D3D11_BLEND_OP_ADD;
-    case BlendOperation::SUBTRACT:
+    case BlendOp::SUBTRACT:
         return D3D11_BLEND_OP_SUBTRACT;
-    case BlendOperation::REVERSE_SUBTRACT:
+    case BlendOp::REVERSE_SUBTRACT:
         return D3D11_BLEND_OP_REV_SUBTRACT;
     default:
         return D3D11_BLEND_OP_ADD;
@@ -144,14 +144,14 @@ static UINT toD3DColorWriteMask(ColorWriteMask mask)
     return result;
 }
 
-static uint32_t hashBlendDesc(const BlendDescriptor& bd)
+static uint32_t hashBlendDesc(const BlendDesc& bd)
 {
     struct PODBlend
     {
         uint32_t writeMask;
         uint8_t blendEnabled;
-        uint8_t rgbBlendOperation;
-        uint8_t alphaBlendOperation;
+        uint8_t rgbBlendOp;
+        uint8_t alphaBlendOp;
         uint8_t pad0;
         uint8_t sourceRGBBlendFactor;
         uint8_t destinationRGBBlendFactor;
@@ -160,8 +160,8 @@ static uint32_t hashBlendDesc(const BlendDescriptor& bd)
         uint32_t pad1;
     } pod{static_cast<uint32_t>(bd.writeMask),
           static_cast<uint8_t>(bd.blendEnabled),
-          static_cast<uint8_t>(bd.rgbBlendOperation),
-          static_cast<uint8_t>(bd.alphaBlendOperation),
+          static_cast<uint8_t>(bd.rgbBlendOp),
+          static_cast<uint8_t>(bd.alphaBlendOp),
           0,
           static_cast<uint8_t>(bd.sourceRGBBlendFactor),
           static_cast<uint8_t>(bd.destinationRGBBlendFactor),
@@ -172,11 +172,11 @@ static uint32_t hashBlendDesc(const BlendDescriptor& bd)
     return XXH32(&pod, sizeof(pod), 0);
 }
 
-void RenderPipelineImpl::update(const RenderTarget*, const PipelineDescriptor& desc)
+void RenderPipelineImpl::update(const RenderTarget*, const PipelineDesc& desc)
 {
     ComPtr<ID3D11BlendState> blendState;
 
-    auto key = hashBlendDesc(desc.blendDescriptor);
+    auto key = hashBlendDesc(desc.blendDesc);
     auto it      = _blendCache.find(key);
 
     if (it != _blendCache.end())
@@ -188,20 +188,20 @@ void RenderPipelineImpl::update(const RenderTarget*, const PipelineDescriptor& d
         D3D11_BLEND_DESC bd{};
 
         auto& bd0                 = bd.RenderTarget[0];
-        bd0.RenderTargetWriteMask = toD3DColorWriteMask(desc.blendDescriptor.writeMask);
+        bd0.RenderTargetWriteMask = toD3DColorWriteMask(desc.blendDesc.writeMask);
 
-        if (desc.blendDescriptor.blendEnabled)
+        if (desc.blendDesc.blendEnabled)
         {
             bd0.BlendEnable = TRUE;
 
-            bd0.SrcBlend  = toD3DBlendRGB(desc.blendDescriptor.sourceRGBBlendFactor);
-            bd0.DestBlend = toD3DBlendRGB(desc.blendDescriptor.destinationRGBBlendFactor);
+            bd0.SrcBlend  = toD3DBlendRGB(desc.blendDesc.sourceRGBBlendFactor);
+            bd0.DestBlend = toD3DBlendRGB(desc.blendDesc.destinationRGBBlendFactor);
 
-            bd0.SrcBlendAlpha  = toD3DBlendAlpha(desc.blendDescriptor.sourceAlphaBlendFactor);
-            bd0.DestBlendAlpha = toD3DBlendAlpha(desc.blendDescriptor.destinationAlphaBlendFactor);
+            bd0.SrcBlendAlpha  = toD3DBlendAlpha(desc.blendDesc.sourceAlphaBlendFactor);
+            bd0.DestBlendAlpha = toD3DBlendAlpha(desc.blendDesc.destinationAlphaBlendFactor);
 
-            bd0.BlendOp      = toD3DBlendOp(desc.blendDescriptor.rgbBlendOperation);
-            bd0.BlendOpAlpha = toD3DBlendOp(desc.blendDescriptor.alphaBlendOperation);
+            bd0.BlendOp      = toD3DBlendOp(desc.blendDesc.rgbBlendOp);
+            bd0.BlendOpAlpha = toD3DBlendOp(desc.blendDesc.alphaBlendOp);
         }
         else
         {
@@ -229,7 +229,7 @@ void RenderPipelineImpl::update(const RenderTarget*, const PipelineDescriptor& d
 
     constexpr UINT sampleMask = 0xFFFFFFFF;
 
-    if (desc.blendDescriptor.blendEnabled)
+    if (desc.blendDesc.blendEnabled)
     {
         // axmol don't call glBlendColor, so the default blendFactor shoud be transparent
         const FLOAT blendColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};

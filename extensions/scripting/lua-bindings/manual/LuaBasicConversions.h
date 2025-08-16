@@ -1310,11 +1310,11 @@ AX_LUA_DLL bool luaval_to_vertexLayout(lua_State* L,
                                        const char* message);
 
 /**
- * convert lua object SamplerDescriptor to native object
+ * convert lua object SamplerDesc to native object
  */
-AX_LUA_DLL bool luaval_to_samplerDescriptor(lua_State* L,
+AX_LUA_DLL bool luaval_to_samplerDesc(lua_State* L,
                                             int pos,
-                                            ax::rhi::SamplerDescriptor& desc,
+                                            ax::rhi::SamplerDesc& desc,
                                             const char* message);
 
 /**

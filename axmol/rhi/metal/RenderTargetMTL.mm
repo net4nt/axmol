@@ -4,7 +4,7 @@
 
 namespace ax::rhi::mtl {
 
-static MTLLoadAction getLoadAction(const RenderPassDescriptor& params, TargetBufferFlags buffer)
+static MTLLoadAction getLoadAction(const RenderPassDesc& params, TargetBufferFlags buffer)
 {
     const auto clearFlags        = (TargetBufferFlags)params.flags.clear;
     const auto discardStartFlags = params.flags.discardStart;
@@ -19,7 +19,7 @@ static MTLLoadAction getLoadAction(const RenderPassDescriptor& params, TargetBuf
     return MTLLoadActionLoad;
 }
 
-static MTLStoreAction getStoreAction(const RenderPassDescriptor& params, TargetBufferFlags buffer)
+static MTLStoreAction getStoreAction(const RenderPassDesc& params, TargetBufferFlags buffer)
 {
     const auto discardEndFlags = params.flags.discardEnd;
     if (bitmask::any(discardEndFlags, buffer))
@@ -32,8 +32,8 @@ static MTLStoreAction getStoreAction(const RenderPassDescriptor& params, TargetB
 RenderTargetImpl::RenderTargetImpl(bool defaultRenderTarget) : RenderTarget(defaultRenderTarget) {}
 RenderTargetImpl::~RenderTargetImpl() {}
 
-void RenderTargetImpl::applyRenderPassAttachments(const RenderPassDescriptor& params,
-                                                 MTLRenderPassDescriptor* descriptor) const
+void RenderTargetImpl::applyRenderPassAttachments(const RenderPassDesc& params,
+                                                 MTLRenderPassDescriptor* desc) const
 {
     // const auto discardFlags = params.flags.discardEnd;
     auto clearFlags = params.flags.clear;
@@ -48,13 +48,13 @@ void RenderTargetImpl::applyRenderPassAttachments(const RenderPassDescriptor& pa
 
         const auto MRTColorFlag = getMRTColorFlag(i);
 
-        descriptor.colorAttachments[i].texture = attachment.texture;
-        descriptor.colorAttachments[i].level   = attachment.level;
-        // descriptor.colorAttachments[i].slice = attachment.layer;
-        descriptor.colorAttachments[i].loadAction  = getLoadAction(params, MRTColorFlag);
-        descriptor.colorAttachments[i].storeAction = getStoreAction(params, MRTColorFlag);
+        desc.colorAttachments[i].texture = attachment.texture;
+        desc.colorAttachments[i].level   = attachment.level;
+        // desc.colorAttachments[i].slice = attachment.layer;
+        desc.colorAttachments[i].loadAction  = getLoadAction(params, MRTColorFlag);
+        desc.colorAttachments[i].storeAction = getStoreAction(params, MRTColorFlag);
         if (bitmask::any(clearFlags, MRTColorFlag))
-            descriptor.colorAttachments[i].clearColor =
+            desc.colorAttachments[i].clearColor =
                 MTLClearColorMake(params.clearColorValue[0], params.clearColorValue[1], params.clearColorValue[2],
                                 params.clearColorValue[3]);
     }
@@ -65,22 +65,22 @@ void RenderTargetImpl::applyRenderPassAttachments(const RenderPassDescriptor& pa
         if (depthStencilAttachment)
         {
             // depth
-            descriptor.depthAttachment.texture = depthStencilAttachment.texture;
-            descriptor.depthAttachment.level   = depthStencilAttachment.level;
-            // descriptor.depthAttachment.slice = depthAttachment.layer;
-            descriptor.depthAttachment.loadAction  = getLoadAction(params, TargetBufferFlags::DEPTH);
-            descriptor.depthAttachment.storeAction = getStoreAction(params, TargetBufferFlags::DEPTH);
+            desc.depthAttachment.texture = depthStencilAttachment.texture;
+            desc.depthAttachment.level   = depthStencilAttachment.level;
+            // desc.depthAttachment.slice = depthAttachment.layer;
+            desc.depthAttachment.loadAction  = getLoadAction(params, TargetBufferFlags::DEPTH);
+            desc.depthAttachment.storeAction = getStoreAction(params, TargetBufferFlags::DEPTH);
             if (bitmask::any(clearFlags, TargetBufferFlags::DEPTH))
-                descriptor.depthAttachment.clearDepth = params.clearDepthValue;
+                desc.depthAttachment.clearDepth = params.clearDepthValue;
 
             // depth
-            descriptor.stencilAttachment.texture = depthStencilAttachment.texture;
-            descriptor.stencilAttachment.level   = depthStencilAttachment.level;
-            // descriptor.stencilAttachment.slice = depthAttachment.layer;
-            descriptor.stencilAttachment.loadAction  = getLoadAction(params, TargetBufferFlags::STENCIL);
-            descriptor.stencilAttachment.storeAction = getStoreAction(params, TargetBufferFlags::STENCIL);
+            desc.stencilAttachment.texture = depthStencilAttachment.texture;
+            desc.stencilAttachment.level   = depthStencilAttachment.level;
+            // desc.stencilAttachment.slice = depthAttachment.layer;
+            desc.stencilAttachment.loadAction  = getLoadAction(params, TargetBufferFlags::STENCIL);
+            desc.stencilAttachment.storeAction = getStoreAction(params, TargetBufferFlags::STENCIL);
             if (bitmask::any(clearFlags, TargetBufferFlags::STENCIL))
-                descriptor.stencilAttachment.clearStencil = params.clearStencilValue;
+                desc.stencilAttachment.clearStencil = params.clearStencilValue;
         }
     }
 

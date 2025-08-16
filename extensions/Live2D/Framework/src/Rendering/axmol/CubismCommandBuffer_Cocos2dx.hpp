@@ -57,8 +57,8 @@ public:
             DrawCommand();
             virtual ~DrawCommand();
 
-            ax::rhi::BlendDescriptor* GetBlendDescriptor();
-            ax::PipelineDescriptor* GetPipelineDescriptor();
+            ax::rhi::BlendDesc* GetBlendDescriptor();
+            ax::PipelineDesc* GetPipelineDescriptor();
             ax::CustomCommand* GetCommand();
 
         private:

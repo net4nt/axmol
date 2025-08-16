@@ -6,64 +6,64 @@ namespace ax::rhi::d3d
 {
 namespace
 {
-static D3D11_COMPARISON_FUNC to_d3d(CompareFunction func)
+static D3D11_COMPARISON_FUNC to_d3d(CompareFunc func)
 {
     switch (func)
     {
-    case CompareFunction::NEVER:
+    case CompareFunc::NEVER:
         return D3D11_COMPARISON_NEVER;
-    case CompareFunction::LESS:
+    case CompareFunc::LESS:
         return D3D11_COMPARISON_LESS;
-    case CompareFunction::LESS_EQUAL:
+    case CompareFunc::LESS_EQUAL:
         return D3D11_COMPARISON_LESS_EQUAL;
-    case CompareFunction::GREATER:
+    case CompareFunc::GREATER:
         return D3D11_COMPARISON_GREATER;
-    case CompareFunction::GREATER_EQUAL:
+    case CompareFunc::GREATER_EQUAL:
         return D3D11_COMPARISON_GREATER_EQUAL;
-    case CompareFunction::EQUAL:
+    case CompareFunc::EQUAL:
         return D3D11_COMPARISON_EQUAL;
-    case CompareFunction::NOT_EQUAL:
+    case CompareFunc::NOT_EQUAL:
         return D3D11_COMPARISON_NOT_EQUAL;
-    case CompareFunction::ALWAYS:
+    case CompareFunc::ALWAYS:
         return D3D11_COMPARISON_ALWAYS;
     default:
         return D3D11_COMPARISON_LESS_EQUAL;
     }
 }
 
-static D3D11_STENCIL_OP to_d3d(StencilOperation op)
+static D3D11_STENCIL_OP to_d3d(StencilOp op)
 {
     switch (op)
     {
-    case StencilOperation::KEEP:
+    case StencilOp::KEEP:
         return D3D11_STENCIL_OP_KEEP;
-    case StencilOperation::ZERO:
+    case StencilOp::ZERO:
         return D3D11_STENCIL_OP_ZERO;
-    case StencilOperation::REPLACE:
+    case StencilOp::REPLACE:
         return D3D11_STENCIL_OP_REPLACE;
-    case StencilOperation::INVERT:
+    case StencilOp::INVERT:
         return D3D11_STENCIL_OP_INVERT;
-    case StencilOperation::INCREMENT_WRAP:
+    case StencilOp::INCREMENT_WRAP:
         return D3D11_STENCIL_OP_INCR;
-    case StencilOperation::DECREMENT_WRAP:
+    case StencilOp::DECREMENT_WRAP:
         return D3D11_STENCIL_OP_DECR;
     default:
         return D3D11_STENCIL_OP_KEEP;
     }
 }
 
-static D3D11_DEPTH_STENCILOP_DESC make_op_desc(const StencilDescriptor& s)
+static D3D11_DEPTH_STENCILOP_DESC make_op_desc(const StencilDesc& s)
 {
     D3D11_DEPTH_STENCILOP_DESC d{};
-    d.StencilFailOp      = to_d3d(s.stencilFailureOperation);
-    d.StencilDepthFailOp = to_d3d(s.depthFailureOperation);
-    d.StencilPassOp      = to_d3d(s.depthStencilPassOperation);
-    d.StencilFunc        = to_d3d(s.stencilCompareFunction);
+    d.StencilFailOp      = to_d3d(s.stencilFailureOp);
+    d.StencilDepthFailOp = to_d3d(s.depthFailureOp);
+    d.StencilPassOp      = to_d3d(s.depthStencilPassOp);
+    d.StencilFunc        = to_d3d(s.stencilCompareFunc);
     return d;
 }
 }  // namespace
 
-void DepthStencilStateImpl::update(const DepthStencilDescriptor& desc)
+void DepthStencilStateImpl::update(const DepthStencilDesc& desc)
 {
     if (_state && memcmp(&desc, &_dsDesc, sizeof(desc)) == 0)
     {
@@ -77,7 +77,7 @@ void DepthStencilStateImpl::update(const DepthStencilDescriptor& desc)
     d.DepthEnable    = bitmask::any(desc.flags, DepthStencilFlags::DEPTH_TEST) ? TRUE : FALSE;
     d.DepthWriteMask = bitmask::any(desc.flags, DepthStencilFlags::DEPTH_WRITE) ? D3D11_DEPTH_WRITE_MASK_ALL
                                                                                 : D3D11_DEPTH_WRITE_MASK_ZERO;
-    d.DepthFunc      = to_d3d(desc.depthCompareFunction);
+    d.DepthFunc      = to_d3d(desc.depthCompareFunc);
 
     d.StencilEnable    = bitmask::any(desc.flags, DepthStencilFlags::STENCIL_TEST) ? TRUE : FALSE;
     d.StencilReadMask  = desc.frontFaceStencil.readMask;
@@ -95,7 +95,7 @@ void DepthStencilStateImpl::update(const DepthStencilDescriptor& desc)
     _state  = std::move(newState);
     _dsDesc = desc;
     _isBackFrontStencilEqual =
-        (std::memcmp(&desc.frontFaceStencil, &desc.backFaceStencil, sizeof(StencilDescriptor)) == 0);
+        (std::memcmp(&desc.frontFaceStencil, &desc.backFaceStencil, sizeof(StencilDesc)) == 0);
 }
 
 void DepthStencilStateImpl::apply(ID3D11DeviceContext* ctx, UINT stencilRef) const

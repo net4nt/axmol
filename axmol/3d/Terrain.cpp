@@ -955,7 +955,7 @@ void Terrain::Chunk::bindAndDraw()
     AXASSERT(_buffer && _chunkIndices._indexBuffer, "buffer should not be nullptr");
     _command.setIndexBuffer(_chunkIndices._indexBuffer, rhi::IndexFormat::U_SHORT);
     _command.setVertexBuffer(_buffer);
-    _command.getPipelineDescriptor().programState = _terrain->_programState;
+    _command.getPipelineDesc().programState = _terrain->_programState;
     _command.setIndexDrawInfo(0, _chunkIndices._size);
     renderer->addCommand(&_command);
     AX_INCREMENT_GL_DRAWN_BATCHES_AND_VERTICES(1, _chunkIndices._size);
@@ -1083,8 +1083,8 @@ Terrain::Chunk::Chunk(Terrain* terrain)
     _command.setBeforeCallback(AX_CALLBACK_0(Terrain::onBeforeDraw, terrain));
     _command.setAfterCallback(AX_CALLBACK_0(Terrain::onAfterDraw, terrain));
 
-    auto& pipelineDescriptor                        = _command.getPipelineDescriptor();
-    pipelineDescriptor.blendDescriptor.blendEnabled = false;
+    auto& pipelineDesc                        = _command.getPipelineDesc();
+    pipelineDesc.blendDesc.blendEnabled = false;
 }
 
 void Terrain::Chunk::updateIndicesLOD()

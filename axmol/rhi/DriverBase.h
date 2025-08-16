@@ -26,7 +26,7 @@
 #pragma once
 
 #include "axmol/rhi/RHITypes.h"
-#include "axmol/rhi/RenderPassDescriptor.h"
+#include "axmol/rhi/RenderPassDesc.h"
 #include "axmol/rhi/Texture.h"
 #include "axmol/rhi/DepthStencilState.h"
 #include "axmol/rhi/ShaderCache.h"
@@ -107,7 +107,7 @@ public:
      * @param descriptor Specifies texture description.
      * @return A Texture object.
      */
-    virtual Texture* createTexture(const TextureDescriptor& descriptor) = 0;
+    virtual Texture* createTexture(const TextureDesc& descriptor) = 0;
 
     virtual RenderTarget* createDefaultRenderTarget() = 0;
 

@@ -50,7 +50,7 @@ public:
     RenderPipelineImpl() = default;
     ~RenderPipelineImpl();
 
-    void update(const RenderTarget*, const PipelineDescriptor& pipelineDescriptor) override;
+    void update(const RenderTarget*, const PipelineDesc& pipelineDesc) override;
     /**
      * Get program instance.
      * @return Program instance.
@@ -58,7 +58,7 @@ public:
     inline ProgramImpl* getProgram() const { return _programImpl; }
 
 private:
-    void updateBlendState(const BlendDescriptor& descriptor);
+    void updateBlendState(const BlendDesc& descriptor);
 
     ProgramImpl* _programImpl = nullptr;
 };

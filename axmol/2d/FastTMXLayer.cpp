@@ -125,7 +125,7 @@ FastTMXLayer::~FastTMXLayer()
 
     for (auto&& e : _customCommands)
     {
-        AX_SAFE_RELEASE(e.second->getPipelineDescriptor().programState);
+        AX_SAFE_RELEASE(e.second->getPipelineDesc().programState);
         delete e.second;
     }
 }
@@ -163,8 +163,8 @@ void FastTMXLayer::draw(Renderer* renderer, const Mat4& transform, uint32_t flag
     {
         if (e.second->getIndexDrawCount() > 0)
         {
-            auto mvpmatrixLocation = e.second->getPipelineDescriptor().programState->getUniformLocation("u_MVPMatrix");
-            e.second->getPipelineDescriptor().programState->setUniform(mvpmatrixLocation, finalMat.m,
+            auto mvpmatrixLocation = e.second->getPipelineDesc().programState->getUniformLocation("u_MVPMatrix");
+            e.second->getPipelineDesc().programState->setUniform(mvpmatrixLocation, finalMat.m,
                                                                        sizeof(finalMat.m));
             renderer->addCommand(e.second);
         }
@@ -446,30 +446,30 @@ void FastTMXLayer::updatePrimitives()
 
             command->setIndexDrawInfo(start * 6, iter.second * 6);
 
-            auto& pipelineDescriptor = command->getPipelineDescriptor();
+            auto& pipelineDesc = command->getPipelineDesc();
 
             if (_useAutomaticVertexZ)
             {
-                AX_SAFE_RELEASE(pipelineDescriptor.programState);
+                AX_SAFE_RELEASE(pipelineDesc.programState);
                 auto* program =
                     axpm->getBuiltinProgram(rhi::ProgramType::POSITION_TEXTURE_COLOR_ALPHA_TEST);
                 auto programState               = new rhi::ProgramState(program);
-                pipelineDescriptor.programState = programState;
-                _alphaValueLocation             = pipelineDescriptor.programState->getUniformLocation("u_alpha_value");
-                pipelineDescriptor.programState->setUniform(_alphaValueLocation, &_alphaFuncValue,
+                pipelineDesc.programState = programState;
+                _alphaValueLocation             = pipelineDesc.programState->getUniformLocation("u_alpha_value");
+                pipelineDesc.programState->setUniform(_alphaValueLocation, &_alphaFuncValue,
                                                             sizeof(_alphaFuncValue));
             }
             else
             {
-                AX_SAFE_RELEASE(pipelineDescriptor.programState);
+                AX_SAFE_RELEASE(pipelineDesc.programState);
                 auto* program     = axpm->getBuiltinProgram(rhi::ProgramType::POSITION_TEXTURE_COLOR);
                 auto programState = new rhi::ProgramState(program);
-                pipelineDescriptor.programState = programState;
+                pipelineDesc.programState = programState;
             }
 
-            _mvpMatrixLocaiton = pipelineDescriptor.programState->getUniformLocation("u_MVPMatrix");
-            _textureLocation   = pipelineDescriptor.programState->getUniformLocation("u_tex0");
-            pipelineDescriptor.programState->setTexture(_textureLocation, 0, _texture->getBackendTexture());
+            _mvpMatrixLocaiton = pipelineDesc.programState->getUniformLocation("u_MVPMatrix");
+            _textureLocation   = pipelineDesc.programState->getUniformLocation("u_tex0");
+            pipelineDesc.programState->setTexture(_textureLocation, 0, _texture->getBackendTexture());
             command->init(_globalZOrder, blendfunc);
 
             _customCommands[iter.first] = command;

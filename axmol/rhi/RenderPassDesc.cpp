@@ -22,11 +22,11 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#include "axmol/rhi/RenderPassDescriptor.h"
+#include "axmol/rhi/RenderPassDesc.h"
 
 namespace ax::rhi {
 
-bool RenderPassDescriptor::operator==(const RenderPassDescriptor& descriptor) const
+bool RenderPassDesc::operator==(const RenderPassDesc& descriptor) const
 {
     return (clearDepthValue == descriptor.clearDepthValue && clearStencilValue == descriptor.clearStencilValue &&
             clearColorValue == descriptor.clearColorValue &&

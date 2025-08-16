@@ -148,7 +148,7 @@ void DrawNode::updateShaderInternal(CustomCommand& cmd,
                                     CustomCommand::DrawType drawType,
                                     CustomCommand::PrimitiveType primitiveType)
 {
-    auto& pipelinePS = cmd.getPipelineDescriptor().programState;
+    auto& pipelinePS = cmd.getPipelineDesc().programState;
     AX_SAFE_RELEASE(pipelinePS);
 
     auto program = axpm->getBuiltinProgram(programType);
@@ -160,50 +160,50 @@ void DrawNode::updateShaderInternal(CustomCommand& cmd,
 
 void DrawNode::setVertexLayout(CustomCommand& cmd)
 {
-    auto* programState = cmd.getPipelineDescriptor().programState;
+    auto* programState = cmd.getPipelineDesc().programState;
     programState->validateSharedVertexLayout(rhi::VertexLayoutType::DrawNode);
 }
 
 void DrawNode::freeShaderInternal(CustomCommand& cmd)
 {
-    auto& pipelinePS = cmd.getPipelineDescriptor().programState;
+    auto& pipelinePS = cmd.getPipelineDesc().programState;
     AX_SAFE_RELEASE_NULL(pipelinePS);
 }
 
 void DrawNode::updateBlendState(CustomCommand& cmd)
 {
-    rhi::BlendDescriptor& blendDescriptor = cmd.getPipelineDescriptor().blendDescriptor;
-    blendDescriptor.blendEnabled              = true;
+    rhi::BlendDesc& blendDesc = cmd.getPipelineDesc().blendDesc;
+    blendDesc.blendEnabled              = true;
     if (_blendFunc == BlendFunc::ALPHA_NON_PREMULTIPLIED)
     {
-        blendDescriptor.sourceRGBBlendFactor        = rhi::BlendFactor::SRC_ALPHA;
-        blendDescriptor.destinationRGBBlendFactor   = rhi::BlendFactor::ONE_MINUS_SRC_ALPHA;
-        blendDescriptor.sourceAlphaBlendFactor      = rhi::BlendFactor::SRC_ALPHA;
-        blendDescriptor.destinationAlphaBlendFactor = rhi::BlendFactor::ONE_MINUS_SRC_ALPHA;
+        blendDesc.sourceRGBBlendFactor        = rhi::BlendFactor::SRC_ALPHA;
+        blendDesc.destinationRGBBlendFactor   = rhi::BlendFactor::ONE_MINUS_SRC_ALPHA;
+        blendDesc.sourceAlphaBlendFactor      = rhi::BlendFactor::SRC_ALPHA;
+        blendDesc.destinationAlphaBlendFactor = rhi::BlendFactor::ONE_MINUS_SRC_ALPHA;
         setOpacityModifyRGB(false);
     }
     else
     {
-        blendDescriptor.sourceRGBBlendFactor        = _blendFunc.src;
-        blendDescriptor.destinationRGBBlendFactor   = _blendFunc.dst;
-        blendDescriptor.sourceAlphaBlendFactor      = _blendFunc.src;
-        blendDescriptor.destinationAlphaBlendFactor = _blendFunc.dst;
+        blendDesc.sourceRGBBlendFactor        = _blendFunc.src;
+        blendDesc.destinationRGBBlendFactor   = _blendFunc.dst;
+        blendDesc.sourceAlphaBlendFactor      = _blendFunc.src;
+        blendDesc.destinationAlphaBlendFactor = _blendFunc.dst;
         setOpacityModifyRGB(true);
     }
 }
 
 void DrawNode::updateUniforms(const Mat4& transform, CustomCommand& cmd)
 {
-    auto& pipelineDescriptor = cmd.getPipelineDescriptor();
+    auto& pipelineDesc = cmd.getPipelineDesc();
     const auto& matrixP      = _director->getMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION);
     Mat4 matrixMVP           = matrixP * transform;
-    auto mvpLocation         = pipelineDescriptor.programState->getUniformLocation("u_MVPMatrix");
-    pipelineDescriptor.programState->setUniform(mvpLocation, matrixMVP.m, sizeof(matrixMVP.m));
+    auto mvpLocation         = pipelineDesc.programState->getUniformLocation("u_MVPMatrix");
+    pipelineDesc.programState->setUniform(mvpLocation, matrixMVP.m, sizeof(matrixMVP.m));
 
     // FIXME: consider whether 'u_alpha' is a redundant uniform in shaders?
     float alpha               = _displayedColor.a / 255.0f;
-    auto alphaUniformLocation = pipelineDescriptor.programState->getUniformLocation("u_alpha");
-    pipelineDescriptor.programState->setUniform(alphaUniformLocation, &alpha, sizeof(alpha));
+    auto alphaUniformLocation = pipelineDesc.programState->getUniformLocation("u_alpha");
+    pipelineDesc.programState->setUniform(alphaUniformLocation, &alpha, sizeof(alpha));
 }
 
 void DrawNode::draw(Renderer* renderer, const Mat4& transform, uint32_t flags)

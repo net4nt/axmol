@@ -129,8 +129,8 @@ bool CameraBackgroundDepthBrush::init()
 
     _locDepth = _programState->getUniformLocation("dpeth");
 
-    auto& pipelineDescriptor        = _customCommand.getPipelineDescriptor();
-    pipelineDescriptor.programState = _programState;
+    auto& pipelineDesc        = _customCommand.getPipelineDesc();
+    pipelineDesc.programState = _programState;
 
     _vertices.resize(4);
     _vertices[0].position = Vec3(-1, -1, 0);
@@ -174,8 +174,8 @@ void CameraBackgroundDepthBrush::drawBackground(Camera* /*camera*/)
     renderer->addCommand(groupCommand);
     renderer->pushGroup(groupCommand->getRenderQueueID());
 
-    auto& pipelineDescriptor = _customCommand.getPipelineDescriptor();
-    auto& blend              = pipelineDescriptor.blendDescriptor;
+    auto& pipelineDesc = _customCommand.getPipelineDesc();
+    auto& blend              = pipelineDesc.blendDesc;
     blend.writeMask          = _clearColor ? rhi::ColorWriteMask::ALL : rhi::ColorWriteMask::NONE;
 
     // draw
@@ -191,11 +191,11 @@ void CameraBackgroundDepthBrush::onBeforeDraw()
     auto* renderer               = Director::getInstance()->getRenderer();
     _stateBlock.stencilWriteMask = renderer->getStencilWriteMask();
     _stateBlock.depthTest        = renderer->getDepthTest();
-    _stateBlock.compareFunc      = renderer->getDepthCompareFunction();
+    _stateBlock.compareFunc      = renderer->getDepthCompareFunc();
 
     renderer->setStencilWriteMask(0);
     renderer->setDepthTest(true);
-    renderer->setDepthCompareFunction(rhi::CompareFunction::ALWAYS);
+    renderer->setDepthCompareFunc(rhi::CompareFunc::ALWAYS);
 }
 
 void CameraBackgroundDepthBrush::onAfterDraw()
@@ -203,7 +203,7 @@ void CameraBackgroundDepthBrush::onAfterDraw()
     auto* renderer = Director::getInstance()->getRenderer();
     renderer->setStencilWriteMask(_stateBlock.stencilWriteMask);
     renderer->setDepthTest(_stateBlock.depthTest);
-    renderer->setDepthCompareFunction(_stateBlock.compareFunc);
+    renderer->setDepthCompareFunc(_stateBlock.compareFunc);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -223,7 +223,7 @@ void CameraBackgroundColorBrush::drawBackground(Camera* camera)
 {
     BlendFunc op = {BlendFunc::ALPHA_NON_PREMULTIPLIED.src, BlendFunc::ALPHA_NON_PREMULTIPLIED.dst};
 
-    auto& blend                = _customCommand.getPipelineDescriptor().blendDescriptor;
+    auto& blend                = _customCommand.getPipelineDesc().blendDesc;
     blend.sourceRGBBlendFactor = blend.sourceAlphaBlendFactor = op.src;
     blend.destinationRGBBlendFactor = blend.destinationAlphaBlendFactor = op.dst;
     blend.blendEnabled                                                  = true;
@@ -350,8 +350,8 @@ void CameraBackgroundSkyBoxBrush::drawBackground(Camera* camera)
 
     Mat4 cameraModelMat = camera->getNodeToWorldTransform();
 
-    auto& pipelineDescriptor                        = _customCommand.getPipelineDescriptor();
-    pipelineDescriptor.blendDescriptor.blendEnabled = false;
+    auto& pipelineDesc                        = _customCommand.getPipelineDesc();
+    pipelineDesc.blendDesc.blendEnabled = false;
 
     Vec4 color(1.f, 1.f, 1.f, 1.f);
     cameraModelMat.m[12] = cameraModelMat.m[13] = cameraModelMat.m[14] = 0;
@@ -383,10 +383,10 @@ bool CameraBackgroundSkyBoxBrush::init()
     _uniformCameraRotLoc = _programState->getUniformLocation("u_cameraRot");
     _uniformEnvLoc       = _programState->getUniformLocation("u_Env");
 
-    auto& pipelineDescriptor        = _customCommand.getPipelineDescriptor();
-    pipelineDescriptor.programState = _programState;
+    auto& pipelineDesc        = _customCommand.getPipelineDesc();
+    pipelineDesc.programState = _programState;
     // disable blend
-    pipelineDescriptor.blendDescriptor.blendEnabled = false;
+    pipelineDesc.blendDesc.blendEnabled = false;
 
     initBuffer();
 
@@ -449,7 +449,7 @@ void CameraBackgroundSkyBoxBrush::onBeforeDraw()
     auto* renderer         = Director::getInstance()->getRenderer();
     _stateBlock.depthTest  = renderer->getDepthTest();
     _stateBlock.depthWrite = renderer->getDepthWrite();
-    _stateBlock.depthFunc  = renderer->getDepthCompareFunction();
+    _stateBlock.depthFunc  = renderer->getDepthCompareFunc();
     _stateBlock.cullMode   = renderer->getCullMode();
 }
 
@@ -458,7 +458,7 @@ void CameraBackgroundSkyBoxBrush::onAfterDraw()
     auto* renderer = Director::getInstance()->getRenderer();
     renderer->setDepthTest(_stateBlock.depthTest);
     renderer->setDepthWrite(_stateBlock.depthWrite);
-    renderer->setDepthCompareFunction(_stateBlock.depthFunc);
+    renderer->setDepthCompareFunc(_stateBlock.depthFunc);
     renderer->setCullMode(_stateBlock.cullMode);
 }
 

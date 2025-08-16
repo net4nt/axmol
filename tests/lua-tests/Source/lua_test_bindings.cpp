@@ -174,7 +174,7 @@ bool DrawNode3D::init()
     _customCommand.createVertexBuffer(sizeof(V3F_C4B), INITIAL_VERTEX_BUFFER_LENGTH,
                                       CustomCommand::BufferUsage::DYNAMIC);
 
-    _customCommand.getPipelineDescriptor().programState = _programState;
+    _customCommand.getPipelineDesc().programState = _programState;
 
     _dirty = true;
 
@@ -275,7 +275,7 @@ void DrawNode3D::setBlendFunc(const BlendFunc& blendFunc)
 {
     _blendFunc = blendFunc;
     // update blend mode
-    auto& blend                = _customCommand.getPipelineDescriptor().blendDescriptor;
+    auto& blend                = _customCommand.getPipelineDesc().blendDesc;
     blend.blendEnabled         = true;
     blend.sourceRGBBlendFactor = blend.sourceAlphaBlendFactor = _blendFunc.src;
     blend.destinationRGBBlendFactor = blend.destinationAlphaBlendFactor = _blendFunc.dst;

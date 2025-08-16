@@ -6,11 +6,11 @@ set(_AX_RHI_HEADER
   rhi/CommandBuffer.h
   rhi/DepthStencilState.h
   rhi/DriverBase.h
-  rhi/PixelBufferDescriptor.h
+  rhi/PixelBufferDesc.h
   rhi/PixelFormatUtils.h
   rhi/Program.h
   rhi/ProgramState.h
-  rhi/RenderPassDescriptor.h
+  rhi/RenderPassDesc.h
   rhi/RenderPipeline.h
   rhi/RenderTarget.h
   rhi/ShaderCache.h
@@ -30,7 +30,7 @@ set(_AX_RHI_SRC
   rhi/Program.cpp
   rhi/ProgramState.cpp
   rhi/ShaderCache.cpp
-  rhi/RenderPassDescriptor.cpp
+  rhi/RenderPassDesc.cpp
 )
 
 if(AX_RENDER_API STREQUAL "gl")

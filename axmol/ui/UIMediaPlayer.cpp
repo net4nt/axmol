@@ -64,7 +64,7 @@ using namespace ax::ui;
 
 namespace
 {
-struct PrivateVideoDescriptor
+struct PrivateVideoDesc
 {
     MediaEngine* _engine        = nullptr;
     Texture2D* _vtexture        = nullptr;
@@ -868,7 +868,7 @@ void BasicMediaController::updateControlsForContentSize(const Vec2& contentSize)
 
 MediaPlayer::MediaPlayer()
 {
-    auto pvd      = new PrivateVideoDescriptor{};
+    auto pvd      = new PrivateVideoDesc{};
     _videoContext = pvd;
 #    if AX_VIDEOPLAYER_DEBUG_DRAW
     _debugDrawNode = DrawNode::create();
@@ -1015,7 +1015,7 @@ MediaPlayer::MediaPlayer()
                 if (pixelFormat >= MEVideoPixelFormat::YUY2)
                 {
                     auto ps = pvd->_vrender->getProgramState();
-                    PrivateVideoDescriptor::updateColorTransform(ps, frame._vpd._fullRange);
+                    PrivateVideoDesc::updateColorTransform(ps, frame._vpd._fullRange);
 
                     ps->setTexture(ps->getUniformLocation("u_tex1"), 1, pvd->_vchromaTexture->getBackendTexture());
 
@@ -1035,7 +1035,7 @@ MediaPlayer::MediaPlayer()
 
 MediaPlayer::~MediaPlayer()
 {
-    auto pvd = reinterpret_cast<PrivateVideoDescriptor*>(_videoContext);
+    auto pvd = reinterpret_cast<PrivateVideoDesc*>(_videoContext);
 
     removeAllProtectedChildren();
 
@@ -1077,7 +1077,7 @@ void MediaPlayer::setFileName(std::string_view fileName)
     auto fullPath = FileUtils::getInstance()->fullPathForFilename(fileName);
     if (ax::utils::filePathToUrl(std::forward<std::string>(fullPath)) != _videoURL)
     {
-        reinterpret_cast<PrivateVideoDescriptor*>(_videoContext)->closePlayer();
+        reinterpret_cast<PrivateVideoDesc*>(_videoContext)->closePlayer();
         _videoURL = std::move(fullPath);
     }
     _videoSource = MediaPlayer::Source::FILENAME;
@@ -1087,7 +1087,7 @@ void MediaPlayer::setURL(std::string_view videoUrl)
 {
     if (_videoURL != videoUrl)
     {
-        reinterpret_cast<PrivateVideoDescriptor*>(_videoContext)->closePlayer();
+        reinterpret_cast<PrivateVideoDesc*>(_videoContext)->closePlayer();
         _videoURL = videoUrl;
     }
     _videoSource = MediaPlayer::Source::URL;
@@ -1097,7 +1097,7 @@ void MediaPlayer::setLooping(bool looping)
 {
     _isLooping = looping;
 
-    auto pvd = reinterpret_cast<PrivateVideoDescriptor*>(_videoContext);
+    auto pvd = reinterpret_cast<PrivateVideoDesc*>(_videoContext);
     if (pvd->_engine)
         pvd->_engine->setLoop(looping);
 }
@@ -1122,7 +1122,7 @@ void MediaPlayer::setStyle(StyleType style)
 
 Node* MediaPlayer::getVirtualRenderer()
 {
-    auto pvd = reinterpret_cast<PrivateVideoDescriptor*>(_videoContext);
+    auto pvd = reinterpret_cast<PrivateVideoDesc*>(_videoContext);
     return pvd->_vrender;
 }
 
@@ -1130,7 +1130,7 @@ void MediaPlayer::draw(Renderer* renderer, const Mat4& transform, uint32_t flags
 {
     ax::ui::Widget::draw(renderer, transform, flags);
 
-    auto pvd     = reinterpret_cast<PrivateVideoDescriptor*>(_videoContext);
+    auto pvd     = reinterpret_cast<PrivateVideoDesc*>(_videoContext);
     auto vrender = pvd->_vrender;
     auto engine  = pvd->_engine;
     if (!vrender || !engine)
@@ -1154,7 +1154,7 @@ void MediaPlayer::draw(Renderer* renderer, const Mat4& transform, uint32_t flags
 void MediaPlayer::setContentSize(const Size& contentSize)
 {
     Widget::setContentSize(contentSize);
-    auto videoContext               = reinterpret_cast<PrivateVideoDescriptor*>(_videoContext);
+    auto videoContext               = reinterpret_cast<PrivateVideoDesc*>(_videoContext);
     videoContext->_originalViewSize = contentSize;
     if (_mediaController)
     {
@@ -1167,7 +1167,7 @@ MediaPlayer::MediaState MediaPlayer::getState() const
     if (_videoURL.empty())
         return MediaState::CLOSED;
 
-    auto engine = reinterpret_cast<PrivateVideoDescriptor*>(_videoContext)->_engine;
+    auto engine = reinterpret_cast<PrivateVideoDesc*>(_videoContext)->_engine;
     if (engine)
     {
         switch (engine->getState())
@@ -1214,7 +1214,7 @@ void MediaPlayer::setFullScreenEnabled(bool enabled)
     {
         _fullScreenEnabled = enabled;
 
-        auto pvd               = reinterpret_cast<PrivateVideoDescriptor*>(_videoContext);
+        auto pvd               = reinterpret_cast<PrivateVideoDesc*>(_videoContext);
         const auto contentSize = enabled ? _director->getRenderView()->getDesignResolutionSize() : pvd->_originalViewSize;
         Widget::setContentSize(contentSize);
 
@@ -1232,7 +1232,7 @@ void MediaPlayer::setKeepAspectRatioEnabled(bool enable)
     if (_keepAspectRatioEnabled != enable)
     {
         _keepAspectRatioEnabled                                               = enable;
-        reinterpret_cast<PrivateVideoDescriptor*>(_videoContext)->_scaleDirty = true;
+        reinterpret_cast<PrivateVideoDesc*>(_videoContext)->_scaleDirty = true;
     }
 }
 
@@ -1240,7 +1240,7 @@ void MediaPlayer::setPlayRate(float fRate)
 {
     if (!_videoURL.empty())
     {
-        auto engine = reinterpret_cast<PrivateVideoDescriptor*>(_videoContext)->_engine;
+        auto engine = reinterpret_cast<PrivateVideoDesc*>(_videoContext)->_engine;
         if (engine)
             engine->setRate(fRate);
     }
@@ -1250,7 +1250,7 @@ void MediaPlayer::play()
 {
     if (!_videoURL.empty())
     {
-        auto engine = reinterpret_cast<PrivateVideoDescriptor*>(_videoContext)->_engine;
+        auto engine = reinterpret_cast<PrivateVideoDesc*>(_videoContext)->_engine;
         if (engine)
         {
             switch (engine->getState())
@@ -1283,7 +1283,7 @@ void MediaPlayer::pausePlayback()
 {
     if (!_videoURL.empty())
     {
-        auto engine = reinterpret_cast<PrivateVideoDescriptor*>(_videoContext)->_engine;
+        auto engine = reinterpret_cast<PrivateVideoDesc*>(_videoContext)->_engine;
         if (engine)
         {
             engine->pause();
@@ -1296,7 +1296,7 @@ void MediaPlayer::resumePlayback()
 {
     if (!_videoURL.empty())
     {
-        auto engine = reinterpret_cast<PrivateVideoDescriptor*>(_videoContext)->_engine;
+        auto engine = reinterpret_cast<PrivateVideoDesc*>(_videoContext)->_engine;
         if (engine)
         {
             switch (engine->getState())
@@ -1315,7 +1315,7 @@ void MediaPlayer::stop()
 {
     if (!_videoURL.empty())
     {
-        auto engine = reinterpret_cast<PrivateVideoDescriptor*>(_videoContext)->_engine;
+        auto engine = reinterpret_cast<PrivateVideoDesc*>(_videoContext)->_engine;
         if (engine)
         {
             engine->stop();
@@ -1328,7 +1328,7 @@ void MediaPlayer::seekTo(float sec)
 {
     if (!_videoURL.empty())
     {
-        auto engine = reinterpret_cast<PrivateVideoDescriptor*>(_videoContext)->_engine;
+        auto engine = reinterpret_cast<PrivateVideoDesc*>(_videoContext)->_engine;
         if (engine)
         {
             engine->setCurrentTime(sec);
@@ -1341,7 +1341,7 @@ float MediaPlayer::getCurrentTime()
 {
     if (!_videoURL.empty())
     {
-        auto engine = reinterpret_cast<PrivateVideoDescriptor*>(_videoContext)->_engine;
+        auto engine = reinterpret_cast<PrivateVideoDesc*>(_videoContext)->_engine;
         if (engine)
         {
             return static_cast<float>(engine->getCurrentTime());
@@ -1355,7 +1355,7 @@ float MediaPlayer::getDuration()
 {
     if (!_videoURL.empty())
     {
-        auto engine = reinterpret_cast<PrivateVideoDescriptor*>(_videoContext)->_engine;
+        auto engine = reinterpret_cast<PrivateVideoDesc*>(_videoContext)->_engine;
         if (engine)
         {
             return static_cast<float>(engine->getDuration());

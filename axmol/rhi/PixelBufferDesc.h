@@ -5,11 +5,11 @@
 
 namespace ax::rhi {
 
-struct PixelBufferDescriptor
+struct PixelBufferDesc
 {
-    PixelBufferDescriptor()                             = default;
-    PixelBufferDescriptor(const PixelBufferDescriptor&) = default;
-    PixelBufferDescriptor(PixelBufferDescriptor&& rhs) noexcept
+    PixelBufferDesc()                             = default;
+    PixelBufferDesc(const PixelBufferDesc&) = default;
+    PixelBufferDesc(PixelBufferDesc&& rhs) noexcept
         : _data(std::move(rhs._data)), _width(rhs._width), _height(rhs._height)
     {}
 

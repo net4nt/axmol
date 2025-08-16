@@ -20,7 +20,7 @@ public:
     RenderTargetImpl(bool defaultRenderTarget);
     ~RenderTargetImpl();
 
-    void applyRenderPassAttachments(const RenderPassDescriptor&, MTLRenderPassDescriptor*) const;
+    void applyRenderPassAttachments(const RenderPassDesc&, MTLRenderPassDescriptor*) const;
 
     Attachment getColorAttachment(int index) const;
     Attachment getDepthStencilAttachment() const;

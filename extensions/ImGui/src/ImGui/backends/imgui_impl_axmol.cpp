@@ -100,12 +100,12 @@ static void ImGui_ImplAxmol_UpdateTexture(ImTextureData* tex)
         texture->initWithData(pixels, tex->Width * tex->Height * 4, rhi::PixelFormat::RGBA8, tex->Width,
                               tex->Height, true);
 
-        rhi::SamplerDescriptor descriptor(rhi::SamplerFilter::LINEAR,              // magFilter
+        rhi::SamplerDesc descriptor(rhi::SamplerFilter::LINEAR,              // magFilter
                                               rhi::SamplerFilter::LINEAR,              // minFilter
                                               rhi::SamplerAddressMode::CLAMP_TO_EDGE,  // sAddressMode
                                               rhi::SamplerAddressMode::CLAMP_TO_EDGE   // tAddressMode
         );
-        texture->getBackendTexture()->updateSamplerDescriptor(descriptor);
+        texture->getBackendTexture()->updateSamplerDesc(descriptor);
 
         // Store identifiers
         tex->SetTexID((ImTextureID)(intptr_t)texture);
@@ -335,14 +335,14 @@ IMGUI_IMPL_API void ImGui_ImplAxmol_RenderDrawData(ImDrawData* draw_data)
                         auto state = new ProgramState(pinfo->program);
                         state->autorelease();
                         bd->ProgramStates.pushBack(state);
-                        auto& desc        = cmd->getPipelineDescriptor();
+                        auto& desc        = cmd->getPipelineDesc();
                         desc.programState = state;
                         // setup attributes for ImDrawVert
                         desc.programState->setSharedVertexLayout(pinfo->layout);
                         desc.programState->setUniform(pinfo->projection, &bd->Projection, sizeof(Mat4));
                         desc.programState->setTexture(pinfo->texture, 0, tex->getBackendTexture());
                         // In order to composite our output buffer we need to preserve alpha
-                        desc.blendDescriptor.sourceAlphaBlendFactor = BlendFactor::ONE;
+                        desc.blendDesc.sourceAlphaBlendFactor = BlendFactor::ONE;
                         // set vertex/index buffer
                         cmd->setIndexBuffer(ibuffer, IMGUI_INDEX_FORMAT);
                         cmd->setVertexBuffer(vbuffer);

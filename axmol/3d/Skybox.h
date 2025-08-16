@@ -119,7 +119,7 @@ private:
     void onAfterDraw();
 
     bool _rendererDepthTestEnabled;
-    rhi::CompareFunction _rendererDepthCmpFunc;
+    rhi::CompareFunc _rendererDepthCmpFunc;
     rhi::CullMode _rendererCullMode;
 };
 

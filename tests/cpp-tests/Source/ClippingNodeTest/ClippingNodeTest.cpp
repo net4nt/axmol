@@ -593,7 +593,7 @@ void RawStencilBufferTest::initCommands()
         cmd.updateVertexBuffer(vertices, sizeof(vertices));
         cmd.createIndexBuffer(rhi::IndexFormat::U_SHORT, 6, rhi::BufferUsage::STATIC);
         cmd.updateIndexBuffer(indices, sizeof(indices));
-        cmd.getPipelineDescriptor().programState = _programState;
+        cmd.getPipelineDesc().programState = _programState;
 
         auto& cmd2 = _renderCmds[cmdIndex];
         cmdIndex++;
@@ -604,7 +604,7 @@ void RawStencilBufferTest::initCommands()
         cmd2.updateVertexBuffer(vertices2, sizeof(vertices2));
         cmd2.createIndexBuffer(rhi::IndexFormat::U_SHORT, 6, rhi::BufferUsage::STATIC);
         cmd2.updateIndexBuffer(indices, sizeof(indices));
-        cmd2.getPipelineDescriptor().programState = _programState;
+        cmd2.getPipelineDesc().programState = _programState;
     }
 }
 
@@ -667,18 +667,18 @@ void RawStencilBufferTest::setupStencilForClippingOnPlane(int plane)
     auto renderer          = Director::getInstance()->getRenderer();
     unsigned int planeMask = 0x1 << plane;
     renderer->setStencilWriteMask(planeMask);
-    renderer->setStencilCompareFunction(rhi::CompareFunction::NEVER, planeMask, planeMask);
-    renderer->setStencilOperation(rhi::StencilOperation::REPLACE, rhi::StencilOperation::KEEP,
-                                  rhi::StencilOperation::KEEP);
+    renderer->setStencilCompareFunc(rhi::CompareFunc::NEVER, planeMask, planeMask);
+    renderer->setStencilOp(rhi::StencilOp::REPLACE, rhi::StencilOp::KEEP,
+                                  rhi::StencilOp::KEEP);
 }
 
 void RawStencilBufferTest::setupStencilForDrawingOnPlane(int plane)
 {
     auto renderer          = Director::getInstance()->getRenderer();
     unsigned int planeMask = 0x1 << plane;
-    renderer->setStencilCompareFunction(rhi::CompareFunction::EQUAL, planeMask, planeMask);
-    renderer->setStencilOperation(rhi::StencilOperation::KEEP, rhi::StencilOperation::KEEP,
-                                  rhi::StencilOperation::KEEP);
+    renderer->setStencilCompareFunc(rhi::CompareFunc::EQUAL, planeMask, planeMask);
+    renderer->setStencilOp(rhi::StencilOp::KEEP, rhi::StencilOp::KEEP,
+                                  rhi::StencilOp::KEEP);
 }
 
 //@implementation RawStencilBufferTest2
@@ -792,9 +792,9 @@ void RawStencilBufferTest6::setupStencilForClippingOnPlane(int plane)
 {
     int planeMask = 0x1 << plane;
     auto renderer = Director::getInstance()->getRenderer();
-    renderer->setStencilCompareFunction(rhi::CompareFunction::NEVER, planeMask, planeMask);
-    renderer->setStencilOperation(rhi::StencilOperation::REPLACE, rhi::StencilOperation::KEEP,
-                                  rhi::StencilOperation::KEEP);
+    renderer->setStencilCompareFunc(rhi::CompareFunc::NEVER, planeMask, planeMask);
+    renderer->setStencilOp(rhi::StencilOp::REPLACE, rhi::StencilOp::KEEP,
+                                  rhi::StencilOp::KEEP);
     renderer->setDepthTest(false);
     renderer->setDepthWrite(false);
 }

@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include "axmol/rhi/RenderPassDescriptor.h"
+#include "axmol/rhi/RenderPassDesc.h"
 #include "axmol/rhi/RenderPipeline.h"
 #include "axmol/rhi/DriverBase.h"
 #include "axmol/rhi/RHITypes.h"

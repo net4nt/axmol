@@ -64,9 +64,9 @@ struct AttributeInfo
 
 #define MAX_UNIFORM_NAME_LENGTH 256
 
-struct UniformBlockDescriptor
+struct UniformBlockDesc
 {
-    UniformBlockDescriptor(BufferImpl* ubo, int loc, int size) : _ubo(ubo), _location(loc), _size(size) {}
+    UniformBlockDesc(BufferImpl* ubo, int loc, int size) : _ubo(ubo), _location(loc), _size(size) {}
     BufferImpl* _ubo;
     int _location;
     int _size;
@@ -186,7 +186,7 @@ private:
     ShaderModuleImpl* _vertexShaderModule   = nullptr;
     ShaderModuleImpl* _fragmentShaderModule = nullptr;
 
-    axstd::pod_vector<UniformBlockDescriptor> _uniformBuffers;
+    axstd::pod_vector<UniformBlockDesc> _uniformBuffers;
 
     std::vector<AttributeInfo> _attributeInfos;
 

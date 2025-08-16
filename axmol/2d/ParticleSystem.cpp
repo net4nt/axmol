@@ -1108,15 +1108,15 @@ void ParticleSystem::addParticles(int count, int animationIndex, int animationCe
     }
 }
 
-void ParticleSystem::setAnimationDescriptor(unsigned short indexOfDescriptor,
+void ParticleSystem::setAnimationDesc(unsigned short indexOfDesc,
                                             float time,
                                             float timeVariance,
                                             const std::vector<unsigned short>& indices,
                                             bool reverse)
 {
-    auto iter = _animations.find(indexOfDescriptor);
+    auto iter = _animations.find(indexOfDesc);
     if (iter == _animations.end())
-        iter = _animations.emplace(indexOfDescriptor, ParticleAnimationDescriptor{}).first;
+        iter = _animations.emplace(indexOfDesc, ParticleAnimationDesc{}).first;
 
     auto& desc                  = iter->second;
     desc.animationSpeed         = time;
@@ -1470,7 +1470,7 @@ bool ParticleSystem::addAnimationIndex(unsigned short index, ax::Rect rect, bool
     auto iter = _animationIndices.find(index);
     if (iter == _animationIndices.end())
     {
-        iter = _animationIndices.emplace(index, ParticleFrameDescriptor{}).first;
+        iter = _animationIndices.emplace(index, ParticleFrameDesc{}).first;
         _animIndexCount++;
     }
 
@@ -2325,9 +2325,9 @@ void ParticleEmissionMaskCache::bakeEmissionMask(std::string_view maskId,
 
     auto iter = this->masks.find(fourccId);
     if (iter == this->masks.end())
-        iter = this->masks.emplace(fourccId, ParticleEmissionMaskDescriptor{}).first;
+        iter = this->masks.emplace(fourccId, ParticleEmissionMaskDesc{}).first;
 
-    ParticleEmissionMaskDescriptor desc;
+    ParticleEmissionMaskDesc desc;
     desc.size   = {float(w), float(h)};
     desc.points = std::move(points);
 
@@ -2337,12 +2337,12 @@ void ParticleEmissionMaskCache::bakeEmissionMask(std::string_view maskId,
           (unsigned int)htonl(fourccId), w, h, desc.points.size(), desc.points.size() * 8 / 1e+6);
 }
 
-const ParticleEmissionMaskDescriptor& ParticleEmissionMaskCache::getEmissionMask(uint32_t fourccId)
+const ParticleEmissionMaskDesc& ParticleEmissionMaskCache::getEmissionMask(uint32_t fourccId)
 {
     auto iter = this->masks.find(fourccId);
     if (iter == this->masks.end())
     {
-        iter                = this->masks.emplace(fourccId, ParticleEmissionMaskDescriptor{}).first;
+        iter                = this->masks.emplace(fourccId, ParticleEmissionMaskDesc{}).first;
         iter->second.size   = {float(1), float(1)};
         iter->second.points = {{0, 0}};
         return iter->second;
@@ -2350,14 +2350,14 @@ const ParticleEmissionMaskDescriptor& ParticleEmissionMaskCache::getEmissionMask
     return iter->second;
 }
 
-const ParticleEmissionMaskDescriptor& ParticleEmissionMaskCache::getEmissionMask(std::string_view maskId)
+const ParticleEmissionMaskDesc& ParticleEmissionMaskCache::getEmissionMask(std::string_view maskId)
 {
     auto fourccId = utils::fourccValue(maskId);
 
     auto iter = this->masks.find(fourccId);
     if (iter == this->masks.end())
     {
-        iter                = this->masks.emplace(fourccId, ParticleEmissionMaskDescriptor{}).first;
+        iter                = this->masks.emplace(fourccId, ParticleEmissionMaskDesc{}).first;
         iter->second.size   = {float(1), float(1)};
         iter->second.points = {{0, 0}};
         return iter->second;

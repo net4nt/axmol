@@ -27,17 +27,17 @@
 
 namespace ax::rhi {
 
-bool StencilDescriptor::operator==(const StencilDescriptor& rhs) const
+bool StencilDesc::operator==(const StencilDesc& rhs) const
 {
     return (
-        stencilFailureOperation == rhs.stencilFailureOperation && depthFailureOperation == rhs.depthFailureOperation &&
-        depthStencilPassOperation == rhs.depthStencilPassOperation &&
-        stencilCompareFunction == rhs.stencilCompareFunction && readMask == rhs.readMask && writeMask == rhs.writeMask);
+        stencilFailureOp == rhs.stencilFailureOp && depthFailureOp == rhs.depthFailureOp &&
+        depthStencilPassOp == rhs.depthStencilPassOp &&
+        stencilCompareFunc == rhs.stencilCompareFunc && readMask == rhs.readMask && writeMask == rhs.writeMask);
 }
 
 DepthStencilState::~DepthStencilState() {}
 
-void DepthStencilState::update(const DepthStencilDescriptor& dsDesc)
+void DepthStencilState::update(const DepthStencilDesc& dsDesc)
 {
     _dsDesc        = dsDesc;
     _isBackFrontStencilEqual = dsDesc.backFaceStencil == dsDesc.frontFaceStencil;

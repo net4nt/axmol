@@ -107,7 +107,7 @@ void CustomCommand::assign(CustomCommand&& rhs)
         _afterCallback  = std::move(rhs._afterCallback);
 
         rhs._vertexBuffer = rhs._indexBuffer = nullptr;
-        rhs._pipelineDescriptor.programState = nullptr;
+        rhs._pipelineDesc.programState = nullptr;
     }
 }
 #if defined(__INTEL_COMPILER)
@@ -130,10 +130,10 @@ void CustomCommand::init(float globalZOrder, const BlendFunc& blendFunc)
 {
     _globalOrder = globalZOrder;
 
-    auto& blendDescriptor                = _pipelineDescriptor.blendDescriptor;
-    blendDescriptor.blendEnabled         = true;
-    blendDescriptor.sourceRGBBlendFactor = blendDescriptor.sourceAlphaBlendFactor = blendFunc.src;
-    blendDescriptor.destinationRGBBlendFactor = blendDescriptor.destinationAlphaBlendFactor = blendFunc.dst;
+    auto& blendDesc                = _pipelineDesc.blendDesc;
+    blendDesc.blendEnabled         = true;
+    blendDesc.sourceRGBBlendFactor = blendDesc.sourceAlphaBlendFactor = blendFunc.src;
+    blendDesc.destinationRGBBlendFactor = blendDesc.destinationAlphaBlendFactor = blendFunc.dst;
 }
 
 void CustomCommand::createVertexBuffer(std::size_t vertexSize, std::size_t capacity, BufferUsage usage)

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "axmol/rhi/RHITypes.h"
-#include "axmol/rhi/PixelBufferDescriptor.h"
+#include "axmol/rhi/PixelBufferDesc.h"
 #include "axmol/rhi/d3d/TextureD3D.h"
 #include <dxgi.h>
 

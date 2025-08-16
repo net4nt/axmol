@@ -958,7 +958,7 @@ bool MySprite::setProgramState(rhi::ProgramState* programState, bool ownPS/* = f
 {
     if (Sprite::setProgramState(programState, ownPS))
     {
-        auto& pipelineDescriptor        = _customCommand.getPipelineDescriptor();
+        auto& pipelineDescriptor        = _customCommand.getPipelineDesc();
         pipelineDescriptor.programState = programState;
 
         _customCommand.setDrawType(CustomCommand::DrawType::ARRAY);
@@ -974,7 +974,7 @@ void MySprite::draw(Renderer* renderer, const Mat4& transform, uint32_t flags)
 {
     const auto& projectionMat = Director::getInstance()->getMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION);
     auto mvpMatrix            = projectionMat * transform;
-    _customCommand.getPipelineDescriptor().programState->setUniform(_mvpMatrixLocation, mvpMatrix.m,
+    _customCommand.getPipelineDesc().programState->setUniform(_mvpMatrixLocation, mvpMatrix.m,
                                                                     sizeof(mvpMatrix.m));
     _customCommand.init(_globalZOrder, transform, flags);
     renderer->addCommand(&_customCommand);

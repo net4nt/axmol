@@ -2993,9 +2993,9 @@ bool luaval_to_vertexLayout(lua_State* L, int pos, ax::rhi::VertexLayout& outLay
     return ret;
 }
 
-bool luaval_to_samplerDescriptor(lua_State* L,
+bool luaval_to_samplerDesc(lua_State* L,
                                  int pos,
-                                 ax::rhi::SamplerDescriptor& output,
+                                 ax::rhi::SamplerDesc& output,
                                  const char* message)
 {
     if (L == nullptr)

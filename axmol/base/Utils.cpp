@@ -46,7 +46,7 @@ THE SOFTWARE.
 #include "axmol/renderer/Renderer.h"
 #include "axmol/renderer/TextureCache.h"
 #include "axmol/renderer/RenderState.h"
-#include "axmol/rhi/PixelBufferDescriptor.h"
+#include "axmol/rhi/PixelBufferDesc.h"
 
 #include "axmol/platform/Image.h"
 #include "axmol/platform/FileUtils.h"
@@ -115,7 +115,7 @@ void captureScreen(std::function<void(RefPtr<Image>)> imageCallback)
         eventDispatcher->removeEventListener(s_captureScreenListener);
         s_captureScreenListener = nullptr;
         // !!!GL: AFTER_DRAW and BEFORE_END_FRAME
-        renderer->readPixels(renderer->getDefaultRenderTarget(), [=](const rhi::PixelBufferDescriptor& pbd) {
+        renderer->readPixels(renderer->getDefaultRenderTarget(), [=](const rhi::PixelBufferDesc& pbd) {
             if (pbd)
             {
                 auto image = utils::makeInstance<Image>(&Image::initWithRawData, pbd._data.getBytes(),

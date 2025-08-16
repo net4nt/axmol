@@ -213,7 +213,7 @@ bool Particle3DQuadRender::initQuadRender(std::string_view texFile)
         _programState = new rhi::ProgramState(program);
     }
 
-    auto& pipelineDescriptor        = _meshCommand.getPipelineDescriptor();
+    auto& pipelineDescriptor        = _meshCommand.getPipelineDesc();
     pipelineDescriptor.programState = _programState;
 
     _locColor   = _programState->getUniformLocation("u_color");
@@ -234,9 +234,9 @@ bool Particle3DQuadRender::initQuadRender(std::string_view texFile)
 void Particle3DQuadRender::onBeforeDraw()
 {
     auto* renderer            = Director::getInstance()->getRenderer();
-    auto& pipelineDescriptor  = _meshCommand.getPipelineDescriptor();
+    auto& pipelineDescriptor  = _meshCommand.getPipelineDesc();
     _rendererDepthTestEnabled = renderer->getDepthTest();
-    _rendererDepthCmpFunc     = renderer->getDepthCompareFunction();
+    _rendererDepthCmpFunc     = renderer->getDepthCompareFunc();
     _rendererCullMode         = renderer->getCullMode();
     _rendererDepthWrite       = renderer->getDepthWrite();
     _rendererWinding          = renderer->getWinding();
@@ -248,7 +248,7 @@ void Particle3DQuadRender::onAfterDraw()
 {
     auto* renderer = Director::getInstance()->getRenderer();
     renderer->setDepthTest(_rendererDepthTestEnabled);
-    renderer->setDepthCompareFunction(_rendererDepthCmpFunc);
+    renderer->setDepthCompareFunc(_rendererDepthCmpFunc);
     renderer->setCullMode(_rendererCullMode);
     renderer->setDepthWrite(_rendererDepthWrite);
     renderer->setWinding(_rendererWinding);

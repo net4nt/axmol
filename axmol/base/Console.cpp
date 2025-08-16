@@ -367,13 +367,13 @@ bool Console::listenOnTCP(int port)
     else if (ep.af() == AF_INET6)
         AXLOGI("Console: IPV6 server is listening on {}", ep.to_string());
 
-    return listenOnFileDescriptor(sock.release_handle());
+    return listenOnFileDesc(sock.release_handle());
 #else
     return false;
 #endif
 }
 
-bool Console::listenOnFileDescriptor(int fd)
+bool Console::listenOnFileDesc(int fd)
 {
     if (_running)
     {

@@ -26,7 +26,7 @@
 #pragma once
 
 #include "axmol/rhi/RHITypes.h"
-#include "axmol/rhi/PixelBufferDescriptor.h"
+#include "axmol/rhi/PixelBufferDesc.h"
 #import <Metal/Metal.h>
 #include <functional>
 
@@ -51,37 +51,37 @@ struct UtilsMTL
      * init GPU texture supported formats
      */
     static void initGPUTextureFormats();
-    
+
     /**
      * Update default color attachment texture.
      * @param texture Specifies the texture to be setted to the color attachemnt.
      */
     static void updateDefaultColorAttachmentTexture(id<MTLTexture> texture);
     static void resizeDefaultAttachmentTexture(std::size_t width, std::size_t height);
-    
+
     static MTLPixelFormat getDefaultColorAttachmentPixelFormat();
-    
+
     static MTLPixelFormat getDefaultDepthStencilAttachmentPixelFormat();
-    
+
     /**
      * Get the default combined depth and stencil texture.
      * @return The default combined depth and stencil texture.
      */
     static id<MTLTexture> getDefaultDepthStencilTexture();
-    
+
     /**
      * Convert rhi::PixelFormat to MTLPixelFormat.
      * @param textureFormat Specifies a pixel format to be converted.
      * @return A MTLPixelFormat.
      */
     static MTLPixelFormat toMTLPixelFormat(PixelFormat textureFormat);
-    
+
     /**
      * Generate a complete set of mipmaps in given texture.
      * @param texture Specifies a texture to generate mipmap.
      */
     static void generateMipmaps(id<MTLTexture> texture);
-    
+
     /**
      * Swizzle the iamge form the given format to MTLPixelFormatRGBA8Unorm.
      * @param image Specifies the image to be swizzled.
@@ -90,10 +90,10 @@ struct UtilsMTL
      * @param format Specifies the format of the image.
      */
     static void swizzleImage(unsigned char* image, std::size_t width, std::size_t height, MTLPixelFormat format);
-    
+
 private:
     static id<MTLTexture> createDepthStencilAttachmentTexture();
-    
+
     static id<MTLTexture> _defaultColorAttachmentTexture;
     static id<MTLTexture> _defaultDepthStencilAttachmentTexture;
 };

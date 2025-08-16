@@ -145,7 +145,7 @@ public:
             // normal effect: order == 0
             _trianglesCommand.init(_globalZOrder, _texture, _blendFunc, _polyInfo.triangles, transform, flags);
 
-            updateUniforms(_trianglesCommand.getPipelineDescriptor().programState);
+            updateUniforms(_trianglesCommand.getPipelineDesc().programState);
             renderer->addCommand(&_trianglesCommand);
 
             // positive effects: order >= 0
@@ -155,7 +155,7 @@ public:
                 auto* programState = std::get<1>(*it)->getProgramState();
                 updateUniforms(programState);
                 q.init(_globalZOrder, _texture, _blendFunc, &_quad, 1, transform, flags);
-                q.getPipelineDescriptor().programState = programState;
+                q.getPipelineDesc().programState = programState;
                 renderer->addCommand(&q);
                 idx++;
             }

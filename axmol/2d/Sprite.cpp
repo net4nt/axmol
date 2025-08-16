@@ -391,8 +391,8 @@ bool Sprite::setProgramState(rhi::ProgramState* programState, bool ownPS/* = fal
     AXASSERT(programState, "argument should not be nullptr");
     if (Node::setProgramState(programState, ownPS))
     {
-        auto& pipelineDescriptor        = _trianglesCommand.getPipelineDescriptor();
-        pipelineDescriptor.programState = _programState;
+        auto& pipelineDesc        = _trianglesCommand.getPipelineDesc();
+        pipelineDesc.programState = _programState;
 
         _mvpMatrixLocation = _programState->getUniformLocation(rhi::Uniform::MVP_MATRIX);
 
@@ -1678,8 +1678,8 @@ void Sprite::updateBlendFunc()
              "Sprite: updateBlendFunc doesn't work when the sprite is rendered using a SpriteBatchNode");
 
     // it is possible to have an untextured sprite
-    rhi::BlendDescriptor& blendDescriptor = _trianglesCommand.getPipelineDescriptor().blendDescriptor;
-    blendDescriptor.blendEnabled              = true;
+    rhi::BlendDesc& blendDesc = _trianglesCommand.getPipelineDesc().blendDesc;
+    blendDesc.blendEnabled              = true;
 
     if (!_texture || !_texture->hasPremultipliedAlpha())
     {
@@ -1721,7 +1721,7 @@ void Sprite::setPolygonInfo(const PolygonInfo& info)
 void Sprite::setMVPMatrixUniform()
 {
     const auto& projectionMat = _director->getMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION);
-    auto programState         = _trianglesCommand.getPipelineDescriptor().programState;
+    auto programState         = _trianglesCommand.getPipelineDesc().programState;
     if (programState && _mvpMatrixLocation)
         programState->setUniform(_mvpMatrixLocation, projectionMat.m, sizeof(projectionMat.m));
 }

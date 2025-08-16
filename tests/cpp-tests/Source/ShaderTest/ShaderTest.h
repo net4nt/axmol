@@ -157,7 +157,7 @@ protected:
     {
         if (Node::setProgramState(programState, ownPS))
         {
-            _customCommand.getPipelineDescriptor().programState = programState;
+            _customCommand.getPipelineDesc().programState = programState;
             updateUniforms();
             return true;
         }

@@ -30,8 +30,8 @@
 #include "axmol/base/Data.h"
 
 #include "axmol/rhi/RHITypes.h"
-#include "axmol/rhi/RenderPassDescriptor.h"
-#include "axmol/rhi/PixelBufferDescriptor.h"
+#include "axmol/rhi/RenderPassDesc.h"
+#include "axmol/rhi/PixelBufferDesc.h"
 #include "axmol/platform/StdC.h"
 #include "axmol/rhi/ProgramState.h"
 #include "axmol/rhi/VertexLayout.h"
@@ -41,7 +41,7 @@
 
 namespace ax
 {
-struct PipelineDescriptor;
+struct PipelineDesc;
 }
 
 namespace ax::rhi {
@@ -52,7 +52,7 @@ class Buffer;
 class DepthStencilState;
 class Texture;
 class RenderTarget;
-struct DepthStencilDescriptor;
+struct DepthStencilDesc;
 
 /**
  * @addtogroup _rhi
@@ -91,22 +91,22 @@ public:
      * Begin a render pass, initial color, depth and stencil attachment.
      * @param descriptor Specifies a group of render targets that hold the results of a render pass.
      */
-    virtual void beginRenderPass(const RenderTarget* renderTarget, const RenderPassDescriptor& descriptor) = 0;
+    virtual void beginRenderPass(const RenderTarget* renderTarget, const RenderPassDesc& descriptor) = 0;
 
     /**
      * Update depthStencil status, improvment: for metal backend cache it
      * @param depthStencilState Specifies the depth and stencil status
      */
-    virtual void updateDepthStencilState(const DepthStencilDescriptor& descriptor) = 0;
+    virtual void updateDepthStencilState(const DepthStencilDesc& descriptor) = 0;
 
     /**
      * Update render pipeline status
      * Building a programmable pipeline involves an expensive evaluation of GPU state.
      * So a new render pipeline object will be created only if it hasn't been created before.
      * @param rt Specifies the render target.
-     * @param pipelineDescriptor Specifies the pipeline descriptor.
+     * @param pipelineDesc Specifies the pipeline descriptor.
      */
-    virtual void updatePipelineState(const RenderTarget* rt, const PipelineDescriptor& descriptor) = 0;
+    virtual void updatePipelineState(const RenderTarget* rt, const PipelineDesc& descriptor) = 0;
 
     /**
      * Fixed-function state
@@ -226,7 +226,7 @@ public:
      * Get a screen snapshot
      * @param callback A callback to deal with screen snapshot image.
      */
-    virtual void readPixels(RenderTarget* rt, std::function<void(const PixelBufferDescriptor&)> callback) = 0;
+    virtual void readPixels(RenderTarget* rt, std::function<void(const PixelBufferDesc&)> callback) = 0;
 
     /**
      * Update both front and back stencil reference value.

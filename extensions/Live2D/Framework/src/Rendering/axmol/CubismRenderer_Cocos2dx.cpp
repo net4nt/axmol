@@ -1092,8 +1092,8 @@ void CubismShader_Cocos2dx::SetupShaderProgram(CubismCommandBuffer_Cocos2dx::Dra
         GenerateShaders();
     }
 
-    ax::rhi::BlendDescriptor* blendDescriptor = drawCommand->GetBlendDescriptor();
-    ax::PipelineDescriptor* pipelineDescriptor = drawCommand->GetPipelineDescriptor();
+    ax::rhi::BlendDesc* blendDescriptor = drawCommand->GetBlendDescriptor();
+    ax::PipelineDesc* pipelineDescriptor = drawCommand->GetPipelineDescriptor();
 
     ax::rhi::ProgramState* programState = pipelineDescriptor->programState;
     VertexLayout* layout                    = nullptr;

@@ -110,7 +110,7 @@ private:
 
 private:
     ax::Renderer* _renderer;
-    ax::rhi::DepthStencilDescriptor _dsDesc;
+    ax::rhi::DepthStencilDesc _dsDesc;
     ax::RenderTexture* _rtx;
     ax::Sprite* _spriteDS;
     ax::Sprite* _spriteDraw;

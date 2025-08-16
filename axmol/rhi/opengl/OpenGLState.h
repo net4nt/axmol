@@ -15,13 +15,13 @@ namespace ax::rhi::gl
 
 struct BlendEquationSeparateState
 {
-    BlendEquationSeparateState(GLenum rgb, GLenum alpha) : rgbBlendOperation(rgb), alphaBlendOperation(alpha) {}
+    BlendEquationSeparateState(GLenum rgb, GLenum alpha) : rgbBlendOp(rgb), alphaBlendOp(alpha) {}
     bool equals(GLenum rgb, GLenum alpha) const
     {
-        return this->rgbBlendOperation == rgb && this->alphaBlendOperation == alpha;
+        return this->rgbBlendOp == rgb && this->alphaBlendOp == alpha;
     }
-    GLenum rgbBlendOperation;
-    GLenum alphaBlendOperation;
+    GLenum rgbBlendOp;
+    GLenum alphaBlendOp;
 };
 
 struct BlendFuncSeparateState
@@ -63,14 +63,14 @@ struct ColorMaskState
 struct StencilFuncState
 {
     StencilFuncState(GLenum func, GLint ref, GLuint mask)
-        : stencilCompareFunction(func), stencilReferenceValueFront(ref), readMask(mask)
+        : stencilCompareFunc(func), stencilReferenceValueFront(ref), readMask(mask)
     {}
     inline bool equals(GLenum func, GLint ref, GLuint mask) const
     {
-        return this->stencilCompareFunction == func && this->stencilReferenceValueFront == ref &&
+        return this->stencilCompareFunc == func && this->stencilReferenceValueFront == ref &&
                this->readMask == mask;
     }
-    unsigned int stencilCompareFunction;
+    unsigned int stencilCompareFunc;
     int stencilReferenceValueFront;
     unsigned int readMask;
 };
@@ -78,16 +78,16 @@ struct StencilFuncState
 struct StencilOperationState
 {
     StencilOperationState(GLenum fail, GLenum zfail, GLenum zpass)
-        : stencilFailureOperation(fail), depthFailureOperation(zfail), depthStencilPassOperation(zpass)
+        : stencilFailureOp(fail), depthFailureOp(zfail), depthStencilPassOp(zpass)
     {}
     inline bool equals(GLenum fail, GLenum zfail, GLenum zpass) const
     {
-        return this->stencilFailureOperation == fail && this->depthFailureOperation == zfail &&
-               this->depthStencilPassOperation == zpass;
+        return this->stencilFailureOp == fail && this->depthFailureOp == zfail &&
+               this->depthStencilPassOp == zpass;
     }
-    unsigned int stencilFailureOperation;
-    unsigned int depthFailureOperation;
-    unsigned int depthStencilPassOperation;
+    unsigned int stencilFailureOp;
+    unsigned int depthFailureOp;
+    unsigned int depthStencilPassOp;
 };
 
 struct CommonBindState

@@ -75,7 +75,7 @@ namespace spine {
 		Director::getInstance()->getEventDispatcher()->removeCustomEventListeners(EVENT_AFTER_DRAW_RESET_POSITION);
 
 		for (unsigned int i = 0; i < _commandsPool.size(); i++) {
-			AX_SAFE_RELEASE(_commandsPool[i]->getPipelineDescriptor().programState);
+			AX_SAFE_RELEASE(_commandsPool[i]->getPipelineDesc().programState);
 			delete _commandsPool[i];
 			_commandsPool[i] = nullptr;
 		}
@@ -85,7 +85,7 @@ namespace spine {
 
 	rhi::ProgramState* SkeletonBatch::updateCommandPipelinePS(SkeletonCommand* command, rhi::ProgramState* programState)
 	{
-		auto& currentState = command->getPipelineDescriptor().programState;
+		auto& currentState = command->getPipelineDesc().programState;
 	#if defined(AX_VERSION)
                 if (currentState == nullptr ||
                     currentState->getBatchId() != programState->getBatchId())
