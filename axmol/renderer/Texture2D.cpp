@@ -663,9 +663,10 @@ const Rect& Texture2D::getSpriteFrameCapInset(ax::SpriteFrame* spriteFrame) cons
     else
     {
         auto& capInsetMap = this->_ninePatchInfo->capInsetMap;
-        if (capInsetMap.find(spriteFrame) != capInsetMap.end())
+        auto it           = capInsetMap.find(spriteFrame);
+        if (it != capInsetMap.end())
         {
-            return capInsetMap.at(spriteFrame);
+            return it->second;
         }
         else
         {
@@ -679,9 +680,10 @@ void Texture2D::removeSpriteFrameCapInset(SpriteFrame* spriteFrame)
     if (nullptr != this->_ninePatchInfo)
     {
         auto capInsetMap = this->_ninePatchInfo->capInsetMap;
-        if (capInsetMap.find(spriteFrame) != capInsetMap.end())
+        auto it          = capInsetMap.find(spriteFrame);
+        if (it != capInsetMap.end())
         {
-            capInsetMap.erase(spriteFrame);
+            capInsetMap.erase(it);
         }
     }
 }

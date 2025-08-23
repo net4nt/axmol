@@ -37,7 +37,7 @@ namespace ax::rhi::mtl {
  */
 
 /**
- * TextureImpl
+ * The texture implementation supports 2D, cubemap, and 2D array textures.
  */
 class TextureImpl : public rhi::Texture
 {

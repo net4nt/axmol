@@ -916,6 +916,90 @@ AX_DLL uint32_t fourccValue(std::string_view str)
     return value;
 }
 
+namespace braceinit
+{
+inline void skip_ws(const char*& p, const char* end)
+{
+    while (p < end && std::isspace(static_cast<unsigned char>(*p)))
+        ++p;
+}
+inline bool expect(const char*& p, const char* end, char c)
+{
+    skip_ws(p, end);
+    if (p >= end || *p != c) [[unlikely]]
+        return false;
+    ++p;
+    return true;
+}
+
+inline bool parse_float(const char*& p, const char* end, float& out)
+{
+    skip_ws(p, end);
+    auto fc = axstd::from_chars(p, end, out);
+    if (fc.ec != std::errc{}) [[unlikely]]
+        return false;
+    p = fc.ptr;
+    return true;
+}
+
+static bool parse_vec2(const char*& p, const char* end, Vec2& v)
+{
+    if (!expect(p, end, '{')) [[unlikely]]
+        return false;
+    if (!parse_float(p, end, v.x)) [[unlikely]]
+        return false;
+    if (!expect(p, end, ',')) [[unlikely]]
+        return false;
+    if (!parse_float(p, end, v.y)) [[unlikely]]
+        return false;
+    if (!expect(p, end, '}')) [[unlikely]]
+        return false;
+    return true;
+}
+
+static bool parse_rect(const char*& p, const char* end, Rect& r)
+{
+    if (!expect(p, end, '{')) [[unlikely]]
+        return false;
+    if (!parse_vec2(p, end, r.origin)) [[unlikely]]
+        return false;
+    if (!expect(p, end, ',')) [[unlikely]]
+        return false;
+    if (!parse_vec2(p, end, r.size)) [[unlikely]]
+        return false;
+    if (!expect(p, end, '}')) [[unlikely]]
+        return false;
+    return true;
+}
+
+}  // namespace braceinit
+
+AX_DLL Vec2 parseVec2(std::string_view s)
+{
+    Vec2 ret;
+
+    const char* p = s.data();
+    const char* e = p + s.size();
+    bool ok       = braceinit::parse_vec2(p, e, ret);
+    braceinit::skip_ws(p, e);
+    assert(ok && p == e);
+
+    return ret;
+}
+
+AX_DLL Rect parseRect(std::string_view s)
+{
+    Rect ret;
+
+    const char* p = s.data();
+    const char* e = p + s.size();
+    bool ok       = braceinit::parse_rect(p, e, ret);
+    braceinit::skip_ws(p, e);
+    assert(ok && p == e);
+
+    return ret;
+}
+
 }  // namespace utils
 
 }  // namespace ax

@@ -28,7 +28,6 @@
 #include "axmol/2d/AutoPolygon.h"
 #include "axmol/2d/SpriteFrameCache.h"
 #include "axmol/base/NinePatchImageParser.h"
-#include "axmol/base/NS.h"
 #include "axmol/base/Macros.h"
 #include "axmol/base/text_utils.h"
 #include "axmol/base/Utils.h"
@@ -209,7 +208,7 @@ void PlistSpriteSheetLoader::addSpriteFramesWithDictionary(ValueMap& dictionary,
 
         if (metadataDict.find("size"sv) != metadataDict.end())
         {
-            textureSize = SizeFromString(optValue(metadataDict, "size"sv).asString());
+            textureSize = utils::parseVec2(optValue(metadataDict, "size"sv).asString());
         }
     }
 
@@ -257,7 +256,7 @@ void PlistSpriteSheetLoader::addSpriteFramesWithDictionary(ValueMap& dictionary,
         }
         else if (format == 1 || format == 2)
         {
-            auto frame   = RectFromString(optValue(frameDict, "frame"sv).asString());
+            auto frame   = utils::parseRect(optValue(frameDict, "frame"sv).asString());
             auto rotated = false;
 
             // rotation
@@ -266,8 +265,8 @@ void PlistSpriteSheetLoader::addSpriteFramesWithDictionary(ValueMap& dictionary,
                 rotated = optValue(frameDict, "rotated"sv).asBool();
             }
 
-            auto offset     = PointFromString(optValue(frameDict, "offset"sv).asString());
-            auto sourceSize = SizeFromString(optValue(frameDict, "sourceSize"sv).asString());
+            auto offset     = utils::parseVec2(optValue(frameDict, "offset"sv).asString());
+            auto sourceSize = utils::parseVec2(optValue(frameDict, "sourceSize"sv).asString());
 
             // create frame
             spriteFrame = SpriteFrame::createWithTexture(texture, frame, rotated, offset, sourceSize);
@@ -275,10 +274,10 @@ void PlistSpriteSheetLoader::addSpriteFramesWithDictionary(ValueMap& dictionary,
         else if (format == 3)
         {
             // get values
-            auto spriteSize       = SizeFromString(optValue(frameDict, "spriteSize"sv).asString());
-            auto spriteOffset     = PointFromString(optValue(frameDict, "spriteOffset"sv).asString());
-            auto spriteSourceSize = SizeFromString(optValue(frameDict, "spriteSourceSize"sv).asString());
-            auto textureRect      = RectFromString(optValue(frameDict, "textureRect"sv).asString());
+            auto spriteSize       = utils::parseVec2(optValue(frameDict, "spriteSize"sv).asString());
+            auto spriteOffset     = utils::parseVec2(optValue(frameDict, "spriteOffset"sv).asString());
+            auto spriteSourceSize = utils::parseVec2(optValue(frameDict, "spriteSourceSize"sv).asString());
+            auto textureRect      = utils::parseRect(optValue(frameDict, "textureRect"sv).asString());
             auto textureRotated   = optValue(frameDict, "textureRotated"sv).asBool();
 
             // get aliases
@@ -315,7 +314,7 @@ void PlistSpriteSheetLoader::addSpriteFramesWithDictionary(ValueMap& dictionary,
             }
             if (frameDict.find("anchor") != frameDict.end())
             {
-                spriteFrame->setAnchorPoint(PointFromString(optValue(frameDict, "anchor"sv).asString()));
+                spriteFrame->setAnchorPoint(utils::parseVec2(optValue(frameDict, "anchor"sv).asString()));
             }
         }
 
@@ -452,7 +451,7 @@ void PlistSpriteSheetLoader::reloadSpriteFramesWithDictionary(ValueMap& dict,
         }
         else if (format == 1 || format == 2)
         {
-            auto frame   = RectFromString(optValue(frameDict, "frame"sv).asString());
+            auto frame   = utils::parseRect(optValue(frameDict, "frame"sv).asString());
             auto rotated = false;
 
             // rotation
@@ -461,8 +460,8 @@ void PlistSpriteSheetLoader::reloadSpriteFramesWithDictionary(ValueMap& dict,
                 rotated = optValue(frameDict, "rotated"sv).asBool();
             }
 
-            auto offset     = PointFromString(optValue(frameDict, "offset"sv).asString());
-            auto sourceSize = SizeFromString(optValue(frameDict, "sourceSize"sv).asString());
+            auto offset     = utils::parseVec2(optValue(frameDict, "offset"sv).asString());
+            auto sourceSize = utils::parseVec2(optValue(frameDict, "sourceSize"sv).asString());
 
             // create frame
             spriteFrame = SpriteFrame::createWithTexture(texture, frame, rotated, offset, sourceSize);
@@ -470,10 +469,10 @@ void PlistSpriteSheetLoader::reloadSpriteFramesWithDictionary(ValueMap& dict,
         else if (format == 3)
         {
             // get values
-            const auto spriteSize     = SizeFromString(optValue(frameDict, "spriteSize"sv).asString());
-            auto spriteOffset         = PointFromString(optValue(frameDict, "spriteOffset"sv).asString());
-            auto spriteSourceSize     = SizeFromString(optValue(frameDict, "spriteSourceSize"sv).asString());
-            const auto textureRect    = RectFromString(optValue(frameDict, "textureRect"sv).asString());
+            const auto spriteSize     = utils::parseVec2(optValue(frameDict, "spriteSize"sv).asString());
+            auto spriteOffset         = utils::parseVec2(optValue(frameDict, "spriteOffset"sv).asString());
+            auto spriteSourceSize     = utils::parseVec2(optValue(frameDict, "spriteSourceSize"sv).asString());
+            const auto textureRect    = utils::parseRect(optValue(frameDict, "textureRect"sv).asString());
             const auto textureRotated = optValue(frameDict, "textureRotated"sv).asBool();
 
             // get aliases

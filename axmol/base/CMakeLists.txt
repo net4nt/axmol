@@ -67,7 +67,6 @@ set(_AX_BASE_HEADER
   base/TGAlib.h
   base/EventMouse.h
   base/IMEDelegate.h
-  base/NS.h
   base/AutoreleasePool.h
   base/StencilStateManager.h
   base/EventListenerTouch.h
@@ -108,7 +107,6 @@ set(_AX_BASE_SRC
   base/EventMouse.cpp
   base/EventTouch.cpp
   base/IMEDispatcher.cpp
-  base/NS.cpp
   base/Profiling.cpp
   base/Properties.cpp
   base/Object.cpp

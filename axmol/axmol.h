@@ -45,7 +45,6 @@ THE SOFTWARE.
 #include "axmol/base/IMEDelegate.h"
 #include "axmol/base/IMEDispatcher.h"
 #include "axmol/base/Map.h"
-#include "axmol/base/NS.h"
 #include "axmol/base/Profiling.h"
 #include "axmol/base/Properties.h"
 #include "axmol/base/Object.h"

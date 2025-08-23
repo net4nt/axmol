@@ -475,6 +475,25 @@ AX_DLL int base64Decode(const unsigned char* in, unsigned int inLength, unsigned
 
 AX_DLL uint32_t fourccValue(std::string_view str);
 
+/**
+ * Parses a 2D vector from a string representation.
+ *
+ * @param str  String in the form "{x,y}" where x and y are numeric values.
+ *             Example: "{3,4}" → Vec2(3, 4)
+ * @return     A Vec2 initialized with the parsed coordinates.
+ */
+AX_DLL Vec2 parseVec2(std::string_view str);
+
+/**
+ * Parses an axis-aligned rectangle from a string representation.
+ *
+ * @param str  String in the form "{{x,y},{w,h}}" where (x,y) is the rectangle origin
+ *             and (w,h) is its size. All values are numeric.
+ *             Example: "{{4,3},{5,6}}" → Rect(origin=(4, 3), size=(5, 6))
+ * @return     A Rect initialized with the parsed origin and size.
+ */
+AX_DLL Rect parseRect(std::string_view str);
+
 }  // namespace utils
 
 }
