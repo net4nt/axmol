@@ -57,12 +57,12 @@ bool GridBase::initWithSize(const Vec2& gridSize, const ax::Rect& rect)
 
     Texture2D* texture = new Texture2D();
 
-    rhi::TextureDesc descriptor;
-    descriptor.width         = POTWide;
-    descriptor.height        = POTHigh;
-    descriptor.textureUsage  = rhi::TextureUsage::RENDER_TARGET;
-    descriptor.textureFormat = rhi::PixelFormat::RGBA8;
-    texture->updateTextureDesc(descriptor);
+    rhi::TextureDesc desc;
+    desc.width         = POTWide;
+    desc.height        = POTHigh;
+    desc.textureUsage  = rhi::TextureUsage::RENDER_TARGET;
+    desc.pixelFormat   = rhi::PixelFormat::RGBA8;
+    texture->initWithSpec(desc, {});
 
     initWithSize(gridSize, texture, false, rect);
 
@@ -220,7 +220,7 @@ void GridBase::beforeDraw()
         _oldRenderTarget = renderer->getRenderTarget();
         AX_SAFE_RELEASE(_renderTarget);
         _renderTarget =
-            rhi::DriverBase::getInstance()->createRenderTarget(_texture->getBackendTexture());
+            rhi::DriverBase::getInstance()->createRenderTarget(_texture->getRHITexture());
         renderer->setRenderTarget(_renderTarget);
     };
     renderer->addCallbackCommand(beforeDrawCommandFunc);
@@ -385,7 +385,7 @@ void Grid3D::blit()
     ax::Mat4 projectionMat = Director::getInstance()->getMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION);
     auto programState           = _drawCommand.getPipelineDesc().programState;
     programState->setUniform(_mvpMatrixLocation, projectionMat.m, sizeof(projectionMat.m));
-    programState->setTexture(_textureLocation, 0, _texture->getBackendTexture());
+    programState->setTexture(_textureLocation, 0, _texture->getRHITexture());
 }
 
 void Grid3D::calculateVertexPoints()
@@ -635,7 +635,7 @@ void TiledGrid3D::blit()
     ax::Mat4 projectionMat = Director::getInstance()->getMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION);
     auto programState           = _drawCommand.getPipelineDesc().programState;
     programState->setUniform(_mvpMatrixLocation, projectionMat.m, sizeof(projectionMat.m));
-    programState->setTexture(_textureLocation, 0, _texture->getBackendTexture());
+    programState->setTexture(_textureLocation, 0, _texture->getRHITexture());
 }
 
 void TiledGrid3D::calculateVertexPoints()

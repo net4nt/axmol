@@ -502,7 +502,7 @@ Label::Label(TextHAlignment hAlignment /* = TextHAlignment::LEFT */,
     AX_SAFE_RETAIN(_debugDrawNode);
 #endif
 
-    _purgeTextureListener = EventListenerCustom::create(FontAtlas::CMD_PURGE_FONTATLAS, [this](EventCustom* event) {
+    _resetTextureListener = EventListenerCustom::create(FontAtlas::CMD_RESET_FONTATLAS, [this](EventCustom* event) {
         if (_fontAtlas && _currentLabelType == LabelType::TTF && event->getUserData() == _fontAtlas)
         {
             for (auto&& it : _letters)
@@ -515,15 +515,9 @@ Label::Label(TextHAlignment hAlignment /* = TextHAlignment::LEFT */,
             if (_fontAtlas)
             {
                 FontAtlasCache::releaseFontAtlas(_fontAtlas);
+                _fontAtlas      = nullptr;
             }
-        }
-    });
-    _eventDispatcher->addEventListenerWithFixedPriority(_purgeTextureListener, 1);
 
-    _resetTextureListener = EventListenerCustom::create(FontAtlas::CMD_RESET_FONTATLAS, [this](EventCustom* event) {
-        if (_fontAtlas && _currentLabelType == LabelType::TTF && event->getUserData() == _fontAtlas)
-        {
-            _fontAtlas      = nullptr;
             auto lineHeight = _lineHeight;
             this->setTTFConfig(_fontConfig);
             if (_currentLabelType != LabelType::STRING_TEXTURE)
@@ -536,7 +530,7 @@ Label::Label(TextHAlignment hAlignment /* = TextHAlignment::LEFT */,
             }
         }
     });
-    _eventDispatcher->addEventListenerWithFixedPriority(_resetTextureListener, 2);
+    _eventDispatcher->addEventListenerWithFixedPriority(_resetTextureListener, 1);
 }
 
 Label::~Label()
@@ -551,7 +545,6 @@ Label::~Label()
         FontAtlasCache::releaseFontAtlas(_fontAtlas);
     }
     _batchCommands.clear();
-    _eventDispatcher->removeEventListener(_purgeTextureListener);
     _eventDispatcher->removeEventListener(_resetTextureListener);
 
     AX_SAFE_RELEASE_NULL(_textSprite);
@@ -2059,7 +2052,7 @@ void Label::draw(Renderer* renderer, const Mat4& transform, uint32_t flags)
             auto texture       = textureAtlas->getTexture();
             auto& pipelineQuad = _quadCommand.getPipelineDesc();
             pipelineQuad.programState->setUniform(_mvpMatrixLocation, matrixProjection.m, sizeof(matrixProjection.m));
-            pipelineQuad.programState->setTexture(texture->getBackendTexture());
+            pipelineQuad.programState->setTexture(texture->getRHITexture());
             _quadCommand.init(_globalZOrder, texture, _blendFunc, textureAtlas->getQuads(),
                               textureAtlas->getTotalQuads(), transform, flags);
             renderer->addCommand(&_quadCommand);
@@ -2093,7 +2086,7 @@ void Label::draw(Renderer* renderer, const Mat4& transform, uint32_t flags)
                 {
                     auto* programState = command->getPipelineDesc().programState;
                     programState->setUniform(_textColorLocation, &_textColor, sizeof(_textColor));
-                    programState->setTexture(textureAtlas->getTexture()->getBackendTexture());
+                    programState->setTexture(textureAtlas->getTexture()->getRHITexture());
                 }
                 batch.textCommand.getPipelineDesc().programState->setUniform(_mvpMatrixLocation, matrixMVP.m,
                                                                                    sizeof(matrixMVP.m));

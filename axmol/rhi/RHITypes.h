@@ -89,7 +89,7 @@ refer to:
   https://developer.apple.com/documentation/metal/mtlpixelformat?language=objc
  */
 
-enum class PixelFormat : uint32_t
+enum class PixelFormat : uint8_t
 {
     /* below is compression format */
 
@@ -164,10 +164,10 @@ enum class PixelFormat : uint32_t
     /* the count of pixel format supported by axmol */
     COUNT,
 
-    NONE = 0xffff
+    NONE = 0xFF,  //!< No pixel format, used for invalid texture
 };
 
-enum class TextureUsage : uint32_t
+enum class TextureUsage : uint8_t
 {
     READ,
     WRITE,
@@ -299,7 +299,7 @@ enum class Winding : uint32_t
     COUNTER_CLOCK_WISE
 };
 
-enum class TextureType : uint32_t
+enum class TextureType : uint8_t
 {
     TEXTURE_2D,
     TEXTURE_CUBE
@@ -327,9 +327,9 @@ enum class SamplerFilter : uint32_t
     MAG_LINEAR,
 
     // mip filter
-    MIP_NONE = 0,
-    MIP_NEAREST,
+    MIP_NEAREST = 0,
     MIP_LINEAR,
+    MIP_DEFAULT = 0b11,
 
     // alias
     NEAREST = 0,
@@ -363,7 +363,7 @@ struct SamplerDesc
 {
     SamplerFilter minFilter : 2         = SamplerFilter::MIN_LINEAR;
     SamplerFilter magFilter : 1         = SamplerFilter::MAG_LINEAR;
-    SamplerFilter mipFilter : 2         = SamplerFilter::MIP_NONE;
+    SamplerFilter mipFilter : 2         = SamplerFilter::MIP_DEFAULT;
     SamplerAddressMode sAddressMode : 2 = SamplerAddressMode::CLAMP;
     SamplerAddressMode tAddressMode : 2 = SamplerAddressMode::CLAMP;
     SamplerAddressMode wAddressMode : 2 = SamplerAddressMode::CLAMP;
@@ -378,12 +378,14 @@ using SamplerHandle = void*;
  */
 struct TextureDesc
 {
+    uint16_t width            = 1;
+    uint16_t height           = 1;
+    uint16_t arraySize        = 1;
+    // =1: no mipmaps, =0: generate mipmaps by GPU, >1: mipmaps enabled manually
+    uint16_t mipLevels        = 1;
     TextureType textureType   = TextureType::TEXTURE_2D;
-    PixelFormat textureFormat = PixelFormat::RGBA8;
+    PixelFormat pixelFormat   = PixelFormat::RGBA8;
     TextureUsage textureUsage = TextureUsage::READ;
-    uint32_t width            = 1;
-    uint32_t height           = 1;
-    uint32_t depth            = 1;
     SamplerDesc samplerDesc{};
 };
 

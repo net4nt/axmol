@@ -63,6 +63,14 @@ std::string TextureCache::getETC1AlphaFileSuffix()
     return s_etc1AlphaFileSuffix;
 }
 
+std::string TextureCache::checkETC1AlphaFile(std::string_view path) {
+    std::string ret;
+    ret.reserve(path.size() + TextureCache::s_etc1AlphaFileSuffix.size());
+    ret += path;
+    ret += TextureCache::s_etc1AlphaFileSuffix;
+    return FileUtils::getInstance()->isFileExist(ret) ? ret : std::string{};
+}
+
 TextureCache::TextureCache() : _loadingThread(nullptr), _needQuit(false), _asyncRefCount(0) {}
 
 TextureCache::~TextureCache()
@@ -341,23 +349,35 @@ void TextureCache::addImageAsyncCallBack(float /*dt*/)
                 // generate texture in render thread
                 texture = new Texture2D();
 
-                texture->initWithImage(image, asyncStruct->pixelFormat);
+                if (asyncStruct->imageAlpha.getFileType() != Image::Format::ETC1)
+                {
+                    texture->initWithImage(image, asyncStruct->pixelFormat);
+                }
+                else
+                {
+                    TextureSliceData subDatas[] = {
+                        TextureSliceData{image->getData(), static_cast<uint16_t>(image->getDataSize()), 0, 0},
+                        TextureSliceData{asyncStruct->imageAlpha.getData(),
+                                         static_cast<uint16_t>(asyncStruct->imageAlpha.getDataSize()), 1, 0}};
+                    texture->initWithSpec(rhi::TextureDesc{.width       = static_cast<uint16_t>(image->getWidth()),
+                                                           .height      = static_cast<uint16_t>(image->getHeight()),
+                                                           .arraySize   = 2,
+                                                           .pixelFormat = image->getPixelFormat()},
+                                          subDatas);
+                }
+
                 // parse 9-patch info
                 this->parseNinePatchImage(image, texture, asyncStruct->filename);
-#if AX_ENABLE_CACHE_TEXTURE_DATA
-                // cache the texture file name
-                VolatileTextureMgr::addImageTexture(texture, asyncStruct->filename);
-#endif
+
                 // cache the texture. retain it, since it is added in the map
                 _textures.emplace(asyncStruct->filename, texture);
                 texture->retain();
 
                 texture->autorelease();
-                // ETC1 ALPHA supports.
-                if (asyncStruct->imageAlpha.getFileType() == Image::Format::ETC1)
-                {
-                    texture->updateWithImage(&asyncStruct->imageAlpha, asyncStruct->pixelFormat, 1);
-                }
+#if AX_ENABLE_CONTEXT_LOSS_RECOVERY
+                // cache the texture file name
+                VolatileTextureMgr::addImageTexture(texture, asyncStruct->filename);
+#endif
             }
             else
             {
@@ -431,12 +451,12 @@ Texture2D* TextureCache::getDummyTexture()
     return texture;
 }
 
-Texture2D* TextureCache::addImage(std::string_view path)
+Texture2D* TextureCache::addImage(std::string_view path, bool autoGenMipmaps)
 {
-    return addImage(path, PixelFormat::NONE);
+    return addImage(path, PixelFormat::NONE, autoGenMipmaps);
 }
 
-Texture2D* TextureCache::addImage(std::string_view path, PixelFormat format)
+Texture2D* TextureCache::addImage(std::string_view path, PixelFormat renderFormat, bool autoGenMipmaps)
 {
     Texture2D* texture = nullptr;
     Image* image       = nullptr;
@@ -465,27 +485,46 @@ Texture2D* TextureCache::addImage(std::string_view path, PixelFormat format)
 
             texture = new Texture2D();
 
-            if (texture->initWithImage(image, format))
+            std::string alphaFullPath;
+
+            bool ret;
+            if (image->getFileType() != Image::Format::ETC1 || (alphaFullPath = checkETC1AlphaFile(fullpath)).empty())
             {
-#if AX_ENABLE_CACHE_TEXTURE_DATA
+                ret = texture->initWithImage(image, renderFormat, autoGenMipmaps);
+            }
+            else
+            { // ETC1 ALPHA supports.
+                Image imageAlpha;
+                ret = imageAlpha.initWithImageFile(alphaFullPath);
+                if (ret)
+                {
+                    rhi::TextureDesc desc{
+                        .width       = static_cast<uint16_t>(image->getWidth()),
+                        .height      = static_cast<uint16_t>(image->getHeight()),
+                        .arraySize = 2,
+                        .pixelFormat = image->getPixelFormat(),
+                    };
+                    TextureSliceData subDatas[2] = {
+                        TextureSliceData{image->getData(), static_cast<uint16_t>(image->getDataSize()), 0},
+                        TextureSliceData{imageAlpha.getData(),
+                                                   static_cast<uint16_t>(imageAlpha.getDataSize()),
+                                                   1}
+                    };
+
+                    if (autoGenMipmaps)
+                        desc.mipLevels = 0;  // generate mipmaps by GPU
+                    ret = texture->initWithSpec(desc, subDatas, renderFormat);
+                }
+            }
+
+            if (ret)
+            {
+#if AX_ENABLE_CONTEXT_LOSS_RECOVERY
                 // cache the texture file name
                 VolatileTextureMgr::addImageTexture(texture, fullpath);
 #endif
                 // texture already retained, no need to re-retain it
                 _textures.emplace(fullpath, texture);
-
-                //-- ANDROID ETC1 ALPHA SUPPORTS.
-                std::string alphaFullPath{path};
-                alphaFullPath += s_etc1AlphaFileSuffix;
-                if (image->getFileType() == Image::Format::ETC1 && !s_etc1AlphaFileSuffix.empty() &&
-                    FileUtils::getInstance()->isFileExist(alphaFullPath))
-                {
-                    Image imageAlpha;
-                    if (imageAlpha.initWithImageFile(alphaFullPath))
-                    {
-                        texture->updateWithImage(&imageAlpha, format, 1);
-                    }
-                }
 
                 // parse 9-patch info
                 this->parseNinePatchImage(image, texture, path);
@@ -549,7 +588,7 @@ Texture2D* TextureCache::addImage(Image* image, std::string_view key, PixelForma
 
     } while (0);
 
-#if AX_ENABLE_CACHE_TEXTURE_DATA
+#if AX_ENABLE_CONTEXT_LOSS_RECOVERY
     VolatileTextureMgr::addImage(texture, image);
 #endif
 
@@ -583,7 +622,7 @@ Texture2D* TextureCache::addImage(const Data& imageData, std::string_view key)
             if (texture->initWithImage(image))
             {
 
-#if AX_ENABLE_CACHE_TEXTURE_DATA
+#if AX_ENABLE_CONTEXT_LOSS_RECOVERY
                 VolatileTextureMgr::addImage(texture, image);
 #endif
                 _textures.emplace(key, texture);
@@ -770,7 +809,7 @@ std::string TextureCache::getCachedTextureInfo() const
         totalBytes += bytes;
         count++;
         auto msg = fmt::format_to_z(tmp, "\"{}\" rc={} id={} {} x {} @ {} bpp => {} KB\n", texture.first,
-                 tex->getReferenceCount(), fmt::ptr(tex->getBackendTexture()), tex->getPixelsWide(),
+                 tex->getReferenceCount(), fmt::ptr(tex->getRHITexture()), tex->getPixelsWide(),
                  tex->getPixelsHigh(), bpp, bytes / 1024);
 
         ret += msg;
@@ -809,15 +848,15 @@ void TextureCache::renameTextureWithKey(std::string_view srcName, std::string_vi
     }
 }
 
-#if AX_ENABLE_CACHE_TEXTURE_DATA
+#if AX_ENABLE_CONTEXT_LOSS_RECOVERY
 
 std::list<VolatileTexture*> VolatileTextureMgr::_textures;
 bool VolatileTextureMgr::_isReloading = false;
 
 VolatileTexture::VolatileTexture(Texture2D* t)
     : _texture(t)
-    , _uiImage(nullptr)
-    , _cashedImageType(kInvalid)
+    , _image(nullptr)
+    , _cachedImageType(kInvalid)
     , _textureData(nullptr)
     , _pixelFormat(rhi::PixelFormat::RGBA8)
     , _fileName("")
@@ -826,7 +865,7 @@ VolatileTexture::VolatileTexture(Texture2D* t)
 
 VolatileTexture::~VolatileTexture()
 {
-    AX_SAFE_RELEASE(_uiImage);
+    AX_SAFE_RELEASE(_image);
 }
 
 void VolatileTextureMgr::addImageTexture(Texture2D* tt, std::string_view imageFileName)
@@ -836,9 +875,9 @@ void VolatileTextureMgr::addImageTexture(Texture2D* tt, std::string_view imageFi
         return;
     }
 
-    VolatileTexture* vt = getOrAddVolatileTexture(tt);
+    VolatileTexture* vt = ensureVolatileTexture(tt);
 
-    vt->_cashedImageType = VolatileTexture::kImageFile;
+    vt->_cachedImageType = VolatileTexture::kImageFile;
     vt->_fileName        = imageFileName;
     vt->_pixelFormat     = tt->getPixelFormat();
 }
@@ -848,18 +887,18 @@ void VolatileTextureMgr::addImage(Texture2D* tt, Image* image)
     if (tt == nullptr || image == nullptr)
         return;
 
-    VolatileTexture* vt = getOrAddVolatileTexture(tt);
+    VolatileTexture* vt = ensureVolatileTexture(tt);
 
-    if(vt->_uiImage != image) {
-        AX_SAFE_RELEASE(vt->_uiImage);
+    if(vt->_image != image) {
+        AX_SAFE_RELEASE(vt->_image);
         image->retain();
-        vt->_uiImage         = image;
-        vt->_cashedImageType = VolatileTexture::kImage;
+        vt->_image         = image;
+        vt->_cachedImageType = VolatileTexture::kImage;
         vt->_pixelFormat     = tt->getPixelFormat();
     }
 }
 
-VolatileTexture* VolatileTextureMgr::getOrAddVolatileTexture(Texture2D* tt)
+VolatileTexture* VolatileTextureMgr::ensureVolatileTexture(Texture2D* tt)
 {
     VolatileTexture* vt = nullptr;
     for (const auto& texture : _textures)
@@ -892,9 +931,9 @@ void VolatileTextureMgr::addDataTexture(Texture2D* tt,
         return;
     }
 
-    VolatileTexture* vt = getOrAddVolatileTexture(tt);
+    VolatileTexture* vt = ensureVolatileTexture(tt);
 
-    vt->_cashedImageType = VolatileTexture::kImageData;
+    vt->_cachedImageType = VolatileTexture::kImageData;
     vt->_textureData     = data;
     vt->_dataLen         = dataLen;
     vt->_pixelFormat     = pixelFormat;
@@ -908,9 +947,9 @@ void VolatileTextureMgr::addStringTexture(Texture2D* tt, std::string_view text, 
         return;
     }
 
-    VolatileTexture* vt = getOrAddVolatileTexture(tt);
+    VolatileTexture* vt = ensureVolatileTexture(tt);
 
-    vt->_cashedImageType = VolatileTexture::kString;
+    vt->_cachedImageType = VolatileTexture::kString;
     vt->_text            = text;
     vt->_fontDefinition  = fontDefinition;
 }
@@ -934,59 +973,71 @@ void VolatileTextureMgr::reloadAllTextures()
     _isReloading = true;
     AXLOGD("reload all texture");
 
-    for (auto&& texture : _textures)
+    for (auto&& vt : _textures)
     {
-        VolatileTexture* vt = texture;
-
-        switch (vt->_cashedImageType)
-        {
-        case VolatileTexture::kImageFile:
-        {
-            reloadTexture(vt->_texture, vt->_fileName, vt->_pixelFormat);
-
-            // etc1 support check whether alpha texture exists & load it
-            Image image;
-            if (image.initWithImageFile(vt->_fileName + TextureCache::getETC1AlphaFileSuffix()))
-            {
-                vt->_texture->updateWithImage(&image, vt->_pixelFormat, 1);
-            }
-        }
-        break;
-        case VolatileTexture::kImageData:
-        {
-            vt->_texture->initWithData(vt->_textureData, vt->_dataLen, vt->_pixelFormat, vt->_textureSize.width,
-                                       vt->_textureSize.height);
-        }
-        break;
-        case VolatileTexture::kString:
-        {
-            vt->_texture->initWithString(vt->_text, vt->_fontDefinition);
-        }
-        break;
-        case VolatileTexture::kImage:
-        {
-            vt->_texture->initWithImage(vt->_uiImage, vt->_pixelFormat);
-        }
-        break;
-        default:
-            break;
-        }
+        reloadTexture(vt);
     }
 
     _isReloading = false;
 }
 
-void VolatileTextureMgr::reloadTexture(Texture2D* texture, std::string_view filename, rhi::PixelFormat pixelFormat)
+void VolatileTextureMgr::reloadTexture(VolatileTexture* vt)
 {
+    auto texture = vt->_texture;
+
     if (!texture)
         return;
 
-    Image image;
+    if(vt->_cachedImageType != VolatileTexture::kInvalid) {
+        texture->invalidate();
+        switch (vt->_cachedImageType) {
+            case VolatileTexture::kImageFile: {
+                Image image;
 
-    if (image.initWithImageFile(filename))
-        texture->initWithImage(&image, pixelFormat);
+                if (!image.initWithImageFile(vt->_fileName))
+                    return;
+
+                if (image.getFileType() != Image::Format::ETC1) {
+                    texture->updateData(&image);
+                } else {
+                    std::string alphaFilePath = TextureCache::checkETC1AlphaFile(vt->_fileName);
+                    if (!alphaFilePath.empty()) {
+                        Image imageAlpha;
+                        auto ret = imageAlpha.initWithImageFile(alphaFilePath);
+                        if (ret) {
+                            TextureSliceData subDatas[2] = {
+                                    TextureSliceData{image.getData(),
+                                                     static_cast<uint16_t>(image.getDataSize()), 0},
+                                    TextureSliceData{imageAlpha.getData(),
+                                                     static_cast<uint16_t>(imageAlpha.getDataSize()),
+                                                     1}
+                            };
+
+                            texture->updateData(subDatas);
+                        }
+                    } else {
+                        texture->updateData(&image);
+                    }
+                }
+                break;
+            }
+            case VolatileTexture::kImage:
+                texture->updateData(vt->_image);
+                break;
+            case VolatileTexture::kImageData:
+                texture->updateData(vt->_textureData, vt->_textureSize.width,
+                                    vt->_textureSize.height);
+                break;
+            case VolatileTexture::kString:
+                texture->updateData(vt->_text, vt->_fontDefinition);
+                break;
+        }
+    }
+    else {
+        AXLOGE("VolatileTexture:{}, no valid data to restore", fmt::ptr(vt));
+    }
 }
 
-#endif  // AX_ENABLE_CACHE_TEXTURE_DATA
+#endif  // AX_ENABLE_CONTEXT_LOSS_RECOVERY
 
 }

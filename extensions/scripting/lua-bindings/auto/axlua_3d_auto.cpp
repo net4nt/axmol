@@ -1184,7 +1184,7 @@ int lua_ax_3d_TextureCube_setTexParameters(lua_State* tolua_S)
 
     return 0;
 }
-int lua_ax_3d_TextureCube_getBackendTexture(lua_State* tolua_S)
+int lua_ax_3d_TextureCube_getRHITexture(lua_State* tolua_S)
 {
     int argc = 0;
     ax::TextureCube* cobj = nullptr;
@@ -1204,7 +1204,7 @@ int lua_ax_3d_TextureCube_getBackendTexture(lua_State* tolua_S)
 #if _AX_DEBUG >= 1
     if (!cobj)
     {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_ax_3d_TextureCube_getBackendTexture'", nullptr);
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_ax_3d_TextureCube_getRHITexture'", nullptr);
         return 0;
     }
 #endif
@@ -1214,19 +1214,19 @@ int lua_ax_3d_TextureCube_getBackendTexture(lua_State* tolua_S)
     {
         if(!ok)
         {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_ax_3d_TextureCube_getBackendTexture'", nullptr);
+            tolua_error(tolua_S,"invalid arguments in function 'lua_ax_3d_TextureCube_getRHITexture'", nullptr);
             return 0;
         }
-        auto&& ret = cobj->getBackendTexture();
+        auto&& ret = cobj->getRHITexture();
         object_to_luaval<ax::rhi::Texture>(tolua_S, "axrhi.Texture",(ax::rhi::Texture*)ret);
         return 1;
     }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "ax.TextureCube:getBackendTexture",argc, 0);
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "ax.TextureCube:getRHITexture",argc, 0);
     return 0;
 
 #if _AX_DEBUG >= 1
     tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_ax_3d_TextureCube_getBackendTexture'.",&tolua_err);
+    tolua_error(tolua_S,"#ferror in function 'lua_ax_3d_TextureCube_getRHITexture'.",&tolua_err);
 #endif
 
     return 0;
@@ -1422,7 +1422,7 @@ int lua_register_ax_3d_TextureCube(lua_State* tolua_S)
     tolua_beginmodule(tolua_S,"TextureCube");
         tolua_function(tolua_S,"new",lua_ax_3d_TextureCube_constructor);
         tolua_function(tolua_S,"setTexParameters",lua_ax_3d_TextureCube_setTexParameters);
-        tolua_function(tolua_S,"getBackendTexture",lua_ax_3d_TextureCube_getBackendTexture);
+        tolua_function(tolua_S,"getRHITexture",lua_ax_3d_TextureCube_getRHITexture);
         tolua_function(tolua_S,"getImagePaths",lua_ax_3d_TextureCube_getImagePaths);
         tolua_function(tolua_S,"reloadTexture",lua_ax_3d_TextureCube_reloadTexture);
         tolua_function(tolua_S,"create", lua_ax_3d_TextureCube_create);

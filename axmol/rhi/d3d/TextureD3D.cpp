@@ -24,7 +24,7 @@
 #include "axmol/rhi/d3d/TextureD3D.h"
 #include "axmol/rhi/d3d/DriverD3D.h"
 #include "axmol/rhi/d3d/UtilsD3D.h"
-#include "axmol/rhi/PixelFormatUtils.h"
+#include "axmol/rhi/RHIUtils.h"
 #include "axmol/rhi/SamplerCache.h"
 
 namespace ax::rhi::d3d
@@ -55,12 +55,13 @@ static void translateTexDesc(const TextureDesc& desc, D3D11_TEXTURE2D_DESC& outD
     outDesc.Height             = desc.height;
     outDesc.SampleDesc.Count   = 1;
     outDesc.SampleDesc.Quality = 0;
+    outDesc.MipLevels          = desc.mipLevels;
     translateUsage(desc.textureUsage, outDesc);
 
     switch (desc.textureType)
     {
     case TextureType::TEXTURE_2D:
-        outDesc.ArraySize = 1;
+        outDesc.ArraySize = desc.arraySize;
         break;
     case TextureType::TEXTURE_CUBE:
         outDesc.ArraySize = 6;
@@ -69,7 +70,7 @@ static void translateTexDesc(const TextureDesc& desc, D3D11_TEXTURE2D_DESC& outD
     }
 
     // depth-stencil
-    switch (desc.textureFormat)
+    switch (desc.pixelFormat)
     {
     case PixelFormat::D24S8:
         outDesc.BindFlags |= D3D11_BIND_DEPTH_STENCIL;
@@ -85,24 +86,23 @@ static void fromD3DTexDesc(TextureDesc& td, const D3D11_TEXTURE2D_DESC& desc)
 {
     td.textureType = TextureType::TEXTURE_2D;
 
-    td.width  = desc.Width;
-    td.height = desc.Height;
-
-    td.depth = 1;  // desc.ArraySize
+    td.width     = static_cast<uint16_t>(desc.Width);
+    td.height    = static_cast<uint16_t>(desc.Height);
+    td.arraySize = desc.ArraySize;
 
     switch (desc.Format)
     {
     case DXGI_FORMAT_R8G8B8A8_UNORM:
-        td.textureFormat = PixelFormat::RGBA8;
+        td.pixelFormat = PixelFormat::RGBA8;
         break;
     case DXGI_FORMAT_R8_UNORM:
-        td.textureFormat = PixelFormat::R8;
+        td.pixelFormat = PixelFormat::R8;
         break;
     case DXGI_FORMAT_D24_UNORM_S8_UINT:
-        td.textureFormat = PixelFormat::D24S8;
+        td.pixelFormat = PixelFormat::D24S8;
         break;
     default:
-        td.textureFormat = PixelFormat::NONE;
+        td.pixelFormat = PixelFormat::NONE;
         break;
     }
 
@@ -112,25 +112,182 @@ static void fromD3DTexDesc(TextureDesc& td, const D3D11_TEXTURE2D_DESC& desc)
         td.textureUsage = TextureUsage::READ;
 }
 
-TextureHandle TextureResource::createTexture(UINT mipLevels)
+// ------------------------------------------------------------
+// ctor / dtor
+// ------------------------------------------------------------
+TextureImpl::TextureImpl(ID3D11Device* device, const TextureDesc& desc) : _device(device)
 {
+    updateTextureDesc(desc);
+}
+
+TextureImpl::TextureImpl(ID3D11Device* device, ID3D11Texture2D* texture) : _device(device)
+{
+    texture->AddRef();
+    _nativeTexture.tex2d = texture;
+
+    D3D11_TEXTURE2D_DESC desc;
+    texture->GetDesc(&desc);
+    fromD3DTexDesc(_desc, desc);
+
+    Texture::updateTextureDesc(_desc);
+}
+
+TextureImpl::~TextureImpl()
+{
+    _nativeTexture.destroy();
+}
+
+// ------------------------------------------------------------
+// updateSamplerDesc
+// ------------------------------------------------------------
+void TextureImpl::updateSamplerDesc(const SamplerDesc& desc)
+{
+    _desc.samplerDesc = desc;
+    _samplerState     = static_cast<ID3D11SamplerState*>(SamplerCache::getInstance()->getSampler(desc));
+}
+
+// ------------------------------------------------------------
+// updateTextureDesc
+// ------------------------------------------------------------
+void TextureImpl::updateTextureDesc(const TextureDesc& desc)
+{
+    _desc = desc;
+
+    Texture::updateTextureDesc(desc);
+
+    updateSamplerDesc(desc.samplerDesc);
+}
+
+void TextureImpl::updateData(const void* data,
+                             int width,
+                             int height,
+                             int level,
+                             int layerIndex /*=0*/)
+{
+    updateSubData(0, 0, width, height, level, data, layerIndex);
+}
+
+void TextureImpl::updateCompressedData(const void* data,
+                                       int width,
+                                       int height,
+                                       std::size_t dataSize,
+                                       int level,
+                                       int layerIndex /*=0*/)
+{
+    updateCompressedSubData(0, 0, width, height, dataSize, level, data, layerIndex);
+}
+
+void TextureImpl::updateSubData(int xoffset,
+                                int yoffset,
+                                int width,
+                                int height,
+                                int level,
+                                const void* data,
+                                int layerIndex /*=0*/)
+{
+    assert(_desc.textureType == TextureType::TEXTURE_2D);
+    ensureNativeTexture();
+
+    if(!data) [[unlikely]]
+        return;
+
+    D3D11_BOX box{};
+    box.left   = static_cast<UINT>(xoffset);
+    box.top    = static_cast<UINT>(yoffset);
+    box.front  = 0;
+    box.right  = static_cast<UINT>(xoffset + width);
+    box.bottom = static_cast<UINT>(yoffset + height);
+    box.back   = 1;
+
+    auto rowPitch   = RHIUtils::computeRowPitch(_desc.pixelFormat, static_cast<uint32_t>(width));
+    UINT slicePitch = rowPitch * static_cast<UINT>(height);
+
+    auto context = static_cast<DriverImpl*>(DriverBase::getInstance())->getContext();
+    UINT subresource = D3D11CalcSubresource(level, layerIndex, _desc.mipLevels);
+    context->UpdateSubresource(_nativeTexture, subresource, &box, data, rowPitch, slicePitch);
+
+    if (shouldGenMipmaps(level))
+        generateMipmaps(context);
+}
+
+void TextureImpl::updateCompressedSubData(int xoffset,
+                                          int yoffset,
+                                          int width,
+                                          int height,
+                                          std::size_t /*dataSize*/,
+                                          int level,
+                                          const void* data,
+                                          int layerIndex /*=0*/)
+{
+    assert(_desc.textureType == TextureType::TEXTURE_2D);
+    ensureNativeTexture();
+
+    D3D11_BOX box{};
+    box.left   = static_cast<UINT>(xoffset);
+    box.top    = static_cast<UINT>(yoffset);
+    box.front  = 0;
+    box.right  = static_cast<UINT>(xoffset + width);
+    box.bottom = static_cast<UINT>(yoffset + height);
+    box.back   = 1;
+
+    auto context = static_cast<DriverImpl*>(DriverBase::getInstance())->getContext();
+    UINT subresource = D3D11CalcSubresource(level, layerIndex, _desc.mipLevels);
+    context->UpdateSubresource(_nativeTexture, subresource, &box, data, 0, 0);
+
+    if (shouldGenMipmaps(level))
+        generateMipmaps(context);
+}
+
+void TextureImpl::updateFaceData(TextureCubeFace side, const void* data)
+{
+    assert(_desc.textureType == TextureType::TEXTURE_CUBE);
+    ensureNativeTexture();
+
+    auto context = static_cast<DriverImpl*>(DriverBase::getInstance())->getContext();
+
+    //-------------------------------------------------------------------
+    // 1. compute SubResource： = 6 * (mip-levels)
+    //-------------------------------------------------------------------
+    const uint32_t mipLevel    = 0;
+    const uint32_t arraySlice  = static_cast<uint32_t>(side);
+    const uint32_t subresource = ::D3D11CalcSubresource(mipLevel, arraySlice, _desc.mipLevels);
+
+    //-------------------------------------------------------------------
+    // 2. compute RowPitch / SlicePitch
+    //-------------------------------------------------------------------
+    const uint32_t rowPitch = RHIUtils::computeRowPitch(_desc.pixelFormat, static_cast<uint32_t>(_desc.width));
+    const uint32_t slicePitch = _desc.height * rowPitch;
+
+    //-------------------------------------------------------------------
+    // 3. update
+    //-------------------------------------------------------------------
+    context->UpdateSubresource(_nativeTexture, subresource, nullptr, data, rowPitch, slicePitch);
+
+    if (shouldGenMipmaps())
+        generateMipmaps(context);
+}
+
+void TextureImpl::ensureNativeTexture()
+{
+    if (_nativeTexture)
+        return;
     D3D11_TEXTURE2D_DESC texDesc{};
     translateTexDesc(_desc, texDesc);
 
-    texDesc.MipLevels = mipLevels;
+    texDesc.MipLevels = _desc.mipLevels;
 
-    if (mipLevels == 0)
-    {
+    if (_desc.mipLevels == 0)
+    {  // means we must invoke generateMipmaps by GPU
         texDesc.MiscFlags |= D3D11_RESOURCE_MISC_GENERATE_MIPS;
         texDesc.BindFlags |= D3D11_BIND_RENDER_TARGET;
     }
 
-    auto fmtInfo = UtilsD3D::toDxgiFormatInfo(_desc.textureFormat);
+    auto fmtInfo = UtilsD3D::toDxgiFormatInfo(_desc.pixelFormat);
     assert(fmtInfo);
     if (fmtInfo->format == DXGI_FORMAT_UNKNOWN)
     {
-        AXLOGE("axmol: D3D not support pixel format: {}", (int)_desc.textureFormat);
-        return TextureHandle{};
+        AXLOGE("axmol: D3D not support pixel format: {}", (int)_desc.pixelFormat);
+        return;
     }
 
     texDesc.Format = fmtInfo->format;
@@ -139,11 +296,17 @@ TextureHandle TextureResource::createTexture(UINT mipLevels)
     HRESULT hr = _device->CreateTexture2D(&texDesc, nullptr, texture.GetAddressOf());
     if (FAILED(hr) || !texture)
     {
-        return TextureHandle{};
+        return;
     }
 
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc{};
     srvDesc.Format = fmtInfo->fmtSrv;
+
+    // srvDesc.xxx.MipLevels:
+    //   Set to -1 to indicate all the mipmap levels from MostDetailedMip on down to least detailed.
+    // srvDesc.xxx.MostDetailedMip
+    //   Index of the most detailed mipmap level to use; this number is between 0 and MipLevels (from the original
+    //   Texture2D for which ID3D11Device::CreateShaderResourceView creates a view) -1.
     switch (_desc.textureType)
     {
     case TextureType::TEXTURE_CUBE:
@@ -152,9 +315,19 @@ TextureHandle TextureResource::createTexture(UINT mipLevels)
         srvDesc.TextureCube.MostDetailedMip = 0;
         break;
     default:
-        srvDesc.ViewDimension             = D3D11_SRV_DIMENSION_TEXTURE2D;
-        srvDesc.Texture2D.MipLevels       = -1;
-        srvDesc.Texture2D.MostDetailedMip = 0;
+        if (texDesc.ArraySize == 1)
+        {
+            srvDesc.ViewDimension             = D3D11_SRV_DIMENSION_TEXTURE2D;
+            srvDesc.Texture2D.MipLevels       = -1;
+            srvDesc.Texture2D.MostDetailedMip = 0;
+        }
+        else
+        {
+            srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
+            srvDesc.Texture2DArray.MipLevels = -1;
+            srvDesc.Texture2DArray.MostDetailedMip = 0;
+            srvDesc.Texture2DArray.ArraySize       = texDesc.ArraySize;
+        }
     }
 
     ComPtr<ID3D11ShaderResourceView> srv;
@@ -162,233 +335,33 @@ TextureHandle TextureResource::createTexture(UINT mipLevels)
 
     if (FAILED(hr) || !srv)
     {
-        return TextureHandle{};
+        AXLOGE("create srv from texture fail:{}", hr);
+        return;
     }
 
-    return TextureHandle{texture.Detach(), srv.Detach()};
+    _nativeTexture = TextureHandle{texture.Detach(), srv.Detach()};
 }
 
-TextureHandle TextureResource::ensure(int index)
-{
-    if (index < 0 || index >= _textures.size())
-        return TextureHandle{};
-
-    if (_textures[index])
-        return _textures[index];
-
-    _textures[index] = createTexture(1);
-    _maxIdx          = (std::max)(_maxIdx, index + 1);
-
-    return _textures[index];
-}
-
-// ------------------------------------------------------------
-// ctor / dtor
-// ------------------------------------------------------------
-TextureImpl::TextureImpl(ID3D11Device* device, const TextureDesc& descriptor) : _textureRes(device)
-{
-    updateTextureDesc(descriptor);
-    // TODO:
-    // _rendererRecreatedListener = EventDispatcher::addListener(
-    //     EventType::RENDERER_RECREATED, [this](auto&&) { updateTextureDesc(this->_textureDesc); });
-}
-
-TextureImpl::TextureImpl(ID3D11Device* device, ID3D11Texture2D* texture) : _textureRes(device)
-{
-    texture->AddRef();
-    _textureRes._textures[0].tex2d = texture;
-    _textureRes._maxIdx            = 0;
-
-    D3D11_TEXTURE2D_DESC desc;
-    texture->GetDesc(&desc);
-    fromD3DTexDesc(_textureRes._desc, desc);
-
-    Texture::updateTextureDesc(_textureRes._desc);
-}
-
-TextureImpl::~TextureImpl()
-{
-    // TODO:
-    // EventDispatcher::removeListener(_rendererRecreatedListener);
-    _textureRes.destroy();
-}
-
-// ------------------------------------------------------------
-// updateSamplerDesc
-// ------------------------------------------------------------
-void TextureImpl::updateSamplerDesc(const SamplerDesc& desc)
-{
-    _textureRes._samplerState = static_cast<ID3D11SamplerState*>(SamplerCache::getInstance()->getSampler(desc));
-}
-
-// ------------------------------------------------------------
-// updateTextureDesc
-// ------------------------------------------------------------
-void TextureImpl::updateTextureDesc(const TextureDesc& descriptor, int index /*=0*/)
-{
-
-    _textureRes._desc = descriptor;
-
-    Texture::updateTextureDesc(descriptor);
-
-    updateSamplerDesc(descriptor.samplerDesc);
-
-    if (descriptor.textureFormat != PixelFormat::NONE)
-        _textureRes.ensure(index);
-}
 
 // ------------------------------------------------------------
 // generateMipmaps
 // ------------------------------------------------------------
-void TextureImpl::generateMipmaps()
+void TextureImpl::generateMipmaps(ID3D11DeviceContext* context)
 {
-    if (TextureUsage::RENDER_TARGET == _textureUsage)
+    if (TextureUsage::RENDER_TARGET == _desc.textureUsage)
         return;
-
-    if (!_hasMipmaps)
+    if (!_nativeTexture)
     {
-        _hasMipmaps  = true;
-        auto context = static_cast<DriverImpl*>(DriverBase::getInstance())->getContext();
-
-        // FIXME: consider add a member mipLevels to TextureDesc to avoid recreate texture
-        //
-        _textureRes.foreachTextures([context, this](TextureHandle& h, int) {
-            if (h && h.srv)
-            {
-                // recreate texture with mip
-                auto tmp = _textureRes.createTexture(0);
-                if (tmp)
-                {
-                    context->CopySubresourceRegion(tmp.tex2d, 0, 0, 0, 0, h.tex2d, 0, nullptr);
-                    context->GenerateMips(tmp.srv);
-                    h.Release();
-                    h = tmp;
-                }
-            }
-        });
-
-        auto mainTexture = _textureRes._textures[0];
-        if (mainTexture.srv)
-        {
-            D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-            mainTexture.srv->GetDesc(&srvDesc);
-            _textureRes._mipLevels = srvDesc.Texture2D.MipLevels;
-        }
+        // geneate mipmaps by GPU required at least upload data once
+        return;
     }
-}
 
-void TextureImpl::updateData(uint8_t* data, std::size_t width, std::size_t height, std::size_t level, int index /*=0*/)
-{
-    assert(_textureType == TextureType::TEXTURE_2D);
-    _textureRes.ensure(index);
-    AX_ASSERT(index <= _textureRes._maxIdx);
+    // generate mipmaps
+    context->GenerateMips(_nativeTexture.srv);
+    D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+    _nativeTexture.srv->GetDesc(&srvDesc);
 
-    auto rowPitch = PixelFormatUtils::computeRowPitch(_textureFormat, static_cast<uint32_t>(width));
-
-    UINT slicePitch = rowPitch * static_cast<UINT>(height);
-
-    auto context = static_cast<DriverImpl*>(DriverBase::getInstance())->getContext();
-    context->UpdateSubresource(_textureRes._textures[index].tex2d, static_cast<UINT>(level), nullptr, data, rowPitch,
-                               slicePitch);
-}
-
-void TextureImpl::updateCompressedData(uint8_t* data,
-                                       std::size_t width,
-                                       std::size_t height,
-                                       std::size_t dataLen,
-                                       std::size_t level,
-                                       int index /*=0*/)
-{
-    assert(_textureType == TextureType::TEXTURE_2D);
-    _textureRes.ensure(index);
-    AX_ASSERT(index <= _textureRes._maxIdx);
-
-    auto context = static_cast<DriverImpl*>(DriverBase::getInstance())->getContext();
-    context->UpdateSubresource(_textureRes._textures[index].tex2d, static_cast<UINT>(level), nullptr, data, 0, 0);
-}
-
-void TextureImpl::updateSubData(std::size_t xoffset,
-                                std::size_t yoffset,
-                                std::size_t width,
-                                std::size_t height,
-                                std::size_t level,
-                                uint8_t* data,
-                                int index /*=0*/)
-{
-    assert(_textureType == TextureType::TEXTURE_2D);
-    _textureRes.ensure(index);
-    AX_ASSERT(index <= _textureRes._maxIdx);
-
-    D3D11_BOX box{};
-    box.left   = static_cast<UINT>(xoffset);
-    box.top    = static_cast<UINT>(yoffset);
-    box.front  = 0;
-    box.right  = static_cast<UINT>(xoffset + width);
-    box.bottom = static_cast<UINT>(yoffset + height);
-    box.back   = 1;
-
-    auto rowPitch   = PixelFormatUtils::computeRowPitch(_textureFormat, static_cast<uint32_t>(width));
-    UINT slicePitch = rowPitch * static_cast<UINT>(height);
-
-    auto context = static_cast<DriverImpl*>(DriverBase::getInstance())->getContext();
-    context->UpdateSubresource(_textureRes._textures[index].tex2d, static_cast<UINT>(level), &box, data, rowPitch,
-                               slicePitch);
-}
-
-void TextureImpl::updateCompressedSubData(std::size_t xoffset,
-                                          std::size_t yoffset,
-                                          std::size_t width,
-                                          std::size_t height,
-                                          std::size_t dataLen,
-                                          std::size_t level,
-                                          uint8_t* data,
-                                          int index /*=0*/)
-{
-    assert(_textureType == TextureType::TEXTURE_2D);
-    _textureRes.ensure(index);
-    AX_ASSERT(index <= _textureRes._maxIdx);
-
-    D3D11_BOX box{};
-    box.left   = static_cast<UINT>(xoffset);
-    box.top    = static_cast<UINT>(yoffset);
-    box.front  = 0;
-    box.right  = static_cast<UINT>(xoffset + width);
-    box.bottom = static_cast<UINT>(yoffset + height);
-    box.back   = 1;
-
-    auto context = static_cast<DriverImpl*>(DriverBase::getInstance())->getContext();
-    context->UpdateSubresource(_textureRes._textures[index].tex2d, static_cast<UINT>(level), &box, data, 0, 0);
-}
-
-void TextureImpl::updateFaceData(TextureCubeFace side, void* data, int index)
-{
-    assert(_textureType == TextureType::TEXTURE_CUBE);
-    _textureRes.ensure(index);
-    assert(index <= _textureRes._maxIdx);
-
-    auto context = static_cast<DriverImpl*>(DriverBase::getInstance())->getContext();
-
-    auto& texHandle = _textureRes.getTexture(index);
-
-    //-------------------------------------------------------------------
-    // 1. compute SubResource： = 6 * (mip-levels)
-    //-------------------------------------------------------------------
-    const uint32_t mipLevels   = 1;  // texHandle.tex2d->getMipLevels();
-    const uint32_t mipLevel    = 0;
-    const uint32_t arraySlice  = static_cast<uint32_t>(side) + index * 6;
-    const uint32_t subresource = ::D3D11CalcSubresource(mipLevel, arraySlice, mipLevels);
-
-    //-------------------------------------------------------------------
-    // 2. compute RowPitch / SlicePitch
-    //-------------------------------------------------------------------
-    const uint32_t rowPitch =
-        PixelFormatUtils::computeRowPitch(_textureFormat, static_cast<uint32_t>(_textureRes._desc.width));
-    const uint32_t slicePitch = _textureRes._desc.height * rowPitch;
-
-    //-------------------------------------------------------------------
-    // 3. update
-    //-------------------------------------------------------------------
-    context->UpdateSubresource(_textureRes._textures[index].tex2d, subresource, nullptr, data, rowPitch, slicePitch);
+    _overrideMipLevels = (std::max)(1u, srvDesc.Texture2D.MipLevels);
 }
 
 }  // namespace ax::rhi::d3d

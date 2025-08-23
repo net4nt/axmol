@@ -121,7 +121,7 @@ bool ParticleSystemQuad::initWithTotalParticles(int numberOfParticles)
         initIndices();
         //        setupVBO();
 
-#if AX_ENABLE_CACHE_TEXTURE_DATA
+#if AX_ENABLE_CONTEXT_LOSS_RECOVERY
         // Need to listen the event only when not use batchnode, because it will use VBO
         auto listener = EventListenerCustom::create(EVENT_RENDERER_RECREATED,
                                                     AX_CALLBACK_1(ParticleSystemQuad::listenRendererRecreated, this));
@@ -223,11 +223,11 @@ void ParticleSystemQuad::setTextureWithRect(Texture2D* texture, const Rect& rect
     }
 
     // Only update the texture if is different from the current one
-    if (!_texture || texture->getBackendTexture() != _texture->getBackendTexture())
+    if (!_texture || texture->getRHITexture() != _texture->getRHITexture())
     {
         ParticleSystem::setTexture(texture);
 
-        _programState->setTexture(_texture->getBackendTexture());
+        _programState->setTexture(_texture->getRHITexture());
     }
 
     this->initTexCoordsWithRect(rect);

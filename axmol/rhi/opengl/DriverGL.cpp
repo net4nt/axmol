@@ -176,9 +176,9 @@ Buffer* DriverImpl::createBuffer(std::size_t size, BufferType type, BufferUsage 
     return new BufferImpl(size, type, usage);
 }
 
-Texture* DriverImpl::createTexture(const TextureDesc& descriptor)
+Texture* DriverImpl::createTexture(const TextureDesc& desc)
 {
-    return new TextureImpl(descriptor);
+    return new TextureImpl(desc);
 }
 
 RenderTarget* DriverImpl::createDefaultRenderTarget()
@@ -231,7 +231,7 @@ SamplerHandle DriverImpl::createSampler(const SamplerDesc& desc)
         case SamplerFilter::MIP_LINEAR:
             minFilterGL = GL_NEAREST_MIPMAP_LINEAR;
             break;
-        default: // MIP_NONE
+        default: // MIP_DEFAULT
             minFilterGL = GL_NEAREST;
         }
     }

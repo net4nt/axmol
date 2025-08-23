@@ -42,13 +42,11 @@ hlookup::string_map<FontAtlas*> FontAtlasCache::_atlasMap;
 
 void FontAtlasCache::purgeCachedData()
 {
-    auto atlasMapCopy = _atlasMap;
-    for (auto&& atlas : atlasMapCopy)
+    for(auto& [_, atlas] : _atlasMap)
     {
-        auto refCount = atlas.second->getReferenceCount();
-        atlas.second->release();
-        if (refCount != 1)
-            atlas.second->purgeTexturesAtlas();
+        if(atlas->getReferenceCount() > 1)
+            atlas->clearTexturesAtlas();
+        atlas->release();
     }
     _atlasMap.clear();
 }
@@ -166,7 +164,7 @@ FontAtlas* FontAtlasCache::getFontAtlasCharMap(std::string_view plistFile)
 
 FontAtlas* FontAtlasCache::getFontAtlasCharMap(Texture2D* texture, int itemWidth, int itemHeight, int startCharMap)
 {
-    auto atlasName = fmt::format("name:{}_{}_{}_{}", reinterpret_cast<uintptr_t>(texture->getBackendTexture()), itemWidth, itemHeight, startCharMap);
+    auto atlasName = fmt::format("name:{}_{}_{}_{}", reinterpret_cast<uintptr_t>(texture->getRHITexture()), itemWidth, itemHeight, startCharMap);
 
     auto it = _atlasMap.find(atlasName);
     if (it == _atlasMap.end())
@@ -213,24 +211,22 @@ FontAtlas* FontAtlasCache::getFontAtlasCharMap(std::string_view charMapFile,
 
 bool FontAtlasCache::releaseFontAtlas(FontAtlas* atlas)
 {
-    if (nullptr != atlas)
+    if (!atlas) [[unlikely]]
+        return false;
+
+    if (atlas->getReferenceCount() == 1)
     {
-        if (atlas->getReferenceCount() == 1)
+        for (auto it = _atlasMap.begin(); it != _atlasMap.end(); ++it)
         {
-            for (auto&& item : _atlasMap)
+            if (it->second == atlas)
             {
-                if (item.second == atlas)
-                {
-                    _atlasMap.erase(item.first);
-                    break;
-                }
+                _atlasMap.erase(it);
+                break;
             }
         }
-        atlas->release();
-        return true;
     }
-
-    return false;
+    atlas->release();
+    return true;
 }
 
 void FontAtlasCache::reloadFontAtlasFNT(std::string_view fontFileName, const Rect& imageRect, bool imageRotated)

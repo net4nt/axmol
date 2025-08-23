@@ -37,110 +37,73 @@ namespace ax::rhi {
 // static field
 std::vector<ProgramState::AutoBindingResolver*> ProgramState::_customAutoBindingResolvers;
 
-TextureInfo::TextureInfo(std::vector<int>&& _slots, std::vector<rhi::Texture*>&& _textures)
-    : TextureInfo(std::move(_slots), std::vector<int>(_slots.size(), 0), std::move(_textures))
-{}
-
-TextureInfo::TextureInfo(std::vector<int>&& _slots,
-                         std::vector<int>&& _indexs,
-                         std::vector<rhi::Texture*>&& _textures)
-    : slots(std::move(_slots)), indexs(std::move(_indexs)), textures(std::move(_textures))
-{
-    retainTextures();
-}
-
-/* CLASS TextureInfo */
-TextureInfo::TextureInfo(const TextureInfo& other)
+TextureBindingInfo::TextureBindingInfo(const TextureBindingInfo& other)
 {
     this->assign(other);
 }
 
-TextureInfo::TextureInfo(TextureInfo&& other)
+TextureBindingInfo::TextureBindingInfo(TextureBindingInfo&& other)
 {
     this->assign(std::move(other));
 }
 
-TextureInfo::~TextureInfo()
-{
-    releaseTextures();
-}
-
-void TextureInfo::retainTextures()
-{
-    for (auto&& texture : textures)
-        AX_SAFE_RETAIN(texture);
-}
-
-void TextureInfo::releaseTextures()
-{
-    for (auto&& texture : textures)
-        AX_SAFE_RELEASE(texture);
-    textures.clear();
-}
-
-TextureInfo& TextureInfo::operator=(const TextureInfo& other) noexcept
+TextureBindingInfo& TextureBindingInfo::operator=(const TextureBindingInfo& other) noexcept
 {
     this->assign(other);
     return *this;
 }
 
-TextureInfo& TextureInfo::operator=(TextureInfo&& other) noexcept
+TextureBindingInfo& TextureBindingInfo::operator=(TextureBindingInfo&& other) noexcept
 {
     this->assign(std::move(other));
     return *this;
 }
 
-void TextureInfo::assign(const TextureInfo& other)
+void TextureBindingInfo::assign(const TextureBindingInfo& other)
 {
     if (this != &other)
     {
-        releaseTextures();
+        AX_SAFE_RELEASE(this->tex);
+        this->slot = other.slot;
+        this->tex  = other.tex;
+        AX_SAFE_RETAIN(this->tex);
 
-        indexs   = other.indexs;
-        slots    = other.slots;
-        textures = other.textures;
-        retainTextures();
-
-#if AX_ENABLE_CACHE_TEXTURE_DATA
+#if AX_ENABLE_CONTEXT_LOSS_RECOVERY
         location = other.location;
 #endif
     }
 }
 
-void TextureInfo::assign(TextureInfo&& other)
+void TextureBindingInfo::assign(TextureBindingInfo&& other)
 {
     if (this != &other)
     {
-        releaseTextures();
+        std::swap(slot, other.slot);
+        std::swap(tex, other.tex);
 
-        indexs   = std::move(other.indexs);
-        slots    = std::move(other.slots);
-        textures = std::move(other.textures);
-
-#if AX_ENABLE_CACHE_TEXTURE_DATA
-        location       = other.location;
-        other.location = -1;
+#if AX_ENABLE_CONTEXT_LOSS_RECOVERY
+        std::swap(location, other.location);
 #endif
     }
 }
 
-void TextureInfo::assign(int slot, int index, rhi::Texture* texture)
+void TextureBindingInfo::reset(int location_, int slot_, rhi::Texture* tex_)
 {
-    if (textures.size() != 1 or textures[0] != texture or slots[0] != slot or indexs[0] != index)
-    {
-        releaseTextures();
-        indexs.resize(1);
-        indexs[0] = index;
-        slots.resize(1);
-        slots[0] = slot;
-        textures.resize(1);
-        textures[0] = texture;
-        AX_SAFE_RETAIN(texture);
+    AX_SAFE_RELEASE(this->tex);
 
-#if AX_ENABLE_CACHE_TEXTURE_DATA
-        location = -1;
+    this->slot = slot_;
+    this->tex  = tex_;
+
+    AX_SAFE_RETAIN(this->tex);
+
+#if AX_ENABLE_CONTEXT_LOSS_RECOVERY
+    this->location = location_;
 #endif
-    }
+}
+
+TextureBindingInfo::~TextureBindingInfo()
+{
+    AX_SAFE_RELEASE(this->tex);
 }
 
 /* CLASS ProgramState */
@@ -164,7 +127,7 @@ bool ProgramState::init(Program* program)
 
     _uniformBuffers.resize((std::max)(_vertexUniformBufferSize + _fragmentUniformBufferSize, (size_t)1), 0);
 
-#if AX_ENABLE_CACHE_TEXTURE_DATA
+#if AX_ENABLE_CONTEXT_LOSS_RECOVERY
     _backToForegroundListener =
         EventListenerCustom::create(EVENT_RENDERER_RECREATED, [this](EventCustom*) { this->resetUniforms(); });
     Director::getInstance()->getEventDispatcher()->addEventListenerWithFixedPriority(_backToForegroundListener, -1);
@@ -188,7 +151,7 @@ void ProgramState::updateBatchId()
 
 void ProgramState::resetUniforms()
 {
-#if AX_ENABLE_CACHE_TEXTURE_DATA
+#if AX_ENABLE_CONTEXT_LOSS_RECOVERY
     if (_program == nullptr)
         return;
 
@@ -199,9 +162,9 @@ void ProgramState::resetUniforms()
         auto mappedLocation = _program->getMappedLocation(location);
 
         // check if current location had been set before
-        if (_vertexTextureInfos.find(location) != _vertexTextureInfos.end())
+        if (_textureBindingInfos.find(location) != _textureBindingInfos.end())
         {
-            _vertexTextureInfos[location].location = mappedLocation;
+            _textureBindingInfos[location].location = mappedLocation;
         }
     }
 #endif
@@ -211,7 +174,7 @@ ProgramState::~ProgramState()
 {
     AX_SAFE_RELEASE(_program);
 
-#if AX_ENABLE_CACHE_TEXTURE_DATA
+#if AX_ENABLE_CONTEXT_LOSS_RECOVERY
     Director::getInstance()->getEventDispatcher()->removeEventListener(_backToForegroundListener);
 #endif
 
@@ -222,8 +185,7 @@ ProgramState::~ProgramState()
 ProgramState* ProgramState::clone() const
 {
     ProgramState* cp          = new ProgramState(_program);
-    cp->_vertexTextureInfos   = _vertexTextureInfos;
-    cp->_fragmentTextureInfos = _fragmentTextureInfos;
+    cp->_textureBindingInfos  = _textureBindingInfos;
     cp->_uniformBuffers       = _uniformBuffers;
 
     cp->_ownVertexLayout = _ownVertexLayout;
@@ -319,76 +281,17 @@ void ProgramState::setSharedVertexLayout(VertexLayout* vertexLayout)
 
 void ProgramState::setTexture(rhi::Texture* texture)
 {
-    for (int slot = 0; slot < texture->getCount() && slot < AX_META_TEXTURES; ++slot)
+    auto location = getUniformLocation((rhi::Uniform)(rhi::Uniform::TEXTURE));
+    setTexture(location, 0, texture);
+}
+
+void ProgramState::setTexture(const rhi::UniformLocation& uniformLocation, int slot, rhi::Texture* texture)
+{
+    if (uniformLocation.fragStage)
     {
-        auto location = getUniformLocation((rhi::Uniform)(rhi::Uniform::TEXTURE + slot));
-        setTexture(location, slot, slot, texture);
+        auto& textureBinding = _textureBindingInfos[uniformLocation.fragStage.location];
+        textureBinding.reset(uniformLocation.fragStage.location, slot, texture);
     }
-}
-
-void ProgramState::setTexture(const rhi::UniformLocation& uniformLocation,
-                              int slot,
-                              rhi::Texture* texture)
-{
-    setTexture(uniformLocation, slot, 0, texture);
-}
-
-void ProgramState::setTexture(const rhi::UniformLocation& uniformLocation,
-                              int slot,
-                              int index,
-                              rhi::Texture* texture)
-{
-    if (uniformLocation.vertStage)
-        setTexture(uniformLocation.vertStage.location, slot, index, texture, _vertexTextureInfos);
-#if AX_RENDER_API == AX_RENDER_API_MTL || AX_RENDER_API == AX_RENDER_API_D3D
-    if (uniformLocation.fragStage)
-        setTexture(uniformLocation.fragStage.location, slot, index, texture, _fragmentTextureInfos);
-#endif
-}
-
-void ProgramState::setTextureArray(const rhi::UniformLocation& uniformLocation,
-                                   std::vector<int> slots,
-                                   std::vector<rhi::Texture*> textures)
-{
-    if (uniformLocation.vertStage)
-        setTextureArray(uniformLocation.vertStage.location, std::move(slots), std::move(textures), _vertexTextureInfos);
-#if AX_RENDER_API == AX_RENDER_API_MTL || AX_RENDER_API == AX_RENDER_API_D3D
-    if (uniformLocation.fragStage)
-        setTextureArray(uniformLocation.fragStage.location, std::move(slots), std::move(textures),
-                        _fragmentTextureInfos);
-#endif
-}
-
-void ProgramState::setTexture(int location,
-                              int slot,
-                              int index,
-                              rhi::Texture* texture,
-                              std::unordered_map<int, TextureInfo>& textureInfo)
-{
-    if (location < 0)
-        return;
-
-    auto& info = textureInfo[location];
-    info.assign(slot, index, texture);
-
-#if AX_ENABLE_CACHE_TEXTURE_DATA
-    info.location = location;
-#endif
-}
-
-void ProgramState::setTextureArray(int location,
-                                   std::vector<int> slots,
-                                   std::vector<rhi::Texture*> textures,
-                                   std::unordered_map<int, TextureInfo>& textureInfo)
-{
-    assert(slots.size() == textures.size());
-
-    auto& info = textureInfo[location];
-    info       = {std::move(slots), std::move(textures)};
-
-#if AX_ENABLE_CACHE_TEXTURE_DATA
-    info.location = location;
-#endif
 }
 
 void ProgramState::setParameterAutoBinding(std::string_view uniform, std::string_view autoBinding)

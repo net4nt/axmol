@@ -29,8 +29,8 @@ THE SOFTWARE.
 #pragma once
 
 #include <string>
-#include <map>
 #include <unordered_map>
+#include <span>
 
 #include "axmol/base/Object.h"
 #include "axmol/math/Math.h"
@@ -43,7 +43,18 @@ namespace ax
 class Image;
 class NinePatchInfo;
 class SpriteFrame;
-typedef struct _MipmapInfo MipmapInfo;
+
+template<typename _PointerType>
+struct TextureSliceDataBase
+{
+    _PointerType data   = nullptr;
+    uint32_t dataSize   = 0;
+    uint16_t layerIndex = 0;
+    uint16_t mipLevel   = 0;
+};
+
+using MipmapInfo = TextureSliceDataBase<void*>;
+using TextureSliceData = TextureSliceDataBase<const void*>;
 
 namespace ui
 {
@@ -94,7 +105,7 @@ public:
 
 public:
 
-    static rhi::SamplerDesc chooseSamplerDesc(bool antialiasEnabled, bool mipEnabled);
+    static void chooseSamplerDesc(bool antialiasEnabled, bool mipEnabled, rhi::SamplerDesc& desc);
 
     /**
      */
@@ -104,130 +115,14 @@ public:
      */
     virtual ~Texture2D();
 
-    /** Initializes with a texture2d with data.
+    /** Initializes a texture from a Image object.
 
-     @param data Specifies a pointer to the image data in memory.
-     @param dataLen The image data length.
-     @param pixelFormat The image pixelFormat.
-     @param pixelsWide The image width.
-     @param pixelsHigh The image height.
-     @param contentSize The image content size.
-     @param preMultipliedAlpha The texture has premultiplied alpha
-     * @lua NA
-     */
-    bool initWithData(const void* data,
-                      ssize_t dataLen,
-                      rhi::PixelFormat pixelFormat,
-                      int pixelsWide,
-                      int pixelsHigh,
-                      bool preMultipliedAlpha = false)
-    {
-        return initWithData(data, dataLen, pixelFormat, pixelFormat, pixelsWide, pixelsHigh,
-                            preMultipliedAlpha);
-    }
-
-    /** Initializes with a texture2d with data.
-
-     @param data Specifies a pointer to the image data in memory.
-     @param dataLen The image data length.
-     @param pixelFormat The image pixelFormat.
-     @param renderFormat The format converted to.
-     @param pixelsWide The image width.
-     @param pixelsHigh The image height.
-     @param contentSize The image content size.
-     @param preMultipliedAlpha The texture has premultiplied alpha
-     * @lua NA
-     */
-    bool initWithData(const void* data,
-                      ssize_t dataLen,
-                      rhi::PixelFormat pixelFormat,
-                      rhi::PixelFormat renderFormat,
-                      int pixelsWide,
-                      int pixelsHigh,
-                      bool preMultipliedAlpha = false);
-
-    /** Initializes with mipmaps.
-
-     @param mipmaps Specifies a pointer to the image data in memory.
-     @param mipmapsNum The mipmaps number.
-     @param pixelFormat The image pixelFormat.
-     @param pixelsWide The image width.
-     @param pixelsHigh The image height.
-     @param preMultipliedAlpha The texture has premultiplied alpha
-     */
-    bool initWithMipmaps(MipmapInfo* mipmaps,
-                         int mipmapsNum,
-                         rhi::PixelFormat pixelFormat,
-                         rhi::PixelFormat renderFormat,
-                         int pixelsWide,
-                         int pixelsHigh,
-                         bool preMultipliedAlpha = false);
-
-    /** Update with image.
-
-    @param data Specifies a pointer to the image data in memory.
-    @param offsetX Specifies a texel offset in the x direction within the texture array.
-    @param offsetY Specifies a texel offset in the y direction within the texture array.
-    @param width Specifies the width of the texture subimage.
-    @param height Specifies the height of the texture subimage.
+    We will use the format you passed to the function to convert the image format to the texture format.
+    If you pass PixelFormat::NONE, we will auto detect the image render type and use that type for texture to render.
+    @param image An Image object.
+    @param format Texture pixel formats.
     */
-    bool updateWithImage(Image* image, int index = 0);
-    bool updateWithImage(Image* image, rhi::PixelFormat format, int index = 0);
-    bool updateWithData(const void* data,
-                        ssize_t dataLen,
-                        rhi::PixelFormat pixelFormat,
-                        rhi::PixelFormat renderFormat,
-                        int pixelsWide,
-                        int pixelsHigh,
-                        bool preMultipliedAlpha,
-                        int index = 0);
-    bool updateWithMipmaps(MipmapInfo* mipmaps,
-                           int mipmapsNum,
-                           rhi::PixelFormat pixelFormat,
-                           rhi::PixelFormat renderFormat,
-                           int pixelsWide,
-                           int pixelsHigh,
-                           bool preMultipliedAlpha = false,
-                           int index               = 0);
-
-    /** Update with texture data.
-
-     @param data Specifies a pointer to the image data in memory.
-     @param offsetX Specifies a texel offset in the x direction within the texture array.
-     @param offsetY Specifies a texel offset in the y direction within the texture array.
-     @param width Specifies the width of the texture subimage.
-     @param height Specifies the height of the texture subimage.
-     */
-    bool updateWithSubData(void* data, int offsetX, int offsetY, int width, int height, int index = 0);
-    /**
-    Drawing extensions to make it easy to draw basic quads using a Texture2D object.
-    These functions require GL_TEXTURE_2D and both GL_VERTEX_ARRAY and GL_TEXTURE_COORD_ARRAY client states to be
-    enabled.
-    */
-    /** Draws a texture at a given point. */
-    void drawAtPoint(const Vec2& point, float globalZOrder);
-    /** Draws a texture inside a rect.*/
-    void drawInRect(const Rect& rect, float globalZOrder);
-
-    /**
-    Extensions to make it easy to create a Texture2D object from an image file.
-    */
-    /**
-    Initializes a texture from a UIImage object.
-
-    We will use the pixel format of the image.
-    NOTE: It will not convert the pvr image file.
-    @param image An UIImage object.
-    */
-    bool initWithImage(Image* image);
-
-    /**
-    Initializes a texture from an Image object and convert it to the given
-    format if necessary.
-
-    NOTE: It will not convert the pvr image file.
-    */
-    bool initWithImage(Image* image, PixelFormat format);
+    bool initWithImage(Image* image, PixelFormat renderFormat = PixelFormat::NONE, bool autoGenMipmaps = false);
 
     /** Initializes a texture from a string with dimensions, alignment, font name and font size.
 
@@ -256,19 +151,132 @@ public:
      */
     bool initWithString(std::string_view text, const FontDefinition& textDefinition);
 
-    //!!Used for render buffer, such depth stencil attachment
-    bool updateTextureDesc(const rhi::TextureDesc& descriptor, bool preMultipliedAlpha = false);
 
-    void setRenderTarget(bool renderTarget);
-    inline bool isRenderTarget() const { return _flags & TextureFlag::RENDERTARGET; }
+    /** Initializes with a texture2d with data.
+
+     @param data Specifies a pointer to the image data in memory.
+     @param dataSize The image data length.
+     @param pixelFormat The image pixelFormat.
+     @param pixelsWide The image width.
+     @param pixelsHigh The image height.
+     @param contentSize The image content size.
+     @param preMultipliedAlpha The texture has premultiplied alpha
+     * @lua NA
+     */
+    bool initWithData(const void* data,
+                      ssize_t dataSize,
+                      rhi::PixelFormat pixelFormat,
+                      int pixelsWide,
+                      int pixelsHigh,
+                      bool preMultipliedAlpha = false,
+                      bool autoGenMipmaps     = false)
+    {
+        return initWithData(data, dataSize, pixelFormat, pixelFormat, pixelsWide, pixelsHigh, preMultipliedAlpha,
+                            autoGenMipmaps);
+    }
+
+    /** Initializes with a texture2d with data.
+
+     @param data Specifies a pointer to the image data in memory.
+     @param dataSize The image data length.
+     @param pixelFormat The image pixelFormat.
+     @param renderFormat The format converted to.
+     @param pixelsWide The image width.
+     @param pixelsHigh The image height.
+     @param contentSize The image content size.
+     @param preMultipliedAlpha The texture has premultiplied alpha
+     * @lua NA
+     */
+    bool initWithData(const void* data,
+                      ssize_t dataSize,
+                      rhi::PixelFormat pixelFormat,
+                      rhi::PixelFormat renderFormat,
+                      int pixelsWide,
+                      int pixelsHigh,
+                      bool preMultipliedAlpha = false,
+                      bool autoGenMipmaps     = false);
+
+    /** Initializes with mipmaps.
+
+     @param mipmaps Specifies a pointer to the image data in memory.
+     @param mipmapsNum The mipmaps number.
+     @param pixelFormat The image pixelFormat.
+     @param pixelsWide The image width.
+     @param pixelsHigh The image height.
+     @param preMultipliedAlpha The texture has premultiplied alpha
+     */
+    bool initWithMipmaps(std::span<MipmapInfo> mipmaps,
+                         rhi::PixelFormat pixelFormat,
+                         rhi::PixelFormat renderFormat,
+                         int pixelsWide,
+                         int pixelsHigh,
+                         bool preMultipliedAlpha = false);
+
+    bool initWithSpec(rhi::TextureDesc desc,
+                      std::span<TextureSliceData> subDatas,
+                      PixelFormat renderFormat = PixelFormat::NONE,
+                      bool preMultipliedAlpha = false);
+
+    /*
+     * @brief update data by text
+    */
+    bool updateData(std::string_view text, const FontDefinition& textDefinition);
+
+    /**
+     * @brief update data by image
+     *
+     * @param image
+     */
+    bool updateData(Image* image);
+
+    /**
+     * @brief update data by subDatas
+     *
+     * @param subDatas
+     */
+    bool updateData(std::span<TextureSliceData> subDatas);
+
+    /**
+     * Update the texture with a new image data.
+     * @param data Specifies a pointer to the image data in memory.
+     * @param width Specifies the width of the texture.
+     * @param height Specifies the height of the texture.
+     * @param level Specifies the mipmap level to update. Default is 0.
+     * @param layerIndex Specifies the layer index to update. Default is 0.
+    */
+    bool updateData(const void* data, int width, int height, int level = 0, int layerIndex = 0);
+
+    /** Update texture sub data.
+
+     @param data Specifies a pointer to the image data in memory.
+     @param offsetX Specifies a texel offset in the x direction within the texture array.
+     @param offsetY Specifies a texel offset in the y direction within the texture array.
+     @param width Specifies the width of the texture subimage.
+     @param height Specifies the height of the texture subimage.
+     */
+    bool updateSubData(const void* data, int offsetX, int offsetY, int width, int height, int level = 0, int layerIndex = 0);
+
+    /*
+    * Invalidate the texture for we can re-create RHI GPU texture when app context loss recovery
+    * For example:
+    *   texture2d->invalidate();
+    *   texture2d->updateData(...); // re-create the texture
+    */
+    void invalidate();
+
+    /**
+    Drawing extensions to make it easy to draw basic quads using a Texture2D object.
+    These functions require GL_TEXTURE_2D and both GL_VERTEX_ARRAY and GL_TEXTURE_COORD_ARRAY client states to be
+    enabled.
+    */
+    /** Draws a texture at a given point. */
+    void drawAtPoint(const Vec2& point, float globalZOrder);
+    /** Draws a texture inside a rect.*/
+    void drawInRect(const Rect& rect, float globalZOrder);
+
+    bool isRenderTarget() const;
 
     void setTexParameters(const TexParams& params);
-
-    /** Generates mipmap images for the texture.
-     It only works if the texture size is POT (power of 2).
-     @since v0.99.0
-     */
-    void generateMipmap();
 
     /** Sets antialias texture parameters:
      - GL_TEXTURE_MIN_FILTER = GL_LINEAR
@@ -326,7 +334,7 @@ public:
     /** Gets the height of the texture in pixels. */
     int getPixelsHigh() const;
 
-    rhi::Texture* getBackendTexture() const;
+    rhi::Texture* getRHITexture() const;
 
     /** Gets max S. */
     float getMaxS() const;
@@ -390,8 +398,8 @@ private:
     void initProgram();
 
 protected:
-    /** pixel format of the texture */
-    rhi::PixelFormat _pixelFormat;
+
+    void updateData(std::span<TextureSliceData> subDatas, PixelFormat renderFormat, bool compressed);
 
     /** width in pixels */
     int _pixelsWide;
@@ -400,7 +408,7 @@ protected:
     int _pixelsHigh;
 
     /** texture name */
-    rhi::Texture* _texture;
+    rhi::Texture* _rhiTexture;
 
     /** texture max S */
     float _maxS;
@@ -411,15 +419,17 @@ protected:
     /** content size */
     Vec2 _contentSize;
 
-    uint16_t _flags : 16;
-    uint16_t _samplerFlags : 16;
+    uint8_t _flags;
+    uint8_t _samplerFlags;
+
+    /** pixel format of the texture */
+    rhi::PixelFormat _originalPF;
 
     NinePatchInfo* _ninePatchInfo;
     friend class SpriteFrameCache;
     friend class TextureCache;
     friend class ui::Scale9Sprite;
 
-    bool _valid;
     std::string _filePath;
 
     rhi::ProgramState* _programState = nullptr;

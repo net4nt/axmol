@@ -26,11 +26,11 @@
 #pragma once
 
 #include "axmol/platform/PlatformMacros.h"
-#include "axmol/renderer/Texture2D.h"
+#include "axmol/rhi/RHITypes.h"
 
 namespace ax::rhi
 {
-namespace PixelFormatUtils
+namespace RHIUtils
 {
 struct PixelFormatDesc
 {
@@ -68,5 +68,10 @@ PixelFormat convertDataToFormat(const unsigned char* data,
                                 PixelFormat format,
                                 unsigned char** outData,
                                 size_t* outDataLen);
-};  // namespace PixelFormatUtils
+
+inline uint8_t computeMipLevels(int width, int height)
+{
+    return static_cast<uint8_t>(floor(log2((std::max)(width, height))) + 1);
+}
+} // namespace RHIUtils
 }  // namespace ax::rhi

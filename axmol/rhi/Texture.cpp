@@ -24,25 +24,41 @@
  ****************************************************************************/
 
 #include "axmol/rhi/Texture.h"
-#include "axmol/rhi/PixelFormatUtils.h"
+#include "axmol/rhi/RHIUtils.h"
 #include <cassert>
 namespace ax::rhi
 {
 
 Texture::~Texture() {}
 
-void Texture::updateTextureDesc(const TextureDesc& descriptor, int /*index*/)
+void Texture::updateTextureDesc(const TextureDesc& desc)
 {
-    _bitsPerPixel  = PixelFormatUtils::getBitsPerPixel(descriptor.textureFormat);
-    _textureType   = descriptor.textureType;
-    _textureFormat = descriptor.textureFormat;
-    _textureUsage  = descriptor.textureUsage;
-    _width         = (std::max)(descriptor.width, (uint32_t)1);
-    _height        = (std::max)(descriptor.height, (uint32_t)1);
+    _bitsPerPixel = RHIUtils::getBitsPerPixel(desc.pixelFormat);
+    _desc         = desc;
 
     if (_bitsPerPixel == 0)
-    {
         _bitsPerPixel = (uint8_t)(8 * 4);
+
+    _overrideMipLevels = desc.mipLevels;
+}
+
+void Texture::invalidate()
+{
+}
+
+void Texture::zeroTexData()
+{
+    if (!RHIUtils::isCompressed(_desc.pixelFormat))
+    {
+        const auto w = getWidth();
+        const auto h = getHeight();
+        auto size    = w * h * _bitsPerPixel / 8;
+        assert(size > 0);
+
+        axstd::byte_buffer blackPixels;
+        blackPixels.resize(size, 0);
+
+        updateData(blackPixels.data(), w, h, 0, 0);
     }
 }
 
