@@ -216,6 +216,9 @@ public:
     void readPixels(RenderTarget* rt, std::function<void(const PixelBufferDesc&)> callback) override;
 
 protected:
+
+    void readPixels(RenderTarget* rt, UINT x, UINT y, UINT width, UINT height, PixelBufferDesc& pbd);
+
     void updateRasterizerState();
 
     void prepareDrawing();

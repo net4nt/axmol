@@ -47,6 +47,11 @@ THE SOFTWARE.
 namespace ax
 {
 
+void RenderTexture::applySpriteFlippedY(Sprite* sp)
+{
+    sp->setFlippedY(AX_RENDER_API == AX_RENDER_API_GL);
+}
+
 // implementation RenderTexture
 RenderTexture::RenderTexture()
 {
@@ -250,9 +255,7 @@ bool RenderTexture::initWithWidthAndHeight(int w,
         _sprite->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
         _sprite->setPosition(Vec2(w, h) / 2);
 
-#if AX_RENDER_API == AX_RENDER_API_GL
-        _sprite->setFlippedY(true);
-#endif
+        applySpriteFlippedY(_sprite);
 
         if (_colorTexture->hasPremultipliedAlpha())
         {

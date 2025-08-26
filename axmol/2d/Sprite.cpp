@@ -1444,10 +1444,6 @@ bool Sprite::isFlippedX() const
 
 void Sprite::setFlippedY(bool flippedY)
 {
-#if AX_RENDER_API == AX_RENDER_API_MTL
-    if (_texture && _texture->isRenderTarget())
-        flippedY = !flippedY;
-#endif
     if (_flippedY != flippedY)
     {
         _flippedY = flippedY;

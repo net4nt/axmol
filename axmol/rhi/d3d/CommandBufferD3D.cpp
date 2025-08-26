@@ -607,6 +607,100 @@ void CommandBufferImpl::endFrame()
     }
 }
 
-void CommandBufferImpl::readPixels(RenderTarget* rt, std::function<void(const PixelBufferDesc&)> callback) {}
+void CommandBufferImpl::readPixels(RenderTarget* rt, std::function<void(const PixelBufferDesc&)> callback)
+{
+    PixelBufferDesc pbd;
+
+    if (rt->isDefaultRenderTarget())
+    {
+        D3D11_VIEWPORT vp;
+        UINT numViewports = 1;
+        _driverImpl->getContext()->RSGetViewports(&numViewports, &vp);
+        uint32_t width  = static_cast<uint32_t>(vp.Width);
+        uint32_t height = static_cast<uint32_t>(vp.Height);
+        uint32_t x      = static_cast<uint32_t>(vp.TopLeftX);
+        uint32_t y      = static_cast<uint32_t>(vp.TopLeftY);
+
+        // FIXME: After maximizing the window, the viewport not hold whole render target color attachment
+        readPixels(rt, x, y, width, height, pbd);
+    }
+    else
+    {
+        auto colorAttachment = rt->_color[0].texture;
+        if (colorAttachment)
+        {
+            uint32_t width  = colorAttachment->getWidth();
+            uint32_t height = colorAttachment->getHeight();
+            readPixels(rt, 0, 0, width, height, pbd);
+        }
+    }
+
+    callback(pbd);
+}
+
+void CommandBufferImpl::readPixels(RenderTarget* rt, UINT x, UINT y, UINT width, UINT height, PixelBufferDesc& pbd)
+{
+    auto tex = static_cast<RenderTargetImpl*>(rt)->getColorAttachment(0).texure;
+    assert(tex);
+
+    ID3D11Device* device         = _driverImpl->getDevice();
+    ID3D11DeviceContext* context = _driverImpl->getContext();
+
+    // D3D11_CPU_ACCESS_READ not allow as render target color attachment
+    // so we need create a staging texture for CPU read
+    D3D11_TEXTURE2D_DESC desc;
+    tex->GetDesc(&desc);
+    // desc.Width          = width;
+    // desc.Height         = height;
+    desc.MipLevels      = 1;
+    desc.ArraySize      = 1;
+    desc.Usage          = D3D11_USAGE_STAGING;
+    desc.BindFlags      = 0;
+    desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+    desc.MiscFlags      = 0;
+
+    ID3D11Texture2D* stagingTex = nullptr;
+    HRESULT hr                  = device->CreateTexture2D(&desc, nullptr, &stagingTex);
+    if (FAILED(hr))
+        return;
+
+    UINT texW = desc.Width;
+    UINT texH = desc.Height;
+
+    x      = std::min<UINT>(x, texW);
+    y      = std::min<UINT>(y, texH);
+    width  = std::min<UINT>(width, texW - x);
+    height = std::min<UINT>(height, texH - y);
+
+    D3D11_BOX srcBox = {x, y, 0, x + width, y + height, 1};
+
+    context->CopySubresourceRegion(stagingTex, 0, 0, 0, 0, tex, 0, &srcBox);
+
+    D3D11_MAPPED_SUBRESOURCE mapped;
+    hr = context->Map(stagingTex, 0, D3D11_MAP_READ, 0, &mapped);
+    if (FAILED(hr))
+    {
+        stagingTex->Release();
+        return;
+    }
+
+    const UINT bytesPerRow = width * 4;
+    size_t bufferSize      = bytesPerRow * height;
+    uint8_t* dst           = pbd._data.resize(bufferSize);
+    uint8_t* src           = reinterpret_cast<uint8_t*>(mapped.pData);
+
+    for (uint32_t row = 0; row < height; ++row)
+    {
+        memcpy(dst + row * bytesPerRow, src + row * mapped.RowPitch, bytesPerRow);
+    }
+
+    pbd._width  = width;
+    pbd._height = height;
+
+    context->Unmap(stagingTex, 0);
+
+    context->Unmap(stagingTex, 0);
+    SafeRelease(stagingTex);
+}
 
 }  // namespace ax::rhi::d3d

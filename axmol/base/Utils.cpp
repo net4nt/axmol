@@ -171,7 +171,7 @@ void captureNode(Node* startNode, std::function<void(RefPtr<Image>)> imageCallba
             auto finalRect = Rect(0, 0, size.width, size.height);
             Sprite* sprite = Sprite::createWithTexture(rtx->getSprite()->getTexture(), finalRect);
             sprite->setAnchorPoint(Point(0, 0));
-            sprite->setFlippedY(true);
+            RenderTexture::applySpriteFlippedY(sprite);
             finalRtx = RenderTexture::create(size.width * scale, size.height * scale, rhi::PixelFormat::RGBA8,
                                              PixelFormat::D24S8, false);
 

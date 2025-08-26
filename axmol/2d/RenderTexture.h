@@ -63,6 +63,9 @@ class AX_DLL RenderTexture : public Node
 {
 public:
     using SaveFileCallbackType = std::function<void(RenderTexture*, std::string_view)>;
+
+    static void applySpriteFlippedY(Sprite* sp);
+
     /** Initializes a RenderTexture object with width and height in Points and a pixel format( only RGB and RGBA formats
      * are valid ) and depthStencil format.
      *
@@ -330,7 +333,6 @@ public:
      * @return Returns true if this using a shared render target.
      */
     bool isSharedRenderTarget() const;
-
 public:
     /** FIXME: should be protected.
      * but due to a bug in PowerVR + Android,
