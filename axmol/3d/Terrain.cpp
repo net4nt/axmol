@@ -47,15 +47,6 @@ using namespace ax;
 
 namespace ax
 {
-
-namespace
-{
-// It's used for creating a default texture when lightMap is nullpter
-static unsigned char ax_2x2_white_image[] = {
-    // RGBA8888
-    0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
-}  // namespace
-
 Terrain* Terrain::create(TerrainData& parameter, CrackFixedType fixedType)
 {
     Terrain* terrain = new Terrain();
@@ -135,37 +126,36 @@ void Terrain::draw(ax::Renderer* renderer, const ax::Mat4& transform, uint32_t f
     _programState->setUniform(_lightDirLocation, &_lightDir, sizeof(_lightDir));
     if (!_alphaMap)
     {
-        _programState->setTexture(_detailMapLocation[0], 0, _detailMapTextures[0]->getRHITexture());
+        _programState->setTexture(_detailMapLocation, _detailMapBindings[0].slot, _detailMapBindings[0].tex);
         int hasAlphaMap = 0;
         _programState->setUniform(_alphaIsHasAlphaMapLocation, &hasAlphaMap, sizeof(hasAlphaMap));
+        _programState->setTexture(_lightMapLocation, BINDING_SLOT_ALPHA_MAP, _dummyTexture->getRHITexture());
     }
     else
     {
         float detailMapSize[4] = {0.0f, 0.0f, 0.0f, 0.0f};
         for (int i = 0; i < _maxDetailMapValue; ++i)
         {
-            _programState->setTexture(_detailMapLocation[i], i, _detailMapTextures[i]->getRHITexture());
             detailMapSize[i] = _terrainData._detailMaps[i]._detailMapSize;
         }
+        _programState->setTextureArray(_detailMapLocation, _detailMapBindings);
         _programState->setUniform(_detailMapSizeLocation, detailMapSize, sizeof(detailMapSize));
 
         int hasAlphaMap = 1;
         _programState->setUniform(_alphaIsHasAlphaMapLocation, &hasAlphaMap, sizeof(hasAlphaMap));
-        _programState->setTexture(_alphaMapLocation, 4, _alphaMap->getRHITexture());
+        _programState->setTexture(_alphaMapLocation, BINDING_SLOT_ALPHA_MAP, _alphaMap->getRHITexture());
     }
     if (_lightMap)
     {
         int hasLightMap = 1;
         _programState->setUniform(_lightMapCheckLocation, &hasLightMap, sizeof(hasLightMap));
-        _programState->setTexture(_lightMapLocation, 5, _lightMap->getRHITexture());
+        _programState->setTexture(_lightMapLocation, BINDING_SLOT_LIGHT_MAP, _lightMap->getRHITexture());
     }
     else
     {
         int hasLightMap = 0;
         _programState->setUniform(_lightMapCheckLocation, &hasLightMap, sizeof(hasLightMap));
-#if AX_RENDER_API == AX_RENDER_API_MTL || AX_RENDER_API == AX_RENDER_API_D3D
-        _programState->setTexture(_lightMapLocation, 5, _detailMapTextures[0]->getRHITexture());
-#endif
+        _programState->setTexture(_lightMapLocation, BINDING_SLOT_LIGHT_MAP, _dummyTexture->getRHITexture());
     }
     auto camera = Camera::getVisitingCamera();
 
@@ -265,14 +255,8 @@ Terrain::Terrain()
         EventListenerCustom::create(EVENT_RENDERER_RECREATED, [this](EventCustom*) { reload(); });
     _director->getEventDispatcher()->addEventListenerWithFixedPriority(_backToForegroundListener, 1);
 #endif
-#if AX_RENDER_API == AX_RENDER_API_MTL || AX_RENDER_API == AX_RENDER_API_D3D
-    auto image          = new Image();
-    bool AX_UNUSED isOK = image->initWithRawData(ax_2x2_white_image, sizeof(ax_2x2_white_image), 2, 2, 8);
-    AXASSERT(isOK, "The 2x2 empty texture was created unsuccessfully.");
-    _dummyTexture = new Texture2D();
-    _dummyTexture->initWithImage(image);
-    AX_SAFE_RELEASE(image);
-#endif
+    _dummyTexture = _director->getTextureCache()->getWhiteTexture();
+    AX_SAFE_RETAIN(_dummyTexture);
 }
 
 void Terrain::setChunksLOD(const Vec3& cameraPos)
@@ -477,6 +461,7 @@ Terrain::~Terrain()
         {
             _detailMapTextures[i]->release();
         }
+        _detailMapBindings[i].reset();
     }
     for (int i = 0; i < MAX_CHUNKES; ++i)
     {
@@ -689,7 +674,6 @@ void Terrain::setDetailMap(unsigned int index, DetailMap detailMap)
     _terrainData._detailMaps[index] = detailMap;
     if (_detailMapTextures[index])
     {
-
         _detailMapTextures[index]->release();
     }
     _detailMapTextures[index] = new Texture2D();
@@ -697,6 +681,9 @@ void Terrain::setDetailMap(unsigned int index, DetailMap detailMap)
     textImage->initWithImageFile(detailMap._detailMapSrc);
     _detailMapTextures[index]->initWithImage(textImage);
     delete textImage;
+
+    _detailMapBindings[index].slot = BINDING_SLOT_DETAIL_BASE + index;
+    _detailMapBindings[index].tex = _detailMapTextures[index]->getRHITexture();
 }
 
 Terrain::ChunkIndices Terrain::lookForIndicesLOD(int neighborLod[4], int selfLod, bool* result)
@@ -799,26 +786,18 @@ void Terrain::onEnter()
 void Terrain::cacheUniformAttribLocation()
 {
     _alphaMapLocation.reset();
-    for (int i = 0; i < 4; ++i)
-    {
-        _detailMapLocation[i].reset();
-    }
+    _detailMapLocation.reset();
     _detailMapSizeLocation.reset();
 
     _alphaIsHasAlphaMapLocation = _programState->getUniformLocation("u_has_alpha");
     _lightMapCheckLocation      = _programState->getUniformLocation("u_has_light_map");
     if (!_alphaMap)
     {
-        _detailMapLocation[0] = _programState->getUniformLocation("u_tex0");
+        _detailMapLocation = _programState->getUniformLocation("u_details");
     }
     else
     {
-        char str[20];
-        for (int i = 0; i < _maxDetailMapValue; ++i)
-        {
-            auto key = fmt::format_to_z(str, "u_tex{}", i);
-            _detailMapLocation[i] = _programState->getUniformLocation(key);
-        }
+        _detailMapLocation = _programState->getUniformLocation("u_details");
 
         _detailMapSizeLocation = _programState->getUniformLocation("u_detailSize");  // float[4]
 
@@ -834,6 +813,7 @@ bool Terrain::initTextures()
     for (int i = 0; i < 4; ++i)
     {
         _detailMapTextures[i] = nullptr;
+        _detailMapBindings[i].reset();
     }
 
     rhi::TextureDesc texDesc;
@@ -855,6 +835,9 @@ bool Terrain::initTextures()
         texture->initWithSpec(texDesc, subDatas);
         _detailMapTextures[0] = texture;
         image->release();
+
+        _detailMapBindings[0].slot = BINDING_SLOT_DETAIL_BASE;
+        _detailMapBindings[0].tex = texture->getRHITexture();
     }
     else
     {
@@ -886,6 +869,9 @@ bool Terrain::initTextures()
             auto texture = new Texture2D();
             texture->initWithSpec(texDesc, subDatas);
             _detailMapTextures[i] = texture;
+
+            _detailMapBindings[i].slot = BINDING_SLOT_DETAIL_BASE + i;
+            _detailMapBindings[i].tex = texture->getRHITexture();
 
             image->release();
         }

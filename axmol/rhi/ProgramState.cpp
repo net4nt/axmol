@@ -37,74 +37,122 @@ namespace ax::rhi {
 // static field
 std::vector<ProgramState::AutoBindingResolver*> ProgramState::_customAutoBindingResolvers;
 
-TextureBindingInfo::TextureBindingInfo(const TextureBindingInfo& other)
+TextureBindingSet::TextureBindingSet(const TextureBindingSet& other)
 {
     this->assign(other);
 }
 
-TextureBindingInfo::TextureBindingInfo(TextureBindingInfo&& other) noexcept
+TextureBindingSet::TextureBindingSet(TextureBindingSet&& other) noexcept
 {
-    this->assign(std::move(other));
+    this->swap(other);
 }
 
-TextureBindingInfo& TextureBindingInfo::operator=(const TextureBindingInfo& other) noexcept
+TextureBindingSet& TextureBindingSet::operator=(const TextureBindingSet& other) noexcept
 {
     this->assign(other);
     return *this;
 }
 
-TextureBindingInfo& TextureBindingInfo::operator=(TextureBindingInfo&& other) noexcept
+TextureBindingSet& TextureBindingSet::operator=(TextureBindingSet&& other) noexcept
 {
-    this->assign(std::move(other));
+    this->swap(other);
     return *this;
 }
 
-void TextureBindingInfo::assign(const TextureBindingInfo& other)
+TextureBindingSet::~TextureBindingSet()
+{
+    releaseTextures();
+}
+
+void TextureBindingSet::assign(const TextureBindingSet& other)
 {
     if (this != &other)
     {
-        AX_SAFE_RELEASE(this->tex);
-        this->slot = other.slot;
-        this->tex  = other.tex;
-        AX_SAFE_RETAIN(this->tex);
-
 #if AX_ENABLE_CONTEXT_LOSS_RECOVERY
-        location = other.location;
+        setTextureArray(other.loc, other.slots, other.texs);
+#else
+        setTextureArray(-1, other.slots, other.texs);
 #endif
     }
 }
 
-void TextureBindingInfo::assign(TextureBindingInfo&& other)
+void TextureBindingSet::swap(TextureBindingSet& other)
 {
     if (this != &other)
     {
-        std::swap(slot, other.slot);
-        std::swap(tex, other.tex);
+        std::swap(slots, other.slots);
+        std::swap(texs, other.texs);
 
 #if AX_ENABLE_CONTEXT_LOSS_RECOVERY
-        std::swap(location, other.location);
+        std::swap(loc, other.loc);
 #endif
     }
 }
 
-void TextureBindingInfo::setTexture(int location_, int slot_, rhi::Texture* tex_)
+void TextureBindingSet::setTexture(int location, int slot, rhi::Texture* tex)
 {
-    AX_SAFE_RELEASE(this->tex);
+    if(tex && slot >= 0) {
+        tex->retain();
+        releaseTextures();
+        this->slots.push_back(slot);
+        this->texs.push_back(tex);
+    }
+}
 
-    this->slot = slot_;
-    this->tex  = tex_;
+void TextureBindingSet::setTextureArray(int location, std::span<const TextureBinding> units)
+{
+    for(auto& unit : units)
+        AX_SAFE_RETAIN(unit.tex);
 
-    AX_SAFE_RETAIN(this->tex);
+    releaseTextures();
+
+    if(!units.empty()) {
+        const auto count = units.size();
+        this->texs.resize(count);
+        this->slots.resize(count);
+        for (int i = 0; i < count; ++i) {
+            this->texs[i] = units[i].tex;
+            this->slots[i] = units[i].slot;
+        }
+    }
 
 #if AX_ENABLE_CONTEXT_LOSS_RECOVERY
-    this->location = location_;
+    this->loc = location;
 #endif
 }
 
-TextureBindingInfo::~TextureBindingInfo()
+void TextureBindingSet::setTextureArray(int location, std::span<const int> slots, std::span<rhi::Texture*> texs)
 {
-    AX_SAFE_RELEASE(this->tex);
+    bool retain = !slots.empty() && (slots.size() == texs.size());
+
+    if (retain) {
+        for(auto tex : texs)
+            AX_SAFE_RETAIN(tex);
+    }
+
+    releaseTextures();
+
+    if(retain) {
+        this->slots.resize(slots.size());
+        this->texs.resize(slots.size());
+        
+        memcpy(this->slots.data(), slots.data(), slots.size_bytes());
+        memcpy(this->texs.data(), texs.data(), texs.size_bytes());
+    }
+
+#if AX_ENABLE_CONTEXT_LOSS_RECOVERY
+    this->loc = location;
+#endif
 }
+
+void TextureBindingSet::releaseTextures()
+{
+    for(auto& tex: this->texs)
+        AX_SAFE_RELEASE(tex);
+    this->texs.clear();
+    this->slots.clear();
+}
+
 
 /* CLASS ProgramState */
 ProgramState::ProgramState(Program* program)
@@ -163,10 +211,9 @@ void ProgramState::resetUniforms()
         auto mappedLocation = _program->getMappedLocation(location);
 
         // check if current location had been set before
-        if (_textureBindingInfos.find(location) != _textureBindingInfos.end())
-        {
-            _textureBindingInfos[location].location = mappedLocation;
-        }
+        auto it = _textureBindingSets.find(location);
+        if (it != _textureBindingSets.end())
+            it->second.loc = mappedLocation;
     }
 #endif
 }
@@ -183,7 +230,7 @@ ProgramState::~ProgramState()
 ProgramState* ProgramState::clone() const
 {
     ProgramState* cp          = new ProgramState(_program);
-    cp->_textureBindingInfos  = _textureBindingInfos;
+    cp->_textureBindingSets   = _textureBindingSets;
 
     cp->_uniformBuffer = _uniformBuffer;
 #if AX_RENDER_API != AX_RENDER_API_GL
@@ -239,8 +286,28 @@ void ProgramState::setTexture(const rhi::UniformLocation& uniformLocation, int s
     auto location = uniformLocation.stages[0].location;
     if (location >= 0)
     {
-        auto& textureBinding = _textureBindingInfos[location];
-        textureBinding.setTexture(location, slot, texture);
+        auto& bindingSet = _textureBindingSets[location];
+        bindingSet.setTexture(location, slot, texture);
+    }
+}
+
+void ProgramState::setTextureArray(const rhi::UniformLocation& uniformLocation, std::span<TextureBinding> units)
+{
+    auto location = uniformLocation.stages[0].location;
+    if (location >= 0)
+    {
+        auto& bindingSet = _textureBindingSets[location];
+        bindingSet.setTextureArray(location, units);
+    }
+}
+
+void ProgramState::setTextureArray(const rhi::UniformLocation& uniformLocation, std::span<int> slots, std::span<rhi::Texture*> textures)
+{
+    auto location = uniformLocation.stages[0].location;
+    if (location >= 0)
+    {
+        auto& bindingSet = _textureBindingSets[location];
+        bindingSet.setTextureArray(location, slots, textures);
     }
 }
 

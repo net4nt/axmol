@@ -573,14 +573,19 @@ void CommandBufferImpl::prepareDrawing()
 
     // bind texture
     _textureBounds = 0;
-    for (const auto& [_, bindingInfo] : _programState->getTextureBindingInfos())
+    for (const auto& [bindingIndex, bindingSet] : _programState->getTextureBindingSets())
     {
-        auto textureImpl    = static_cast<TextureImpl*>(bindingInfo.tex);
-        auto& textureHandle = textureImpl->internalHandle();
-        context->PSSetShaderResources(bindingInfo.slot, 1, &textureHandle.srv);
-        auto samplerState = textureImpl->getSamplerState();
-        context->PSSetSamplers(bindingInfo.slot, 1, &samplerState);
-        ++_textureBounds;
+        auto& texs     = bindingSet.texs;
+        auto arraySize = texs.size();
+        for (size_t k = 0; k < arraySize; ++k)
+        {
+            const auto slot  = bindingIndex + k;
+            auto textureImpl    = static_cast<TextureImpl*>(texs[k]);
+            context->PSSetShaderResources(slot, 1, &textureImpl->internalHandle().srv);
+            auto samplerState = textureImpl->getSamplerState();
+            context->PSSetSamplers(slot, 1, &samplerState);
+            ++_textureBounds;
+        }
     }
 
     // depth stencil

@@ -135,8 +135,15 @@ function(ax_target_compile_shaders target_name)
       list(APPEND SC_FLAGS "--lang=msl")
     endif()
 
-    # automap, no-suffix since 1.18.1 released by axmolengine
-    list(APPEND SC_FLAGS "--automap" "--no-suffix")
+    # no-suffix since 1.18.1 released by axmolengine
+    list(APPEND SC_FLAGS "--no-suffix")
+
+    # The follow flags was separated from --automap since axslcc-1.13.1, many exists shaders not specify it binding index for uniform blocks,
+    # so add auto map bindings suppress errors for exists shaders. in future if we migrate all
+    # shaders, these flags can be removed
+    # Note: axmol only use binding_index=0 for uniform blocks because axmol limit support per-uniform-block/per-stage
+    list(APPEND SC_FLAGS "--auto-map-bindings")
+    list(APPEND SC_FLAGS "--auto-map-locations")
 
     # defines
     get_source_file_property(SOURCE_SC_DEFINES ${SC_FILE} AXSLCC_DEFINES)
