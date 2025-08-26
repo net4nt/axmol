@@ -64,6 +64,37 @@ public:
 class AX_DLL Object
 {
 public:
+    /*
+     * Take ownership newValue with retain
+     */
+    template <class T>
+    static bool assign(T*& target, T* newValue)
+    {
+        if (newValue)
+            newValue->retain();
+        if (target)
+            target->release();
+        bool ret = target != newValue;
+        target   = newValue;
+        return ret;
+    }
+
+    /*
+     * Take ownership newValue without retain
+     */
+    template <class T>
+    static bool adopt(T*& target, T* newValue)
+    {
+        if (target != newValue)
+        {
+            if (target)
+                target->release();
+            target = newValue;
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Retains the ownership.
      *

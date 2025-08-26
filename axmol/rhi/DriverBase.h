@@ -49,6 +49,8 @@ class VertexLayout;
 
 class SamplerCache;
 
+class VertexLayoutDesc;
+
 enum class FeatureType : uint32_t
 {
     ETC1,
@@ -62,7 +64,8 @@ enum class FeatureType : uint32_t
     VAO,
     MAPBUFFER,
     DEPTH24,
-    ASTC
+    ASTC,
+    VERTEX_ATTRIB_BINDING, // GL330 / GLES30, need detect
 };
 
 /**
@@ -146,7 +149,7 @@ public:
      */
     virtual Program* createProgram(std::string_view vsSource, std::string_view fsSource) = 0;
 
-    virtual VertexLayout* createVertexLayout();
+    virtual VertexLayout* createVertexLayout(VertexLayoutDesc&& desc);
 
     virtual void resetState() {};
 
@@ -237,3 +240,5 @@ private:
 // end of _rhi group
 /// @}
 }
+
+#define axdrv ax::rhi::DriverBase::getInstance()

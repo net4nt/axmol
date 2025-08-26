@@ -1,5 +1,4 @@
 /****************************************************************************
- Copyright (c) 2018-2019 Xiamen Yaji Software Co., Ltd.
  Copyright (c) 2019-present Axmol Engine contributors (see AUTHORS.md).
 
  https://axmol.dev/
@@ -22,25 +21,34 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  ****************************************************************************/
+#pragma once
 
-#include "axmol/rhi/Program.h"
-#include "axmol/renderer/VertexLayoutManager.h"
+#include "axmol/rhi/VertexLayout.h"
+#include "axmol/rhi/RHITypes.h"
 
-namespace ax::rhi
+namespace ax::rhi::gl
 {
-
-Program::Program(std::string_view vs, std::string_view fs) : _vsSource(vs), _fsSource(fs)
+class BufferImpl;
+class VertexLayoutImpl : public VertexLayout
 {
-}
+public:
+    explicit VertexLayoutImpl(VertexLayoutDesc&&);
+    ~VertexLayoutImpl() override;
 
-Program::~Program()
-{
-    AX_SAFE_RELEASE(_vertexLayout);
-}
+    void apply(BufferImpl* vertexBuffer, BufferImpl* instanceBuffer, uint32_t& usedBits) const;
 
-void Program::setProgramIds(uint32_t progType, uint64_t progId)
-{
-    _programType = progType;
-    _programId   = progId;
-}
-}  // namespace ax::rhi
+    void invalidate()
+    {
+        _vao = 0;
+        _usedBits = 0;
+    }
+
+private:
+
+    void setupVAO();
+
+    mutable GLuint _vao{0};
+
+    uint32_t _usedBits{0};
+};
+}  // namespace ax::rhi::d3d

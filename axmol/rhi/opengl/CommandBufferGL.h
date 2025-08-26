@@ -121,12 +121,6 @@ public:
     void setVertexBuffer(Buffer* buffer) override;
 
     /**
-     * Set unifroms and textures
-     * @param programState A programState object that hold the uniform and texture data.
-     */
-    void setProgramState(ProgramState* programState) override;
-
-    /**
      * Set indexes when drawing primitives with index list
      * @ buffer A buffer object that the device will read indexes from.
      * @ see `drawElements(PrimitiveType primitiveType, IndexFormat indexType, unsigned int count, unsigned int offset)`
@@ -230,7 +224,6 @@ protected:
     void cleanResources();
 
     BufferImpl* _vertexBuffer                     = nullptr;
-    ProgramState* _programState                   = nullptr;
     BufferImpl* _indexBuffer                      = nullptr;
     BufferImpl* _instanceBuffer                   = nullptr;
     RenderPipelineImpl* _renderPipeline           = nullptr;

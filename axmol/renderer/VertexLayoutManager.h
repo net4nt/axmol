@@ -23,22 +23,61 @@
  ****************************************************************************/
 #pragma once
 
-#include "axmol/rhi/VertexLayout.h"
+#include "axmol/base/axstd.h"
+#include "axmol/base/hlookup.h"
 #include "axmol/rhi/RHITypes.h"
-#include <d3d11.h>
+#include "axmol/rhi/VertexLayout.h"
 
-namespace ax::rhi::d3d
+namespace ax
 {
-class VertexLayoutImpl : public VertexLayout
+class ProgramManager;
+
+class AX_DLL VertexLayoutManager
 {
+    friend class ::ax::ProgramManager;
+
 public:
-    explicit VertexLayoutImpl(VertexLayoutDesc&&);
-    ~VertexLayoutImpl() override;
+    static VertexLayoutManager* getInstance();
+    static void destroyInstance();
 
-    void apply(ID3D11DeviceContext* context, Program* program) const;
+    VertexLayoutManager();
+
+    /**
+     * @brief acquire builtin vertex layout
+     *
+     * @param kind
+     * @return VertexLayout*
+     */
+    VertexLayout* acquireBuiltinVertexLayout(VertexLayoutKind kind);
+
+    /**
+     * @brief acquire vertex layout by desc
+     *
+     * @return VertexLayout*
+     */
+    VertexLayout* acquireVertexLayout(VertexLayoutDesc&&);
+
+    /**
+     * @brief Remove unused vertex layout
+     * @remark: only remove custom
+     */
+    void removeUnusedVertexLayouts();
+
+    /**
+     * @brief allocate vertex layout desc fast
+     *
+     * @return VertexLayoutDesc
+     */
+    VertexLayoutDesc allocateVertexLayoutDesc();
 
 private:
+    VertexLayout* acquireBuiltinVertexLayout(VertexLayoutKind kind, rhi::Program* prog);
 
-    mutable ID3D11InputLayout* _d3dVL{nullptr};
+    axstd::pod_vector<VertexLayout*> _builtinVertexLayouts;
+    tsl::robin_map<uint32_t, VertexLayout*> _customVertexLayouts;
+
+    std::vector<VertexLayoutDesc> _vertexLayoutDescPool;
 };
-}  // namespace ax::rhi::d3d
+}  // namespace ax
+
+#define axvlm ax::VertexLayoutManager::getInstance()

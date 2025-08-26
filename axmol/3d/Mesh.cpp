@@ -320,7 +320,6 @@ void Mesh::setTexture(Texture2D* tex, NTextureData::Usage usage, bool cacheFileN
     // This functionality is added for compatibility issues
     if (tex == nullptr)
         tex = Director::getInstance()->getTextureCache()->getDummyTexture();
-
     AX_SAFE_RETAIN(tex);
     AX_SAFE_RELEASE(_textures[usage]);
     _textures[usage] = tex;
@@ -403,7 +402,7 @@ void Mesh::setMaterial(Material* material)
                 }
 #endif
                 // TODO
-                auto vertexInputBinding = VertexInputBinding::create(_meshIndexData, pass, &list[i]);
+                auto vertexInputBinding = VertexInputBinding::spawn(_meshIndexData, pass, &list[i], _instanceCount > 0 && _instancing);
                 pass->setVertexInputBinding(vertexInputBinding);
                 i += 1;
             }
@@ -450,7 +449,7 @@ void Mesh::draw(Renderer* renderer,
             AX_SAFE_RELEASE(_instanceTransformBuffer);
             AX_SAFE_DELETE_ARRAY(_instanceMatrixCache);
 
-            _instanceTransformBuffer = rhi::DriverBase::getInstance()->createBuffer(
+            _instanceTransformBuffer = axdrv->createBuffer(
                 _instanceCount * 64, rhi::BufferType::VERTEX, rhi::BufferUsage::DYNAMIC);
 
             _instanceMatrixCache = new float[_instanceCount * 16];

@@ -36,6 +36,7 @@
 #include "axmol/rhi/opengl/UtilsGL.h"
 #include "axmol/rhi/opengl/RenderTargetGL.h"
 #include "axmol/rhi/opengl/DriverGL.h"
+#include "axmol/rhi/opengl/VertexLayoutGL.h"
 #include <algorithm>
 
 namespace ax::rhi::gl {
@@ -139,18 +140,20 @@ void CommandBufferImpl::setRenderPipeline(RenderPipeline* renderPipeline)
  * Update depthStencil status, improvment: for metal backend cache it
  * @param depthStencilState Specifies the depth and stencil status
  */
-void CommandBufferImpl::updateDepthStencilState(const DepthStencilDesc& descriptor)
+void CommandBufferImpl::updateDepthStencilState(const DepthStencilDesc& desc)
 {
-    _depthStencilStateImpl->update(descriptor);
+    _depthStencilStateImpl->update(desc);
 }
 
 /**
  * Update render pipeline status
  * @param depthStencilState Specifies the depth and stencil status
  */
-void CommandBufferImpl::updatePipelineState(const RenderTarget* rt, const PipelineDesc& descriptor)
+void CommandBufferImpl::updatePipelineState(const RenderTarget* rt, const PipelineDesc& desc)
 {
-    _renderPipeline->update(rt, descriptor);
+    CommandBuffer::updatePipelineState(rt, desc);
+
+    _renderPipeline->update(rt, desc);
 }
 
 void CommandBufferImpl::setViewport(int x, int y, unsigned int w, unsigned int h)
@@ -166,13 +169,6 @@ void CommandBufferImpl::setCullMode(CullMode mode)
 void CommandBufferImpl::setWinding(Winding winding)
 {
     __state->winding(winding);
-}
-
-void CommandBufferImpl::setProgramState(ProgramState* programState)
-{
-    AX_SAFE_RETAIN(programState);
-    AX_SAFE_RELEASE(_programState);
-    _programState = programState;
 }
 
 void CommandBufferImpl::setVertexBuffer(Buffer* buffer)
@@ -258,7 +254,7 @@ void CommandBufferImpl::drawElements(PrimitiveType primitiveType,
     if (wireframe)
         primitiveType = PrimitiveType::LINE;
 #endif
-    __state->bindBuffer(BufferType::ELEMENT_ARRAY_BUFFER, _indexBuffer->getHandler());
+    __state->bindBuffer(BufferType::ELEMENT_ARRAY_BUFFER, _indexBuffer->internalHandle());
     glDrawElements(UtilsGL::toGLPrimitiveType(primitiveType), count, UtilsGL::toGLIndexType(indexType),
                    (GLvoid*)offset);
     CHECK_GL_ERROR_DEBUG();
@@ -284,7 +280,7 @@ void CommandBufferImpl::drawElementsInstanced(PrimitiveType primitiveType,
     if (wireframe)
         primitiveType = PrimitiveType::LINE;
 #endif
-    __state->bindBuffer(BufferType::ELEMENT_ARRAY_BUFFER, _indexBuffer->getHandler());
+    __state->bindBuffer(BufferType::ELEMENT_ARRAY_BUFFER, _indexBuffer->internalHandle());
     glDrawElementsInstanced(UtilsGL::toGLPrimitiveType(primitiveType), count, UtilsGL::toGLIndexType(indexType),
                             (GLvoid*)offset, instanceCount);
     CHECK_GL_ERROR_DEBUG();
@@ -309,7 +305,7 @@ void CommandBufferImpl::endFrame()
 void CommandBufferImpl::prepareDrawing() const
 {
     const auto& program = _renderPipeline->getProgram();
-    __state->useProgram(program->getHandler());
+    __state->useProgram(program->internalHandle());
 
     uint32_t usedBits{0};
 
@@ -333,63 +329,10 @@ void CommandBufferImpl::prepareDrawing() const
 
 void CommandBufferImpl::bindVertexBuffer(uint32_t& usedBits) const
 {
-    auto vertexLayout = _programState->getVertexLayout();
+    assert(_vertexLayout);
 
-    if (!vertexLayout->isValid())
-        return;
-
-    // Bind vertex buffers and set the attributes.
-    {
-        // Bind VAO, engine share 1 VAO for all vertexLayouts aka vfmts
-        // optimize proposal: create VAO per vertexLayout, just need bind VAO
-        __state->bindBuffer(BufferType::ARRAY_BUFFER, _vertexBuffer->getHandler());
-
-        const auto& attributes = vertexLayout->getBindings();
-        for (const auto& attributeInfo : attributes)
-        {
-            const auto& attribute = attributeInfo.second;
-            __state->enableVertexAttribArray(attribute.index);
-            glVertexAttribPointer(attribute.index, UtilsGL::getGLAttributeSize(attribute.format),
-                                    UtilsGL::toGLAttributeType(attribute.format), attribute.needToBeNormallized,
-                                    vertexLayout->getStride(), (GLvoid*)static_cast<uintptr_t>(attribute.offset));
-            // non-instance attrib not use divisor, so clear to 0
-            __state->clearVertexAttribDivisor(attribute.index);
-            usedBits |= (1 << attribute.index);
-        }
-    }
-
-    // Bind vertex instance buffer and set attributes
-    if (_instanceBuffer)
-    {
-        __state->bindBuffer(BufferType::ARRAY_BUFFER, _instanceBuffer->getHandler());
-        const auto instanceStride = vertexLayout->getInstanceStride();
-        const auto& attributes    = vertexLayout->getInstanceBindings();
-        for (const auto& attributeInfo : attributes)
-        {
-            const auto& attribute = attributeInfo.second;
-            switch (attribute.format)
-            {
-            case VertexFormat::MAT4:
-                for (auto i = 0; i < 4; ++i)
-                {
-                    auto elementLoc = attribute.index + i;
-                    __state->enableVertexAttribArray(elementLoc);
-                    glVertexAttribPointer(elementLoc, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 16,
-                                            (void*)(sizeof(float) * 4 * i));
-                    __state->setVertexAttribDivisor(elementLoc);
-                    usedBits |= (1 << elementLoc);
-                }
-                break;
-            default:
-                __state->enableVertexAttribArray(attribute.index);
-                glVertexAttribPointer(attribute.index, UtilsGL::getGLAttributeSize(attribute.format),
-                                        UtilsGL::toGLAttributeType(attribute.format), attribute.needToBeNormallized,
-                                        instanceStride, (GLvoid*)static_cast<uintptr_t>(attribute.offset));
-                __state->setVertexAttribDivisor(attribute.index);
-                usedBits |= (1 << attribute.index);
-            }
-        }
-    }
+    auto vl = static_cast<VertexLayoutImpl*>(_vertexLayout);
+    vl->apply(_vertexBuffer, _instanceBuffer, usedBits);
 }
 
 void CommandBufferImpl::bindUniforms(ProgramImpl* program) const
@@ -415,7 +358,8 @@ void CommandBufferImpl::bindUniforms(ProgramImpl* program) const
 
 void CommandBufferImpl::cleanResources()
 {
-    AX_SAFE_RELEASE_NULL(_programState);
+    _programState = nullptr;
+    _vertexLayout = nullptr;
 }
 
 void CommandBufferImpl::setScissorRect(bool isEnabled, float x, float y, float width, float height)

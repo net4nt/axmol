@@ -137,10 +137,13 @@ protected:
     bool initWithProgramState(Technique* parent, rhi::ProgramState* glProgramState);
 
     void setProgramState(rhi::ProgramState* programState);
+    void setVertexLayout(rhi::VertexLayout* vertexLayout);
+
     Node* getTarget() const;
 
-    VertexInputBinding* _vertexInputBinding = nullptr;
-    rhi::ProgramState* _programState      = nullptr;
+    VertexInputBinding* _vertexInputBinding   = nullptr;
+    rhi::ProgramState* _programState          = nullptr;
+    rhi::VertexLayout* _vertexLayout          = nullptr;
     Technique* _technique                     = nullptr;
     bool _hashDirty                           = true;
     RenderState _renderState;
@@ -179,11 +182,11 @@ private:
     rhi::UniformLocation _locAmbientLigthColor;
 
     // renderer state cache variables
-    bool _rendererDepthTestEnabled                 = true;
+    bool _rendererDepthTestEnabled         = true;
     rhi::CompareFunc _rendererDepthCmpFunc = rhi::CompareFunc::LESS;
-    rhi::CullMode _rendererCullMode            = rhi::CullMode::BACK;
-    rhi::Winding _rendererWinding              = rhi::Winding::COUNTER_CLOCK_WISE;
-    bool _rendererDepthWrite                       = false;
+    rhi::CullMode _rendererCullMode        = rhi::CullMode::BACK;
+    rhi::Winding _rendererWinding          = rhi::Winding::COUNTER_CLOCK_WISE;
+    bool _rendererDepthWrite               = false;
 };
 
 }

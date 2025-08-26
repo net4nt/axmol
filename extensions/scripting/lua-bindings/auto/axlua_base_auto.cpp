@@ -3774,114 +3774,6 @@ int lua_ax_base_Texture2D_initWithString(lua_State* tolua_S)
 
     return 0;
 }
-int lua_ax_base_Texture2D_updateData(lua_State* tolua_S)
-{
-    int argc = 0;
-    ax::Texture2D* cobj = nullptr;
-    bool ok  = true;
-
-#if _AX_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if _AX_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"ax.Texture2D",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (ax::Texture2D*)tolua_tousertype(tolua_S,1,0);
-
-#if _AX_DEBUG >= 1
-    if (!cobj)
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_ax_base_Texture2D_updateData'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 3) 
-    {
-        const void* arg0;
-        int arg1;
-        int arg2;
-
-        #pragma warning NO CONVERSION TO NATIVE FOR void*
-		ok = false;
-
-        ok &= luaval_to_int32(tolua_S, 3,(int *)&arg1, "ax.Texture2D:updateData");
-
-        ok &= luaval_to_int32(tolua_S, 4,(int *)&arg2, "ax.Texture2D:updateData");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_ax_base_Texture2D_updateData'", nullptr);
-            return 0;
-        }
-        auto&& ret = cobj->updateData(arg0, arg1, arg2);
-        tolua_pushboolean(tolua_S,(bool)ret);
-        return 1;
-    }
-    if (argc == 4) 
-    {
-        const void* arg0;
-        int arg1;
-        int arg2;
-        int arg3;
-
-        #pragma warning NO CONVERSION TO NATIVE FOR void*
-		ok = false;
-
-        ok &= luaval_to_int32(tolua_S, 3,(int *)&arg1, "ax.Texture2D:updateData");
-
-        ok &= luaval_to_int32(tolua_S, 4,(int *)&arg2, "ax.Texture2D:updateData");
-
-        ok &= luaval_to_int32(tolua_S, 5,(int *)&arg3, "ax.Texture2D:updateData");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_ax_base_Texture2D_updateData'", nullptr);
-            return 0;
-        }
-        auto&& ret = cobj->updateData(arg0, arg1, arg2, arg3);
-        tolua_pushboolean(tolua_S,(bool)ret);
-        return 1;
-    }
-    if (argc == 5) 
-    {
-        const void* arg0;
-        int arg1;
-        int arg2;
-        int arg3;
-        int arg4;
-
-        #pragma warning NO CONVERSION TO NATIVE FOR void*
-		ok = false;
-
-        ok &= luaval_to_int32(tolua_S, 3,(int *)&arg1, "ax.Texture2D:updateData");
-
-        ok &= luaval_to_int32(tolua_S, 4,(int *)&arg2, "ax.Texture2D:updateData");
-
-        ok &= luaval_to_int32(tolua_S, 5,(int *)&arg3, "ax.Texture2D:updateData");
-
-        ok &= luaval_to_int32(tolua_S, 6,(int *)&arg4, "ax.Texture2D:updateData");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_ax_base_Texture2D_updateData'", nullptr);
-            return 0;
-        }
-        auto&& ret = cobj->updateData(arg0, arg1, arg2, arg3, arg4);
-        tolua_pushboolean(tolua_S,(bool)ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "ax.Texture2D:updateData",argc, 3);
-    return 0;
-
-#if _AX_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_ax_base_Texture2D_updateData'.",&tolua_err);
-#endif
-
-    return 0;
-}
 int lua_ax_base_Texture2D_updateSubData(lua_State* tolua_S)
 {
     int argc = 0;
@@ -4004,6 +3896,53 @@ int lua_ax_base_Texture2D_updateSubData(lua_State* tolua_S)
 #if _AX_DEBUG >= 1
     tolua_lerror:
     tolua_error(tolua_S,"#ferror in function 'lua_ax_base_Texture2D_updateSubData'.",&tolua_err);
+#endif
+
+    return 0;
+}
+int lua_ax_base_Texture2D_invalidate(lua_State* tolua_S)
+{
+    int argc = 0;
+    ax::Texture2D* cobj = nullptr;
+    bool ok  = true;
+
+#if _AX_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if _AX_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"ax.Texture2D",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (ax::Texture2D*)tolua_tousertype(tolua_S,1,0);
+
+#if _AX_DEBUG >= 1
+    if (!cobj)
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_ax_base_Texture2D_invalidate'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 0) 
+    {
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_ax_base_Texture2D_invalidate'", nullptr);
+            return 0;
+        }
+        cobj->invalidate();
+        lua_settop(tolua_S, 1);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "ax.Texture2D:invalidate",argc, 0);
+    return 0;
+
+#if _AX_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_ax_base_Texture2D_invalidate'.",&tolua_err);
 #endif
 
     return 0;
@@ -5119,8 +5058,8 @@ int lua_register_ax_base_Texture2D(lua_State* tolua_S)
         tolua_function(tolua_S,"new",lua_ax_base_Texture2D_constructor);
         tolua_function(tolua_S,"initWithImage",lua_ax_base_Texture2D_initWithImage);
         tolua_function(tolua_S,"initWithString",lua_ax_base_Texture2D_initWithString);
-        tolua_function(tolua_S,"updateData",lua_ax_base_Texture2D_updateData);
         tolua_function(tolua_S,"updateSubData",lua_ax_base_Texture2D_updateSubData);
+        tolua_function(tolua_S,"invalidate",lua_ax_base_Texture2D_invalidate);
         tolua_function(tolua_S,"drawAtPoint",lua_ax_base_Texture2D_drawAtPoint);
         tolua_function(tolua_S,"drawInRect",lua_ax_base_Texture2D_drawInRect);
         tolua_function(tolua_S,"isRenderTarget",lua_ax_base_Texture2D_isRenderTarget);
@@ -98427,7 +98366,7 @@ int lua_ax_base_ProgramManager_registerCustomProgram(lua_State* tolua_S)
     {
         std::string_view arg0;
         std::string_view arg1;
-        ax::rhi::VertexLayoutType arg2;
+        ax::rhi::VertexLayoutKind arg2;
 
         ok &= luaval_to_std_string_view(tolua_S, 2,&arg0, "ax.ProgramManager:registerCustomProgram");
 
@@ -98447,7 +98386,7 @@ int lua_ax_base_ProgramManager_registerCustomProgram(lua_State* tolua_S)
     {
         std::string_view arg0;
         std::string_view arg1;
-        ax::rhi::VertexLayoutType arg2;
+        ax::rhi::VertexLayoutKind arg2;
         bool arg3;
 
         ok &= luaval_to_std_string_view(tolua_S, 2,&arg0, "ax.ProgramManager:registerCustomProgram");
@@ -98523,7 +98462,7 @@ int lua_ax_base_ProgramManager_loadProgram(lua_State* tolua_S)
             ok &= luaval_to_std_string_view(tolua_S, 3,&arg1, "ax.ProgramManager:loadProgram");
 
             if (!ok) { break; }
-            ax::rhi::VertexLayoutType arg2;
+            ax::rhi::VertexLayoutKind arg2;
             ok &= luaval_to_int32(tolua_S, 4,(int *)&arg2, "ax.ProgramManager:loadProgram");
 
             if (!ok) { break; }
@@ -102831,6 +102770,42 @@ int lua_ax_base_TextureCache_getETC1AlphaFileSuffix(lua_State* tolua_S)
 #endif
     return 0;
 }
+int lua_ax_base_TextureCache_checkETC1AlphaFile(lua_State* tolua_S)
+{
+    int argc = 0;
+    bool ok  = true;
+
+#if _AX_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+#if _AX_DEBUG >= 1
+    if (!tolua_isusertable(tolua_S,1,"ax.TextureCache",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    argc = lua_gettop(tolua_S) - 1;
+
+    if (argc == 1)
+    {
+        std::string_view arg0;
+        ok &= luaval_to_std_string_view(tolua_S, 2,&arg0, "ax.TextureCache:checkETC1AlphaFile");
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_ax_base_TextureCache_checkETC1AlphaFile'", nullptr);
+            return 0;
+        }
+        auto&& ret = ax::TextureCache::checkETC1AlphaFile(arg0);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "ax.TextureCache:checkETC1AlphaFile",argc, 1);
+    return 0;
+#if _AX_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_ax_base_TextureCache_checkETC1AlphaFile'.",&tolua_err);
+#endif
+    return 0;
+}
 int lua_ax_base_TextureCache_constructor(lua_State* tolua_S)
 {
     int argc = 0;
@@ -102899,6 +102874,7 @@ int lua_register_ax_base_TextureCache(lua_State* tolua_S)
         tolua_function(tolua_S,"renameTextureWithKey",lua_ax_base_TextureCache_renameTextureWithKey);
         tolua_function(tolua_S,"setETC1AlphaFileSuffix", lua_ax_base_TextureCache_setETC1AlphaFileSuffix);
         tolua_function(tolua_S,"getETC1AlphaFileSuffix", lua_ax_base_TextureCache_getETC1AlphaFileSuffix);
+        tolua_function(tolua_S,"checkETC1AlphaFile", lua_ax_base_TextureCache_checkETC1AlphaFile);
     tolua_endmodule(tolua_S);
     auto typeName = typeid(ax::TextureCache).name(); // rtti is literal storage
     g_luaType[reinterpret_cast<uintptr_t>(typeName)] = "ax.TextureCache";

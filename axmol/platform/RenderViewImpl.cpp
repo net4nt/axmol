@@ -645,7 +645,7 @@ bool RenderViewImpl::initWithRect(std::string_view viewName, const ax::Rect& rec
 #endif
 
     // Init driver after load GL
-    rhi::DriverBase::getInstance();
+    axdrv;
 #endif
 
 #if AX_RENDER_API == AX_RENDER_API_GL
@@ -1384,7 +1384,7 @@ static bool loadFboExtensions()
     // If the current opengl driver doesn't have framebuffers methods, check if an extension exists
     if (glGenFramebuffers == nullptr)
     {
-        auto driver = rhi::DriverBase::getInstance();
+        auto driver = axdrv;
         AXLOGW("OpenGL: glGenFramebuffers is nullptr, try to detect an extension");
         if (driver->hasExtension("ARB_framebuffer_object"sv))
         {

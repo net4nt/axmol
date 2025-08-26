@@ -395,9 +395,9 @@ void DriverImpl::destroySampler(SamplerHandle& h) {
     SafeRelease(reinterpret_cast<ID3D11SamplerState*&>(h));
 }
 
-VertexLayout* DriverImpl::createVertexLayout()
+VertexLayout* DriverImpl::createVertexLayout(VertexLayoutDesc&& desc)
 {
-    return new VertexLayoutImpl();
+    return new VertexLayoutImpl(std::move(desc));
 }
 
 /// below is driver info
@@ -467,7 +467,8 @@ bool DriverImpl::checkForFeatureSupported(FeatureType feature)
     //     VAO,
     //     MAPBUFFER,
     //     DEPTH24,
-    //     ASTC
+    //     ASTC,
+    //     VERTEX_ATTRIB_BINDING
     // };
 
     switch (feature)
@@ -477,6 +478,7 @@ bool DriverImpl::checkForFeatureSupported(FeatureType feature)
     case FeatureType::PACKED_DEPTH_STENCIL:
     case FeatureType::IMG_FORMAT_BGRA8888:
     case FeatureType::S3TC:
+    case FeatureType::VERTEX_ATTRIB_BINDING:
         return true;
     }
     return false;

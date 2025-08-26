@@ -35,6 +35,13 @@ namespace ax::rhi::gl {
  * @{
  */
 
+struct DriverCapImpl
+{
+    bool textureCompressionAstc{false};
+    bool textureCompressionEtc2{false};
+    bool vertexAttribBinding{false};
+};
+
 /**
  * Use to create resoureces.
  */
@@ -43,6 +50,13 @@ class DriverImpl : public DriverBase
 public:
     DriverImpl();
     ~DriverImpl();
+
+    /* The vertex data buffers binding index start, the axslcc(SPIRV-Cross)
+     */
+    static constexpr uint32_t VBO_BINDING_INDEX = 0;
+
+    /* The vertex instancing buffer binding index */
+    static constexpr uint32_t VBO_INSTANCING_BINDING_INDEX = VBO_BINDING_INDEX + 1;
 
     GLint getDefaultFBO() const;
 
@@ -95,6 +109,8 @@ public:
      * @return A Program instance.
      */
     Program* createProgram(std::string_view vertexShader, std::string_view fragmentShader) override;
+
+    VertexLayout* createVertexLayout(VertexLayoutDesc&&) override;
 
     void resetState() override;
 
@@ -168,8 +184,7 @@ private:
 
     const char* _version{nullptr};
 
-    bool _textureCompressionAstc{false};
-    bool _textureCompressionEtc2{false};
+    DriverCapImpl _cap{};
 };
 // end of _opengl group
 /// @}
