@@ -2,7 +2,9 @@ name: build
 
 on:
   push:
-    branches: dev
+    branches:
+      - dev/*
+      - release/*
     paths-ignore:
       - '**.md'
       - '**/*.md.in'

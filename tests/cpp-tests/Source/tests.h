@@ -36,7 +36,7 @@
 #if (AX_TARGET_PLATFORM != AX_PLATFORM_MARMALADE)
 #    include "ClippingNodeTest/ClippingNodeTest.h"
 #endif
-#include "NewAudioEngineTest/NewAudioEngineTest.h"
+#include "AudioEngineTest/AudioEngineTest.h"
 #if (AX_TARGET_PLATFORM != AX_PLATFORM_EMSCRIPEN)
 #    if (AX_TARGET_PLATFORM != AX_PLATFORM_MARMALADE)
 // bada don't support libcurl
@@ -78,7 +78,7 @@
 #include "FontTest/FontTest.h"
 #include "InputTest/MouseTest.h"
 #include "IntervalTest/IntervalTest.h"
-#include "LabelTest/LabelTestNew.h"
+#include "LabelTest/LabelTest.h"
 #include "LayerTest/LayerTest.h"
 #include "LightTest/LightTest.h"
 #include "MaterialSystemTest/MaterialSystemTest.h"
@@ -86,8 +86,8 @@
 #include "MotionStreakTest/MotionStreakTest.h"
 #include "MultiTouchTest/MultiTouchTest.h"
 #include "NavMeshTest/NavMeshTest.h"
-#include "NewEventDispatcherTest/NewEventDispatcherTest.h"
-#include "NewRendererTest/NewRendererTest.h"
+#include "EventDispatcherTest/EventDispatcherTest.h"
+#include "RendererTest/RendererTest.h"
 #include "NodeTest/NodeTest.h"
 #include "OpenURLTest/OpenURLTest.h"
 #include "ParallaxTest/ParallaxTest.h"

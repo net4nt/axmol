@@ -23,7 +23,7 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#include "LabelTestNew.h"
+#include "LabelTest.h"
 #include "../testResource.h"
 #include "axmol/renderer/Renderer.h"
 #include "axmol/2d/FontAtlasCache.h"

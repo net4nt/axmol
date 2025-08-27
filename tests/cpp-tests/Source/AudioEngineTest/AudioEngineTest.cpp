@@ -25,7 +25,7 @@
  ****************************************************************************/
 
 #include "axmol/platform/PlatformConfig.h"
-#include "NewAudioEngineTest.h"
+#include "AudioEngineTest.h"
 #include "axmol/ui/CocosGUI.h"
 
 using namespace ax;
