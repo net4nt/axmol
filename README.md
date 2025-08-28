@@ -2,7 +2,7 @@
 
 # Axmol Engine
 
-## A Multi-platform Engine for Mobile, Desktop and Xbox.
+## A Multi-platform Engine for Desktop, XBOX (UWP), WebAssembly and Mobile games.
 
 [Axmol Engine](https://axmol.dev) is an open-source, C++ multi-platform engine designed for mobile devices, desktop, and Xbox, well-suited for 2D game development. It was launched in November 2019 as a fork of Cocos2d-x v4.0.
 
@@ -74,11 +74,11 @@ Axmol Engine has iterated and improved over the Cocos2d-x v4.0 base. Now is fast
 * Linux (x64)
 * OSX (x64, arm64)
 * UWP (x64, arm64)
-* Wasm32
+* Wasm32, Wasm64
 
 **Supported 2D physics engines** ([more info here](https://github.com/axmolengine/axmol/wiki/2D-Physics-Engines-Information)):
 * Box2D
-* Chipmunk2D (Will be removed in axmol-v3)
+* Chipmunk2D (Removed in `dev/v3`)
 
 **Supported 3D physics engines**:
 * Bullet Physics SDK

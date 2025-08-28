@@ -2,7 +2,7 @@
 
 # Axmol Engine
 
-## A Multi-platform Engine for Mobile, Desktop and Xbox.
+## A Multi-platform Engine for Desktop, XBOX (UWP), WebAssembly and Mobile games.
 
 [Axmol Engine](https://axmol.dev) 是一个开源的专为移动、桌面和 XBox 设备设计的 C++ 多平台引擎。该项目于 2019 年 11 月作为 `Cocos2d-X-4.0` 的一个分支启动。
 
@@ -78,7 +78,7 @@ Axmol 引擎在 Cocos2d-x v4.0 的基础上进行迭代和改进。现在速度�
 * Linux (x64)
 * OSX (x64, arm64)
 * UWP (x64, arm64)
-* Wasm32
+* Wasm32, Wasm64
 
 **支持2D物理引擎** ([更多相关信息](https://github.com/axmolengine/axmol/wiki/2D-Physics-Engines-informations)):
 
