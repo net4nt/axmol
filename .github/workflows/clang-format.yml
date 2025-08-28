@@ -24,8 +24,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v5
-      with:
-        ref: ${{ github.head_ref || github.ref_name }}
 
     - name: Set LAST_COMMIT_HASH (short)
       run: echo "LAST_COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
@@ -34,7 +32,7 @@ jobs:
       uses: DoozyX/clang-format-lint-action@v0.20
       with:
         source: './axmol ./extensions ./tests ./templates'
-        exclude: './3rdparty ./extensions/fairygui ./extensions/Live2D ./extensions/Effekseer ./extensions/scripting/lua-bindings/auto ./extensions/spine ./tests/fairygui-tests ./extensions/**/*_generated.h'
+        exclude: './3rdparty ./extensions/ImGui/**/im* ./extensions/fairygui ./extensions/Live2D ./extensions/Effekseer ./extensions/scripting/lua-bindings/auto ./extensions/spine ./tests/cpp-tests/Source/Box2DTestBed/samples ./tests/fairygui-tests ./tests/live2d-tests ./extensions/**/*_generated.h'
         extensions: 'h,cpp,c,mm'
         clangFormatVersion: 20
         inplace: True
@@ -95,6 +93,6 @@ jobs:
         committer_name: GitHub Actions
         committer_email: 41898282+github-actions[bot]@users.noreply.github.com
         message: 'Committing clang-format changes'
-        new_branch: ${{ github.head_ref }}
+        new_branch: ${{ github.head_ref || github.ref_name }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
