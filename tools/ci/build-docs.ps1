@@ -2,7 +2,7 @@
 # Can runs on Windows,Linux
 param(
     $site_dist = $null,
-    $min_ver = '2.3' # The minimum version to build docs
+    $min_ver = '2.4' # The minimum version to build docs
 )
 
 $myRoot = $PSScriptRoot
@@ -12,6 +12,13 @@ $isWin = $IsWindows -or ("$env:OS" -eq 'Windows_NT')
 $pwsh_ver = $PSVersionTable.PSVersion.ToString()
 
 $AX_ROOT = (Resolve-Path $myRoot/../..)
+
+$git_prog = (Get-Command 'git' -ErrorAction SilentlyContinue).Source
+if (!$git_prog) {
+    throw 'build-docs: requires git installed'
+}
+
+$stored_branch = $(git -C $AX_ROOT branch --show-current)
 
 function mkdirs([string]$path) {
     if (!(Test-Path $path)) {
@@ -45,11 +52,11 @@ if (!(Test-Path "$prefix" -PathType Container)) {
 }
 
 function setup_doxygen() {
-    $doxygen_ver = '1.13.2'
+    $doxygen_ver = '1.14.0'
 
     $doxygen_pkg_name = if ($isWin) { "doxygen-$doxygen_ver.windows.x64.bin.zip" } else { "doxygen-$doxygen_ver.linux.bin.tar.gz" }
     $doxygen_pkg_path = Join-Path $prefix $doxygen_pkg_name
-    
+
     if (!(Test-Path $doxygen_pkg_path -PathType Leaf)) {
         $doxygen_ver_ul = $doxygen_ver.Replace('.', '_')
         Invoke-WebRequest -Uri "https://github.com/doxygen/doxygen/releases/download/Release_$doxygen_ver_ul/$doxygen_pkg_name" -OutFile $doxygen_pkg_path | Out-Host
@@ -81,24 +88,25 @@ setup_doxygen
 
 Write-Host "Using doxygen $(doxygen --version)"
 
-$axver_file = (Resolve-Path $AX_ROOT/core/axmolver.h.in).Path
-$axver_content = $(Get-Content -Path $axver_file)
-function parse_axver($part) {
-    return ($axver_content | Select-String "#define AX_VERSION_$part").Line.Split(' ')[2]
-}
+$remote_default_branch = (git symbolic-ref refs/remotes/origin/HEAD) -replace '^refs/remotes/origin/', ''
+$latest_branch = $remote_default_branch
 
-function query_axmol_latest() {
-    
+Write-Host "remote_default_branch=$remote_default_branch"
+
+function parse_laset_rev() {
+    git checkout $latest_branch | Out-Host
+    $axver_file = (Resolve-Path $AX_ROOT/axmol/axmolver.h.in).Path
+    $axver_content = $(Get-Content -Path $axver_file)
+    function parse_axver($part) {
+        return ($axver_content | Select-String "#define AX_VERSION_$part").Line.Split(' ')[2]
+    }
+
     $axver = "$(parse_axver 'MAJOR').$(parse_axver 'MINOR').$(parse_axver 'PATCH')"
 
-    $git_prog = (Get-Command 'git' -ErrorAction SilentlyContinue).Source
-    if ($git_prog) {
-        Write-Host "Found git: $git_prog"
-        $branchName = $(git -C $AX_ROOT branch --show-current)
-        if ($branchName -eq 'dev') {
-            $commitHash = $(git -C $AX_ROOT rev-parse --short=7 HEAD)
-            $axver += "-$commitHash"
-        }
+    $branchName = $(git -C $AX_ROOT branch --show-current)
+    if ($branchName.StartsWith('dev/')) {
+        $commitHash = $(git -C $AX_ROOT rev-parse --short=7 HEAD)
+        $axver += "-$commitHash"
     }
     return $axver
 }
@@ -137,7 +145,7 @@ foreach ($item in $release_tags) {
 
 $verList = $verMap.GetEnumerator() | Sort-Object Value -Descending | ForEach-Object { $_.Key }
 
-$verMap['latest'] = $null
+$verMap['latest'] = parse_laset_rev
 
 $strVerList = "'latest','$($verList -join "','")'"
 Write-Host "$(Out-String -InputObject $verMap)"
@@ -155,33 +163,30 @@ foreach ($branch in $branches) {
 # build manuals
 foreach ($item in $verMap.GetEnumerator()) {
     $ver = $item.Key
+    $release_tag = $item.Value
+    Write-Host "Generating docs for ${ver}:${release_tag} ..."
+
     $html_out = Join-Path $site_dist "manual/$ver"
     mkdirs $html_out
-    $release_tag = $item.Value
 
-    if ($ver -eq 'latest') {
-        git checkout dev
-        $release_tag = query_axmol_latest
+    if($ver -ne 'latest') {
+        git checkout $release_tag | Out-Host
+    } else {
+        git checkout $latest_branch | Out-Host
     }
-    elseif ($canon_branches.Contains($ver)) {
-        # prefer LTS branch
-        git checkout $ver
-    }
-    else {
-        git checkout $release_tag
-    }
+
     configure_file './Doxyfile.in' './Doxyfile' @{'@VERSION@' = $release_tag; '@OUTPUT_DIR@' = $site_dist; './dist' = $site_dist; '@HTML_OUTPUT@' = "manual/$ver" }
 
-    Write-Host "Generating docs for $ver ..." -NoNewline
     doxygen "./Doxyfile" # 1>$null 2>$null
-    Write-Host "done"
 
     Copy-Item './hacks.js' $html_out
     Copy-Item './doc_style.css' "$html_out/stylesheet.css"
     configure_file './menu_version.js.in' "$html_out/menu_version.js" @{'@VERLIST@' = $strVerList; '@VERSION@' = $ver }
+
+    Write-Host "Generating docs for ${ver}:${release_tag} done"
 }
 
-# checkout back to dev
-git checkout dev
+# checkout back to stored branch
+git checkout $stored_branch
 
 Set-Location $store_cwd
