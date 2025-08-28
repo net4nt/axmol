@@ -73,7 +73,7 @@ jobs:
 
           [1]: https://github.com/peter-evans/create-pull-request
         labels: |
-          lua-bindings
+          clang-format
           automated pr
           pinned
         assignees: axmol-bot
