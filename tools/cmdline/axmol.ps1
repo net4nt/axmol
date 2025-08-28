@@ -33,7 +33,7 @@ $axmolVersion = "$(parse_axver 'MAJOR').$(parse_axver 'MINOR').$(parse_axver 'PA
 $git_prog = (Get-Command 'git' -ErrorAction SilentlyContinue).Source
 if ($git_prog) {
     $branchName = $(git -C $AX_ROOT branch --show-current 2>$null)
-    if ($branchName -eq 'dev') {
+    if ($branchName) {
         $commitHash = $(git -C $AX_ROOT rev-parse --short=7 HEAD 2>$null)
         $axmolVersion += "-$commitHash"
     }
@@ -143,7 +143,7 @@ function axmol_deploy() {
         # read applicationId aka package name
         $outputMetaFile = Join-Path $apkDir 'output-metadata.json'
         $outputMeta = ConvertFrom-Json $(Get-Content $outputMetaFile -raw)
-        $androidAppId = $outputMeta.applicationId 
+        $androidAppId = $outputMeta.applicationId
 
         # read activityName
         $androidManifestFile = Join-Path $proj_dir 'proj.android/app/AndroidManifest.xml'
@@ -365,9 +365,9 @@ $plugin = $builtinPlugins["$cmdName"]
 if ($plugin) {
     # -h will consumed by param
     # !!!Note: 3 condition statement: 'xxx = if(c) { v1 } else { v2 }' will lost array type if source array only 1 element
-    if ($args.Count -gt 1) { 
-        $sub_args = $args[1..($args.Count - 1)] 
-    } 
+    if ($args.Count -gt 1) {
+        $sub_args = $args[1..($args.Count - 1)]
+    }
     else {
         $sub_args = @()
     }
@@ -383,7 +383,7 @@ if ($help -or ($sub_args -and $sub_args[0] -eq '--help')) {
     else {
         println $tool_usage
     }
-    return 
+    return
 }
 
 if (!$plugin) { $plugin = $builtinPlugins['build'] }
