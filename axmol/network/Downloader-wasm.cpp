@@ -177,7 +177,7 @@ void DownloaderEmscripten::onLoad(emscripten_fetch_t* fetch)
         }
 
         // open file
-        auto _fs = util->openFileStream(storagePath, IFileStream::Mode::READ);
+        auto _fs = util->openFileStream(storagePath, IFileStream::Mode::WRITE);
         if (!_fs)
         {
             errCode         = DownloadTask::ERROR_OPEN_FILE_FAILED;

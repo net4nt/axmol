@@ -2,15 +2,6 @@ cmake_minimum_required(VERSION 3.20)
 
 set(APP_NAME cpp-tests)
 
-
-# "too large PDB" error often occurs in cpp-tests when using default "/Zi"
-if (MSVC)
-    string(REPLACE "/Zi" "/Z7" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
-    string(REPLACE "/Zi" "/Z7" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
-    string(REPLACE "/Zi" "/Z7" CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
-    string(REPLACE "/Zi" "/Z7" CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
-endif()
-
 project(${APP_NAME})
 
 if(NOT DEFINED BUILD_ENGINE_DONE)
