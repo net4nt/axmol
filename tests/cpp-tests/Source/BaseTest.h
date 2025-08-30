@@ -37,6 +37,7 @@ class TestSuite;
 
 extern ax::Size g_resourceSize;
 extern ax::Size g_designSize;
+extern const ax::Color g_testsDefaultClearColor;
 
 /**
  * Each test case should inherit from TestCase, and add to a TestSuite object.

@@ -30,7 +30,7 @@ int lua_ax_video_MediaPlayer_setFileName(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         std::string_view arg0;
 
@@ -80,7 +80,7 @@ int lua_ax_video_MediaPlayer_getFileName(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -127,7 +127,7 @@ int lua_ax_video_MediaPlayer_setURL(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         std::string_view arg0;
 
@@ -177,7 +177,7 @@ int lua_ax_video_MediaPlayer_getURL(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -224,7 +224,7 @@ int lua_ax_video_MediaPlayer_setLooping(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -274,7 +274,7 @@ int lua_ax_video_MediaPlayer_setUserInputEnabled(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -324,7 +324,7 @@ int lua_ax_video_MediaPlayer_setStyle(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::ui::MediaPlayer::StyleType arg0;
 
@@ -374,7 +374,7 @@ int lua_ax_video_MediaPlayer_setPlayRate(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -424,7 +424,7 @@ int lua_ax_video_MediaPlayer_play(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -471,7 +471,7 @@ int lua_ax_video_MediaPlayer_pausePlayback(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -518,7 +518,7 @@ int lua_ax_video_MediaPlayer_resumePlayback(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -565,7 +565,7 @@ int lua_ax_video_MediaPlayer_stop(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -612,7 +612,7 @@ int lua_ax_video_MediaPlayer_seekTo(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -662,7 +662,7 @@ int lua_ax_video_MediaPlayer_getCurrentTime(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -709,7 +709,7 @@ int lua_ax_video_MediaPlayer_getDuration(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -756,7 +756,7 @@ int lua_ax_video_MediaPlayer_isPlaying(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -803,7 +803,7 @@ int lua_ax_video_MediaPlayer_isLooping(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -850,7 +850,7 @@ int lua_ax_video_MediaPlayer_isUserInputEnabled(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -897,7 +897,7 @@ int lua_ax_video_MediaPlayer_setKeepAspectRatioEnabled(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -947,7 +947,7 @@ int lua_ax_video_MediaPlayer_isKeepAspectRatioEnabled(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -994,7 +994,7 @@ int lua_ax_video_MediaPlayer_setFullScreenEnabled(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -1044,7 +1044,7 @@ int lua_ax_video_MediaPlayer_isFullScreenEnabled(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1091,7 +1091,7 @@ int lua_ax_video_MediaPlayer_onPlayEvent(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         int arg0;
 
@@ -1141,7 +1141,7 @@ int lua_ax_video_MediaPlayer_getState(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1188,7 +1188,7 @@ int lua_ax_video_MediaPlayer_setMediaController(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::ui::MediaController* arg0;
 
@@ -1238,7 +1238,7 @@ int lua_ax_video_MediaPlayer_getMediaController(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1306,7 +1306,7 @@ int lua_ax_video_MediaPlayer_constructor(lua_State* tolua_S)
 
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1378,15 +1378,15 @@ int lua_register_ax_video_MediaPlayer(lua_State* tolua_S)
 }
 TOLUA_API int register_all_ax_video(lua_State* tolua_S)
 {
-	tolua_open(tolua_S);
-	
-	tolua_module(tolua_S,"axui",0);
-	tolua_beginmodule(tolua_S,"axui");
+    tolua_open(tolua_S);
 
-	lua_register_ax_video_MediaPlayer(tolua_S);
+    tolua_module(tolua_S,"axui",0);
+    tolua_beginmodule(tolua_S,"axui");
 
-	tolua_endmodule(tolua_S);
-	return 1;
+    lua_register_ax_video_MediaPlayer(tolua_S);
+
+    tolua_endmodule(tolua_S);
+    return 1;
 }
 
 #endif

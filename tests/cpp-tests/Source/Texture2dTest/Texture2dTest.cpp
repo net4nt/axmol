@@ -1994,7 +1994,7 @@ TextureDrawAtPoint::~TextureDrawAtPoint()
 
 std::string TextureDrawAtPoint::title() const
 {
-    return "CCTexture2D: drawAtPoint";
+    return "Texture2D: drawAtPoint";
 }
 
 std::string TextureDrawAtPoint::subtitle() const
@@ -2069,7 +2069,7 @@ void TextureDrawInRect::onDraw(const Mat4& transform, uint32_t flags)
 
 std::string TextureDrawInRect::title() const
 {
-    return "CCTexture2D: drawInRect";
+    return "Texture2D: drawInRect";
 }
 
 std::string TextureDrawInRect::subtitle() const

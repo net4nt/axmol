@@ -29,7 +29,7 @@ int lua_ax_extension_ScrollView_initWithViewSize(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Size arg0;
 
@@ -43,7 +43,7 @@ int lua_ax_extension_ScrollView_initWithViewSize(lua_State* tolua_S)
         tolua_pushboolean(tolua_S,(bool)ret);
         return 1;
     }
-    if (argc == 2) 
+    if (argc == 2)
     {
         ax::Size arg0;
         ax::Node* arg1;
@@ -96,7 +96,7 @@ int lua_ax_extension_ScrollView_setContentOffset(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Vec2 arg0;
 
@@ -110,7 +110,7 @@ int lua_ax_extension_ScrollView_setContentOffset(lua_State* tolua_S)
         lua_settop(tolua_S, 1);
         return 1;
     }
-    if (argc == 2) 
+    if (argc == 2)
     {
         ax::Vec2 arg0;
         bool arg1;
@@ -163,7 +163,7 @@ int lua_ax_extension_ScrollView_getContentOffset(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -210,7 +210,7 @@ int lua_ax_extension_ScrollView_setContentOffsetInDuration(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 2) 
+    if (argc == 2)
     {
         ax::Vec2 arg0;
         double arg1;
@@ -263,7 +263,7 @@ int lua_ax_extension_ScrollView_stopAnimatedContentOffset(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -369,7 +369,7 @@ int lua_ax_extension_ScrollView_getZoomScale(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -416,7 +416,7 @@ int lua_ax_extension_ScrollView_setZoomScaleInDuration(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 2) 
+    if (argc == 2)
     {
         double arg0;
         double arg1;
@@ -469,7 +469,7 @@ int lua_ax_extension_ScrollView_setMinScale(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -519,7 +519,7 @@ int lua_ax_extension_ScrollView_setMaxScale(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -569,7 +569,7 @@ int lua_ax_extension_ScrollView_minContainerOffset(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -616,7 +616,7 @@ int lua_ax_extension_ScrollView_maxContainerOffset(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -663,7 +663,7 @@ int lua_ax_extension_ScrollView_isNodeVisible(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Node* arg0;
 
@@ -713,7 +713,7 @@ int lua_ax_extension_ScrollView_pause(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Object* arg0;
 
@@ -763,7 +763,7 @@ int lua_ax_extension_ScrollView_resume(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Object* arg0;
 
@@ -813,7 +813,7 @@ int lua_ax_extension_ScrollView_setTouchEnabled(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -863,7 +863,7 @@ int lua_ax_extension_ScrollView_isTouchEnabled(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -910,7 +910,7 @@ int lua_ax_extension_ScrollView_setSwallowTouches(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -960,7 +960,7 @@ int lua_ax_extension_ScrollView_isDragging(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1007,7 +1007,7 @@ int lua_ax_extension_ScrollView_isTouchMoved(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1054,7 +1054,7 @@ int lua_ax_extension_ScrollView_isBounceable(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1101,7 +1101,7 @@ int lua_ax_extension_ScrollView_setBounceable(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -1151,7 +1151,7 @@ int lua_ax_extension_ScrollView_getViewSize(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1198,7 +1198,7 @@ int lua_ax_extension_ScrollView_setViewSize(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Size arg0;
 
@@ -1248,7 +1248,7 @@ int lua_ax_extension_ScrollView_getContainer(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1295,7 +1295,7 @@ int lua_ax_extension_ScrollView_setContainer(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Node* arg0;
 
@@ -1345,7 +1345,7 @@ int lua_ax_extension_ScrollView_getDirection(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1392,7 +1392,7 @@ int lua_ax_extension_ScrollView_setDirection(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::extension::ScrollView::Direction arg0;
 
@@ -1442,7 +1442,7 @@ int lua_ax_extension_ScrollView_updateInset(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1489,7 +1489,7 @@ int lua_ax_extension_ScrollView_isClippingToBounds(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1536,7 +1536,7 @@ int lua_ax_extension_ScrollView_setClippingToBounds(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -1586,7 +1586,7 @@ int lua_ax_extension_ScrollView_onTouchBegan(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 2) 
+    if (argc == 2)
     {
         ax::Touch* arg0;
         ax::Event* arg1;
@@ -1639,7 +1639,7 @@ int lua_ax_extension_ScrollView_onTouchMoved(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 2) 
+    if (argc == 2)
     {
         ax::Touch* arg0;
         ax::Event* arg1;
@@ -1692,7 +1692,7 @@ int lua_ax_extension_ScrollView_onTouchEnded(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 2) 
+    if (argc == 2)
     {
         ax::Touch* arg0;
         ax::Event* arg1;
@@ -1745,7 +1745,7 @@ int lua_ax_extension_ScrollView_onTouchCancelled(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 2) 
+    if (argc == 2)
     {
         ax::Touch* arg0;
         ax::Event* arg1;
@@ -1798,7 +1798,7 @@ int lua_ax_extension_ScrollView_updateTweenAction(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 2) 
+    if (argc == 2)
     {
         double arg0;
         std::string_view arg1;
@@ -1851,7 +1851,7 @@ int lua_ax_extension_ScrollView_hasVisibleParents(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1946,7 +1946,7 @@ int lua_ax_extension_ScrollView_constructor(lua_State* tolua_S)
 
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -2054,7 +2054,7 @@ int lua_ax_extension_TableViewCell_getIdx(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -2101,7 +2101,7 @@ int lua_ax_extension_TableViewCell_setIdx(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ssize_t arg0;
 
@@ -2151,7 +2151,7 @@ int lua_ax_extension_TableViewCell_reset(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -2219,7 +2219,7 @@ int lua_ax_extension_TableViewCell_constructor(lua_State* tolua_S)
 
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -2293,7 +2293,7 @@ int lua_ax_extension_TableView_initWithViewSize(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Size arg0;
 
@@ -2307,7 +2307,7 @@ int lua_ax_extension_TableView_initWithViewSize(lua_State* tolua_S)
         tolua_pushboolean(tolua_S,(bool)ret);
         return 1;
     }
-    if (argc == 2) 
+    if (argc == 2)
     {
         ax::Size arg0;
         ax::Node* arg1;
@@ -2360,7 +2360,7 @@ int lua_ax_extension_TableView_setVerticalFillOrder(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::extension::TableView::VerticalFillOrder arg0;
 
@@ -2410,7 +2410,7 @@ int lua_ax_extension_TableView_getVerticalFillOrder(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -2457,7 +2457,7 @@ int lua_ax_extension_TableView_updateCellAtIndex(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ssize_t arg0;
 
@@ -2507,7 +2507,7 @@ int lua_ax_extension_TableView_insertCellAtIndex(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ssize_t arg0;
 
@@ -2557,7 +2557,7 @@ int lua_ax_extension_TableView_removeCellAtIndex(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ssize_t arg0;
 
@@ -2607,7 +2607,7 @@ int lua_ax_extension_TableView_reloadData(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -2654,7 +2654,7 @@ int lua_ax_extension_TableView_dequeueCell(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -2701,7 +2701,7 @@ int lua_ax_extension_TableView_cellAtIndex(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ssize_t arg0;
 
@@ -2751,7 +2751,7 @@ int lua_ax_extension_TableView_scrollViewDidScroll(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::extension::ScrollView* arg0;
 
@@ -2801,7 +2801,7 @@ int lua_ax_extension_TableView_scrollViewDidZoom(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::extension::ScrollView* arg0;
 
@@ -2851,7 +2851,7 @@ int lua_ax_extension_TableView__updateContentSize(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -2885,7 +2885,7 @@ int lua_ax_extension_TableView_constructor(lua_State* tolua_S)
 
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -2967,7 +2967,7 @@ int lua_ax_extension_AssetsManager_checkUpdate(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -3014,7 +3014,7 @@ int lua_ax_extension_AssetsManager_update(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -3061,7 +3061,7 @@ int lua_ax_extension_AssetsManager_getPackageUrl(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -3108,7 +3108,7 @@ int lua_ax_extension_AssetsManager_setPackageUrl(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         const char* arg0;
 
@@ -3158,7 +3158,7 @@ int lua_ax_extension_AssetsManager_getVersionFileUrl(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -3205,7 +3205,7 @@ int lua_ax_extension_AssetsManager_setVersionFileUrl(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         const char* arg0;
 
@@ -3255,7 +3255,7 @@ int lua_ax_extension_AssetsManager_getVersion(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -3302,7 +3302,7 @@ int lua_ax_extension_AssetsManager_deleteVersion(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -3349,7 +3349,7 @@ int lua_ax_extension_AssetsManager_getStoragePath(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -3396,7 +3396,7 @@ int lua_ax_extension_AssetsManager_setStoragePath(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         const char* arg0;
 
@@ -3446,7 +3446,7 @@ int lua_ax_extension_AssetsManager_setConnectionTimeout(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         unsigned int arg0;
 
@@ -3496,7 +3496,7 @@ int lua_ax_extension_AssetsManager_getConnectionTimeout(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -3544,20 +3544,20 @@ int lua_ax_extension_AssetsManager_create(lua_State* tolua_S)
         std::string arg1_tmp; ok &= luaval_to_std_string(tolua_S, 3, &arg1_tmp, "ax.AssetsManager:create"); arg1 = arg1_tmp.c_str();
         std::string arg2_tmp; ok &= luaval_to_std_string(tolua_S, 4, &arg2_tmp, "ax.AssetsManager:create"); arg2 = arg2_tmp.c_str();
         do {
-			// Lambda binding for lua is not supported.
-			assert(false);
-		} while(0)
-		;
+        	// Lambda binding for lua is not supported.
+            assert(false);
+        } while(0)
+        ;
         do {
-			// Lambda binding for lua is not supported.
-			assert(false);
-		} while(0)
-		;
+        	// Lambda binding for lua is not supported.
+            assert(false);
+        } while(0)
+        ;
         do {
-			// Lambda binding for lua is not supported.
-			assert(false);
-		} while(0)
-		;
+        	// Lambda binding for lua is not supported.
+            assert(false);
+        } while(0)
+        ;
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_ax_extension_AssetsManager_create'", nullptr);
@@ -3588,7 +3588,7 @@ int lua_ax_extension_AssetsManager_constructor(lua_State* tolua_S)
 
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -3602,7 +3602,7 @@ int lua_ax_extension_AssetsManager_constructor(lua_State* tolua_S)
         toluafix_pushusertype_object(tolua_S, ID, luaID, (void*)cobj,"ax.AssetsManager");
         return 1;
     }
-    if (argc == 1) 
+    if (argc == 1)
     {
         const char* arg0;
 
@@ -3619,7 +3619,7 @@ int lua_ax_extension_AssetsManager_constructor(lua_State* tolua_S)
         toluafix_pushusertype_object(tolua_S, ID, luaID, (void*)cobj,"ax.AssetsManager");
         return 1;
     }
-    if (argc == 2) 
+    if (argc == 2)
     {
         const char* arg0;
         const char* arg1;
@@ -3639,7 +3639,7 @@ int lua_ax_extension_AssetsManager_constructor(lua_State* tolua_S)
         toluafix_pushusertype_object(tolua_S, ID, luaID, (void*)cobj,"ax.AssetsManager");
         return 1;
     }
-    if (argc == 3) 
+    if (argc == 3)
     {
         const char* arg0;
         const char* arg1;
@@ -3731,7 +3731,7 @@ int lua_ax_extension_EventAssetsManagerEx_getEventCode(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -3778,7 +3778,7 @@ int lua_ax_extension_EventAssetsManagerEx_getCURLECode(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -3825,7 +3825,7 @@ int lua_ax_extension_EventAssetsManagerEx_getCURLMCode(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -3872,7 +3872,7 @@ int lua_ax_extension_EventAssetsManagerEx_getMessage(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -3919,7 +3919,7 @@ int lua_ax_extension_EventAssetsManagerEx_getAssetId(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -3966,7 +3966,7 @@ int lua_ax_extension_EventAssetsManagerEx_getAssetsManagerEx(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -4013,7 +4013,7 @@ int lua_ax_extension_EventAssetsManagerEx_getPercent(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -4060,7 +4060,7 @@ int lua_ax_extension_EventAssetsManagerEx_getPercentByFile(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -4094,7 +4094,7 @@ int lua_ax_extension_EventAssetsManagerEx_constructor(lua_State* tolua_S)
 
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 3) 
+    if (argc == 3)
     {
         std::string_view arg0;
         ax::extension::AssetsManagerEx* arg1;
@@ -4117,7 +4117,7 @@ int lua_ax_extension_EventAssetsManagerEx_constructor(lua_State* tolua_S)
         toluafix_pushusertype_object(tolua_S, ID, luaID, (void*)cobj,"ax.EventAssetsManagerEx");
         return 1;
     }
-    if (argc == 4) 
+    if (argc == 4)
     {
         std::string_view arg0;
         ax::extension::AssetsManagerEx* arg1;
@@ -4143,7 +4143,7 @@ int lua_ax_extension_EventAssetsManagerEx_constructor(lua_State* tolua_S)
         toluafix_pushusertype_object(tolua_S, ID, luaID, (void*)cobj,"ax.EventAssetsManagerEx");
         return 1;
     }
-    if (argc == 5) 
+    if (argc == 5)
     {
         std::string_view arg0;
         ax::extension::AssetsManagerEx* arg1;
@@ -4172,7 +4172,7 @@ int lua_ax_extension_EventAssetsManagerEx_constructor(lua_State* tolua_S)
         toluafix_pushusertype_object(tolua_S, ID, luaID, (void*)cobj,"ax.EventAssetsManagerEx");
         return 1;
     }
-    if (argc == 6) 
+    if (argc == 6)
     {
         std::string_view arg0;
         ax::extension::AssetsManagerEx* arg1;
@@ -4204,7 +4204,7 @@ int lua_ax_extension_EventAssetsManagerEx_constructor(lua_State* tolua_S)
         toluafix_pushusertype_object(tolua_S, ID, luaID, (void*)cobj,"ax.EventAssetsManagerEx");
         return 1;
     }
-    if (argc == 7) 
+    if (argc == 7)
     {
         std::string_view arg0;
         ax::extension::AssetsManagerEx* arg1;
@@ -4239,7 +4239,7 @@ int lua_ax_extension_EventAssetsManagerEx_constructor(lua_State* tolua_S)
         toluafix_pushusertype_object(tolua_S, ID, luaID, (void*)cobj,"ax.EventAssetsManagerEx");
         return 1;
     }
-    if (argc == 8) 
+    if (argc == 8)
     {
         std::string_view arg0;
         ax::extension::AssetsManagerEx* arg1;
@@ -4277,7 +4277,7 @@ int lua_ax_extension_EventAssetsManagerEx_constructor(lua_State* tolua_S)
         toluafix_pushusertype_object(tolua_S, ID, luaID, (void*)cobj,"ax.EventAssetsManagerEx");
         return 1;
     }
-    if (argc == 9) 
+    if (argc == 9)
     {
         std::string_view arg0;
         ax::extension::AssetsManagerEx* arg1;
@@ -4382,7 +4382,7 @@ int lua_ax_extension_Manifest_isVersionLoaded(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -4429,7 +4429,7 @@ int lua_ax_extension_Manifest_isLoaded(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -4476,7 +4476,7 @@ int lua_ax_extension_Manifest_getPackageUrl(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -4523,7 +4523,7 @@ int lua_ax_extension_Manifest_getManifestFileUrl(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -4570,7 +4570,7 @@ int lua_ax_extension_Manifest_getVersionFileUrl(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -4617,7 +4617,7 @@ int lua_ax_extension_Manifest_getVersion(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -4664,7 +4664,7 @@ int lua_ax_extension_Manifest_getSearchPaths(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -4737,7 +4737,7 @@ int lua_ax_extension_AssetsManagerEx_checkUpdate(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -4784,7 +4784,7 @@ int lua_ax_extension_AssetsManagerEx_update(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -4831,7 +4831,7 @@ int lua_ax_extension_AssetsManagerEx_downloadFailedAssets(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -4878,7 +4878,7 @@ int lua_ax_extension_AssetsManagerEx_getState(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -4925,7 +4925,7 @@ int lua_ax_extension_AssetsManagerEx_getStoragePath(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -4972,7 +4972,7 @@ int lua_ax_extension_AssetsManagerEx_getLocalManifest(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -5019,7 +5019,7 @@ int lua_ax_extension_AssetsManagerEx_getRemoteManifest(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -5066,7 +5066,7 @@ int lua_ax_extension_AssetsManagerEx_getMaxConcurrentTask(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -5113,7 +5113,7 @@ int lua_ax_extension_AssetsManagerEx_setMaxConcurrentTask(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         int arg0;
 
@@ -5163,15 +5163,15 @@ int lua_ax_extension_AssetsManagerEx_setVersionCompareHandle(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         std::function<int (std::string_view, std::string_view)> arg0;
 
         do {
-			// Lambda binding for lua is not supported.
-			assert(false);
-		} while(0)
-		;
+        	// Lambda binding for lua is not supported.
+            assert(false);
+        } while(0)
+        ;
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_ax_extension_AssetsManagerEx_setVersionCompareHandle'", nullptr);
@@ -5217,15 +5217,15 @@ int lua_ax_extension_AssetsManagerEx_setVerifyCallback(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         std::function<bool (std::string_view, ax::extension::ManifestAsset)> arg0;
 
         do {
-			// Lambda binding for lua is not supported.
-			assert(false);
-		} while(0)
-		;
+        	// Lambda binding for lua is not supported.
+            assert(false);
+        } while(0)
+        ;
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_ax_extension_AssetsManagerEx_setVerifyCallback'", nullptr);
@@ -5296,7 +5296,7 @@ int lua_ax_extension_AssetsManagerEx_constructor(lua_State* tolua_S)
 
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 2) 
+    if (argc == 2)
     {
         std::string_view arg0;
         std::string_view arg1;
@@ -5384,7 +5384,7 @@ int lua_ax_extension_EventListenerAssetsManagerEx_init(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 2) 
+    if (argc == 2)
     {
         const ax::extension::AssetsManagerEx* arg0;
         std::function<void (ax::extension::EventAssetsManagerEx *)> arg1;
@@ -5392,10 +5392,10 @@ int lua_ax_extension_EventListenerAssetsManagerEx_init(lua_State* tolua_S)
         ok &= luaval_to_object<const ax::extension::AssetsManagerEx>(tolua_S, 2, "ax.AssetsManagerEx",&arg0, "ax.EventListenerAssetsManagerEx:init");
 
         do {
-			// Lambda binding for lua is not supported.
-			assert(false);
-		} while(0)
-		;
+        	// Lambda binding for lua is not supported.
+            assert(false);
+        } while(0)
+        ;
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_ax_extension_EventListenerAssetsManagerEx_init'", nullptr);
@@ -5428,7 +5428,7 @@ int lua_ax_extension_EventListenerAssetsManagerEx_constructor(lua_State* tolua_S
 
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -5499,7 +5499,7 @@ int lua_ax_extension_ParticleSystem3D_setBlendFunc(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::BlendFunc arg0;
 
@@ -5549,7 +5549,7 @@ int lua_ax_extension_ParticleSystem3D_getBlendFunc(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -5596,7 +5596,7 @@ int lua_ax_extension_ParticleSystem3D_startParticleSystem(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -5643,7 +5643,7 @@ int lua_ax_extension_ParticleSystem3D_stopParticleSystem(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -5690,7 +5690,7 @@ int lua_ax_extension_ParticleSystem3D_pauseParticleSystem(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -5737,7 +5737,7 @@ int lua_ax_extension_ParticleSystem3D_resumeParticleSystem(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -5784,7 +5784,7 @@ int lua_ax_extension_ParticleSystem3D_setEmitter(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Particle3DEmitter* arg0;
 
@@ -5834,7 +5834,7 @@ int lua_ax_extension_ParticleSystem3D_setRender(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Particle3DRender* arg0;
 
@@ -5884,7 +5884,7 @@ int lua_ax_extension_ParticleSystem3D_getRender(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -5931,7 +5931,7 @@ int lua_ax_extension_ParticleSystem3D_addAffector(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Particle3DAffector* arg0;
 
@@ -5981,7 +5981,7 @@ int lua_ax_extension_ParticleSystem3D_removeAffector(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         int arg0;
 
@@ -6031,7 +6031,7 @@ int lua_ax_extension_ParticleSystem3D_removeAllAffector(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -6078,7 +6078,7 @@ int lua_ax_extension_ParticleSystem3D_getParticleQuota(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -6125,7 +6125,7 @@ int lua_ax_extension_ParticleSystem3D_setParticleQuota(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         unsigned int arg0;
 
@@ -6175,7 +6175,7 @@ int lua_ax_extension_ParticleSystem3D_getAliveParticleCount(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -6222,7 +6222,7 @@ int lua_ax_extension_ParticleSystem3D_getState(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -6269,7 +6269,7 @@ int lua_ax_extension_ParticleSystem3D_isKeepLocal(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -6316,7 +6316,7 @@ int lua_ax_extension_ParticleSystem3D_setKeepLocal(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -6366,7 +6366,7 @@ int lua_ax_extension_ParticleSystem3D_setEnabled(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -6416,7 +6416,7 @@ int lua_ax_extension_ParticleSystem3D_isEnabled(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -6450,7 +6450,7 @@ int lua_ax_extension_ParticleSystem3D_constructor(lua_State* tolua_S)
 
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -6540,7 +6540,7 @@ int lua_ax_extension_PUParticleSystem3D_forceUpdate(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -6590,7 +6590,7 @@ int lua_ax_extension_PUParticleSystem3D_getParticleSystemScaleVelocity(lua_State
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -6637,7 +6637,7 @@ int lua_ax_extension_PUParticleSystem3D_setParticleSystemScaleVelocity(lua_State
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -6687,7 +6687,7 @@ int lua_ax_extension_PUParticleSystem3D_rotationOffset(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Vec3 arg0;
 
@@ -6737,7 +6737,7 @@ int lua_ax_extension_PUParticleSystem3D_getTimeElapsedSinceStart(lua_State* tolu
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -6784,7 +6784,7 @@ int lua_ax_extension_PUParticleSystem3D_getDefaultWidth(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -6831,7 +6831,7 @@ int lua_ax_extension_PUParticleSystem3D_setDefaultWidth(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -6881,7 +6881,7 @@ int lua_ax_extension_PUParticleSystem3D_getDefaultHeight(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -6928,7 +6928,7 @@ int lua_ax_extension_PUParticleSystem3D_setDefaultHeight(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -6978,7 +6978,7 @@ int lua_ax_extension_PUParticleSystem3D_getDefaultDepth(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -7025,7 +7025,7 @@ int lua_ax_extension_PUParticleSystem3D_setDefaultDepth(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -7075,7 +7075,7 @@ int lua_ax_extension_PUParticleSystem3D_getDerivedPosition(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -7122,7 +7122,7 @@ int lua_ax_extension_PUParticleSystem3D_getDerivedScale(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -7169,7 +7169,7 @@ int lua_ax_extension_PUParticleSystem3D_getMaxVelocity(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -7216,7 +7216,7 @@ int lua_ax_extension_PUParticleSystem3D_setMaxVelocity(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -7266,7 +7266,7 @@ int lua_ax_extension_PUParticleSystem3D_setMaterialName(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         std::string_view arg0;
 
@@ -7316,7 +7316,7 @@ int lua_ax_extension_PUParticleSystem3D_getMaterialName(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -7363,7 +7363,7 @@ int lua_ax_extension_PUParticleSystem3D_forceEmission(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 2) 
+    if (argc == 2)
     {
         ax::PUEmitter* arg0;
         unsigned int arg1;
@@ -7416,7 +7416,7 @@ int lua_ax_extension_PUParticleSystem3D_addEmitter(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::PUEmitter* arg0;
 
@@ -7466,7 +7466,7 @@ int lua_ax_extension_PUParticleSystem3D_removeAllEmitter(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -7513,7 +7513,7 @@ int lua_ax_extension_PUParticleSystem3D_addListener(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::PUListener* arg0;
 
@@ -7563,7 +7563,7 @@ int lua_ax_extension_PUParticleSystem3D_removeListener(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::PUListener* arg0;
 
@@ -7613,7 +7613,7 @@ int lua_ax_extension_PUParticleSystem3D_removeAllListener(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -7660,7 +7660,7 @@ int lua_ax_extension_PUParticleSystem3D_addObserver(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::PUObserver* arg0;
 
@@ -7710,7 +7710,7 @@ int lua_ax_extension_PUParticleSystem3D_removerAllObserver(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -7757,7 +7757,7 @@ int lua_ax_extension_PUParticleSystem3D_addBehaviourTemplate(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::PUBehaviour* arg0;
 
@@ -7807,7 +7807,7 @@ int lua_ax_extension_PUParticleSystem3D_removeAllBehaviourTemplate(lua_State* to
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -7854,7 +7854,7 @@ int lua_ax_extension_PUParticleSystem3D_isMarkedForEmission(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -7901,7 +7901,7 @@ int lua_ax_extension_PUParticleSystem3D_setMarkedForEmission(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -7951,7 +7951,7 @@ int lua_ax_extension_PUParticleSystem3D_clearAllParticles(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -7998,7 +7998,7 @@ int lua_ax_extension_PUParticleSystem3D_getEmittedEmitterQuota(lua_State* tolua_
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -8045,7 +8045,7 @@ int lua_ax_extension_PUParticleSystem3D_setEmittedEmitterQuota(lua_State* tolua_
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         unsigned int arg0;
 
@@ -8095,7 +8095,7 @@ int lua_ax_extension_PUParticleSystem3D_getEmittedSystemQuota(lua_State* tolua_S
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -8142,7 +8142,7 @@ int lua_ax_extension_PUParticleSystem3D_setEmittedSystemQuota(lua_State* tolua_S
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         unsigned int arg0;
 
@@ -8192,7 +8192,7 @@ int lua_ax_extension_PUParticleSystem3D_getParentParticleSystem(lua_State* tolua
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -8239,12 +8239,12 @@ int lua_ax_extension_PUParticleSystem3D_makeParticleLocal(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::PUParticle3D* arg0;
 
         #pragma warning NO CONVERSION TO NATIVE FOR PUParticle3D*
-		ok = false;
+        ok = false;
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_ax_extension_PUParticleSystem3D_makeParticleLocal'", nullptr);
@@ -8290,7 +8290,7 @@ int lua_ax_extension_PUParticleSystem3D_calulateRotationOffset(lua_State* tolua_
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -8337,7 +8337,7 @@ int lua_ax_extension_PUParticleSystem3D_clone(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -8384,7 +8384,7 @@ int lua_ax_extension_PUParticleSystem3D_copyAttributesTo(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::PUParticleSystem3D* arg0;
 
@@ -8434,7 +8434,7 @@ int lua_ax_extension_PUParticleSystem3D_initSystem(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         std::string_view arg0;
 
@@ -8484,7 +8484,7 @@ int lua_ax_extension_PUParticleSystem3D_initWithFilePath(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         std::string_view arg0;
 
@@ -8534,7 +8534,7 @@ int lua_ax_extension_PUParticleSystem3D_initWithFilePathAndMaterialPath(lua_Stat
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 2) 
+    if (argc == 2)
     {
         std::string_view arg0;
         std::string_view arg1;
@@ -8635,7 +8635,7 @@ int lua_ax_extension_PUParticleSystem3D_constructor(lua_State* tolua_S)
 
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -8723,23 +8723,23 @@ int lua_register_ax_extension_PUParticleSystem3D(lua_State* tolua_S)
 }
 TOLUA_API int register_all_ax_extension(lua_State* tolua_S)
 {
-	tolua_open(tolua_S);
-	
-	tolua_module(tolua_S,"ax",0);
-	tolua_beginmodule(tolua_S,"ax");
+    tolua_open(tolua_S);
 
-	lua_register_ax_extension_ScrollView(tolua_S);
-	lua_register_ax_extension_TableViewCell(tolua_S);
-	lua_register_ax_extension_TableView(tolua_S);
-	lua_register_ax_extension_AssetsManager(tolua_S);
-	lua_register_ax_extension_EventAssetsManagerEx(tolua_S);
-	lua_register_ax_extension_Manifest(tolua_S);
-	lua_register_ax_extension_AssetsManagerEx(tolua_S);
-	lua_register_ax_extension_EventListenerAssetsManagerEx(tolua_S);
-	lua_register_ax_extension_ParticleSystem3D(tolua_S);
-	lua_register_ax_extension_PUParticleSystem3D(tolua_S);
+    tolua_module(tolua_S,"ax",0);
+    tolua_beginmodule(tolua_S,"ax");
 
-	tolua_endmodule(tolua_S);
-	return 1;
+    lua_register_ax_extension_ScrollView(tolua_S);
+    lua_register_ax_extension_TableViewCell(tolua_S);
+    lua_register_ax_extension_TableView(tolua_S);
+    lua_register_ax_extension_AssetsManager(tolua_S);
+    lua_register_ax_extension_EventAssetsManagerEx(tolua_S);
+    lua_register_ax_extension_Manifest(tolua_S);
+    lua_register_ax_extension_AssetsManagerEx(tolua_S);
+    lua_register_ax_extension_EventListenerAssetsManagerEx(tolua_S);
+    lua_register_ax_extension_ParticleSystem3D(tolua_S);
+    lua_register_ax_extension_PUParticleSystem3D(tolua_S);
+
+    tolua_endmodule(tolua_S);
+    return 1;
 }
 

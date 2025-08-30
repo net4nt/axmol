@@ -30,7 +30,7 @@ int lua_ax_physics_PhysicsCollider_getBody(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -77,7 +77,7 @@ int lua_ax_physics_PhysicsCollider_getType(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -124,7 +124,7 @@ int lua_ax_physics_PhysicsCollider_getArea(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -171,7 +171,7 @@ int lua_ax_physics_PhysicsCollider_setTag(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         int arg0;
 
@@ -221,7 +221,7 @@ int lua_ax_physics_PhysicsCollider_getTag(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -268,7 +268,7 @@ int lua_ax_physics_PhysicsCollider_getDensity(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -315,7 +315,7 @@ int lua_ax_physics_PhysicsCollider_setDensity(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -329,7 +329,7 @@ int lua_ax_physics_PhysicsCollider_setDensity(lua_State* tolua_S)
         lua_settop(tolua_S, 1);
         return 1;
     }
-    if (argc == 2) 
+    if (argc == 2)
     {
         double arg0;
         bool arg1;
@@ -382,7 +382,7 @@ int lua_ax_physics_PhysicsCollider_getRestitution(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -429,7 +429,7 @@ int lua_ax_physics_PhysicsCollider_setRestitution(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -443,7 +443,7 @@ int lua_ax_physics_PhysicsCollider_setRestitution(lua_State* tolua_S)
         lua_settop(tolua_S, 1);
         return 1;
     }
-    if (argc == 2) 
+    if (argc == 2)
     {
         double arg0;
         bool arg1;
@@ -496,7 +496,7 @@ int lua_ax_physics_PhysicsCollider_getFriction(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -543,7 +543,7 @@ int lua_ax_physics_PhysicsCollider_setFriction(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -557,7 +557,7 @@ int lua_ax_physics_PhysicsCollider_setFriction(lua_State* tolua_S)
         lua_settop(tolua_S, 1);
         return 1;
     }
-    if (argc == 2) 
+    if (argc == 2)
     {
         double arg0;
         bool arg1;
@@ -610,7 +610,7 @@ int lua_ax_physics_PhysicsCollider_getMaterial(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -657,7 +657,7 @@ int lua_ax_physics_PhysicsCollider_setMaterial(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::PhysicsMaterial arg0;
 
@@ -707,7 +707,7 @@ int lua_ax_physics_PhysicsCollider_isSensor(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -754,7 +754,7 @@ int lua_ax_physics_PhysicsCollider_setSensor(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -804,7 +804,7 @@ int lua_ax_physics_PhysicsCollider_getOffset(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -851,7 +851,7 @@ int lua_ax_physics_PhysicsCollider_getCenter(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -898,7 +898,7 @@ int lua_ax_physics_PhysicsCollider_containsPoint(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Vec2 arg0;
 
@@ -948,7 +948,7 @@ int lua_ax_physics_PhysicsCollider_setCategoryBitmask(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         int arg0;
 
@@ -998,7 +998,7 @@ int lua_ax_physics_PhysicsCollider_getCategoryBitmask(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1045,7 +1045,7 @@ int lua_ax_physics_PhysicsCollider_setContactTestBitmask(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         int arg0;
 
@@ -1095,7 +1095,7 @@ int lua_ax_physics_PhysicsCollider_getContactTestBitmask(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1142,7 +1142,7 @@ int lua_ax_physics_PhysicsCollider_setCollisionBitmask(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         int arg0;
 
@@ -1192,7 +1192,7 @@ int lua_ax_physics_PhysicsCollider_getCollisionBitmask(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1239,7 +1239,7 @@ int lua_ax_physics_PhysicsCollider_setGroup(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         int arg0;
 
@@ -1289,7 +1289,7 @@ int lua_ax_physics_PhysicsCollider_getGroup(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1336,7 +1336,7 @@ int lua_ax_physics_PhysicsCollider_deatchFromBody(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1383,7 +1383,7 @@ int lua_ax_physics_PhysicsCollider_isDeatched(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1572,7 +1572,7 @@ int lua_ax_physics_PhysicsColliderCircle_getRadius(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1751,7 +1751,7 @@ int lua_ax_physics_PhysicsColliderPolygon_getPoint(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         int arg0;
 
@@ -1801,7 +1801,7 @@ int lua_ax_physics_PhysicsColliderPolygon_getPoints(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Vec2* arg0;
 
@@ -1851,7 +1851,7 @@ int lua_ax_physics_PhysicsColliderPolygon_getPointsCount(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -2063,7 +2063,7 @@ int lua_ax_physics_PhysicsColliderBox_getSize(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -2226,7 +2226,7 @@ int lua_ax_physics_PhysicsColliderEdgeSegment_getPointA(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -2273,7 +2273,7 @@ int lua_ax_physics_PhysicsColliderEdgeSegment_getPointB(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -2422,7 +2422,7 @@ int lua_ax_physics_PhysicsColliderEdgePolygon_getPoints(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Vec2* arg0;
 
@@ -2472,7 +2472,7 @@ int lua_ax_physics_PhysicsColliderEdgePolygon_getPointsCount(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -2736,7 +2736,7 @@ int lua_ax_physics_PhysicsColliderEdgeChain_getPoints(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Vec2* arg0;
 
@@ -2786,7 +2786,7 @@ int lua_ax_physics_PhysicsColliderEdgeChain_getPointsCount(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -2935,7 +2935,7 @@ int lua_ax_physics_PhysicsBody_addCollider(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::PhysicsCollider* arg0;
 
@@ -2949,7 +2949,7 @@ int lua_ax_physics_PhysicsBody_addCollider(lua_State* tolua_S)
         object_to_luaval<ax::PhysicsCollider>(tolua_S, "ax.PhysicsCollider",(ax::PhysicsCollider*)ret);
         return 1;
     }
-    if (argc == 2) 
+    if (argc == 2)
     {
         ax::PhysicsCollider* arg0;
         bool arg1;
@@ -3089,7 +3089,7 @@ int lua_ax_physics_PhysicsBody_removeAllColliders(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -3100,7 +3100,7 @@ int lua_ax_physics_PhysicsBody_removeAllColliders(lua_State* tolua_S)
         lua_settop(tolua_S, 1);
         return 1;
     }
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -3150,7 +3150,7 @@ int lua_ax_physics_PhysicsBody_getColliders(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -3197,7 +3197,7 @@ int lua_ax_physics_PhysicsBody_getFirstCollider(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -3244,7 +3244,7 @@ int lua_ax_physics_PhysicsBody_getCollider(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         int arg0;
 
@@ -3294,7 +3294,7 @@ int lua_ax_physics_PhysicsBody_applyForce(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Vec2 arg0;
 
@@ -3308,7 +3308,7 @@ int lua_ax_physics_PhysicsBody_applyForce(lua_State* tolua_S)
         lua_settop(tolua_S, 1);
         return 1;
     }
-    if (argc == 2) 
+    if (argc == 2)
     {
         ax::Vec2 arg0;
         ax::Vec2 arg1;
@@ -3361,7 +3361,7 @@ int lua_ax_physics_PhysicsBody_resetForces(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -3408,7 +3408,7 @@ int lua_ax_physics_PhysicsBody_applyImpulse(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Vec2 arg0;
 
@@ -3422,7 +3422,7 @@ int lua_ax_physics_PhysicsBody_applyImpulse(lua_State* tolua_S)
         lua_settop(tolua_S, 1);
         return 1;
     }
-    if (argc == 2) 
+    if (argc == 2)
     {
         ax::Vec2 arg0;
         ax::Vec2 arg1;
@@ -3475,7 +3475,7 @@ int lua_ax_physics_PhysicsBody_applyTorque(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -3525,7 +3525,7 @@ int lua_ax_physics_PhysicsBody_setVelocity(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Vec2 arg0;
 
@@ -3575,7 +3575,7 @@ int lua_ax_physics_PhysicsBody_getVelocity(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -3622,7 +3622,7 @@ int lua_ax_physics_PhysicsBody_setAngularVelocity(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -3672,7 +3672,7 @@ int lua_ax_physics_PhysicsBody_getVelocityAtLocalPoint(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Vec2 arg0;
 
@@ -3722,7 +3722,7 @@ int lua_ax_physics_PhysicsBody_getVelocityAtWorldPoint(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Vec2 arg0;
 
@@ -3772,7 +3772,7 @@ int lua_ax_physics_PhysicsBody_getAngularVelocity(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -3819,7 +3819,7 @@ int lua_ax_physics_PhysicsBody_setVelocityLimit(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -3869,7 +3869,7 @@ int lua_ax_physics_PhysicsBody_getVelocityLimit(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -3916,7 +3916,7 @@ int lua_ax_physics_PhysicsBody_setAngularVelocityLimit(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -3966,7 +3966,7 @@ int lua_ax_physics_PhysicsBody_getAngularVelocityLimit(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -4013,7 +4013,7 @@ int lua_ax_physics_PhysicsBody_removeFromWorld(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -4060,7 +4060,7 @@ int lua_ax_physics_PhysicsBody_getWorld(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -4107,7 +4107,7 @@ int lua_ax_physics_PhysicsBody_getNode(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -4154,7 +4154,7 @@ int lua_ax_physics_PhysicsBody_setCategoryBitmask(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         int arg0;
 
@@ -4204,7 +4204,7 @@ int lua_ax_physics_PhysicsBody_setContactTestBitmask(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         int arg0;
 
@@ -4254,7 +4254,7 @@ int lua_ax_physics_PhysicsBody_setCollisionBitmask(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         int arg0;
 
@@ -4304,7 +4304,7 @@ int lua_ax_physics_PhysicsBody_getCategoryBitmask(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -4351,7 +4351,7 @@ int lua_ax_physics_PhysicsBody_getContactTestBitmask(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -4398,7 +4398,7 @@ int lua_ax_physics_PhysicsBody_getCollisionBitmask(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -4445,7 +4445,7 @@ int lua_ax_physics_PhysicsBody_setGroup(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         int arg0;
 
@@ -4495,7 +4495,7 @@ int lua_ax_physics_PhysicsBody_getGroup(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -4542,7 +4542,7 @@ int lua_ax_physics_PhysicsBody_getPosition(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -4589,7 +4589,7 @@ int lua_ax_physics_PhysicsBody_getRotation(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -4636,7 +4636,7 @@ int lua_ax_physics_PhysicsBody_setPositionOffset(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Vec2 arg0;
 
@@ -4686,7 +4686,7 @@ int lua_ax_physics_PhysicsBody_getPositionOffset(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -4733,7 +4733,7 @@ int lua_ax_physics_PhysicsBody_setRotationOffset(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -4783,7 +4783,7 @@ int lua_ax_physics_PhysicsBody_getRotationOffset(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -4830,7 +4830,7 @@ int lua_ax_physics_PhysicsBody_isDynamic(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -4877,7 +4877,7 @@ int lua_ax_physics_PhysicsBody_setDynamic(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -4927,7 +4927,7 @@ int lua_ax_physics_PhysicsBody_getMass(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -4974,7 +4974,7 @@ int lua_ax_physics_PhysicsBody_getMoment(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -5021,7 +5021,7 @@ int lua_ax_physics_PhysicsBody_getLinearDamping(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -5068,7 +5068,7 @@ int lua_ax_physics_PhysicsBody_setLinearDamping(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -5118,7 +5118,7 @@ int lua_ax_physics_PhysicsBody_getAngularDamping(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -5165,7 +5165,7 @@ int lua_ax_physics_PhysicsBody_setAngularDamping(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -5215,7 +5215,7 @@ int lua_ax_physics_PhysicsBody_isResting(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -5262,7 +5262,7 @@ int lua_ax_physics_PhysicsBody_setResting(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -5312,7 +5312,7 @@ int lua_ax_physics_PhysicsBody_isRotationEnabled(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -5359,7 +5359,7 @@ int lua_ax_physics_PhysicsBody_setRotationEnable(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -5409,7 +5409,7 @@ int lua_ax_physics_PhysicsBody_isGravityEnabled(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -5456,7 +5456,7 @@ int lua_ax_physics_PhysicsBody_setGravityEnable(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -5506,7 +5506,7 @@ int lua_ax_physics_PhysicsBody_getTag(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -5553,7 +5553,7 @@ int lua_ax_physics_PhysicsBody_setTag(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         int arg0;
 
@@ -5603,7 +5603,7 @@ int lua_ax_physics_PhysicsBody_world2Local(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Vec2 arg0;
 
@@ -5653,7 +5653,7 @@ int lua_ax_physics_PhysicsBody_local2World(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Vec2 arg0;
 
@@ -5703,7 +5703,7 @@ int lua_ax_physics_PhysicsBody_getB2Body(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -5750,7 +5750,7 @@ int lua_ax_physics_PhysicsBody_setFixedUpdate(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -6212,7 +6212,7 @@ int lua_ax_physics_PhysicsContact_getShapeA(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -6259,7 +6259,7 @@ int lua_ax_physics_PhysicsContact_getShapeB(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -6306,7 +6306,7 @@ int lua_ax_physics_PhysicsContact_getContactData(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -6353,7 +6353,7 @@ int lua_ax_physics_PhysicsContact_getPreContactData(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -6400,7 +6400,7 @@ int lua_ax_physics_PhysicsContact_getEventCode(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -6471,7 +6471,7 @@ int lua_ax_physics_PhysicsContactPreSolve_getRestitution(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -6518,7 +6518,7 @@ int lua_ax_physics_PhysicsContactPreSolve_getFriction(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -6565,7 +6565,7 @@ int lua_ax_physics_PhysicsContactPreSolve_getSurfaceVelocity(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -6612,7 +6612,7 @@ int lua_ax_physics_PhysicsContactPreSolve_setRestitution(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -6662,7 +6662,7 @@ int lua_ax_physics_PhysicsContactPreSolve_setFriction(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -6712,7 +6712,7 @@ int lua_ax_physics_PhysicsContactPreSolve_setSurfaceVelocity(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Vec2 arg0;
 
@@ -6762,7 +6762,7 @@ int lua_ax_physics_PhysicsContactPreSolve_ignore(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -6835,7 +6835,7 @@ int lua_ax_physics_PhysicsContactPostSolve_getRestitution(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -6882,7 +6882,7 @@ int lua_ax_physics_PhysicsContactPostSolve_getFriction(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -6929,7 +6929,7 @@ int lua_ax_physics_PhysicsContactPostSolve_getSurfaceVelocity(lua_State* tolua_S
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -7052,7 +7052,7 @@ int lua_ax_physics_EventListenerPhysicsContactWithBodies_hitTest(lua_State* tolu
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 2) 
+    if (argc == 2)
     {
         ax::PhysicsCollider* arg0;
         ax::PhysicsCollider* arg1;
@@ -7164,7 +7164,7 @@ int lua_ax_physics_EventListenerPhysicsContactWithShapes_hitTest(lua_State* tolu
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 2) 
+    if (argc == 2)
     {
         ax::PhysicsCollider* arg0;
         ax::PhysicsCollider* arg1;
@@ -7276,7 +7276,7 @@ int lua_ax_physics_EventListenerPhysicsContactWithGroup_hitTest(lua_State* tolua
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 2) 
+    if (argc == 2)
     {
         ax::PhysicsCollider* arg0;
         ax::PhysicsCollider* arg1;
@@ -7386,7 +7386,7 @@ int lua_ax_physics_PhysicsJoint_getBodyA(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -7433,7 +7433,7 @@ int lua_ax_physics_PhysicsJoint_getBodyB(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -7480,7 +7480,7 @@ int lua_ax_physics_PhysicsJoint_getWorld(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -7527,7 +7527,7 @@ int lua_ax_physics_PhysicsJoint_getTag(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -7574,7 +7574,7 @@ int lua_ax_physics_PhysicsJoint_setTag(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         int arg0;
 
@@ -7624,7 +7624,7 @@ int lua_ax_physics_PhysicsJoint_isEnabled(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -7671,7 +7671,7 @@ int lua_ax_physics_PhysicsJoint_setEnable(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -7721,7 +7721,7 @@ int lua_ax_physics_PhysicsJoint_isCollisionEnabled(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -7768,7 +7768,7 @@ int lua_ax_physics_PhysicsJoint_setCollisionEnable(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -7818,7 +7818,7 @@ int lua_ax_physics_PhysicsJoint_removeFormWorld(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -7865,7 +7865,7 @@ int lua_ax_physics_PhysicsJoint_setMaxForce(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -7915,7 +7915,7 @@ int lua_ax_physics_PhysicsJoint_getMaxForce(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -8053,7 +8053,7 @@ int lua_ax_physics_PhysicsJointLimit_getAnchr1(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -8100,7 +8100,7 @@ int lua_ax_physics_PhysicsJointLimit_setAnchr1(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Vec2 arg0;
 
@@ -8150,7 +8150,7 @@ int lua_ax_physics_PhysicsJointLimit_getAnchr2(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -8197,7 +8197,7 @@ int lua_ax_physics_PhysicsJointLimit_setAnchr2(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Vec2 arg0;
 
@@ -8247,7 +8247,7 @@ int lua_ax_physics_PhysicsJointLimit_getMin(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -8294,7 +8294,7 @@ int lua_ax_physics_PhysicsJointLimit_setMin(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -8344,7 +8344,7 @@ int lua_ax_physics_PhysicsJointLimit_getMax(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -8391,7 +8391,7 @@ int lua_ax_physics_PhysicsJointLimit_setMax(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -8624,7 +8624,7 @@ int lua_ax_physics_PhysicsJointDistance_getDistance(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -8671,7 +8671,7 @@ int lua_ax_physics_PhysicsJointDistance_setDistance(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -8785,7 +8785,7 @@ int lua_ax_physics_PhysicsJointSpring_getAnchr1(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -8832,7 +8832,7 @@ int lua_ax_physics_PhysicsJointSpring_setAnchr1(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Vec2 arg0;
 
@@ -8882,7 +8882,7 @@ int lua_ax_physics_PhysicsJointSpring_getAnchr2(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -8929,7 +8929,7 @@ int lua_ax_physics_PhysicsJointSpring_setAnchr2(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Vec2 arg0;
 
@@ -8979,7 +8979,7 @@ int lua_ax_physics_PhysicsJointSpring_getRestLength(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -9026,7 +9026,7 @@ int lua_ax_physics_PhysicsJointSpring_setRestLength(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -9076,7 +9076,7 @@ int lua_ax_physics_PhysicsJointSpring_getStiffness(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -9123,7 +9123,7 @@ int lua_ax_physics_PhysicsJointSpring_setStiffness(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -9173,7 +9173,7 @@ int lua_ax_physics_PhysicsJointSpring_getDamping(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -9220,7 +9220,7 @@ int lua_ax_physics_PhysicsJointSpring_setDamping(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -9346,7 +9346,7 @@ int lua_ax_physics_PhysicsJointGroove_getGrooveA(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -9393,7 +9393,7 @@ int lua_ax_physics_PhysicsJointGroove_setGrooveA(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Vec2 arg0;
 
@@ -9443,7 +9443,7 @@ int lua_ax_physics_PhysicsJointGroove_getGrooveB(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -9490,7 +9490,7 @@ int lua_ax_physics_PhysicsJointGroove_setGrooveB(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Vec2 arg0;
 
@@ -9540,7 +9540,7 @@ int lua_ax_physics_PhysicsJointGroove_getAnchr2(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -9587,7 +9587,7 @@ int lua_ax_physics_PhysicsJointGroove_setAnchr2(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Vec2 arg0;
 
@@ -9707,7 +9707,7 @@ int lua_ax_physics_PhysicsJointRotarySpring_getRestAngle(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -9754,7 +9754,7 @@ int lua_ax_physics_PhysicsJointRotarySpring_setRestAngle(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -9804,7 +9804,7 @@ int lua_ax_physics_PhysicsJointRotarySpring_getStiffness(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -9851,7 +9851,7 @@ int lua_ax_physics_PhysicsJointRotarySpring_setStiffness(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -9901,7 +9901,7 @@ int lua_ax_physics_PhysicsJointRotarySpring_getDamping(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -9948,7 +9948,7 @@ int lua_ax_physics_PhysicsJointRotarySpring_setDamping(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -10066,7 +10066,7 @@ int lua_ax_physics_PhysicsJointRotaryLimit_getMin(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -10113,7 +10113,7 @@ int lua_ax_physics_PhysicsJointRotaryLimit_setMin(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -10163,7 +10163,7 @@ int lua_ax_physics_PhysicsJointRotaryLimit_getMax(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -10210,7 +10210,7 @@ int lua_ax_physics_PhysicsJointRotaryLimit_setMax(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -10344,7 +10344,7 @@ int lua_ax_physics_PhysicsJointRatchet_getAngle(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -10391,7 +10391,7 @@ int lua_ax_physics_PhysicsJointRatchet_setAngle(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -10441,7 +10441,7 @@ int lua_ax_physics_PhysicsJointRatchet_getPhase(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -10488,7 +10488,7 @@ int lua_ax_physics_PhysicsJointRatchet_setPhase(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -10538,7 +10538,7 @@ int lua_ax_physics_PhysicsJointRatchet_getRatchet(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -10585,7 +10585,7 @@ int lua_ax_physics_PhysicsJointRatchet_setRatchet(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -10703,7 +10703,7 @@ int lua_ax_physics_PhysicsJointGear_getPhase(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -10750,7 +10750,7 @@ int lua_ax_physics_PhysicsJointGear_setPhase(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -10800,7 +10800,7 @@ int lua_ax_physics_PhysicsJointGear_getRatio(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -10847,7 +10847,7 @@ int lua_ax_physics_PhysicsJointGear_setRatio(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -10963,7 +10963,7 @@ int lua_ax_physics_PhysicsJointMotor_getRate(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -11010,7 +11010,7 @@ int lua_ax_physics_PhysicsJointMotor_setRate(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -11122,7 +11122,7 @@ int lua_ax_physics_PhysicsWorld_getB2World(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -11169,7 +11169,7 @@ int lua_ax_physics_PhysicsWorld_addJoint(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::PhysicsJoint* arg0;
 
@@ -11219,7 +11219,7 @@ int lua_ax_physics_PhysicsWorld_removeJoint(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::PhysicsJoint* arg0;
 
@@ -11233,7 +11233,7 @@ int lua_ax_physics_PhysicsWorld_removeJoint(lua_State* tolua_S)
         lua_settop(tolua_S, 1);
         return 1;
     }
-    if (argc == 2) 
+    if (argc == 2)
     {
         ax::PhysicsJoint* arg0;
         bool arg1;
@@ -11286,7 +11286,7 @@ int lua_ax_physics_PhysicsWorld_removeAllJoints(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -11297,7 +11297,7 @@ int lua_ax_physics_PhysicsWorld_removeAllJoints(lua_State* tolua_S)
         lua_settop(tolua_S, 1);
         return 1;
     }
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -11402,7 +11402,7 @@ int lua_ax_physics_PhysicsWorld_removeAllBodies(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -11449,7 +11449,7 @@ int lua_ax_physics_PhysicsWorld_getShapes(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Vec2 arg0;
 
@@ -11499,7 +11499,7 @@ int lua_ax_physics_PhysicsWorld_getShape(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Vec2 arg0;
 
@@ -11549,7 +11549,7 @@ int lua_ax_physics_PhysicsWorld_getAllBodies(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -11596,7 +11596,7 @@ int lua_ax_physics_PhysicsWorld_getBody(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         int arg0;
 
@@ -11646,7 +11646,7 @@ int lua_ax_physics_PhysicsWorld_getGravity(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -11693,7 +11693,7 @@ int lua_ax_physics_PhysicsWorld_setGravity(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Vec2 arg0;
 
@@ -11743,7 +11743,7 @@ int lua_ax_physics_PhysicsWorld_setSlopBias(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 2) 
+    if (argc == 2)
     {
         double arg0;
         double arg1;
@@ -11796,7 +11796,7 @@ int lua_ax_physics_PhysicsWorld_setSpeed(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -11846,7 +11846,7 @@ int lua_ax_physics_PhysicsWorld_getSpeed(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -11893,7 +11893,7 @@ int lua_ax_physics_PhysicsWorld_setUpdateRate(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         int arg0;
 
@@ -11943,7 +11943,7 @@ int lua_ax_physics_PhysicsWorld_getUpdateRate(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -11990,7 +11990,7 @@ int lua_ax_physics_PhysicsWorld_setSubsteps(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         int arg0;
 
@@ -12040,7 +12040,7 @@ int lua_ax_physics_PhysicsWorld_getSubsteps(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -12087,7 +12087,7 @@ int lua_ax_physics_PhysicsWorld_setFixedUpdateRate(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         int arg0;
 
@@ -12137,7 +12137,7 @@ int lua_ax_physics_PhysicsWorld_getFixedUpdateRate(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -12184,15 +12184,15 @@ int lua_ax_physics_PhysicsWorld_setPreUpdateCallback(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         std::function<void ()> arg0;
 
         do {
-			// Lambda binding for lua is not supported.
-			assert(false);
-		} while(0)
-		;
+        	// Lambda binding for lua is not supported.
+            assert(false);
+        } while(0)
+        ;
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_ax_physics_PhysicsWorld_setPreUpdateCallback'", nullptr);
@@ -12238,15 +12238,15 @@ int lua_ax_physics_PhysicsWorld_setPostUpdateCallback(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         std::function<void ()> arg0;
 
         do {
-			// Lambda binding for lua is not supported.
-			assert(false);
-		} while(0)
-		;
+        	// Lambda binding for lua is not supported.
+            assert(false);
+        } while(0)
+        ;
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_ax_physics_PhysicsWorld_setPostUpdateCallback'", nullptr);
@@ -12292,7 +12292,7 @@ int lua_ax_physics_PhysicsWorld_setAutoStep(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -12342,7 +12342,7 @@ int lua_ax_physics_PhysicsWorld_isAutoStep(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -12389,7 +12389,7 @@ int lua_ax_physics_PhysicsWorld_step(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -12459,43 +12459,43 @@ int lua_register_ax_physics_PhysicsWorld(lua_State* tolua_S)
 }
 TOLUA_API int register_all_ax_physics(lua_State* tolua_S)
 {
-	tolua_open(tolua_S);
-	
-	tolua_module(tolua_S,"ax",0);
-	tolua_beginmodule(tolua_S,"ax");
+    tolua_open(tolua_S);
 
-	lua_register_ax_physics_PhysicsCollider(tolua_S);
-	lua_register_ax_physics_PhysicsColliderCircle(tolua_S);
-	lua_register_ax_physics_PhysicsColliderPolygon(tolua_S);
-	lua_register_ax_physics_PhysicsColliderBox(tolua_S);
-	lua_register_ax_physics_PhysicsColliderEdgeSegment(tolua_S);
-	lua_register_ax_physics_PhysicsColliderEdgePolygon(tolua_S);
-	lua_register_ax_physics_PhysicsColliderEdgeBox(tolua_S);
-	lua_register_ax_physics_PhysicsColliderEdgeChain(tolua_S);
-	lua_register_ax_physics_PhysicsBody(tolua_S);
-	lua_register_ax_physics_PhysicsContact(tolua_S);
-	lua_register_ax_physics_PhysicsContactPreSolve(tolua_S);
-	lua_register_ax_physics_PhysicsContactPostSolve(tolua_S);
-	lua_register_ax_physics_EventListenerPhysicsContact(tolua_S);
-	lua_register_ax_physics_EventListenerPhysicsContactWithBodies(tolua_S);
-	lua_register_ax_physics_EventListenerPhysicsContactWithShapes(tolua_S);
-	lua_register_ax_physics_EventListenerPhysicsContactWithGroup(tolua_S);
-	lua_register_ax_physics_PhysicsJoint(tolua_S);
-	lua_register_ax_physics_PhysicsJointFixed(tolua_S);
-	lua_register_ax_physics_PhysicsJointLimit(tolua_S);
-	lua_register_ax_physics_PhysicsJointPin(tolua_S);
-	lua_register_ax_physics_PhysicsJointDistance(tolua_S);
-	lua_register_ax_physics_PhysicsJointSpring(tolua_S);
-	lua_register_ax_physics_PhysicsJointGroove(tolua_S);
-	lua_register_ax_physics_PhysicsJointRotarySpring(tolua_S);
-	lua_register_ax_physics_PhysicsJointRotaryLimit(tolua_S);
-	lua_register_ax_physics_PhysicsJointRatchet(tolua_S);
-	lua_register_ax_physics_PhysicsJointGear(tolua_S);
-	lua_register_ax_physics_PhysicsJointMotor(tolua_S);
-	lua_register_ax_physics_PhysicsWorld(tolua_S);
+    tolua_module(tolua_S,"ax",0);
+    tolua_beginmodule(tolua_S,"ax");
 
-	tolua_endmodule(tolua_S);
-	return 1;
+    lua_register_ax_physics_PhysicsCollider(tolua_S);
+    lua_register_ax_physics_PhysicsColliderCircle(tolua_S);
+    lua_register_ax_physics_PhysicsColliderPolygon(tolua_S);
+    lua_register_ax_physics_PhysicsColliderBox(tolua_S);
+    lua_register_ax_physics_PhysicsColliderEdgeSegment(tolua_S);
+    lua_register_ax_physics_PhysicsColliderEdgePolygon(tolua_S);
+    lua_register_ax_physics_PhysicsColliderEdgeBox(tolua_S);
+    lua_register_ax_physics_PhysicsColliderEdgeChain(tolua_S);
+    lua_register_ax_physics_PhysicsBody(tolua_S);
+    lua_register_ax_physics_PhysicsContact(tolua_S);
+    lua_register_ax_physics_PhysicsContactPreSolve(tolua_S);
+    lua_register_ax_physics_PhysicsContactPostSolve(tolua_S);
+    lua_register_ax_physics_EventListenerPhysicsContact(tolua_S);
+    lua_register_ax_physics_EventListenerPhysicsContactWithBodies(tolua_S);
+    lua_register_ax_physics_EventListenerPhysicsContactWithShapes(tolua_S);
+    lua_register_ax_physics_EventListenerPhysicsContactWithGroup(tolua_S);
+    lua_register_ax_physics_PhysicsJoint(tolua_S);
+    lua_register_ax_physics_PhysicsJointFixed(tolua_S);
+    lua_register_ax_physics_PhysicsJointLimit(tolua_S);
+    lua_register_ax_physics_PhysicsJointPin(tolua_S);
+    lua_register_ax_physics_PhysicsJointDistance(tolua_S);
+    lua_register_ax_physics_PhysicsJointSpring(tolua_S);
+    lua_register_ax_physics_PhysicsJointGroove(tolua_S);
+    lua_register_ax_physics_PhysicsJointRotarySpring(tolua_S);
+    lua_register_ax_physics_PhysicsJointRotaryLimit(tolua_S);
+    lua_register_ax_physics_PhysicsJointRatchet(tolua_S);
+    lua_register_ax_physics_PhysicsJointGear(tolua_S);
+    lua_register_ax_physics_PhysicsJointMotor(tolua_S);
+    lua_register_ax_physics_PhysicsWorld(tolua_S);
+
+    tolua_endmodule(tolua_S);
+    return 1;
 }
 
 #endif

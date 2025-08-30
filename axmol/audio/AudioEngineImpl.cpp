@@ -505,7 +505,7 @@ AudioCache* AudioEngineImpl::preload(std::string_view filePath, std::function<vo
     auto it = _audioCaches.find(filePath);
     if (it == _audioCaches.end())
     {
-        audioCache = new AudioCache();  // hlookup_second(it);
+        audioCache = new AudioCache();
         _audioCaches.emplace(filePath, std::unique_ptr<AudioCache>(audioCache));
         audioCache->_fileFullPath = FileUtils::getInstance()->fullPathForFilename(filePath);
         unsigned int cacheId      = audioCache->_id;

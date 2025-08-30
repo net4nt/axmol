@@ -31,7 +31,7 @@ int lua_ax_navmesh_NavMeshAgent_setRadius(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -81,7 +81,7 @@ int lua_ax_navmesh_NavMeshAgent_getRadius(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -128,7 +128,7 @@ int lua_ax_navmesh_NavMeshAgent_setHeight(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -178,7 +178,7 @@ int lua_ax_navmesh_NavMeshAgent_getHeight(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -225,7 +225,7 @@ int lua_ax_navmesh_NavMeshAgent_setMaxAcceleration(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -275,7 +275,7 @@ int lua_ax_navmesh_NavMeshAgent_getMaxAcceleration(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -322,7 +322,7 @@ int lua_ax_navmesh_NavMeshAgent_setMaxSpeed(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -372,7 +372,7 @@ int lua_ax_navmesh_NavMeshAgent_getMaxSpeed(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -419,7 +419,7 @@ int lua_ax_navmesh_NavMeshAgent_setSeparationWeight(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -469,7 +469,7 @@ int lua_ax_navmesh_NavMeshAgent_getSeparationWeight(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -516,7 +516,7 @@ int lua_ax_navmesh_NavMeshAgent_setObstacleAvoidanceType(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         uint16_t arg0;
 
@@ -566,7 +566,7 @@ int lua_ax_navmesh_NavMeshAgent_getObstacleAvoidanceType(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -613,7 +613,7 @@ int lua_ax_navmesh_NavMeshAgent_getCurrentVelocity(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -660,7 +660,7 @@ int lua_ax_navmesh_NavMeshAgent_pause(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -707,7 +707,7 @@ int lua_ax_navmesh_NavMeshAgent_resume(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -754,7 +754,7 @@ int lua_ax_navmesh_NavMeshAgent_stop(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -801,7 +801,7 @@ int lua_ax_navmesh_NavMeshAgent_setOrientationRefAxes(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Vec3 arg0;
 
@@ -851,7 +851,7 @@ int lua_ax_navmesh_NavMeshAgent_setAutoOrientation(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -901,7 +901,7 @@ int lua_ax_navmesh_NavMeshAgent_setAutoTraverseOffMeshLink(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -951,7 +951,7 @@ int lua_ax_navmesh_NavMeshAgent_isOnOffMeshLink(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -998,7 +998,7 @@ int lua_ax_navmesh_NavMeshAgent_completeOffMeshLink(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1045,7 +1045,7 @@ int lua_ax_navmesh_NavMeshAgent_getCurrentOffMeshLinkData(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1092,12 +1092,12 @@ int lua_ax_navmesh_NavMeshAgent_setUserData(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         void* arg0;
 
         #pragma warning NO CONVERSION TO NATIVE FOR void*
-		ok = false;
+        ok = false;
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_ax_navmesh_NavMeshAgent_setUserData'", nullptr);
@@ -1143,7 +1143,7 @@ int lua_ax_navmesh_NavMeshAgent_getUserData(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1190,7 +1190,7 @@ int lua_ax_navmesh_NavMeshAgent_setSyncFlag(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::NavMeshAgent::NavMeshAgentSyncFlag arg0;
 
@@ -1240,7 +1240,7 @@ int lua_ax_navmesh_NavMeshAgent_getSyncFlag(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1287,7 +1287,7 @@ int lua_ax_navmesh_NavMeshAgent_syncToAgent(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1334,7 +1334,7 @@ int lua_ax_navmesh_NavMeshAgent_syncToNode(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1381,7 +1381,7 @@ int lua_ax_navmesh_NavMeshAgent_getVelocity(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1485,7 +1485,7 @@ int lua_ax_navmesh_NavMeshAgent_constructor(lua_State* tolua_S)
 
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1586,7 +1586,7 @@ int lua_ax_navmesh_NavMeshObstacle_getRadius(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1633,7 +1633,7 @@ int lua_ax_navmesh_NavMeshObstacle_getHeight(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1680,7 +1680,7 @@ int lua_ax_navmesh_NavMeshObstacle_setSyncFlag(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::NavMeshObstacle::NavMeshObstacleSyncFlag arg0;
 
@@ -1730,7 +1730,7 @@ int lua_ax_navmesh_NavMeshObstacle_getSyncFlag(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1777,7 +1777,7 @@ int lua_ax_navmesh_NavMeshObstacle_syncToObstacle(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1824,7 +1824,7 @@ int lua_ax_navmesh_NavMeshObstacle_syncToNode(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1871,7 +1871,7 @@ int lua_ax_navmesh_NavMeshObstacle_initWith(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 2) 
+    if (argc == 2)
     {
         double arg0;
         double arg1;
@@ -1983,7 +1983,7 @@ int lua_ax_navmesh_NavMeshObstacle_constructor(lua_State* tolua_S)
 
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -2062,7 +2062,7 @@ int lua_ax_navmesh_NavMesh_update(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -2112,7 +2112,7 @@ int lua_ax_navmesh_NavMesh_debugDraw(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::Renderer* arg0;
 
@@ -2162,7 +2162,7 @@ int lua_ax_navmesh_NavMesh_setDebugDrawEnable(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -2212,7 +2212,7 @@ int lua_ax_navmesh_NavMesh_isDebugDrawEnabled(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -2259,7 +2259,7 @@ int lua_ax_navmesh_NavMesh_addNavMeshAgent(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::NavMeshAgent* arg0;
 
@@ -2309,7 +2309,7 @@ int lua_ax_navmesh_NavMesh_removeNavMeshAgent(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::NavMeshAgent* arg0;
 
@@ -2359,7 +2359,7 @@ int lua_ax_navmesh_NavMesh_addNavMeshObstacle(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::NavMeshObstacle* arg0;
 
@@ -2409,7 +2409,7 @@ int lua_ax_navmesh_NavMesh_removeNavMeshObstacle(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::NavMeshObstacle* arg0;
 
@@ -2484,7 +2484,7 @@ int lua_ax_navmesh_NavMesh_constructor(lua_State* tolua_S)
 
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -2538,17 +2538,17 @@ int lua_register_ax_navmesh_NavMesh(lua_State* tolua_S)
 }
 TOLUA_API int register_all_ax_navmesh(lua_State* tolua_S)
 {
-	tolua_open(tolua_S);
-	
-	tolua_module(tolua_S,"ax",0);
-	tolua_beginmodule(tolua_S,"ax");
+    tolua_open(tolua_S);
 
-	lua_register_ax_navmesh_NavMeshAgent(tolua_S);
-	lua_register_ax_navmesh_NavMeshObstacle(tolua_S);
-	lua_register_ax_navmesh_NavMesh(tolua_S);
+    tolua_module(tolua_S,"ax",0);
+    tolua_beginmodule(tolua_S,"ax");
 
-	tolua_endmodule(tolua_S);
-	return 1;
+    lua_register_ax_navmesh_NavMeshAgent(tolua_S);
+    lua_register_ax_navmesh_NavMeshObstacle(tolua_S);
+    lua_register_ax_navmesh_NavMesh(tolua_S);
+
+    tolua_endmodule(tolua_S);
+    return 1;
 }
 
 #endif

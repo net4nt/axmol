@@ -216,7 +216,7 @@ def main():
         os.putenv('LD_LIBRARY_PATH', '%s/libclang' % cxx_generator_root)
     if platform == 'win32':
         path_env = os.environ['PATH']
-        os.putenv('PATH', r'%s;%s\libclang;%s\tools\win32;' % (path_env, cxx_generator_root, cxx_generator_root))
+        os.putenv('PATH', '%s;%s\\libclang;%s\\tools\\win32;' % (path_env, cxx_generator_root, cxx_generator_root))
 
 
     try:

@@ -29,7 +29,7 @@ int lua_ax_spine_SkeletonRenderer_getSkeleton(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -76,7 +76,7 @@ int lua_ax_spine_SkeletonRenderer_setTimeScale(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -126,7 +126,7 @@ int lua_ax_spine_SkeletonRenderer_getTimeScale(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -173,7 +173,7 @@ int lua_ax_spine_SkeletonRenderer_setDebugSlotsEnabled(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -223,7 +223,7 @@ int lua_ax_spine_SkeletonRenderer_getDebugSlotsEnabled(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -270,7 +270,7 @@ int lua_ax_spine_SkeletonRenderer_setDebugBonesEnabled(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -320,7 +320,7 @@ int lua_ax_spine_SkeletonRenderer_getDebugBonesEnabled(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -367,7 +367,7 @@ int lua_ax_spine_SkeletonRenderer_setDebugMeshesEnabled(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -417,7 +417,7 @@ int lua_ax_spine_SkeletonRenderer_getDebugMeshesEnabled(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -464,7 +464,7 @@ int lua_ax_spine_SkeletonRenderer_setDebugBoundingRectEnabled(lua_State* tolua_S
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -514,7 +514,7 @@ int lua_ax_spine_SkeletonRenderer_getDebugBoundingRectEnabled(lua_State* tolua_S
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -561,7 +561,7 @@ int lua_ax_spine_SkeletonRenderer_setToSetupPose(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -608,7 +608,7 @@ int lua_ax_spine_SkeletonRenderer_setBonesToSetupPose(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -655,7 +655,7 @@ int lua_ax_spine_SkeletonRenderer_setSlotsToSetupPose(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -820,7 +820,7 @@ int lua_ax_spine_SkeletonRenderer_setTwoColorTint(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -870,7 +870,7 @@ int lua_ax_spine_SkeletonRenderer_isTwoColorTint(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -917,7 +917,7 @@ int lua_ax_spine_SkeletonRenderer_setSlotsRange(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 2) 
+    if (argc == 2)
     {
         int arg0;
         int arg1;
@@ -970,7 +970,7 @@ int lua_ax_spine_SkeletonRenderer_setBlendFunc(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         ax::BlendFunc arg0;
 
@@ -1020,7 +1020,7 @@ int lua_ax_spine_SkeletonRenderer_getBlendFunc(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1067,7 +1067,7 @@ int lua_ax_spine_SkeletonRenderer_initWithSkeleton(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         spine::Skeleton* arg0;
 
@@ -1081,7 +1081,7 @@ int lua_ax_spine_SkeletonRenderer_initWithSkeleton(lua_State* tolua_S)
         lua_settop(tolua_S, 1);
         return 1;
     }
-    if (argc == 2) 
+    if (argc == 2)
     {
         spine::Skeleton* arg0;
         bool arg1;
@@ -1098,7 +1098,7 @@ int lua_ax_spine_SkeletonRenderer_initWithSkeleton(lua_State* tolua_S)
         lua_settop(tolua_S, 1);
         return 1;
     }
-    if (argc == 3) 
+    if (argc == 3)
     {
         spine::Skeleton* arg0;
         bool arg1;
@@ -1118,7 +1118,7 @@ int lua_ax_spine_SkeletonRenderer_initWithSkeleton(lua_State* tolua_S)
         lua_settop(tolua_S, 1);
         return 1;
     }
-    if (argc == 4) 
+    if (argc == 4)
     {
         spine::Skeleton* arg0;
         bool arg1;
@@ -1177,7 +1177,7 @@ int lua_ax_spine_SkeletonRenderer_initWithData(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         spine::SkeletonData* arg0;
 
@@ -1191,7 +1191,7 @@ int lua_ax_spine_SkeletonRenderer_initWithData(lua_State* tolua_S)
         lua_settop(tolua_S, 1);
         return 1;
     }
-    if (argc == 2) 
+    if (argc == 2)
     {
         spine::SkeletonData* arg0;
         bool arg1;
@@ -1450,7 +1450,7 @@ int lua_ax_spine_SkeletonRenderer_initialize(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -1973,7 +1973,7 @@ int lua_ax_spine_SkeletonAnimation_setMix(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 3) 
+    if (argc == 3)
     {
         std::string arg0;
         std::string arg1;
@@ -2029,7 +2029,7 @@ int lua_ax_spine_SkeletonAnimation_setEmptyAnimation(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 2) 
+    if (argc == 2)
     {
         int arg0;
         double arg1;
@@ -2082,7 +2082,7 @@ int lua_ax_spine_SkeletonAnimation_setEmptyAnimations(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -2132,7 +2132,7 @@ int lua_ax_spine_SkeletonAnimation_addEmptyAnimation(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 2) 
+    if (argc == 2)
     {
         int arg0;
         double arg1;
@@ -2149,7 +2149,7 @@ int lua_ax_spine_SkeletonAnimation_addEmptyAnimation(lua_State* tolua_S)
         object_to_luaval<spine::TrackEntry>(tolua_S, "sp.TrackEntry",(spine::TrackEntry*)ret);
         return 1;
     }
-    if (argc == 3) 
+    if (argc == 3)
     {
         int arg0;
         double arg1;
@@ -2205,7 +2205,7 @@ int lua_ax_spine_SkeletonAnimation_findAnimation(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         std::string arg0;
 
@@ -2255,7 +2255,7 @@ int lua_ax_spine_SkeletonAnimation_clearTracks(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -2302,7 +2302,7 @@ int lua_ax_spine_SkeletonAnimation_clearTrack(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -2313,7 +2313,7 @@ int lua_ax_spine_SkeletonAnimation_clearTrack(lua_State* tolua_S)
         lua_settop(tolua_S, 1);
         return 1;
     }
-    if (argc == 1) 
+    if (argc == 1)
     {
         int arg0;
 
@@ -2363,15 +2363,15 @@ int lua_ax_spine_SkeletonAnimation_setStartListener(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         std::function<void (spine::TrackEntry *)> arg0;
 
         do {
-			// Lambda binding for lua is not supported.
-			assert(false);
-		} while(0)
-		;
+        	// Lambda binding for lua is not supported.
+            assert(false);
+        } while(0)
+        ;
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_ax_spine_SkeletonAnimation_setStartListener'", nullptr);
@@ -2417,15 +2417,15 @@ int lua_ax_spine_SkeletonAnimation_setInterruptListener(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         std::function<void (spine::TrackEntry *)> arg0;
 
         do {
-			// Lambda binding for lua is not supported.
-			assert(false);
-		} while(0)
-		;
+        	// Lambda binding for lua is not supported.
+            assert(false);
+        } while(0)
+        ;
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_ax_spine_SkeletonAnimation_setInterruptListener'", nullptr);
@@ -2471,15 +2471,15 @@ int lua_ax_spine_SkeletonAnimation_setEndListener(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         std::function<void (spine::TrackEntry *)> arg0;
 
         do {
-			// Lambda binding for lua is not supported.
-			assert(false);
-		} while(0)
-		;
+        	// Lambda binding for lua is not supported.
+            assert(false);
+        } while(0)
+        ;
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_ax_spine_SkeletonAnimation_setEndListener'", nullptr);
@@ -2525,15 +2525,15 @@ int lua_ax_spine_SkeletonAnimation_setDisposeListener(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         std::function<void (spine::TrackEntry *)> arg0;
 
         do {
-			// Lambda binding for lua is not supported.
-			assert(false);
-		} while(0)
-		;
+        	// Lambda binding for lua is not supported.
+            assert(false);
+        } while(0)
+        ;
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_ax_spine_SkeletonAnimation_setDisposeListener'", nullptr);
@@ -2579,15 +2579,15 @@ int lua_ax_spine_SkeletonAnimation_setCompleteListener(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         std::function<void (spine::TrackEntry *)> arg0;
 
         do {
-			// Lambda binding for lua is not supported.
-			assert(false);
-		} while(0)
-		;
+        	// Lambda binding for lua is not supported.
+            assert(false);
+        } while(0)
+        ;
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_ax_spine_SkeletonAnimation_setCompleteListener'", nullptr);
@@ -2633,15 +2633,15 @@ int lua_ax_spine_SkeletonAnimation_setEventListener(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         std::function<void (spine::TrackEntry *, spine::Event *)> arg0;
 
         do {
-			// Lambda binding for lua is not supported.
-			assert(false);
-		} while(0)
-		;
+        	// Lambda binding for lua is not supported.
+            assert(false);
+        } while(0)
+        ;
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_ax_spine_SkeletonAnimation_setEventListener'", nullptr);
@@ -2687,15 +2687,15 @@ int lua_ax_spine_SkeletonAnimation_setPreUpdateWorldTransformsListener(lua_State
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         std::function<void (spine::SkeletonAnimation *)> arg0;
 
         do {
-			// Lambda binding for lua is not supported.
-			assert(false);
-		} while(0)
-		;
+        	// Lambda binding for lua is not supported.
+            assert(false);
+        } while(0)
+        ;
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_ax_spine_SkeletonAnimation_setPreUpdateWorldTransformsListener'", nullptr);
@@ -2741,15 +2741,15 @@ int lua_ax_spine_SkeletonAnimation_setPostUpdateWorldTransformsListener(lua_Stat
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         std::function<void (spine::SkeletonAnimation *)> arg0;
 
         do {
-			// Lambda binding for lua is not supported.
-			assert(false);
-		} while(0)
-		;
+        	// Lambda binding for lua is not supported.
+            assert(false);
+        } while(0)
+        ;
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_ax_spine_SkeletonAnimation_setPostUpdateWorldTransformsListener'", nullptr);
@@ -2795,7 +2795,7 @@ int lua_ax_spine_SkeletonAnimation_setTrackStartListener(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 2) 
+    if (argc == 2)
     {
         spine::TrackEntry* arg0;
         std::function<void (spine::TrackEntry *)> arg1;
@@ -2803,10 +2803,10 @@ int lua_ax_spine_SkeletonAnimation_setTrackStartListener(lua_State* tolua_S)
         ok &= luaval_to_object<spine::TrackEntry>(tolua_S, 2, "sp.TrackEntry",&arg0, "sp.SkeletonAnimation:setTrackStartListener");
 
         do {
-			// Lambda binding for lua is not supported.
-			assert(false);
-		} while(0)
-		;
+        	// Lambda binding for lua is not supported.
+            assert(false);
+        } while(0)
+        ;
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_ax_spine_SkeletonAnimation_setTrackStartListener'", nullptr);
@@ -2852,7 +2852,7 @@ int lua_ax_spine_SkeletonAnimation_setTrackInterruptListener(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 2) 
+    if (argc == 2)
     {
         spine::TrackEntry* arg0;
         std::function<void (spine::TrackEntry *)> arg1;
@@ -2860,10 +2860,10 @@ int lua_ax_spine_SkeletonAnimation_setTrackInterruptListener(lua_State* tolua_S)
         ok &= luaval_to_object<spine::TrackEntry>(tolua_S, 2, "sp.TrackEntry",&arg0, "sp.SkeletonAnimation:setTrackInterruptListener");
 
         do {
-			// Lambda binding for lua is not supported.
-			assert(false);
-		} while(0)
-		;
+        	// Lambda binding for lua is not supported.
+            assert(false);
+        } while(0)
+        ;
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_ax_spine_SkeletonAnimation_setTrackInterruptListener'", nullptr);
@@ -2909,7 +2909,7 @@ int lua_ax_spine_SkeletonAnimation_setTrackEndListener(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 2) 
+    if (argc == 2)
     {
         spine::TrackEntry* arg0;
         std::function<void (spine::TrackEntry *)> arg1;
@@ -2917,10 +2917,10 @@ int lua_ax_spine_SkeletonAnimation_setTrackEndListener(lua_State* tolua_S)
         ok &= luaval_to_object<spine::TrackEntry>(tolua_S, 2, "sp.TrackEntry",&arg0, "sp.SkeletonAnimation:setTrackEndListener");
 
         do {
-			// Lambda binding for lua is not supported.
-			assert(false);
-		} while(0)
-		;
+        	// Lambda binding for lua is not supported.
+            assert(false);
+        } while(0)
+        ;
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_ax_spine_SkeletonAnimation_setTrackEndListener'", nullptr);
@@ -2966,7 +2966,7 @@ int lua_ax_spine_SkeletonAnimation_setTrackDisposeListener(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 2) 
+    if (argc == 2)
     {
         spine::TrackEntry* arg0;
         std::function<void (spine::TrackEntry *)> arg1;
@@ -2974,10 +2974,10 @@ int lua_ax_spine_SkeletonAnimation_setTrackDisposeListener(lua_State* tolua_S)
         ok &= luaval_to_object<spine::TrackEntry>(tolua_S, 2, "sp.TrackEntry",&arg0, "sp.SkeletonAnimation:setTrackDisposeListener");
 
         do {
-			// Lambda binding for lua is not supported.
-			assert(false);
-		} while(0)
-		;
+        	// Lambda binding for lua is not supported.
+            assert(false);
+        } while(0)
+        ;
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_ax_spine_SkeletonAnimation_setTrackDisposeListener'", nullptr);
@@ -3023,7 +3023,7 @@ int lua_ax_spine_SkeletonAnimation_setTrackCompleteListener(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 2) 
+    if (argc == 2)
     {
         spine::TrackEntry* arg0;
         std::function<void (spine::TrackEntry *)> arg1;
@@ -3031,10 +3031,10 @@ int lua_ax_spine_SkeletonAnimation_setTrackCompleteListener(lua_State* tolua_S)
         ok &= luaval_to_object<spine::TrackEntry>(tolua_S, 2, "sp.TrackEntry",&arg0, "sp.SkeletonAnimation:setTrackCompleteListener");
 
         do {
-			// Lambda binding for lua is not supported.
-			assert(false);
-		} while(0)
-		;
+        	// Lambda binding for lua is not supported.
+            assert(false);
+        } while(0)
+        ;
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_ax_spine_SkeletonAnimation_setTrackCompleteListener'", nullptr);
@@ -3080,7 +3080,7 @@ int lua_ax_spine_SkeletonAnimation_setTrackEventListener(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 2) 
+    if (argc == 2)
     {
         spine::TrackEntry* arg0;
         std::function<void (spine::TrackEntry *, spine::Event *)> arg1;
@@ -3088,10 +3088,10 @@ int lua_ax_spine_SkeletonAnimation_setTrackEventListener(lua_State* tolua_S)
         ok &= luaval_to_object<spine::TrackEntry>(tolua_S, 2, "sp.TrackEntry",&arg0, "sp.SkeletonAnimation:setTrackEventListener");
 
         do {
-			// Lambda binding for lua is not supported.
-			assert(false);
-		} while(0)
-		;
+        	// Lambda binding for lua is not supported.
+            assert(false);
+        } while(0)
+        ;
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_ax_spine_SkeletonAnimation_setTrackEventListener'", nullptr);
@@ -3137,7 +3137,7 @@ int lua_ax_spine_SkeletonAnimation_setUpdateOnlyIfVisible(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -3424,15 +3424,15 @@ int lua_register_ax_spine_SkeletonAnimation(lua_State* tolua_S)
 }
 TOLUA_API int register_all_ax_spine(lua_State* tolua_S)
 {
-	tolua_open(tolua_S);
-	
-	tolua_module(tolua_S,"sp",0);
-	tolua_beginmodule(tolua_S,"sp");
+    tolua_open(tolua_S);
 
-	lua_register_ax_spine_SkeletonRenderer(tolua_S);
-	lua_register_ax_spine_SkeletonAnimation(tolua_S);
+    tolua_module(tolua_S,"sp",0);
+    tolua_beginmodule(tolua_S,"sp");
 
-	tolua_endmodule(tolua_S);
-	return 1;
+    lua_register_ax_spine_SkeletonRenderer(tolua_S);
+    lua_register_ax_spine_SkeletonAnimation(tolua_S);
+
+    tolua_endmodule(tolua_S);
+    return 1;
 }
 

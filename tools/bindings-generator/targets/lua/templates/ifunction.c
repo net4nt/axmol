@@ -31,7 +31,7 @@ int ${signature_name}(lua_State* tolua_S)
     #set arg_count = len($arguments)
     #set arg_idx = $min_args
     #while $arg_idx <= $arg_count
-    if (argc == ${arg_idx}) 
+    if (argc == ${arg_idx})
     {
         #set $count = 0
         #while $count < $arg_idx
@@ -105,7 +105,7 @@ int ${signature_name}(lua_State* tolua_S)
         lua_settop(tolua_S, 1);
         return 1;
                 #end if
-        #end if         
+        #end if
     }
         #set $arg_idx = $arg_idx + 1
     #end while

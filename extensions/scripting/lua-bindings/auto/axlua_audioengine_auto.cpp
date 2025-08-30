@@ -17,7 +17,7 @@ int lua_ax_audioengine_AudioProfile_constructor(lua_State* tolua_S)
 
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -184,7 +184,7 @@ int lua_ax_audioengine_AudioEngine_play2d(lua_State* tolua_S)
             if (!ok) { break; }
             ax::AudioPlayerSettings arg1;
             #pragma warning NO CONVERSION TO NATIVE FOR AudioPlayerSettings
-		ok = false;
+        ok = false;
             if (!ok) { break; }
             int ret = ax::AudioEngine::play2d(arg0, arg1);
             tolua_pushnumber(tolua_S,(lua_Number)ret);
@@ -201,7 +201,7 @@ int lua_ax_audioengine_AudioEngine_play2d(lua_State* tolua_S)
             if (!ok) { break; }
             ax::AudioPlayerSettings arg1;
             #pragma warning NO CONVERSION TO NATIVE FOR AudioPlayerSettings
-		ok = false;
+        ok = false;
             if (!ok) { break; }
             const ax::AudioProfile* arg2;
             ok &= luaval_to_object<const ax::AudioProfile>(tolua_S, 4, "ax.AudioProfile",&arg2, "ax.AudioEngine:play2d");
@@ -1079,10 +1079,10 @@ int lua_ax_audioengine_AudioEngine_preload(lua_State* tolua_S)
             if (!ok) { break; }
             std::function<void (bool)> arg1;
             do {
-			// Lambda binding for lua is not supported.
-			assert(false);
-		} while(0)
-		;
+        	// Lambda binding for lua is not supported.
+            assert(false);
+        } while(0)
+        ;
             if (!ok) { break; }
             ax::AudioEngine::preload(arg0, arg1);
             lua_settop(tolua_S, 1);
@@ -1264,16 +1264,16 @@ int lua_register_ax_audioengine_AudioEngine(lua_State* tolua_S)
 }
 TOLUA_API int register_all_ax_audioengine(lua_State* tolua_S)
 {
-	tolua_open(tolua_S);
-	
-	tolua_module(tolua_S,"ax",0);
-	tolua_beginmodule(tolua_S,"ax");
+    tolua_open(tolua_S);
 
-	lua_register_ax_audioengine_AudioProfile(tolua_S);
-	lua_register_ax_audioengine_AudioEngine(tolua_S);
+    tolua_module(tolua_S,"ax",0);
+    tolua_beginmodule(tolua_S,"ax");
 
-	tolua_endmodule(tolua_S);
-	return 1;
+    lua_register_ax_audioengine_AudioProfile(tolua_S);
+    lua_register_ax_audioengine_AudioEngine(tolua_S);
+
+    tolua_endmodule(tolua_S);
+    return 1;
 }
 
 #endif

@@ -40,6 +40,8 @@ USING_NS_AX_EXT;
 Size g_resourceSize(960, 640);
 Size g_designSize(480, 320);
 
+const Color g_testsDefaultClearColor = Color32{0x36, 0x3B, 0x44, 0xFF};
+
 TestBase::TestBase() : _parentTest(nullptr), _isTestList(false) {}
 
 TestBase::~TestBase() {}
@@ -543,6 +545,7 @@ void TestCase::priorTestCallback(Object* sender)
 
 void TestCase::onBackCallback(Object* sender)
 {
+    _director->setClearColor(g_testsDefaultClearColor);
     if (_testSuite)
     {
         _testSuite->backsUpOneLevel();

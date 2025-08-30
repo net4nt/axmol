@@ -41,7 +41,7 @@ jobs:
       if: github.event_name == 'issue_comment'
       uses: peter-evans/create-or-update-comment@v4
       with:
-        token: ${{ secrets.AX_BOT_TOKEN }}
+        token: ${{ secrets.AX_BOT_TOKEN || github.token }}
         issue-number: ${{ github.event.issue.number }}
         body: |
           👋 @${{ github.event.comment.user.login }} Command **/clang-format** received. Running code formatting, please wait...
@@ -52,7 +52,7 @@ jobs:
       id: pr
       uses: actions-ecosystem/action-get-merged-pull-request@v1
       with:
-        github_token: ${{ secrets.AX_BOT_TOKEN }}
+        github_token: ${{ secrets.AX_BOT_TOKEN || github.token }}
         number: ${{ github.event.issue.number }}
 
     # Checkout correct branch
@@ -60,7 +60,7 @@ jobs:
       with:
         ref: ${{ github.event_name == 'issue_comment' && steps.pr.outputs.head_ref || github.head_ref || github.ref_name }}
         repository: ${{ github.event_name == 'issue_comment' && steps.pr.outputs.head_repo || github.repository }}
-        token: ${{ secrets.AX_BOT_TOKEN }}
+        token: ${{ secrets.AX_BOT_TOKEN || github.token }}
 
     # Override LINT_MODE to auto_commit if triggered by /clang-format comment and store head commit hash
     - name: Prepare clang-format lint
@@ -107,7 +107,7 @@ jobs:
       id: cpr
       uses: peter-evans/create-pull-request@v7
       with:
-        token: ${{ secrets.AX_BOT_TOKEN }}
+        token: ${{ secrets.AX_BOT_TOKEN || github.token }}
         push-to-fork: axmol-bot/axmol
         commit-message: Committing clang-format changes
         signoff: false
@@ -145,14 +145,14 @@ jobs:
         message: 'Committing clang-format changes'
         new_branch: ${{ github.head_ref || github.ref_name || steps.pr.outputs.head_ref }}
       env:
-        GITHUB_TOKEN: ${{ secrets.AX_BOT_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.AX_BOT_TOKEN || github.token }}
 
     # Reply finish message after auto_commit success
     - name: Reply finish message
       if: ${{ success() && env.LINT_MODE == 'auto_commit' && github.event_name == 'issue_comment' }}
       uses: peter-evans/create-or-update-comment@v4
       with:
-        token: ${{ secrets.AX_BOT_TOKEN }}
+        token: ${{ secrets.AX_BOT_TOKEN || github.token }}
         issue-number: ${{ github.event.issue.number }}
         body: |
           ✅ Formatting completed and changes have been committed to the PR branch.
@@ -163,7 +163,7 @@ jobs:
       if: ${{ failure() && github.event_name == 'issue_comment' }}
       uses: peter-evans/create-or-update-comment@v4
       with:
-        token: ${{ secrets.AX_BOT_TOKEN }}
+        token: ${{ secrets.AX_BOT_TOKEN || github.token }}
         issue-number: ${{ github.event.issue.number }}
         body: |
           ❌ Formatting failed. Please check the GitHub Actions logs for details.

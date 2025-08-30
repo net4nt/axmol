@@ -81,7 +81,8 @@ stl_type_map = {
     'std::unordered_multimap': 2,
     'std::map': 2,
     'tsl::robin_map': 2,
-    'hlookup::string_map': 2,
+    'axstd::hash_map': 2,
+    'axstd::string_map': 2,
     'std::multimap': 2,
     'std::vector': 1,
     'std::list': 1,
@@ -92,7 +93,8 @@ stl_type_map = {
     'std::unordered_set': 1,
     'std::unordered_multiset': 1,
     'tsl::robin_set': 1,
-    'hlookup::string_set': 1,
+    'axstd::hash_set': 1,
+    'axstd::string_set': 1,
     'std::stack': 1,
     'std::queue': 1,
     'std::deque': 1,
@@ -103,6 +105,7 @@ stl_type_map = {
     'map': 2,
     'multimap': 2,
     'robin_map': 2,
+    'hash_map': 2,
     'string_map': 2,
     'vector': 1,
     'list': 1,
@@ -113,6 +116,7 @@ stl_type_map = {
     'unordered_set': 1,
     'unordered_multiset': 1,
     'robin_set': 1,
+    'hash_set': 1,
     'string_set': 1,
     'stack': 1,
     'queue': 1,
@@ -241,8 +245,8 @@ def normalize_type_str(s, depth=1):
         if last_section == '&' or last_section == '*' or last_section.startswith('::'):
             return 'std::string_view' + last_section
         else:
-            return 'std::string_view'        
-           
+            return 'std::string_view'
+
     # for compatible cxx17::string_view
     if sections[0] == 'const cxx17::basic_string_view' or sections[0] == 'const basic_string_view':
         last_section = sections[len(sections) - 1]
@@ -270,7 +274,7 @@ def normalize_type_str(s, depth=1):
         if last_section == '&' or last_section == '*' or last_section.startswith('::'):
             return 'std::thread::id' + last_section
         else:
-            return 'std::thread::id'       
+            return 'std::thread::id'
 
     for i in range(1, section_len):
         sections[i] = normalize_type_str(sections[i], depth+1)
@@ -661,7 +665,7 @@ class NativeType(object):
         if self.is_function:
             tpl = Template(file=os.path.join(generator.target, "templates", "lambda.c"),
                 searchList=[convert_opts, self])
-            indent = convert_opts['level'] * "\t"
+            indent = convert_opts['level'] * "    "
             return str(tpl).replace("\n", "\n" + indent)
 
 
@@ -669,14 +673,14 @@ class NativeType(object):
             tpl = NativeType.dict_get_value_re(to_native_dict, keys)
             tpl = Template(tpl, searchList=[convert_opts])
             return str(tpl).rstrip()
-        return "#pragma warning NO CONVERSION TO NATIVE FOR " + self.name + "\n" + convert_opts['level'] * "\t" +  "ok = false"
+        return "#pragma warning NO CONVERSION TO NATIVE FOR " + self.name + "\n" + convert_opts['level'] * "    " +  "ok = false"
 
     def to_string(self, generator):
 
         if self.name.find("robin_map<std::string, ") == 0:
-            self.name = self.name.replace(">", ", hlookup::string_hash, hlookup::equal_to>")
-            self.namespaced_name = self.namespaced_name.replace(">", ", hlookup::string_hash, hlookup::equal_to>")
-            self.whole_name = self.whole_name.replace(">", ", hlookup::string_hash, hlookup::equal_to>")
+            self.name = self.name.replace(">", ", axstd::string_hash, axstd::equal_to>")
+            self.namespaced_name = self.namespaced_name.replace(">", ", axstd::string_hash, axstd::equal_to>")
+            self.whole_name = self.whole_name.replace(">", ", axstd::string_hash, axstd::equal_to>")
 
         conversions = generator.config['conversions']
         if 'native_types' in conversions:
@@ -724,7 +728,7 @@ class NativeType(object):
             name = to_replace
 
         if name.find("tsl::robin_map<std::string, ") >= 0:
-            name = name.replace(">", ", hlookup::string_hash, hlookup::equal_to>")
+            name = name.replace(">", ", axstd::string_hash, axstd::equal_to>")
 
         return name
 
@@ -1319,7 +1323,7 @@ class NativeEnum(object):
             field["name"] = node.displayname
             field["value"] = node.enum_value
             self.fields.append(field)
-            
+
 
     def generate_code(self):
         '''
@@ -1669,7 +1673,7 @@ class Generator(object):
 
         for node in cursor.get_children():
             # print("%s %s - %s" % (">" * depth, node.displayname, node.kind))
-            
+
             self._deep_iterate(node, depth + 1)
     def scriptname_from_native(self, namespace_class_name, namespace_name):
         script_ns_dict = self.config['conversions']['ns_map']
@@ -1679,7 +1683,7 @@ class Generator(object):
         if namespace_class_name.find("::") >= 0:
             if namespace_class_name.find("std::") == 0 or namespace_class_name.find("cxx17::") == 0:
                 return namespace_class_name
-            if namespace_class_name.find("tsl::") == 0 or namespace_class_name.find("hlookup::") == 0:
+            if namespace_class_name.find("tsl::") == 0 or namespace_class_name.find("axstd::") == 0:
                 return namespace_class_name
             else:
                 raise Exception("The namespace (%s) conversion wasn't set in 'ns_map' section of the conversions.yaml" % namespace_class_name)
@@ -1691,7 +1695,7 @@ class Generator(object):
         for (k, v) in script_ns_dict.items():
             if namespace_class_name.find("std::") == 0 or namespace_class_name.find("cxx17::") == 0:
                 return False
-            if namespace_class_name.find("tsl::") == 0 or namespace_class_name.find("hlookup::") == 0:
+            if namespace_class_name.find("tsl::") == 0 or namespace_class_name.find("axstd::") == 0:
                 return False
             if namespace_class_name.find(k) >= 0:
                 return True
@@ -1714,7 +1718,7 @@ class Generator(object):
                 return "Array"
             if namespace_class_name.find("std::map") == 0 or namespace_class_name.find("std::unordered_map") == 0:
                 return "map_object"
-            if namespace_class_name.find("tsl::robin_") >= 0 or namespace_class_name.find("hlookup::string_map") == 0:
+            if namespace_class_name.find("tsl::robin_") >= 0 or namespace_class_name.find("axstd::string_map") == 0:
                 return "map_object"
             if namespace_class_name.find("std::function") == 0:
                 return "function"
@@ -1760,7 +1764,7 @@ class Generator(object):
                 return "array_table"
             if namespace_class_name.find("std::map") == 0 or namespace_class_name.find("std::unordered_map") == 0:
                 return "map_table"
-            if namespace_class_name.find("tsl::robin_") >= 0 or namespace_class_name.find("hlookup::string_map") == 0:
+            if namespace_class_name.find("tsl::robin_") >= 0 or namespace_class_name.find("axstd::string_map") == 0:
                 return "map_table"
             if namespace_class_name.find("std::function") == 0:
                 return "function"
@@ -1854,7 +1858,7 @@ class Generator(object):
             return "func"
         else:
             return namespace_class_name
-        
+
 def generate_one(cfg, section, target, outdir, out_file):
     # script directory
     workingdir = os.path.dirname(inspect.getfile(inspect.currentframe()))

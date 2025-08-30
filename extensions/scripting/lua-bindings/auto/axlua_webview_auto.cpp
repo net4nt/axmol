@@ -29,7 +29,7 @@ int lua_ax_webview_WebView_setJavascriptInterfaceScheme(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         std::string_view arg0;
 
@@ -79,7 +79,7 @@ int lua_ax_webview_WebView_loadHTMLString(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         std::string_view arg0;
 
@@ -93,7 +93,7 @@ int lua_ax_webview_WebView_loadHTMLString(lua_State* tolua_S)
         lua_settop(tolua_S, 1);
         return 1;
     }
-    if (argc == 2) 
+    if (argc == 2)
     {
         std::string_view arg0;
         std::string_view arg1;
@@ -205,7 +205,7 @@ int lua_ax_webview_WebView_loadFile(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         std::string_view arg0;
 
@@ -255,7 +255,7 @@ int lua_ax_webview_WebView_stopLoading(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -302,7 +302,7 @@ int lua_ax_webview_WebView_reload(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -349,7 +349,7 @@ int lua_ax_webview_WebView_canGoBack(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -396,7 +396,7 @@ int lua_ax_webview_WebView_canGoForward(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -443,7 +443,7 @@ int lua_ax_webview_WebView_goBack(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -490,7 +490,7 @@ int lua_ax_webview_WebView_goForward(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -537,7 +537,7 @@ int lua_ax_webview_WebView_evaluateJS(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         std::string_view arg0;
 
@@ -587,7 +587,7 @@ int lua_ax_webview_WebView_setScalesPageToFit(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -637,7 +637,7 @@ int lua_ax_webview_WebView_getOnJSCallback(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -684,7 +684,7 @@ int lua_ax_webview_WebView_setBounces(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -734,7 +734,7 @@ int lua_ax_webview_WebView_setOpacityWebView(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         double arg0;
 
@@ -784,7 +784,7 @@ int lua_ax_webview_WebView_getOpacityWebView(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -831,7 +831,7 @@ int lua_ax_webview_WebView_setBackgroundTransparent(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -899,7 +899,7 @@ int lua_ax_webview_WebView_constructor(lua_State* tolua_S)
 
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -962,14 +962,14 @@ int lua_register_ax_webview_WebView(lua_State* tolua_S)
 }
 TOLUA_API int register_all_ax_webview(lua_State* tolua_S)
 {
-	tolua_open(tolua_S);
-	
-	tolua_module(tolua_S,"axui",0);
-	tolua_beginmodule(tolua_S,"axui");
+    tolua_open(tolua_S);
 
-	lua_register_ax_webview_WebView(tolua_S);
+    tolua_module(tolua_S,"axui",0);
+    tolua_beginmodule(tolua_S,"axui");
 
-	tolua_endmodule(tolua_S);
-	return 1;
+    lua_register_ax_webview_WebView(tolua_S);
+
+    tolua_endmodule(tolua_S);
+    return 1;
 }
 

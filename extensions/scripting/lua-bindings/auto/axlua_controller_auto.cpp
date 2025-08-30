@@ -30,7 +30,7 @@ int lua_ax_controller_Controller_getDeviceName(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -77,7 +77,7 @@ int lua_ax_controller_Controller_getDeviceId(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -124,7 +124,7 @@ int lua_ax_controller_Controller_isConnected(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -171,7 +171,7 @@ int lua_ax_controller_Controller_receiveExternalKeyEvent(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 2) 
+    if (argc == 2)
     {
         int arg0;
         bool arg1;
@@ -224,7 +224,7 @@ int lua_ax_controller_Controller_setTag(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         int arg0;
 
@@ -274,7 +274,7 @@ int lua_ax_controller_Controller_getTag(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -490,7 +490,7 @@ int lua_ax_controller_EventController_getControllerEventType(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -537,7 +537,7 @@ int lua_ax_controller_EventController_getController(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -584,7 +584,7 @@ int lua_ax_controller_EventController_getKeyCode(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -631,7 +631,7 @@ int lua_ax_controller_EventController_setKeyCode(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         int arg0;
 
@@ -681,7 +681,7 @@ int lua_ax_controller_EventController_setConnectStatus(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -731,7 +731,7 @@ int lua_ax_controller_EventController_isConnected(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -899,17 +899,17 @@ int lua_register_ax_controller_EventListenerController(lua_State* tolua_S)
 }
 TOLUA_API int register_all_ax_controller(lua_State* tolua_S)
 {
-	tolua_open(tolua_S);
-	
-	tolua_module(tolua_S,"ax",0);
-	tolua_beginmodule(tolua_S,"ax");
+    tolua_open(tolua_S);
 
-	lua_register_ax_controller_Controller(tolua_S);
-	lua_register_ax_controller_EventController(tolua_S);
-	lua_register_ax_controller_EventListenerController(tolua_S);
+    tolua_module(tolua_S,"ax",0);
+    tolua_beginmodule(tolua_S,"ax");
 
-	tolua_endmodule(tolua_S);
-	return 1;
+    lua_register_ax_controller_Controller(tolua_S);
+    lua_register_ax_controller_EventController(tolua_S);
+    lua_register_ax_controller_EventListenerController(tolua_S);
+
+    tolua_endmodule(tolua_S);
+    return 1;
 }
 
 #endif

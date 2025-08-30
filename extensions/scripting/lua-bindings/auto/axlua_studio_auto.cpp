@@ -8511,7 +8511,7 @@ int lua_ax_studio_Bone_create(lua_State* tolua_S)
 
     argc = lua_gettop(tolua_S)-1;
 
-    do
+    do 
     {
         if (argc == 1)
         {
@@ -8524,7 +8524,7 @@ int lua_ax_studio_Bone_create(lua_State* tolua_S)
         }
     } while (0);
     ok  = true;
-    do
+    do 
     {
         if (argc == 0)
         {
@@ -11834,7 +11834,7 @@ int lua_ax_studio_Armature_create(lua_State* tolua_S)
 
     argc = lua_gettop(tolua_S)-1;
 
-    do
+    do 
     {
         if (argc == 1)
         {
@@ -11847,7 +11847,7 @@ int lua_ax_studio_Armature_create(lua_State* tolua_S)
         }
     } while (0);
     ok  = true;
-    do
+    do 
     {
         if (argc == 0)
         {
@@ -11857,7 +11857,7 @@ int lua_ax_studio_Armature_create(lua_State* tolua_S)
         }
     } while (0);
     ok  = true;
-    do
+    do 
     {
         if (argc == 2)
         {
@@ -12213,7 +12213,7 @@ int lua_ax_studio_Skin_create(lua_State* tolua_S)
 
     argc = lua_gettop(tolua_S)-1;
 
-    do
+    do 
     {
         if (argc == 1)
         {
@@ -12226,7 +12226,7 @@ int lua_ax_studio_Skin_create(lua_State* tolua_S)
         }
     } while (0);
     ok  = true;
-    do
+    do 
     {
         if (argc == 0)
         {
@@ -14751,7 +14751,7 @@ int lua_ax_studio_ComRender_create(lua_State* tolua_S)
 
     argc = lua_gettop(tolua_S)-1;
 
-    do
+    do 
     {
         if (argc == 2)
         {
@@ -14767,7 +14767,7 @@ int lua_ax_studio_ComRender_create(lua_State* tolua_S)
         }
     } while (0);
     ok  = true;
-    do
+    do 
     {
         if (argc == 0)
         {
@@ -15247,10 +15247,10 @@ int lua_ax_studio_SceneReader_setTarget(lua_State* tolua_S)
         std::function<void (ax::Object *, void *)> arg0;
 
         do {
-			// Lambda binding for lua is not supported.
-			assert(false);
-		} while(0)
-		;
+        	// Lambda binding for lua is not supported.
+            assert(false);
+        } while(0)
+        ;
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_ax_studio_SceneReader_setTarget'", nullptr);
@@ -22615,10 +22615,10 @@ int lua_ax_studio_ActionTimeline_setAnimationEndCallFunc(lua_State* tolua_S)
         ok &= luaval_to_std_string(tolua_S, 2,&arg0, "ccs.ActionTimeline:setAnimationEndCallFunc");
 
         do {
-			// Lambda binding for lua is not supported.
-			assert(false);
-		} while(0)
-		;
+        	// Lambda binding for lua is not supported.
+            assert(false);
+        } while(0)
+        ;
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_ax_studio_ActionTimeline_setAnimationEndCallFunc'", nullptr);
@@ -22716,10 +22716,10 @@ int lua_ax_studio_ActionTimeline_setLastFrameCallFunc(lua_State* tolua_S)
         std::function<void ()> arg0;
 
         do {
-			// Lambda binding for lua is not supported.
-			assert(false);
-		} while(0)
-		;
+        	// Lambda binding for lua is not supported.
+            assert(false);
+        } while(0)
+        ;
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_ax_studio_ActionTimeline_setLastFrameCallFunc'", nullptr);
@@ -22823,10 +22823,10 @@ int lua_ax_studio_ActionTimeline_addFrameEndCallFunc(lua_State* tolua_S)
         ok &= luaval_to_std_string_view(tolua_S, 3,&arg1, "ccs.ActionTimeline:addFrameEndCallFunc");
 
         do {
-			// Lambda binding for lua is not supported.
-			assert(false);
-		} while(0)
-		;
+        	// Lambda binding for lua is not supported.
+            assert(false);
+        } while(0)
+        ;
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_ax_studio_ActionTimeline_addFrameEndCallFunc'", nullptr);
@@ -24472,7 +24472,7 @@ int lua_ax_studio_BoneNode_create(lua_State* tolua_S)
 
     argc = lua_gettop(tolua_S)-1;
 
-    do
+    do 
     {
         if (argc == 1)
         {
@@ -24485,7 +24485,7 @@ int lua_ax_studio_BoneNode_create(lua_State* tolua_S)
         }
     } while (0);
     ok  = true;
-    do
+    do 
     {
         if (argc == 0)
         {
@@ -25207,72 +25207,72 @@ int lua_register_ax_studio_ComExtensionData(lua_State* tolua_S)
 }
 TOLUA_API int register_all_ax_studio(lua_State* tolua_S)
 {
-	tolua_open(tolua_S);
+    tolua_open(tolua_S);
 
-	tolua_module(tolua_S,"ccs",0);
-	tolua_beginmodule(tolua_S,"ccs");
+    tolua_module(tolua_S,"ccs",0);
+    tolua_beginmodule(tolua_S,"ccs");
 
-	lua_register_ax_studio_ActionFrame(tolua_S);
-	lua_register_ax_studio_ActionMoveFrame(tolua_S);
-	lua_register_ax_studio_ActionScaleFrame(tolua_S);
-	lua_register_ax_studio_ActionRotationFrame(tolua_S);
-	lua_register_ax_studio_ActionFadeFrame(tolua_S);
-	lua_register_ax_studio_ActionTintFrame(tolua_S);
-	lua_register_ax_studio_ActionObject(tolua_S);
-	lua_register_ax_studio_ActionManagerEx(tolua_S);
-	lua_register_ax_studio_BaseData(tolua_S);
-	lua_register_ax_studio_DisplayData(tolua_S);
-	lua_register_ax_studio_SpriteDisplayData(tolua_S);
-	lua_register_ax_studio_ArmatureDisplayData(tolua_S);
-	lua_register_ax_studio_ParticleDisplayData(tolua_S);
-	lua_register_ax_studio_BoneData(tolua_S);
-	lua_register_ax_studio_ArmatureData(tolua_S);
-	lua_register_ax_studio_FrameData(tolua_S);
-	lua_register_ax_studio_MovementBoneData(tolua_S);
-	lua_register_ax_studio_MovementData(tolua_S);
-	lua_register_ax_studio_AnimationData(tolua_S);
-	lua_register_ax_studio_ContourData(tolua_S);
-	lua_register_ax_studio_TextureData(tolua_S);
-	lua_register_ax_studio_Tween(tolua_S);
-	lua_register_ax_studio_DisplayManager(tolua_S);
-	lua_register_ax_studio_Bone(tolua_S);
-	lua_register_ax_studio_BatchNode(tolua_S);
-	lua_register_ax_studio_ArmatureAnimation(tolua_S);
-	lua_register_ax_studio_ArmatureDataManager(tolua_S);
-	lua_register_ax_studio_Armature(tolua_S);
-	lua_register_ax_studio_Skin(tolua_S);
-	lua_register_ax_studio_ComAttribute(tolua_S);
-	lua_register_ax_studio_ComAudio(tolua_S);
-	lua_register_ax_studio_ComController(tolua_S);
-	lua_register_ax_studio_ComRender(tolua_S);
-	lua_register_ax_studio_GUIReader(tolua_S);
-	lua_register_ax_studio_SceneReader(tolua_S);
-	lua_register_ax_studio_ActionTimelineCache(tolua_S);
-	lua_register_ax_studio_Frame(tolua_S);
-	lua_register_ax_studio_VisibleFrame(tolua_S);
-	lua_register_ax_studio_TextureFrame(tolua_S);
-	lua_register_ax_studio_RotationFrame(tolua_S);
-	lua_register_ax_studio_SkewFrame(tolua_S);
-	lua_register_ax_studio_RotationSkewFrame(tolua_S);
-	lua_register_ax_studio_PositionFrame(tolua_S);
-	lua_register_ax_studio_ScaleFrame(tolua_S);
-	lua_register_ax_studio_AnchorPointFrame(tolua_S);
-	lua_register_ax_studio_InnerActionFrame(tolua_S);
-	lua_register_ax_studio_ColorFrame(tolua_S);
-	lua_register_ax_studio_AlphaFrame(tolua_S);
-	lua_register_ax_studio_EventFrame(tolua_S);
-	lua_register_ax_studio_ZOrderFrame(tolua_S);
-	lua_register_ax_studio_BlendFuncFrame(tolua_S);
-	lua_register_ax_studio_PlayableFrame(tolua_S);
-	lua_register_ax_studio_Timeline(tolua_S);
-	lua_register_ax_studio_ActionTimelineData(tolua_S);
-	lua_register_ax_studio_ActionTimeline(tolua_S);
-	lua_register_ax_studio_ActionTimelineNode(tolua_S);
-	lua_register_ax_studio_BoneNode(tolua_S);
-	lua_register_ax_studio_SkeletonNode(tolua_S);
-	lua_register_ax_studio_ComExtensionData(tolua_S);
+    lua_register_ax_studio_ActionFrame(tolua_S);
+    lua_register_ax_studio_ActionMoveFrame(tolua_S);
+    lua_register_ax_studio_ActionScaleFrame(tolua_S);
+    lua_register_ax_studio_ActionRotationFrame(tolua_S);
+    lua_register_ax_studio_ActionFadeFrame(tolua_S);
+    lua_register_ax_studio_ActionTintFrame(tolua_S);
+    lua_register_ax_studio_ActionObject(tolua_S);
+    lua_register_ax_studio_ActionManagerEx(tolua_S);
+    lua_register_ax_studio_BaseData(tolua_S);
+    lua_register_ax_studio_DisplayData(tolua_S);
+    lua_register_ax_studio_SpriteDisplayData(tolua_S);
+    lua_register_ax_studio_ArmatureDisplayData(tolua_S);
+    lua_register_ax_studio_ParticleDisplayData(tolua_S);
+    lua_register_ax_studio_BoneData(tolua_S);
+    lua_register_ax_studio_ArmatureData(tolua_S);
+    lua_register_ax_studio_FrameData(tolua_S);
+    lua_register_ax_studio_MovementBoneData(tolua_S);
+    lua_register_ax_studio_MovementData(tolua_S);
+    lua_register_ax_studio_AnimationData(tolua_S);
+    lua_register_ax_studio_ContourData(tolua_S);
+    lua_register_ax_studio_TextureData(tolua_S);
+    lua_register_ax_studio_Tween(tolua_S);
+    lua_register_ax_studio_DisplayManager(tolua_S);
+    lua_register_ax_studio_Bone(tolua_S);
+    lua_register_ax_studio_BatchNode(tolua_S);
+    lua_register_ax_studio_ArmatureAnimation(tolua_S);
+    lua_register_ax_studio_ArmatureDataManager(tolua_S);
+    lua_register_ax_studio_Armature(tolua_S);
+    lua_register_ax_studio_Skin(tolua_S);
+    lua_register_ax_studio_ComAttribute(tolua_S);
+    lua_register_ax_studio_ComAudio(tolua_S);
+    lua_register_ax_studio_ComController(tolua_S);
+    lua_register_ax_studio_ComRender(tolua_S);
+    lua_register_ax_studio_GUIReader(tolua_S);
+    lua_register_ax_studio_SceneReader(tolua_S);
+    lua_register_ax_studio_ActionTimelineCache(tolua_S);
+    lua_register_ax_studio_Frame(tolua_S);
+    lua_register_ax_studio_VisibleFrame(tolua_S);
+    lua_register_ax_studio_TextureFrame(tolua_S);
+    lua_register_ax_studio_RotationFrame(tolua_S);
+    lua_register_ax_studio_SkewFrame(tolua_S);
+    lua_register_ax_studio_RotationSkewFrame(tolua_S);
+    lua_register_ax_studio_PositionFrame(tolua_S);
+    lua_register_ax_studio_ScaleFrame(tolua_S);
+    lua_register_ax_studio_AnchorPointFrame(tolua_S);
+    lua_register_ax_studio_InnerActionFrame(tolua_S);
+    lua_register_ax_studio_ColorFrame(tolua_S);
+    lua_register_ax_studio_AlphaFrame(tolua_S);
+    lua_register_ax_studio_EventFrame(tolua_S);
+    lua_register_ax_studio_ZOrderFrame(tolua_S);
+    lua_register_ax_studio_BlendFuncFrame(tolua_S);
+    lua_register_ax_studio_PlayableFrame(tolua_S);
+    lua_register_ax_studio_Timeline(tolua_S);
+    lua_register_ax_studio_ActionTimelineData(tolua_S);
+    lua_register_ax_studio_ActionTimeline(tolua_S);
+    lua_register_ax_studio_ActionTimelineNode(tolua_S);
+    lua_register_ax_studio_BoneNode(tolua_S);
+    lua_register_ax_studio_SkeletonNode(tolua_S);
+    lua_register_ax_studio_ComExtensionData(tolua_S);
 
-	tolua_endmodule(tolua_S);
-	return 1;
+    tolua_endmodule(tolua_S);
+    return 1;
 }
 

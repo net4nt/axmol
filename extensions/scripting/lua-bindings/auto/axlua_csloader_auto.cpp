@@ -29,7 +29,7 @@ int lua_ax_csloader_CSLoader_init(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -76,7 +76,7 @@ int lua_ax_csloader_CSLoader_createNodeFromJson(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         std::string_view arg0;
 
@@ -126,7 +126,7 @@ int lua_ax_csloader_CSLoader_loadNodeWithFile(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         std::string_view arg0;
 
@@ -176,7 +176,7 @@ int lua_ax_csloader_CSLoader_loadNodeWithContent(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         std::string_view arg0;
 
@@ -226,7 +226,7 @@ int lua_ax_csloader_CSLoader_setRecordJsonPath(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         bool arg0;
 
@@ -276,7 +276,7 @@ int lua_ax_csloader_CSLoader_isRecordJsonPath(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -323,7 +323,7 @@ int lua_ax_csloader_CSLoader_setJsonPath(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         std::string arg0;
 
@@ -373,7 +373,7 @@ int lua_ax_csloader_CSLoader_getJsonPath(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -420,7 +420,7 @@ int lua_ax_csloader_CSLoader_createNodeWithFlatBuffersFile(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         std::string_view arg0;
 
@@ -470,7 +470,7 @@ int lua_ax_csloader_CSLoader_bindCallback(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 4) 
+    if (argc == 4)
     {
         std::string_view arg0;
         std::string_view arg1;
@@ -529,7 +529,7 @@ int lua_ax_csloader_CSLoader_createNodeWithFlatBuffersForSimulator(lua_State* to
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 1)
     {
         std::string_view arg0;
 
@@ -644,10 +644,10 @@ int lua_ax_csloader_CSLoader_createNodeWithVisibleSize(lua_State* tolua_S)
             if (!ok) { break; }
             std::function<void (ax::Object *)> arg1;
             do {
-			// Lambda binding for lua is not supported.
-			assert(false);
-		} while(0)
-		;
+        	// Lambda binding for lua is not supported.
+            assert(false);
+        } while(0)
+        ;
             if (!ok) { break; }
             ax::Node* ret = ax::CSLoader::createNodeWithVisibleSize(arg0, arg1);
             object_to_luaval<ax::Node>(tolua_S, "ax.Node",(ax::Node*)ret);
@@ -689,7 +689,7 @@ int lua_ax_csloader_CSLoader_constructor(lua_State* tolua_S)
 
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 0)
     {
         if(!ok)
         {
@@ -746,14 +746,14 @@ int lua_register_ax_csloader_CSLoader(lua_State* tolua_S)
 }
 TOLUA_API int register_all_ax_csloader(lua_State* tolua_S)
 {
-	tolua_open(tolua_S);
-	
-	tolua_module(tolua_S,"ax",0);
-	tolua_beginmodule(tolua_S,"ax");
+    tolua_open(tolua_S);
 
-	lua_register_ax_csloader_CSLoader(tolua_S);
+    tolua_module(tolua_S,"ax",0);
+    tolua_beginmodule(tolua_S,"ax");
 
-	tolua_endmodule(tolua_S);
-	return 1;
+    lua_register_ax_csloader_CSLoader(tolua_S);
+
+    tolua_endmodule(tolua_S);
+    return 1;
 }
 
