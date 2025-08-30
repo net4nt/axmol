@@ -98,6 +98,9 @@ void TextureBindingSet::setTexture(int location, int slot, rhi::Texture* tex)
         releaseTextures();
         this->slots.push_back(slot);
         this->texs.push_back(tex);
+#if AX_ENABLE_CONTEXT_LOSS_RECOVERY
+        this->loc = location;
+#endif
     }
 }
 
