@@ -7,6 +7,12 @@ define_property(TARGET
   FULL_DOCS "use to save depend libs of axmol lua project"
 )
 
+if(MSVC)
+  cmake_minimum_required(VERSION 3.25...4.1)
+  cmake_policy(SET CMP0141 NEW)
+  set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<$<CONFIG:Debug,RelWithDebInfo>:Embedded>")
+endif()
+
 # UWP min deploy target support, VS property: targetPlatformMinVersion
 if(WINRT)
   # The minmal deploy target version: Windows 10, version 1809 (Build 10.0.17763) for building msix package
