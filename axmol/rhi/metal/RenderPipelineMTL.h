@@ -29,7 +29,7 @@
 #include <string>
 #include <vector>
 #include <memory>
-#include "tsl/robin_map.h"
+#include "axmol/tlx/hlookup.hpp"
 #import <Metal/Metal.h>
 
 namespace ax::rhi::mtl
@@ -75,7 +75,7 @@ private:
     PixelFormat _colorAttachmentsFormat[MAX_COLOR_ATTCHMENT] = {PixelFormat::NONE};
     PixelFormat _depthStencilPF                              = PixelFormat::NONE;
 
-    tsl::robin_map<uint32_t, id<MTLRenderPipelineState>> _mtlStateCache;
+    axstd::hash_map<uint32_t, id<MTLRenderPipelineState>> _mtlStateCache;
 };
 
 // end of _metal group

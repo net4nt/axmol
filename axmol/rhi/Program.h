@@ -29,11 +29,10 @@
 #include "axmol/base/Object.h"
 #include "axmol/platform/PlatformMacros.h"
 #include "axmol/rhi/ShaderCache.h"
+#include "axmol/tlx/hlookup.hpp"
 
 #include <functional>
-#include <string>
 #include <vector>
-#include <unordered_map>
 
 namespace ax
 {
@@ -109,7 +108,7 @@ public:
      * Get active vertex attributes.
      * @return Active vertex attributes. key is active attribute name, Value is corresponding attribute info.
      */
-    virtual const hlookup::string_map<VertexInputDesc>& getActiveVertexInputs() const = 0;
+    virtual const axstd::string_map<VertexInputDesc>& getActiveVertexInputs() const = 0;
 
     /**
      * Get vertex shader.
@@ -146,7 +145,7 @@ public:
      * Get all uniformInfos.
      * @return The uniformInfos.
      */
-    virtual const hlookup::string_map<UniformInfo>& getActiveUniformInfos(ShaderStage stage) const = 0;
+    virtual const axstd::string_map<UniformInfo>& getActiveUniformInfos(ShaderStage stage) const = 0;
 
     VertexLayout* getVertexLayout() const { return _vertexLayout; }
 
