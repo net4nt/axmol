@@ -2,6 +2,7 @@
 Copyright (c) 2010 cocos2d-x.org
 Copyright (c) Microsoft Open Technologies, Inc.
 Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+Copyright (c) 2019-present Axmol Engine contributors (see AUTHORS.md).
 
 https://axmol.dev/
 
@@ -30,7 +31,7 @@ THE SOFTWARE.
 #define glClearDepth  glClearDepthf
 #define GL_WRITE_ONLY GL_WRITE_ONLY_OES
 
-#if AX_TARGET_PLATFORM == AX_PLATFORM_WINRT
+#if AX_TARGET_PLATFORM == AX_PLATFORM_WINRT && AX_RENDER_API == AX_RENDER_API_GL
 #    define GL_GLEXT_PROTOTYPES 1
 
 #    include "EGL/egl.h"

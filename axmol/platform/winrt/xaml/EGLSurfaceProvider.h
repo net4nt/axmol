@@ -1,9 +1,9 @@
 /*
- * cocos2d-x   https://axmol.dev/
- *
  * Copyright (c) 2010-2014 - cocos2d-x community
  * Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  * Copyright (c) 2019-present Axmol Engine contributors (see AUTHORS.md).
+ *
+ * https://axmol.dev/
  *
  * Portions Copyright (c) Microsoft Open Technologies, Inc.
  * All Rights Reserved
@@ -34,11 +34,11 @@
 
 using namespace winrt;
 
-class OpenGLES
+class EGLSurfaceProvider
 {
 public:
-    OpenGLES();
-    ~OpenGLES();
+    EGLSurfaceProvider();
+    ~EGLSurfaceProvider();
 
     EGLSurface CreateSurface(Windows::UI::Xaml::Controls::SwapChainPanel const& panel,
                              const Windows::Foundation::Size* renderSurfaceSize,

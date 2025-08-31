@@ -1,8 +1,9 @@
 /*
- * cocos2d-x   https://axmol.dev/
- *
  * Copyright (c) 2010-2014 - cocos2d-x community
  * Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ * Copyright (c) 2019-present Axmol Engine contributors (see AUTHORS.md).
+ *
+ * https://axmol.dev/
  *
  * Portions Copyright (c) Microsoft Open Technologies, Inc.
  * All Rights Reserved
@@ -45,6 +46,13 @@ public:
     void QueuePointerEvent(ax::PointerEventType type, Windows::UI::Core::PointerEventArgs const& args);
     void QueueKeyboardEvent(ax::WinRTKeyboardEventType type, Windows::UI::Core::KeyEventArgs const& args);
     void QueueBackButtonEvent();
+
+    /**  Create render view
+     * @remark: this API must call at main ui thread, others API should call at render thread
+     */
+    void CreateRenderView();
+
+    void Start();
     void Pause();
     void Resume();
     void DeviceLost();

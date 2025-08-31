@@ -1,8 +1,9 @@
 /*
- * cocos2d-x   https://axmol.dev/
- *
  * Copyright (c) 2010-2014 - cocos2d-x community
  * Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ * Copyright (c) 2019-present Axmol Engine contributors (see AUTHORS.md).
+ *
+ * https://axmol.dev/
  *
  * Portions Copyright (c) Microsoft Open Technologies, Inc.
  * All Rights Reserved
@@ -51,28 +52,35 @@ AxmolRenderer::AxmolRenderer(int width,
 
 AxmolRenderer::~AxmolRenderer() {}
 
+void AxmolRenderer::CreateRenderView()
+{
+    auto director   = ax::Director::getInstance();
+    auto renderView = static_cast<RenderViewImpl*>(director->getRenderView());
+
+    if (!renderView)
+    {
+        renderView = RenderViewImpl::createWithRect(
+            "axmol3", ax::Rect{0, 0, static_cast<float>(m_width), static_cast<float>(m_height)});
+        renderView->setPanel(m_panel);
+        renderView->UpdateOrientation(m_orientation);
+        renderView->SetDPI(m_dpi);
+        renderView->setDispatcher(m_dispatcher);
+        director->setRenderView(renderView);
+    }
+}
+
+void AxmolRenderer::Start()
+{
+    Application::getInstance()->run();
+}
+
 void AxmolRenderer::Resume()
 {
     auto director = ax::Director::getInstance();
-    auto glview   = director->getRenderView();
 
-    if (!glview)
-    {
-        RenderViewImpl* glview = RenderViewImpl::createWithRect(
-            "axmol2", ax::Rect{0, 0, static_cast<float>(m_width), static_cast<float>(m_height)});
-        glview->UpdateOrientation(m_orientation);
-        glview->SetDPI(m_dpi);
-        glview->setDispatcher(m_dispatcher);
-        glview->setPanel(m_panel);
-        director->setRenderView(glview);
-        Application::getInstance()->run();
-    }
-    else
-    {
-        Application::getInstance()->applicationWillEnterForeground();
-        ax::EventCustom foregroundEvent(EVENT_COME_TO_FOREGROUND);
-        ax::Director::getInstance()->getEventDispatcher()->dispatchEvent(&foregroundEvent, true);
-    }
+    Application::getInstance()->applicationWillEnterForeground();
+    ax::EventCustom foregroundEvent(EVENT_COME_TO_FOREGROUND);
+    ax::Director::getInstance()->getEventDispatcher()->dispatchEvent(&foregroundEvent, true);
 }
 
 void AxmolRenderer::Pause()

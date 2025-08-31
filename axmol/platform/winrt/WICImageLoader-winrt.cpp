@@ -1,6 +1,9 @@
 /****************************************************************************
 Copyright (c) Microsoft Open Technologies, Inc.  All rights reserved.
 Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+Copyright (c) 2019-present Axmol Engine contributors (see AUTHORS.md).
+
+https://axmol.dev/
 
 The MIT License (MIT)
 
@@ -545,6 +548,11 @@ IWICImagingFactory* WICImageLoader::getWICFactory()
         {
             hr = CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory,
                                   (LPVOID*)&_wicFactory);
+        }
+        else
+        {
+            AXLOGE("CoInitializeEx fail:{}", hr);
+            assert(false);
         }
 
         if (FAILED(hr))
