@@ -273,14 +273,12 @@ else()
 endif()
 
 # Try enable asm & nasm compiler support
-set(can_use_assembler TRUE)
-enable_language(ASM)
-enable_language(ASM_NASM OPTIONAL)
-
-if(NOT EXISTS "${CMAKE_ASM_NASM_COMPILER}")
-  set(CMAKE_ASM_NASM_COMPILER_LOADED FALSE CACHE BOOL "Does cmake asm nasm compiler loaded" FORCE)
-  message(AUTHOR_WARNING "The nasm compiler doesn't present on your system PATH, please download from: https://www.nasm.us/pub/nasm/releasebuilds/2.16.01/")
+if(MSVC)
+  enable_language(ASM_MASM OPTIONAL)
+else()
+  enable_language(ASM OPTIONAL)
 endif()
+enable_language(ASM_NASM OPTIONAL)
 
 # we don't need cmake BUILD_TESTING feature
 set(BUILD_TESTING FALSE CACHE BOOL "" FORCE)
