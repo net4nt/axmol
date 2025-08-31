@@ -33,6 +33,15 @@
 namespace ax::rhi::d3d
 {
 
+/**
+ * @addtogroup _d3d
+ * @{
+ */
+
+/**
+ * @brief A D3D11-based Buffer implementation
+ *
+ */
 class BufferImpl final : public Buffer
 {
 public:
@@ -74,5 +83,7 @@ private:
     UINT _cpuAccess           = D3D11_CPU_ACCESS_WRITE;
     D3D11_BIND_FLAG _bindFlag = D3D11_BIND_VERTEX_BUFFER;
 };
+
+/** @} */
 
 }  // namespace ax::rhi::d3d

@@ -29,6 +29,16 @@
 namespace ax::rhi::d3d
 {
 using namespace Microsoft::WRL;
+
+/**
+ * @addtogroup _d3d
+ * @{
+ */
+
+/**
+ * @brief A D3D11-based DepthStencilState implementation
+ *
+ */
 class DepthStencilStateImpl : public DepthStencilState
 {
 public:
@@ -45,4 +55,7 @@ private:
     ComPtr<ID3D11DepthStencilState> _activeState;
     ComPtr<ID3D11DepthStencilState> _disableState;
 };
+
+/** @} */
+
 }  // namespace ax::rhi::d3d
