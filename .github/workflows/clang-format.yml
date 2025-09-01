@@ -65,22 +65,38 @@ jobs:
       shell: pwsh
       run: |
         if ($env:GITHUB_EVENT_NAME -eq 'issue_comment') {
+          $head_repo = "${{ steps.pr.outputs.head_repo }}"
+          $head_ref  = "${{ steps.pr.outputs.head_ref }}"
+        }
+        elseif ($env:GITHUB_EVENT_NAME -eq 'pull_request') {
+          $head_repo = "${{ github.event.pull_request.head.repo.full_name }}"
+          $head_ref  = "${{ github.event.pull_request.head.ref }}"
+        }
+        else {
+          $head_repo = "${{ github.repository }}"
+          $head_ref  = "${{ github.head_ref || github.ref_name }}"
+        }
+        if (!$head_repo -or !$head_ref) {
+          Write-Error "❌ head_repo or head_ref is empty"
+          exit 1
+        }
+        if ($env:GITHUB_EVENT_NAME -eq 'issue_comment') {
           echo "Set lint_mode=auto_commit for ${{ github.event.comment.user.login }} Command **/clang-format**"
           $lint_mode = 'auto_commit'
         }
         else {
           $lint_mode = "${{ inputs.lint_mode || 'check_only' }}"
         }
-        $head_ref = "${{ github.event_name == 'issue_comment' && steps.pr.outputs.head_ref || github.head_ref || github.ref_name }}"
+        echo "head_repo=$head_repo" >> ${env:GITHUB_OUTPUT}
         echo "head_ref=$head_ref" >> ${env:GITHUB_OUTPUT}
         echo "lint_mode=$lint_mode" >> ${env:GITHUB_OUTPUT}
-        Write-Host "lint_mode=$lint_mode, head_ref=$head_ref"
+        Write-Host "head_repo=$head_repo, head_ref=$head_ref, lint_mode=$lint_mode"
 
     # Checkout correct branch
     - uses: actions/checkout@v5
       with:
+        repository: ${{ steps.pp.outputs.head_repo }}
         ref: ${{ steps.pp.outputs.head_ref }}
-        repository: ${{ github.event_name == 'issue_comment' && steps.pr.outputs.head_repo || github.repository }}
         token: ${{ secrets.AX_BOT_TOKEN || github.token }}
 
     - name: Run clang-format lint
