@@ -73,6 +73,7 @@ bool AppDelegate::applicationDidFinishLaunching()
 
     // initialize director
     auto director   = Director::getInstance();
+    director->setPowerPreference(PowerPreference::HighPerformance);
     auto renderView = director->getRenderView();
     if (!renderView)
     {

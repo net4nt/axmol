@@ -534,6 +534,12 @@ bool RenderViewImpl::initWithRect(std::string_view viewName,
     glfwWindowHintPointer(GLFW_WIN32_HWND_PARENT, _gfxContextAttrs.viewParent);
 #endif
 
+#if AX_RENDER_API == AX_RENDER_API_D3D
+    // Initialize the D3D driver before creating the window to avoid a brief white flash
+    // caused by driver initialization stutter (hundreds of milliseconds) after the window appears.
+    axdrv;
+#endif
+
     _mainWindow = glfwCreateWindow(static_cast<int>(windowSize.width), static_cast<int>(windowSize.height),
                                    _viewName.c_str(), _monitor, nullptr);
 
@@ -645,10 +651,9 @@ bool RenderViewImpl::initWithRect(std::string_view viewName,
 #if (AX_TARGET_PLATFORM != AX_PLATFORM_MAC)
 #    if AX_RENDER_API == AX_RENDER_API_GL
     loadGL();
-#    endif
-
     // Init driver after load GL
     axdrv;
+#    endif
 #endif
 
 #if AX_RENDER_API == AX_RENDER_API_GL

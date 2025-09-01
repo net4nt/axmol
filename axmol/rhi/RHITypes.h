@@ -561,6 +561,14 @@ struct ProgramType
 };
 // clang-format on
 
+// d3d RHI spec
+enum class PowerPreference
+{
+    Auto,            // Let the system decide
+    LowPower,        // Prefer integrated GPU
+    HighPerformance  // Prefer discrete GPU
+};
+
 template <typename T, unsigned int N>
 inline void SafeRelease(T (&resourceBlock)[N])
 {

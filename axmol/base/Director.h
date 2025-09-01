@@ -69,6 +69,8 @@ class TextureCache;
 class Renderer;
 class Camera;
 
+using PowerPreference = rhi::PowerPreference;
+
 /**
  @brief Class that creates and handles the main Window and manages how
  and when to execute the Scenes.
@@ -174,6 +176,16 @@ public:
      * @lua NA
      */
     void setRenderView(RenderView* renderView);
+
+    /**
+    * Sets GPU Power Preference, only affects d3d render API currently.
+    */
+    void setPowerPreference(PowerPreference value) { _powerPreference = value; }
+
+    /**
+    * Gets GPU Power Preference
+    */
+    PowerPreference getPowerPreference() const { return _powerPreference; }
 
     /*
      * Gets singleton of TextureCache.
@@ -652,6 +664,8 @@ protected:
     bool _invalid = false;
 
     bool _childrenIndexerEnabled = false;
+
+    PowerPreference _powerPreference = PowerPreference::Auto;
 
     /* axmol thread id */
     std::thread::id _axmol_thread_id;

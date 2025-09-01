@@ -102,6 +102,8 @@ CommandBufferImpl::CommandBufferImpl(DriverImpl* driver, void* presentTarget)
     auto context         = driver->getContext();
     ID3D11Device* device = driver->getDevice();
 
+    HRESULT hr = S_OK;
+
     ComPtr<IDXGIDevice> dxgiDevice;
     device->QueryInterface(__uuidof(IDXGIDevice), (void**)dxgiDevice.GetAddressOf());
 
@@ -115,7 +117,7 @@ CommandBufferImpl::CommandBufferImpl(DriverImpl* driver, void* presentTarget)
     ComPtr<IDXGISwapChain> swapChain;
     ComPtr<IDXGIFactory2> factory2;
 
-#if AX_TARGET_PALTFORM == AX_PLATFORM_WIN32
+#if AX_TARGET_PLATFORM == AX_PLATFORM_WIN32
     DXGI_SWAP_EFFECT swapEffect = DXGI_SWAP_EFFECT_DISCARD;  // Default is blt mode
 
     RECT clientRect;
@@ -149,8 +151,7 @@ CommandBufferImpl::CommandBufferImpl(DriverImpl* driver, void* presentTarget)
         fsDesc.Windowed                        = TRUE;
 
         ComPtr<IDXGISwapChain1> swapChain1;
-        HRESULT hr = factory2->CreateSwapChainForHwnd(device, hwnd, &desc1, &fsDesc, nullptr, &swapChain1);
-
+        hr = factory2->CreateSwapChainForHwnd(device, hwnd, &desc1, &fsDesc, nullptr, &swapChain1);
         if (SUCCEEDED(hr))
         {
             factory->MakeWindowAssociation(hwnd, DXGI_MWA_NO_ALT_ENTER);
@@ -198,7 +199,7 @@ CommandBufferImpl::CommandBufferImpl(DriverImpl* driver, void* presentTarget)
         desc1.AlphaMode             = DXGI_ALPHA_MODE_IGNORE;
 
         ComPtr<IDXGISwapChain1> swapChain1;
-        HRESULT hr = factory2->CreateSwapChainForComposition(device, &desc1, nullptr, &swapChain1);
+        hr = factory2->CreateSwapChainForComposition(device, &desc1, nullptr, &swapChain1);
         assert(SUCCEEDED(hr) && "CreateSwapChainForComposition fail");
         if (FAILED(hr))
             return;
