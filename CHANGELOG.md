@@ -1,9 +1,10 @@
-# axmol-2.8.0 ?? 2025
+# axmol-2.8.0 Sep.1 2025
 
 ## Bug fixes
 
 - Fix #2669: Windows UWP not running on Windows 11 due to DriverGL initialization failure by @halx99
 - Fix #2655: Multi-touch not work on android scene contains imgui layer by @halx99
+- Fix #2674: OpenSSL not linkage for final app on Linux by @halx99 in https://github.com/axmolengine/axmol/pull/2675
 - Fix incorrect FontAtlas when switching label rendering mode from normal to SDF by @halx99 in https://github.com/axmolengine/axmol/pull/2629
 - Fix wasm Device::getTextureDataForText will report exception when process whitespace text by @halx99
 - Fix linux label color incorrect when LabelType is STRING_TEXTURE by @halx99
@@ -19,7 +20,7 @@
 - Improve apple ios platform render view creation by @halx99 in https://github.com/axmolengine/axmol/pull/2600
 - Rename GLView to RenderView by @halx99 in https://github.com/axmolengine/axmol/pull/2602
 - Mention emsdk downgrading notice in version 2.6.0 release notes by @halx99
-- Improve wasm dev setup description by @halx99
+- Improve wasm dev setup notice by @halx99
 - Rename `GLContextAttrs` to `GfxContextAttrs` by @halx99
 - Update pull_request_template.md by @aismann in https://github.com/axmolengine/axmol/pull/2609
 - Improve utf8 chars counting, remove strlen call by @halx99 in https://github.com/axmolengine/axmol/pull/2614
