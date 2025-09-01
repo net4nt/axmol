@@ -39,7 +39,7 @@
 - AX_WITH_XXX: usually user don't need care it
 - AX_RENDER_API: specify render api: gl, mtl, d3d, default: `auto`
 - AX_GLES_PROFILE: specify GLES profile version, only works when selected render api is `gl`, default: `300`, valid value `300`, `310`
-- AX_CORE_PROFILE: whether strip all deprecated features, default `FALSE`, it's useful to pre-upgrade your game project to adapte future axmol versions
+- AX_CORE_PROFILE: whether strip all deprecated features, default `FALSE`, Setting this to `TRUE` before upgrading your game project helps ensure compatibility with future Axmol versions.
 - AX_ISA_LEVEL: specifiy SIMD Instructions Acceleration Level: 0~4, 0: disabled, 1: SSE2, 2: SSE4.1/NEON, 3: SSE4.2, 4: AVX2, default: 2
 - AX_WASM_THREADS: specify wasm thread count, valid value: number: `>=0` , string: must be: `auto` or `navigator.hardwareConcurrency`(default), 
    - number: explicit set thread count, `0` means disable wasm thread support

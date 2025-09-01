@@ -1,20 +1,26 @@
-# axmol-2.8.0 ?? 2025
+# axmol-2.8.0 Sep.1 2025
 
 ## Bug fixes
 
+- Fix #2669: Windows UWP not running on Windows 11 due to DriverGL initialization failure by @halx99
+- Fix #2655: Multi-touch not work on android scene contains imgui layer by @halx99
+- Fix #2674: OpenSSL not linkage for final app on Linux by @halx99 in https://github.com/axmolengine/axmol/pull/2675
 - Fix incorrect FontAtlas when switching label rendering mode from normal to SDF by @halx99 in https://github.com/axmolengine/axmol/pull/2629
 - Fix wasm Device::getTextureDataForText will report exception when process whitespace text by @halx99
 - Fix linux label color incorrect when LabelType is STRING_TEXTURE by @halx99
 - Fix incorrect fmt::format_to use case by @halx99 in https://github.com/axmolengine/axmol/pull/2612
 - Fix llvm ver trim in genbindings.ps1 by @halx99
 - Fix Label SDF rendering issues with font resizing and other bugs by @halx99 in https://github.com/axmolengine/axmol/pull/2625
+- Fix compile error when project contains swift code by @halx99 in https://github.com/axmolengine/axmol/pull/2632
+- Fix wasm Downloader open file with wrong permision (#2666) by @AlexandreK38 in https://github.com/axmolengine/axmol/pull/2666
+- Fix failure in CMake 4.1 when targeting Windows: assembler not found by @halx99
 
 ## Improvements
 
 - Improve apple ios platform render view creation by @halx99 in https://github.com/axmolengine/axmol/pull/2600
 - Rename GLView to RenderView by @halx99 in https://github.com/axmolengine/axmol/pull/2602
 - Mention emsdk downgrading notice in version 2.6.0 release notes by @halx99
-- Improve wasm dev setup description by @halx99
+- Improve wasm dev setup notice by @halx99
 - Rename `GLContextAttrs` to `GfxContextAttrs` by @halx99
 - Update pull_request_template.md by @aismann in https://github.com/axmolengine/axmol/pull/2609
 - Improve utf8 chars counting, remove strlen call by @halx99 in https://github.com/axmolengine/axmol/pull/2614
@@ -24,12 +30,17 @@
 - Use pragma once for more header files by @halx99 in https://github.com/axmolengine/axmol/pull/2616
 - Add support set window size limits by @NgVThangBz in https://github.com/axmolengine/axmol/pull/2618
 - Renamed cpp-tests "Node: Label - New API" to "Node: Label" by @aismann in https://github.com/axmolengine/axmol/pull/2627
+- Update ImGui mult-viewports hint message by @halx99
+- Improve tests (Naming of menu entries on cpp-/lua- tests) by @aismann in https://github.com/axmolengine/axmol/pull/2640
+- Move SIMD availability detection into its own CMake file by @j-jorge in https://github.com/axmolengine/axmol/pull/2642
+- Setting CMAKE_MSVC_DEBUG_INFORMATION_FORMAT to Embedded to resolve pdb too large problem by @halx99
+- Improve NuGet package management by @halx99 in https://github.com/axmolengine/axmol/pull/2671
 
 ## SDK & Tools updates
 
 - agp: 8.11.0 => 8.11.1
 - gradle: 8.14.3 => 9.0.0
-- cmake: 4.0.3 => 4.1.0
+- cmake: 4.0.3 => 4.1.1
 
 ## 3rdparty updates
 
