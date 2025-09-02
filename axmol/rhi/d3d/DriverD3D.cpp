@@ -165,8 +165,8 @@ static Microsoft::WRL::ComPtr<IDXGIAdapter> ChooseAdapter(PowerPreference pref)
     if (pref == PowerPreference::Auto)
         return {};
 
-    Microsoft::WRL::ComPtr<IDXGIFactory> factory;
-    if (FAILED(CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory)))
+    Microsoft::WRL::ComPtr<IDXGIFactory1> factory;
+    if (FAILED(CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void**)&factory)))
         return nullptr;
 
     Microsoft::WRL::ComPtr<IDXGIAdapter> bestAdapter;
