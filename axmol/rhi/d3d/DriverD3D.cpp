@@ -253,20 +253,25 @@ DriverImpl::DriverImpl()
     {
         // Try again with software driver type
         requestDriverType = D3D_DRIVER_TYPE_WARP;
-        hr                = D3D11CreateDevice(nullptr,                   // Adapter
-                                              requestDriverType,         // Driver Type
-                                              nullptr,                   // Software
-                                              createDeviceFlags,         // Flags
-                                              featureLevels,             // Feature Levels
-                                              ARRAYSIZE(featureLevels),  // Num Feature Levels
-                                              D3D11_SDK_VERSION,         // SDK Version
-                                              &_device,                  // Device
-                                              &_featureLevel,            // Feature Level
-                                              &_context);
+        // windows 7: D3D11 software adapter not support create debug device
+        createDeviceFlags &= ~D3D11_CREATE_DEVICE_DEBUG;
+        hr = D3D11CreateDevice(nullptr,                   // Adapter
+                               requestDriverType,         // Driver Type
+                               nullptr,                   // Software
+                               createDeviceFlags,         // Flags
+                               featureLevels,             // Feature Levels
+                               ARRAYSIZE(featureLevels),  // Num Feature Levels
+                               D3D11_SDK_VERSION,         // SDK Version
+                               &_device,                  // Device
+                               &_featureLevel,            // Feature Level
+                               &_context);
     }
     if (FAILED(hr))
     {
-        AXLOGE("Failed to create D3D11 device.");
+        auto msg = fmt::format("D3D11 required, please upgrade the driver of your video card.");
+        AXLOGE("{}", msg);
+        messageBox(msg.c_str(), "Failed to create D3D11 device.");
+        utils::killCurrentProcess();  // kill current process, don't cause crash when driver issue.
     }
 
     Microsoft::WRL::ComPtr<IDXGIDevice> dxgiDevice;
