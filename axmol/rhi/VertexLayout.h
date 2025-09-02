@@ -165,13 +165,6 @@ public:
     uint32_t getHash() const { return _desc.getHash(); }
 
     /**
-     * Get vertex step function. Default value is VERTEX.
-     * @return Vertex step function.
-     * @note Used in metal.
-     */
-    VertexStepMode getVertexStepMode() const { return _stepMode; }
-
-    /**
      *  Get built-in vertex layout id, -1 means not built-in
      */
     int getBuiltinId() const { return _builtinId; }
@@ -179,7 +172,6 @@ public:
 protected:
     VertexLayoutDesc _desc{};
     int _builtinId{-1};
-    VertexStepMode _stepMode = VertexStepMode::VERTEX;
 };
 
 // end of _rhi group

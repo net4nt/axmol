@@ -182,12 +182,6 @@ enum class IndexFormat : uint32_t
     U_INT   = 2,
 };
 
-enum class VertexStepMode : uint32_t
-{
-    VERTEX,
-    INSTANCE
-};
-
 enum class PrimitiveType : uint32_t
 {
     POINT,

@@ -37,14 +37,6 @@ namespace ax::rhi::mtl
 
 namespace
 {
-static MTLVertexStepFunction toMTLVertexStepFunc(VertexStepMode vertexStepMode)
-{
-    if (VertexStepMode::VERTEX == vertexStepMode)
-        return MTLVertexStepFunctionPerVertex;
-    else
-        return MTLVertexStepFunctionPerInstance;
-}
-
 static MTLVertexFormat toMTLVertexFormat(VertexFormat vertexFormat, bool needNormalize)
 {
     MTLVertexFormat ret = MTLVertexFormatFloat4;
@@ -206,7 +198,7 @@ void RenderPipelineImpl::update(const RenderTarget* renderTarget, const Pipeline
          stepFunction:1     stride:15       offest:10       format:5        needNormalized:1
          bit31           bit30 ~ bit16   bit15 ~ bit6    bit5 ~ bit1     bit0
          */
-        hashMe.vertexLayoutInfo[index++] = ((unsigned int)vertexLayout->getVertexStepMode() & 0x1) << 31 |
+        hashMe.vertexLayoutInfo[index++] = ((unsigned int)bindingDesc.instanceStepRate & 0x1) << 31 |
                                            ((unsigned int)(vertexLayout->getStride() & 0x7FFF)) << 16 |
                                            ((unsigned int)bindingDesc.offset & 0x3FF) << 6 |
                                            ((unsigned int)bindingDesc.format & 0x1F) << 1 |
