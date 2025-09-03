@@ -31,10 +31,9 @@
 #include "axmol/rhi/d3d/RenderPipelineD3D.h"
 #include "axmol/rhi/d3d/DepthStencilStateD3D.h"
 #include "axmol/rhi/d3d/VertexLayoutD3D.h"
+#include "axmol/rhi/d3d/UtilsD3D.h"
 #include "axmol/base/Logging.h"
 #include "ntcvt/ntcvt.hpp"
-
-#include <wrl/client.h>
 
 #pragma comment(lib, "D3D11.lib")
 #pragma comment(lib, "DXGI.lib")
@@ -110,7 +109,10 @@ std::string_view GetVendorString(uint32_t vendorId)
 DriverBase* DriverBase::getInstance()
 {
     if (!_instance)
+    {
         _instance = new d3d::DriverImpl();
+        static_cast<d3d::DriverImpl*>(_instance)->init();
+    }
 
     return _instance;
 }
@@ -159,22 +161,121 @@ static uint32_t FindMaxMsaaSamples(ID3D11Device* device, DXGI_FORMAT format)
     }
     return best;
 }
+}  // namespace
 
-static Microsoft::WRL::ComPtr<IDXGIAdapter> ChooseAdapter(PowerPreference pref)
+DriverImpl::DriverImpl() {}
+
+void DriverImpl::init()
 {
-    if (pref == PowerPreference::Auto)
-        return {};
+    initializeAdapter();
+    initializeDevice();
 
-    Microsoft::WRL::ComPtr<IDXGIFactory1> factory;
-    if (FAILED(CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void**)&factory)))
-        return nullptr;
+    HRESULT hr{E_FAIL};
+    if (!_dxgiAdapter)
+    {
+        ComPtr<IDXGIDevice> dxgiDevice;
+        AX_D3D_FAST_FAIL(
+            hr = _device->QueryInterface(__uuidof(IDXGIDevice), reinterpret_cast<void**>(dxgiDevice.GetAddressOf())));
 
-    Microsoft::WRL::ComPtr<IDXGIAdapter> bestAdapter;
+        AX_D3D_FAST_FAIL(hr = dxgiDevice->GetAdapter(&_dxgiAdapter));
+
+        AX_D3D_FAST_FAIL(
+            hr = _dxgiAdapter->GetParent(__uuidof(IDXGIFactory1), (void**)_dxgiFactory.ReleaseAndGetAddressOf()));
+    }
+
+    LARGE_INTEGER version;
+    hr = _dxgiAdapter->CheckInterfaceSupport(__uuidof(IDXGIDevice), &version);
+    if (FAILED(hr))
+    {
+        _driverVersion.reset();
+        AXLOGW("Error querying driver version from DXGI Adapter.");
+    }
+    else
+    {
+        _driverVersion = version;
+    }
+    _dxgiAdapter->GetDesc(&_adapterDesc);
+
+    // _maxAttributes = D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT;
+    // _maxTextureSize    = 16384;
+    // _maxTextureUnits = D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT;
+    // _maxSamplesAllowed = 1;
+
+    _maxAttributes = D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT;  // 16
+
+    _maxTextureUnits = D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT;  // 128
+
+    _maxTextureSize = EstimateMaxTexSize(_device->GetFeatureLevel());
+
+    _maxSamplesAllowed = static_cast<int32_t>(FindMaxMsaaSamples(_device, DXGI_FORMAT_R8G8B8A8_UNORM));
+}
+
+DriverImpl::~DriverImpl()
+{
+    _dxgiFactory.Reset();
+    _dxgiAdapter.Reset();
+    SafeRelease(_context);
+    SafeRelease(_device);
+}
+
+void DriverImpl::initializeDevice()
+{
+    constexpr UINT releaseFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+    constexpr UINT debugFlags   = releaseFlags | D3D11_CREATE_DEVICE_DEBUG;
+
+    HRESULT hr              = E_FAIL;
+    const bool isDebugLayer = Director::getInstance()->isDebugLayerEnabled();
+
+    if (isDebugLayer) [[unlikely]]
+    {
+        hr = createD3DDevice(D3D_DRIVER_TYPE_HARDWARE, debugFlags);
+        if (SUCCEEDED(hr))
+            return;
+
+        if (hr != DXGI_ERROR_UNSUPPORTED)
+        {
+            AXLOGI("Failed creating Debug D3D11 device - falling back to release runtime.");
+            goto L_ReleaseRuntime;
+        }
+        else
+        {
+            goto L_WarpRuntime;
+        }
+    }
+
+L_ReleaseRuntime:
+    hr = createD3DDevice(D3D_DRIVER_TYPE_HARDWARE, releaseFlags);
+    if (hr == DXGI_ERROR_UNSUPPORTED) [[unlikely]]
+    {
+    L_WarpRuntime:
+        AXLOGI("Failed creating hardware D3D11 device - falling back to software runtime.");
+        // Reset adapter to null before using D3D_DRIVER_TYPE_WARP,
+        // otherwise D3D11CreateDevice will return E_INVALIDARG when both
+        // a non-null adapter and a non-matching driver type are specified.
+        _dxgiAdapter.Reset();
+        hr = createD3DDevice(D3D_DRIVER_TYPE_WARP, releaseFlags);
+    }
+
+    if (FAILED(hr)) [[unlikely]]
+        fatalError("initializeDevice"sv, hr);
+}
+
+void DriverImpl::initializeAdapter()
+{
+    const auto powerPreferrence = Director::getInstance()->getPowerPreference();
+
+    if (powerPreferrence == PowerPreference::Auto)
+        return;
+
+    if (FAILED(CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void**)&_dxgiFactory)))
+        return;
+
+    ComPtr<IDXGIAdapter> bestAdapter;
     int bestScore = std::numeric_limits<int>::min();
 
     UINT i = 0;
-    Microsoft::WRL::ComPtr<IDXGIAdapter> adapter;
-    while (factory->EnumAdapters(i, adapter.ReleaseAndGetAddressOf()) != DXGI_ERROR_NOT_FOUND)
+    ComPtr<IDXGIAdapter> adapter;
+    while (_dxgiFactory->EnumAdapters(i, adapter.ReleaseAndGetAddressOf()) != DXGI_ERROR_NOT_FOUND)
     {
         DXGI_ADAPTER_DESC desc;
         adapter->GetDesc(&desc);
@@ -196,15 +297,15 @@ static Microsoft::WRL::ComPtr<IDXGIAdapter> ChooseAdapter(PowerPreference pref)
             score += 500;  // Lower base score for integrated GPU
 
         // 2. Adjust score based on PowerPreference
-        if (pref == PowerPreference::HighPerformance && isDiscrete)
+        if (powerPreferrence == PowerPreference::HighPerformance && isDiscrete)
             score += 500;
-        else if (pref == PowerPreference::LowPower && !isDiscrete)
+        else if (powerPreferrence == PowerPreference::LowPower && !isDiscrete)
             score += 500;
 
         // 3. Adjust score based on VRAM size
-        if (pref == PowerPreference::HighPerformance)
+        if (powerPreferrence == PowerPreference::HighPerformance)
             score += static_cast<int>(desc.DedicatedVideoMemory / (1024 * 1024));  // More VRAM = higher score
-        else if (pref == PowerPreference::LowPower)
+        else if (powerPreferrence == PowerPreference::LowPower)
             score -= static_cast<int>(desc.DedicatedVideoMemory / (1024 * 1024));  // Less VRAM = higher score
 
         // Keep the adapter with the highest score
@@ -217,100 +318,23 @@ static Microsoft::WRL::ComPtr<IDXGIAdapter> ChooseAdapter(PowerPreference pref)
         ++i;
     }
 
-    return bestAdapter;
+    _dxgiAdapter = std::move(bestAdapter);
 }
-}  // namespace
 
-DriverImpl::DriverImpl()
+HRESULT DriverImpl::createD3DDevice(int requestDriverType, int createFlags)
 {
-    // Choose Adapter
-    const auto powerPreferrence = Director::getInstance()->getPowerPreference();
-    auto requestAdapter         = ChooseAdapter(powerPreferrence);
-
-    UINT createDeviceFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
-
-#if defined(_DEBUG)
-    createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
-#endif
-
-    D3D_FEATURE_LEVEL featureLevels[] = {
-        D3D_FEATURE_LEVEL_11_1,
-        D3D_FEATURE_LEVEL_11_0,
-    };
-
-    auto requestDriverType = requestAdapter ? D3D_DRIVER_TYPE_UNKNOWN : D3D_DRIVER_TYPE_HARDWARE;
-    HRESULT hr             = D3D11CreateDevice(requestAdapter.Get(),      // Adapter
-                                               requestDriverType,         // Driver Type
-                                               nullptr,                   // Software
-                                               createDeviceFlags,         // Flags
-                                               featureLevels,             // Feature Levels
-                                               ARRAYSIZE(featureLevels),  // Num Feature Levels
-                                               D3D11_SDK_VERSION,         // SDK Version
-                                               &_device,                  // Device
-                                               &_featureLevel,            // Feature Level
-                                               &_context);
-    if (hr == DXGI_ERROR_UNSUPPORTED)
-    {
-        // Try again with software driver type
-        requestDriverType = D3D_DRIVER_TYPE_WARP;
-        // windows 7: D3D11 software adapter not support create debug device
-        createDeviceFlags &= ~D3D11_CREATE_DEVICE_DEBUG;
-        hr = D3D11CreateDevice(nullptr,                   // Adapter
-                               requestDriverType,         // Driver Type
-                               nullptr,                   // Software
-                               createDeviceFlags,         // Flags
-                               featureLevels,             // Feature Levels
-                               ARRAYSIZE(featureLevels),  // Num Feature Levels
-                               D3D11_SDK_VERSION,         // SDK Version
-                               &_device,                  // Device
-                               &_featureLevel,            // Feature Level
+    if (_dxgiAdapter)
+        requestDriverType = D3D_DRIVER_TYPE_UNKNOWN;
+    return ::D3D11CreateDevice(_dxgiAdapter.Get(),                  // Adapter
+                               (D3D_DRIVER_TYPE)requestDriverType,  // Driver Type
+                               nullptr,                             // Software
+                               createFlags,                         // Flags
+                               DEFAULT_REATURE_LEVELS,              // Feature Levels
+                               ARRAYSIZE(DEFAULT_REATURE_LEVELS),   // Num Feature Levels
+                               D3D11_SDK_VERSION,                   // SDK Version
+                               &_device,                            // Device
+                               &_featureLevel,                      // Feature Level
                                &_context);
-    }
-    if (FAILED(hr))
-    {
-        auto msg = fmt::format("D3D11 required, please upgrade the driver of your video card.");
-        AXLOGE("{}", msg);
-        messageBox(msg.c_str(), "Failed to create D3D11 device.");
-        utils::killCurrentProcess();  // kill current process, don't cause crash when driver issue.
-    }
-
-    Microsoft::WRL::ComPtr<IDXGIDevice> dxgiDevice;
-    _device->QueryInterface(__uuidof(IDXGIDevice), reinterpret_cast<void**>(dxgiDevice.GetAddressOf()));
-
-    Microsoft::WRL::ComPtr<IDXGIAdapter> dxgiAdapter;
-    dxgiDevice->GetAdapter(&dxgiAdapter);
-
-    dxgiAdapter->GetDesc(&_adapterDesc);
-
-    LARGE_INTEGER version;
-    hr = dxgiAdapter->CheckInterfaceSupport(__uuidof(IDXGIDevice), &version);
-    if (FAILED(hr))
-    {
-        _driverVersion.reset();
-        AXLOGE("Error querying driver version from DXGI Adapter.");
-    }
-    else
-    {
-        _driverVersion = version;
-    }
-    // _maxAttributes = D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT;
-    // _maxTextureSize    = 16384;
-    // _maxTextureUnits = D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT;
-    // _maxSamplesAllowed = 1;
-
-    _maxAttributes = D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT;  // 16
-
-    _maxTextureUnits = D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT;  // 128
-
-    _maxTextureSize = EstimateMaxTexSize(_device->GetFeatureLevel());
-
-    _maxSamplesAllowed = static_cast<int32_t>(FindMaxMsaaSamples(_device, DXGI_FORMAT_R8G8B8A8_UNORM));
-}
-
-DriverImpl::~DriverImpl()
-{
-    SafeRelease(_context);
-    SafeRelease(_device);
 }
 
 CommandBuffer* DriverImpl::createCommandBuffer(void* presentTarget)
@@ -444,7 +468,6 @@ SamplerHandle DriverImpl::createSampler(const SamplerDesc& desc)
 
 void DriverImpl::destroySampler(SamplerHandle& h)
 {
-
     SafeRelease(reinterpret_cast<ID3D11SamplerState*&>(h));
 }
 

@@ -1,7 +1,5 @@
 /****************************************************************************
-Copyright (c) 2010 cocos2d-x.org
-Copyright (c) Microsoft Open Technologies, Inc.
-Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+
 Copyright (c) 2019-present Axmol Engine contributors (see AUTHORS.md).
 
 https://axmol.dev/
@@ -24,24 +22,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-#include "axmol/platform/Common.h"
-#include "axmol/platform/StdC.h"
-#include "axmol/platform/winrt/RenderViewImpl-winrt.h"
-#include "axmol/platform/winrt/WinRTUtils.h"
 
-#if defined(VLD_DEBUG_MEMORY)
-#    include <vld.h>
-#endif
+#pragma once
+
+#import <Foundation/NSString.h>
 
 namespace ax
 {
-
-AlertResult showAlert(std::string_view msg, std::string_view title, AlertStyle style)
+static NSString* svtons(std::string_view str)
 {
-    // Create the message dialog and set its content
-    auto hmsg   = PlatformStringFromString(msg);
-    auto htitle = PlatformStringFromString(title);
-    return RenderViewImpl::sharedRenderView()->ShowAlertDialog(hmsg, htitle, style);
+    return !str.empty() ? [[NSString alloc] initWithBytes:str.data() length:str.length() encoding:NSUTF8StringEncoding]
+                        : nil;
 }
-
 }  // namespace ax
