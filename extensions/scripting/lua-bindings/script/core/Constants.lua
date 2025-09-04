@@ -205,7 +205,12 @@ ax.PLATFORM_WASM      = 8
 -- platform alias
 ax.PLATFORM_WINDOWS    = ax.PLATFORM_WIN32
 ax.PLATFORM_MACOS      = ax.PLATFORM_OSX
+ax.PLATFORM_MAC        = ax.PLATFORM_OSX
 ax.PLATFORM_EMSCRIPTEN = ax.PLATFORM_WASM
+ax.PLATFORM_IPHONE     = ax.PLATFORM_IOS
+ax.PLATFORM_IPAD       = ax.PLATFORM_IOS
+ax.PLATFORM_UWP        = ax.PLATFORM_WINUWP
+ax.PLATFORM_WINRT      = ax.PLATFORM_WINUWP
 
 ax.LANGUAGE_ENGLISH    = 0
 ax.LANGUAGE_CHINESE    = 1
@@ -531,7 +536,7 @@ ax.KeyCode.KEY_LEFT_ALT   = ax.KeyCode.KEY_ALT
 
 ax.EventAssetsManagerEx =
 {
-    EventCode = 
+    EventCode =
     {
         ERROR_NO_LOCAL_MANIFEST = 0,
         ERROR_DOWNLOAD_MANIFEST = 1,
@@ -586,7 +591,7 @@ ax.CameraFlag =
     USER8 = 256,
 }
 
-ax.CameraBackgroundBrush.BrushType = 
+ax.CameraBackgroundBrush.BrushType =
 {
     NONE = 0,
     DEPTH = 1,
@@ -627,7 +632,7 @@ ax.MATRIX_STACK_TYPE =
     TEXTURE = 2,
 }
 
-ax.LightType = 
+ax.LightType =
 {
     DIRECTIONAL = 0,
     POINT = 1,
@@ -635,7 +640,7 @@ ax.LightType =
     AMBIENT = 3,
 }
 
-ax.LightFlag = 
+ax.LightFlag =
 {
     LIGHT0  = math.pow(2,0),
     LIGHT1  = math.pow(2,1),

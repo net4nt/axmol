@@ -610,7 +610,7 @@ end
 
 function Scene3DTest:onExit()
     local targetPlatform = cc.Application:getInstance():getTargetPlatform()
-    if targetPlatform == cc.PLATFORM_OS_ANDROID  or targetPlatform == cc.PLATFORM_OS_WINRT  or targetPlatform == cc.PLATFORM_OS_WP8  then
+    if targetPlatform == cc.PLATFORM_ANDROID  or targetPlatform == cc.PLATFORM_WINRT then
         cc.Director:getInstance():getEventDispatcher():removeEventListener(self._backToForegroundListener)
     end
 end

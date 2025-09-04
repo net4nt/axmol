@@ -69,31 +69,15 @@ local LINE_SPACE = 40
 local CurPos = {x = 0, y = 0}
 local BeginPos = {x = 0, y = 0}
 
-local audioEndineSupported = false
-local currPlatform = cc.Application:getInstance():getTargetPlatform()
-if (cc.PLATFORM_OS_WINDOWS == currPlatform or cc.PLATFORM_OS_MAC == currPlatform or cc.PLATFORM_OS_IPHONE == currPlatform or cc.PLATFORM_OS_IPAD == currPlatform or cc.PLATFORM_OS_ANDROID == currPlatform) then
-    audioEndineSupported = true
-end
-
-local assetManagerSupported = true;
-if (currPlatform == cc.PLATFORM_OS_TIZEN) then
-  assetManagerSupported = false;
-end
-
-local luaByteCodeSupported = true;
-if (currPlatform == cc.PLATFORM_OS_TIZEN) then
-  luaByteCodeSupported = false;
-end
-
 local _allTests = {
     { isSupported = true,  name = "Accelerometer"          , create_func=             AccelerometerMain  },
     { isSupported = true,  name = "ActionManagerTest"      , create_func   =         ActionManagerTestMain  },
     { isSupported = true,  name = "ActionsEaseTest"        , create_func   =           EaseActionsTest      },
     { isSupported = true,  name = "ActionsProgressTest"    , create_func   =       ProgressActionsTest      },
     { isSupported = true,  name = "ActionsTest"            , create_func   =               ActionsTest      },
-    { isSupported = assetManagerSupported,  name = "AssetsManagerTest"      , create_func   =         AssetsManagerTestMain      },
+    { isSupported = true,  name = "AssetsManagerTest"      , create_func   =         AssetsManagerTestMain      },
     { isSupported = true,  name = "AssetsManagerExTest"      , create_func   =         AssetsManagerExTestMain  },
-    { isSupported = audioEndineSupported, name = "AudioEngineTest", create_func = AudioEngineTest},
+    { isSupported = true, name = "AudioEngineTest", create_func = AudioEngineTest},
     { isSupported = true,  name = "BillBoardTest"           , create_func=              BillBoardTestMain},
     { isSupported = true,  name = "BugsTest"               , create_func=              BugsTestMain      },
     { isSupported = true,  name = "Camera3DTest"     ,        create_func=       Camera3DTestMain  },
@@ -203,7 +187,7 @@ function CreateTestMenu()
         if obj.name == "WebViewTest" 
         or obj.name == "VibrateTest"
         or obj.name == "VideoPlayerTest" then
-            if cc.PLATFORM_OS_LINUX == targetPlatform then 
+            if cc.PLATFORM_LINUX == targetPlatform then 
                 testMenuItem:setEnabled(false)
             end
         end
