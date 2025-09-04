@@ -94,20 +94,20 @@ local _allTests = {
     { isSupported = true,  name = "FileUtilsTest"          , create_func   =              FileUtilsTestMain},
     { isSupported = true,  name = "FontTest"               , create_func   =              FontTestMain      },
     { isSupported = true,  name = "IntervalTest"           , create_func   =              IntervalTestMain  },
-    { isSupported = true,  name = "KeypadTest"             , create_func=                KeypadTestMain  }, 
+    { isSupported = true,  name = "KeypadTest"             , create_func=                KeypadTestMain  },
     { isSupported = true,  name = "LabelTest"           , create_func   =                 LabelTestNew      },
     { isSupported = true,  name = "LayerTest"              , create_func   =                 LayerTestMain  },
     { isSupported = true,  name = "LightTest"              , create_func   =                 LightTestMain  },
     { isSupported = true,  name = "LuaBridgeTest"          , create_func   =        LuaBridgeMainTest },
     { isSupported = true,  name = "LuaLoaderTest"          , create_func   =        LuaLoaderMain },
     { isSupported = true,  name = "MaterialSystemTest"     , create_func   =        MaterialSystemTest },
-    { isSupported = true,  name = "MenuTest"               , create_func   =                  MenuTestMain  }, 
+    { isSupported = true,  name = "MenuTest"               , create_func   =                  MenuTestMain  },
     { isSupported = true,  name = "MotionStreakTest"       , create_func   =          MotionStreakTest      },
     { isSupported = true,  name = "NavMeshTest"            , create_func   =       NavMeshTest },
     { isSupported = true,  name = "EventDispatcherTest"  , create_func   =       NewEventDispatcherTest },
     { isSupported = true,  name = "NodeTest"               , create_func   =                  CocosNodeTest },
     { isSupported = true,  name = "ParallaxTest"           , create_func   =              ParallaxTestMain  },
-    { isSupported = true,  name = "ParticleTest"           , create_func   =              ParticleTest      }, 
+    { isSupported = true,  name = "ParticleTest"           , create_func   =              ParticleTest      },
     { isSupported = true,  name = "Particle3D (PU)"        , create_func   =              Particle3DTest  },
     { isSupported = true,  name = "PhysicsTest"            , create_func =          PhysicsTest  },
     { isSupported = true,  name = "Physics3DTest"            , create_func =          Physics3DTest  },
@@ -122,9 +122,9 @@ local _allTests = {
     { isSupported = true,  name = "SpritePolygonTest"             , create_func   =         SpritePolygonTest      },
     { isSupported = true,  name = "TextInputTest"          , create_func=             TextInputTestMain  },
     { isSupported = true,  name = "Texture2DTest"          , create_func   =             Texture2dTestMain  },
-    { isSupported = true,  name = "TileMapTest"            , create_func   =               TileMapTestMain  }, 
+    { isSupported = true,  name = "TileMapTest"            , create_func   =               TileMapTestMain  },
     { isSupported = true,  name = "TouchesTest"            , create_func   =               TouchesTest      },
-    { isSupported = true,  name = "TransitionsTest"        , create_func   =           TransitionsTest      },   
+    { isSupported = true,  name = "TransitionsTest"        , create_func   =           TransitionsTest      },
     { isSupported = true,  name = "UserDefaultTest"        , create_func=           UserDefaultTestMain  },
     { isSupported = true,  name = "VideoPlayerTest"        , create_func=           VideoPlayerTestMain  },
     { isSupported = true,  name = "WebViewTest"            , create_func=           WebViewTestMain  },
@@ -137,16 +137,16 @@ local TESTS_COUNT = #(_allTests)
 
 -- create scene
 local function CreateTestScene(nIdx)
-    cc.Director:getInstance():purgeCachedData()
+    ax.Director:getInstance():purgeCachedData()
     local scene = _allTests[nIdx].create_func()
     return scene
 end
 -- create menu
 function CreateTestMenu()
-    local menuLayer = cc.Layer:create()
+    local menuLayer = ax.Layer:create()
 
     local function closeCallback()
-        cc.Director:getInstance():endToLua()
+        ax.Director:getInstance():endToLua()
     end
 
     local function menuCallback(tag)
@@ -154,58 +154,58 @@ function CreateTestMenu()
         local Idx = tag - 10000
         local testScene = CreateTestScene(Idx)
         if testScene then
-            cc.Director:getInstance():replaceScene(testScene)
+            ax.Director:getInstance():replaceScene(testScene)
         end
     end
 
     -- add close menu
-    local s = cc.Director:getInstance():getWinSize()
-    local CloseItem = cc.MenuItemImage:create(s_pPathClose, s_pPathClose)
+    local s = ax.Director:getInstance():getWinSize()
+    local CloseItem = ax.MenuItemImage:create(s_pPathClose, s_pPathClose)
     CloseItem:registerScriptTapHandler(closeCallback)
     CloseItem:setAnchorPoint(1, 1)
     CloseItem:setPosition(VisibleRect:rightTop())
 
-    local CloseMenu = cc.Menu:create()
+    local CloseMenu = ax.Menu:create()
     CloseMenu:setPosition(0, 0)
     CloseMenu:addChild(CloseItem)
     menuLayer:addChild(CloseMenu)
 
-    local targetPlatform = cc.Application:getInstance():getTargetPlatform() 
+    local targetPlatform = ax.Application:getInstance():getTargetPlatform()
 
     -- add menu items for tests
-    local MainMenu = cc.Menu:create()
+    local MainMenu = ax.Menu:create()
     local index = 0
     local obj = nil
     for index, obj in pairs(_allTests) do
-        local testLabel = cc.Label:createWithTTF(obj.name, s_arialPath, 24)
-        testLabel:setAnchorPoint(cc.p(0.5, 0.5))
-        local testMenuItem = cc.MenuItemLabel:create(testLabel)
+        local testLabel = ax.Label:createWithTTF(obj.name, s_arialPath, 24)
+        testLabel:setAnchorPoint(ax.p(0.5, 0.5))
+        local testMenuItem = ax.MenuItemLabel:create(testLabel)
         if not obj.isSupported then
             testMenuItem:setEnabled(false)
         end
 
-        if obj.name == "WebViewTest" 
+        if obj.name == "WebViewTest"
         or obj.name == "VibrateTest"
         or obj.name == "VideoPlayerTest" then
-            if cc.PLATFORM_LINUX == targetPlatform then 
+            if ax.PLATFORM_LINUX == targetPlatform then
                 testMenuItem:setEnabled(false)
             end
         end
 
-        if obj.name == "Physics3DTest" and nil == cc.Physics3DComponent then
-            testMenuItem:setEnabled(false) 
+        if obj.name == "Physics3DTest" and nil == ax.Physics3DComponent then
+            testMenuItem:setEnabled(false)
         end
 
-        if obj.name == "NavMeshTest" and nil == cc.NavMesh then
-            testMenuItem:setEnabled(false) 
+        if obj.name == "NavMeshTest" and nil == ax.NavMesh then
+            testMenuItem:setEnabled(false)
         end
 
         testMenuItem:registerScriptTapHandler(menuCallback)
-        testMenuItem:setPosition(cc.p(s.width / 2, (s.height - (index) * LINE_SPACE)))
+        testMenuItem:setPosition(ax.p(s.width / 2, (s.height - (index) * LINE_SPACE)))
         MainMenu:addChild(testMenuItem, index + 10000, index + 10000)
     end
 
-    MainMenu:setContentSize(cc.size(s.width, (TESTS_COUNT + 1) * (LINE_SPACE)))
+    MainMenu:setContentSize(ax.size(s.width, (TESTS_COUNT + 1) * (LINE_SPACE)))
     MainMenu:setPosition(CurPos.x, CurPos.y)
     menuLayer:addChild(MainMenu)
 
@@ -221,7 +221,7 @@ function CreateTestMenu()
         local nMoveY = location.y - BeginPos.y
         local curPosx, curPosy = MainMenu:getPosition()
         local nextPosy = curPosy + nMoveY
-        local winSize = cc.Director:getInstance():getWinSize()
+        local winSize = ax.Director:getInstance():getWinSize()
         if nextPosy < 0 then
             MainMenu:setPosition(0, 0)
             return
@@ -237,9 +237,9 @@ function CreateTestMenu()
         CurPos = {x = curPosx, y = nextPosy}
     end
 
-    local listener = cc.EventListenerTouchOneByOne:create()
-    listener:registerScriptHandler(onTouchBegan,cc.Handler.EVENT_TOUCH_BEGAN )
-    listener:registerScriptHandler(onTouchMoved,cc.Handler.EVENT_TOUCH_MOVED )
+    local listener = ax.EventListenerTouchOneByOne:create()
+    listener:registerScriptHandler(onTouchBegan,ax.Handler.EVENT_TOUCH_BEGAN )
+    listener:registerScriptHandler(onTouchMoved,ax.Handler.EVENT_TOUCH_MOVED )
     local eventDispatcher = menuLayer:getEventDispatcher()
     eventDispatcher:addEventListenerWithSceneGraphPriority(listener, menuLayer)
 
