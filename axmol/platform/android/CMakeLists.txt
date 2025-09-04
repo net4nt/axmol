@@ -23,8 +23,7 @@ if(NOT BUILD_SHARED_LIBS)
 endif()
 
 target_include_directories(${target_name}
-  PRIVATE ..
-  PRIVATE ../..
+  PRIVATE ../../..
   PRIVATE ../../../3rdparty
   PRIVATE ../../../3rdparty/yasio
   PRIVATE ../../../3rdparty/glad/include
