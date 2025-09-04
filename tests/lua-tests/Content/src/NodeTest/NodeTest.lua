@@ -685,7 +685,7 @@ end
 
 
 
-function CocosNodeTest()
+function NodeTest()
 	local scene = ax.Scene:create()
 
     Helper.createFunctionTable = {

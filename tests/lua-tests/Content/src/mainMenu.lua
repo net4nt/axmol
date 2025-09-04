@@ -105,7 +105,7 @@ local _allTests = {
     { isSupported = true,  name = "MotionStreakTest"       , create_func   =          MotionStreakTest      },
     { isSupported = true,  name = "NavMeshTest"            , create_func   =       NavMeshTest },
     { isSupported = true,  name = "EventDispatcherTest"  , create_func   =       NewEventDispatcherTest },
-    { isSupported = true,  name = "NodeTest"               , create_func   =                  CocosNodeTest },
+    { isSupported = true,  name = "NodeTest"               , create_func   =                  NodeTest },
     { isSupported = true,  name = "ParallaxTest"           , create_func   =              ParallaxTestMain  },
     { isSupported = true,  name = "ParticleTest"           , create_func   =              ParticleTest      },
     { isSupported = true,  name = "Particle3D (PU)"        , create_func   =              Particle3DTest  },
