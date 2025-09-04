@@ -757,7 +757,7 @@ function SpriteAccelerationEventTest:onEnter()
 end
 
 function SpriteAccelerationEventTest:onExit()
-    self:setAccelerometerEnabled(false)
+    ax.Device:setAccelerometerEnabled(false)
 end
 
 function SpriteAccelerationEventTest.create()

@@ -33,8 +33,6 @@ if target == ax.PLATFORM_WINDOWS then
     device.platform = "windows"
 elseif target == ax.PLATFORM_UWP then
     device.platform = "uwp"
-elseif target == ax.PLATFORM_UWP_PHONE then
-    device.platform = "uwp phone"
 elseif target == ax.PLATFORM_MAC then
     device.platform = "mac"
 elseif target == ax.PLATFORM_ANDROID then

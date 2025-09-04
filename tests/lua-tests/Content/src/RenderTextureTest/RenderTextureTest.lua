@@ -50,6 +50,7 @@ local function RenderTextureSave()
     target = ax.RenderTexture:create(s.width, s.height, ax.TEXTURE_PF_RGBA8)
     target:retain()
     target:setPosition(ax.p(s.width / 2, s.height / 2))
+    target:setAnchorPoint(ax.p(0.5, 0.5))
 
     -- note that the render texture is a ax.Node, and contains a sprite of its texture for convenience,
     -- so we can just parent it to the scene like any other ax.Node
@@ -514,22 +515,22 @@ end
 -- -- Attributes
 -- --
 
--- ccGLEnableVertexAttribs(kcc.VertexAttribFlag_PosColorTex)
+-- ccGLEnableVertexAttribs(kax.VertexAttribFlag_PosColorTex)
 
 -- #define kQuadSize sizeof(m_sQuad.bl)
 -- long offset = (long)&m_sQuad
 
 -- -- vertex
 -- int diff = offsetof( V3F_C4B_T2F, vertices)
--- glVertexAttribPointer(kcc.VertexAttrib_Position, 3, GL_FLOAT, GL_FALSE, kQuadSize, (void*) (offset + diff))
+-- glVertexAttribPointer(kax.VertexAttrib_Position, 3, GL_FLOAT, GL_FALSE, kQuadSize, (void*) (offset + diff))
 
 -- -- texCoords
 -- diff = offsetof( V3F_C4B_T2F, texCoords)
--- glVertexAttribPointer(kcc.VertexAttrib_TexCoords, 2, GL_FLOAT, GL_FALSE, kQuadSize, (void*)(offset + diff))
+-- glVertexAttribPointer(kax.VertexAttrib_TexCoords, 2, GL_FLOAT, GL_FALSE, kQuadSize, (void*)(offset + diff))
 
 -- -- color
 -- diff = offsetof( V3F_C4B_T2F, colors)
--- glVertexAttribPointer(kcc.VertexAttrib_Color, 4, GL_UNSIGNED_BYTE, GL_TRUE, kQuadSize, (void*)(offset + diff))
+-- glVertexAttribPointer(kax.VertexAttrib_Color, 4, GL_UNSIGNED_BYTE, GL_TRUE, kQuadSize, (void*)(offset + diff))
 
 -- glDrawArrays(GL_TRIANGLE_STRIP, 0, 4)
 -- end

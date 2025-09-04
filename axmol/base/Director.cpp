@@ -252,7 +252,7 @@ void Director::setDefaultValues()
     Image::setCompressedImagesHavePMA(Image::CompressedImagePMAFlag::ETC2, etc2_alpha_premultiplied);
 }
 
-void Director::setGLDefaultValues()
+void Director::setRenderDefaults()
 {
     // This method SHOULD be called only after _renderView was initialized
     AXASSERT(_renderView, "render view should not be null");

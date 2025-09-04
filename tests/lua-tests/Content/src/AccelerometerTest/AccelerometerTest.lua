@@ -6,7 +6,7 @@ local function AccelerometerMainLayer()
     local layer = ax.Layer:create()
 
     local function onEnter()
-        layer:setAccelerometerEnabled(true)
+        ax.Device:setAccelerometerEnabled(true)
         local label = ax.Label:createWithTTF(title(), "fonts/arial.ttf", 32)
         layer:addChild(label, 1)
         label:setAnchorPoint(ax.p(0.5, 0.5))
@@ -47,7 +47,7 @@ local function AccelerometerMainLayer()
     end
 
     local function onExit()
-        layer:setAccelerometerEnabled(false)
+        ax.Device:setAccelerometerEnabled(false)
     end
 
     local function onNodeEvent(event)

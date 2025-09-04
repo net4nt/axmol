@@ -8,27 +8,6 @@ local function createLayerDemoLayer(title, subtitle)
     local subTitleStr = subtitle  == nil and "" or subtitle
     Helper.titleLabel:setString(titleStr)
     Helper.subtitleLabel:setString(subTitleStr)
-
-    -- local prev = {x = 0, y = 0}
-    -- local function onTouchEvent(eventType, x, y)
-    --     if eventType == "began" then
-    --         prev.x = x
-    --         prev.y = y
-    --         return true
-    --     elseif  eventType == "moved" then
-    --         local node  = layer:getChildByTag(kTagTileMap)
-    --         local newX  = node:getPositionX()
-    --         local newY  = node:getPositionY()
-    --         local diffX = x - prev.x
-    --         local diffY = y - prev.y
-
-    --         node:setPosition( ax.p.__add(ax.p(newX, newY), ax.p(diffX, diffY)) )
-    --         prev.x = x
-    --         prev.y = y
-    --     end
-    -- end
-    -- layer:setTouchEnabled(true)
-    -- layer:registerScriptTouchHandler(onTouchEvent)
     return layer
 end
 
@@ -100,7 +79,7 @@ end
 
 -- LayerTestCascadingOpacityB
 local function LayerTestCascadingOpacityB()
-    local ret = createLayerDemoLayer("CCLayerColor: cascading opacity")
+    local ret = createLayerDemoLayer("LayerColor: cascading opacity")
 
     local s = ax.Director:getInstance():getWinSize()
     local layer1 = ax.LayerColor:create(ax.color32(192, 0, 0, 255), s.width, s.height/2)

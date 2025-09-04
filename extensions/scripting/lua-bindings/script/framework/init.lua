@@ -35,7 +35,6 @@ transition = require("axmol.framework.transition")
 
 require("axmol.framework.extends.NodeEx")
 require("axmol.framework.extends.SpriteEx")
-require("axmol.framework.extends.LayerEx")
 require("axmol.framework.extends.MenuEx")
 
 if ccui then

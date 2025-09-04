@@ -19,12 +19,12 @@ local function LuaBridgeLayer()
     ax.MenuItemFont:setFontSize(24)
 
     local supportObjectCBridge  = false
-    if (ax.PLATFORM_OS_IPHONE == targetPlatform) or (ax.PLATFORM_OS_IPAD == targetPlatform) or (ax.PLATFORM_OS_MAC == targetPlatform)  then
+    if (ax.PLATFORM_IOS == targetPlatform) or (ax.PLATFORM_TVOS == targetPlatform) or (ax.PLATFORM_MAC == targetPlatform)  then
         supportObjectCBridge = true
     end
 
     local supportJavaBridge = false
-    if (ax.PLATFORM_OS_ANDROID == targetPlatform) then
+    if (ax.PLATFORM_ANDROID == targetPlatform) then
         supportJavaBridge = true
     end
 
@@ -60,7 +60,7 @@ local function LuaBridgeLayer()
         subtitleLabel:setAnchorPoint(ax.p(0.5, 0.5))
         subtitleLabel:setPosition(s.width / 2, s.height - 80)
         subtitleLabel:setString("See the console.")
-        if (ax.PLATFORM_OS_ANDROID == targetPlatform) then
+        if (ax.PLATFORM_ANDROID == targetPlatform) then
             local args = { 2 , 3}
             local sigs = "(II)I"
             local luaj = require "axmol.cocos2d.luaj"
@@ -100,7 +100,7 @@ local function LuaBridgeLayer()
         subtitleLabel:setAnchorPoint(ax.p(0.5, 0.5))
         subtitleLabel:setPosition(s.width / 2, s.height - 80)
         subtitleLabel:setString("See the console.")
-        if (ax.PLATFORM_OS_IPHONE == targetPlatform) or (ax.PLATFORM_OS_IPAD == targetPlatform) or (ax.PLATFORM_OS_MAC == targetPlatform) then
+        if (ax.PLATFORM_IPHONE == targetPlatform) or (ax.PLATFORM_IPAD == targetPlatform) or (ax.PLATFORM_MAC == targetPlatform) then
             local args = { num1 = 2 , num2 = 3 }
             local luaoc = require "axmol.cocos2d.luaoc"
             local className = "LuaObjectCBridgeTest"
@@ -135,7 +135,7 @@ local function LuaBridgeLayer()
         subtitleLabel:setAnchorPoint(ax.p(0.5, 0.5))
         subtitleLabel:setPosition(s.width / 2, s.height - 80)
         subtitleLabel:setString("See the console.")
-        if (ax.PLATFORM_OS_IPHONE == targetPlatform) or (ax.PLATFORM_OS_IPAD == targetPlatform) or (ax.PLATFORM_OS_MAC == targetPlatform) then
+        if (ax.PLATFORM_IPHONE == targetPlatform) or (ax.PLATFORM_IPAD == targetPlatform) or (ax.PLATFORM_MAC == targetPlatform) then
             local args = {name = "jett" ,method = "call OC"}
             local args_tab = {tab = args , name = "table_test"}
             local luaoc = require "axmol.cocos2d.luaoc"

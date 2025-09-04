@@ -15,9 +15,9 @@ local function updateLayer()
     local layer = ax.Layer:create()
 
     local support  = false
-    if (ax.PLATFORM_OS_IPHONE == targetPlatform) or (ax.PLATFORM_OS_IPAD == targetPlatform)
-        or (ax.PLATFORM_OS_WINDOWS == targetPlatform) or (ax.PLATFORM_OS_ANDROID == targetPlatform)
-        or (ax.PLATFORM_OS_MAC  == targetPlatform) then
+    if (ax.PLATFORM_IPHONE == targetPlatform) or (ax.PLATFORM_IPAD == targetPlatform)
+        or (ax.PLATFORM_WINDOWS == targetPlatform) or (ax.PLATFORM_ANDROID == targetPlatform)
+        or (ax.PLATFORM_MAC  == targetPlatform) then
         support = true
     end
 

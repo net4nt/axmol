@@ -350,7 +350,7 @@ function AudioProfileTest.create()
     AudioProfileTest._files = {}
     AudioProfileTest._files[1] = "background.mp3"
     local targetPlatform = ax.Application:getInstance():getTargetPlatform()
-    if (ax.PLATFORM_OS_MAC == targetPlatform or ax.PLATFORM_OS_IPHONE == targetPlatform or ax.PLATFORM_OS_IPAD == targetPlatform) then
+    if (ax.PLATFORM_MAC == targetPlatform or ax.PLATFORM_IPHONE == targetPlatform or ax.PLATFORM_IPAD == targetPlatform) then
         AudioProfileTest._files[2] = "background.caf"
     else
         AudioProfileTest._files[2] = "background.ogg"
@@ -449,10 +449,10 @@ function InvalidAudioFileTest.create()
     -- unsupported media type
     local function playUnsupportedAudio(tag, sender)
         local targetPlatform = ax.Application:getInstance():getTargetPlatform()
-        if (ax.PLATFORM_OS_MAC == currPlatform or ax.PLATFORM_OS_IPHONE == targetPlatform or ax.PLATFORM_OS_IPAD == targetPlatform) then
+        if (ax.PLATFORM_MAC == currPlatform or ax.PLATFORM_IPHONE == targetPlatform or ax.PLATFORM_IPAD == targetPlatform) then
             ax.AudioEngine:play2d("background.ogg")
         end
-        if (ax.PLATFORM_OS_ANDROID == targetPlatform) then
+        if (ax.PLATFORM_ANDROID == targetPlatform) then
             ax.AudioEngine:play2d("background.caf")
         end
     end

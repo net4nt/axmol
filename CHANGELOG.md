@@ -1,3 +1,48 @@
+# axmol-2.8.1 ?? 2025
+
+## Bug Fixes
+
+- **Fix a regression introduced by 2.8.0 that improper Content-Length setting in HTTP requests, see #2686** by @halx99
+- Fix compile error when using AX_CORE_PROFILE option by @martinking71 in [#2677](https://github.com/axmolengine/axmol/pull/2677)
+- Fix lua-tests PhysicsTest not work by @halx99
+- Fix missing processor endif in platform/mac/GL-mac.h by @halx99
+- Fix package name for lua-tests, live2d-tests by @halx99
+- Fix AccelerometerTest of lua-tests not work by @halx99
+- Fix wasm downloader by @AlexandreK38 in [#2676](https://github.com/axmolengine/axmol/pull/2676)
+
+## Deprecated
+
+- Mark Director::setGLDefaultValues as deprecated; use setRenderDefaults instead by @halx99
+- Mark messageBox as deprecated; use showAlert instead by @halx99
+
+## Improvements
+
+- **Revert DrawNode color param to Color4F to fix Lua test issues** by @halx99
+- Add API ax::showAlert by @halx99
+- Add API HttpResponse::getStatusText by @halx99
+- Remove entries for non-existent Lua test cases by @halx99
+- Fix incorrect fmt::format format string by @halx99
+- Remove "CC" from the menu entries (cpp-/lua-tests) by @aismann in [#2688](https://github.com/axmolengine/axmol/pull/2688)
+- Remove unnecessary Lua files: LayerEx.lua, DrawPrimitives.lua.lua by @halx99
+- Use lua length operator `#` instead `table.getn` in CocoStudio.lua by @halx99
+- Update url of CurlTeset by @halx99
+- Ensure lua-tests RenderTextureTest case work as expected by @halx99
+- Add API PointArray::clear() by @aismann in [#2692](https://github.com/axmolengine/axmol/pull/2692)
+
+## Notes
+
+- **Revert DrawNode color parameter type**
+
+  **Reason**:  
+  In axmol-2.2.0, the `DrawNode` color parameter was changed from `Color4F` to `Color4B`. This change prevented certain Lua binding test cases from detecting color updates correctly.
+
+  **Impact**:  
+  As a result, some Lua tests failed to produce the expected rendering behavior, leading to inconsistent test outcomes.
+
+  **Solution**:  
+  The color parameter has been reverted to `Color4F`. Since `DrawNode` internally already uses `Color4F` to pass color data to the GPU, this change restores expected Lua test behavior without any noticeable performance loss.
+
+
 # axmol-2.8.0 Sep.1 2025
 
 ## Bug fixes
