@@ -50,6 +50,7 @@ local function RenderTextureSave()
     target = cc.RenderTexture:create(s.width, s.height, cc.TEXTURE_PF_RGBA8)
     target:retain()
     target:setPosition(cc.p(s.width / 2, s.height / 2))
+    target:setAnchorPoint(cc.p(0.5, 0.5))
 
     -- note that the render texture is a cc.Node, and contains a sprite of its texture for convenience,
     -- so we can just parent it to the scene like any other cc.Node
