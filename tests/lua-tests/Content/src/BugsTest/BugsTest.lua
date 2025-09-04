@@ -195,7 +195,6 @@ local function BugTest624()
     pLabel:setAnchorPoint(ax.p(0.5, 0.5))
     pLabel:setPosition(ax.p(Winsize.width / 2, Winsize.height / 2))
     pLayer:addChild(pLabel)
-    pLayer:setAccelerometerEnabled(true)
 --  schedule(schedule_selector(Bug624Layer::switchLayer), 5.0f)
 
 	local function BugTest624_SwitchLayer()
@@ -220,11 +219,6 @@ local function BugTest624()
     end
     pLayer:registerScriptHandler(BugTest624_OnEnterOrExit)
 
-    local function didAccelerate(x,y,z,timestamp)
-    	print("Layer1 accel")
-    end
-    pLayer:registerScriptAccelerateHandler(didAccelerate)
-
     return pLayer
 end
 
@@ -235,7 +229,6 @@ function BugTest624_2()
     pLabel:setAnchorPoint(ax.p(0.5, 0.5))
 	pLabel:setPosition(ax.p(Winsize.width / 2, Winsize.height / 2))
     pLayer:addChild(pLabel)
-    pLayer:setAccelerometerEnabled(true)
 
     local function BugTest624_2_SwitchLayer()
 		local scheduler = ax.Director:getInstance():getScheduler()
@@ -257,13 +250,6 @@ function BugTest624_2()
 		end
     end
     pLayer:registerScriptHandler(BugTest624_2_OnEnterOrExit)
-
-    local function didAccelerate(x,y,z,timestamp)
-    	print("Layer2 accel")
-    end
-
-    pLayer:registerScriptAccelerateHandler(didAccelerate)
-	return pLayer
 end
 
 --BugTest886
