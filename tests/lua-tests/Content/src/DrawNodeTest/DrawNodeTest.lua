@@ -195,7 +195,7 @@ local function drawPrimitivesMainLayer()
     return curLayer
 end
 
-function DrawPrimitivesTest()
+function DrawNodeTest()
     local scene = ax.Scene:create()
     scene:addChild(drawPrimitivesMainLayer())
     scene:addChild(CreateBackMenuItem())
