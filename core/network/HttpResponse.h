@@ -129,6 +129,8 @@ public:
 
     const ResponseHeaderMap& getResponseHeaders() const { return _responseHeaders; }
 
+    const std::string& getStatusText() const { return _statusText; }
+
 private:
     void setResponseCode(int value) { _responseCode = value; }
 
@@ -194,6 +196,7 @@ private:
             _finished = false;
             _responseData.clear();
             _currentHeader.clear();
+            _statusText.clear();
             _responseCode = -1;
             _internalCode = 0;
 
@@ -214,6 +217,7 @@ private:
             _contextSettings.on_header_value          = on_header_value;
             _contextSettings.on_header_value_complete = on_header_value_complete;
             _contextSettings.on_body                  = on_body;
+            _contextSettings.on_status                = on_status;
             _contextSettings.on_message_complete      = on_complete;
         }
 
@@ -223,6 +227,13 @@ private:
     bool validateUri() const { return _requestUri.isValid(); }
 
     const Uri& getRequestUri() const { return _requestUri; }
+
+    static int on_status(llhttp_t* context, const char* at, size_t length)
+    {
+        auto thiz = (HttpResponse*)context->data;
+        thiz->_statusText.append(at, length);
+        return 0;
+    }
 
     static int on_header_field(llhttp_t* context, const char* at, size_t length)
     {
@@ -276,6 +287,7 @@ protected:
     ResponseHeaderMap _responseHeaders;  /// the returned raw header data. You can also dump it as a string
     int _responseCode = -1;              /// the status code returned from server, e.g. 200, 404
     int _internalCode = 0;               /// the ret code of perform
+    std::string _statusText;
     llhttp_t _context;
     llhttp_settings_t _contextSettings;
 };
