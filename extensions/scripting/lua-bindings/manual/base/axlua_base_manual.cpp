@@ -3787,6 +3787,57 @@ tolua_lerror:
     return 0;
 }
 
+#if defined(AX_ENABLE_PHYSICS)
+int axlua_Scene_getPhysicsWorld(lua_State* tolua_S)
+{
+    int argc        = 0;
+    ax::Scene* cobj = nullptr;
+    bool ok         = true;
+
+#if _AX_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+#if _AX_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S, 1, "ax.Scene", 0, &tolua_err))
+        goto tolua_lerror;
+#endif
+
+    cobj = (ax::Scene*)tolua_tousertype(tolua_S, 1, 0);
+
+#if _AX_DEBUG >= 1
+    if (!cobj)
+    {
+        tolua_error(tolua_S, "invalid 'cobj' in function 'axlua_Scene_getPhysicsWorld'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S) - 1;
+    if (argc == 0)
+    {
+        if (!ok)
+        {
+            tolua_error(tolua_S, "invalid arguments in function 'axlua_Scene_getPhysicsWorld'", nullptr);
+            return 0;
+        }
+        ax::PhysicsWorld* ret = cobj->getPhysicsWorld();
+        object_to_luaval<ax::PhysicsWorld>(tolua_S, "ax.PhysicsWorld", (ax::PhysicsWorld*)ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "ax.Scene:getPhysicsWorld", argc,
+               0);
+    return 0;
+
+#if _AX_DEBUG >= 1
+tolua_lerror:
+    tolua_error(tolua_S, "#ferror in function 'axlua_Scene_getPhysicsWorld'.", &tolua_err);
+#endif
+
+    return 0;
+}
+#endif
+
 #if defined(AX_ENABLE_3D_PHYSICS)
 #    include "physics3d/Physics3DWorld.h"
 int axlua_Scene_getPhysics3DWorld(lua_State* tolua_S)
@@ -3896,6 +3947,9 @@ static void extendScene(lua_State* tolua_S)
     lua_rawget(tolua_S, LUA_REGISTRYINDEX);
     if (lua_istable(tolua_S, -1))
     {
+#if defined(AX_ENABLE_PHYSICS)
+        tolua_function(tolua_S, "getPhysicsWorld", axlua_Scene_getPhysicsWorld);
+#endif
 #if defined(AX_ENABLE_3D_PHYSICS)
         tolua_function(tolua_S, "getPhysics3DWorld", axlua_Scene_getPhysics3DWorld);
         tolua_function(tolua_S, "setPhysics3DDebugCamera", axlua_Scene_setPhysics3DDebugCamera);

@@ -252,8 +252,14 @@ local function PhysicsDemoLogoSmash()
 	         return bit.band(bit.rshift(logo_image[bit.rshift(x, 3) + y*logo_raw_length + 1], bit.band(bit.bnot(x), 0x07)), 1)
        end
 
-       cc.Director:getInstance():getRunningScene():getPhysicsWorld():setGravity(cc.p(0, 0))
-       cc.Director:getInstance():getRunningScene():getPhysicsWorld():setUpdateRate(5.0)
+       local runningScene = ax.Director:getInstance():getRunningScene()
+       if runningScene == nil then
+           print('runningScene is nil')
+       end
+       local physicWorld = runningScene:getPhysicsWorld()
+
+       physicWorld:setGravity(cc.p(0, 0))
+       physicWorld:setUpdateRate(5.0)
        
        layer.ball = cc.SpriteBatchNode:create("Images/ball.png", #logo_image)
        layer:addChild(layer.ball)
