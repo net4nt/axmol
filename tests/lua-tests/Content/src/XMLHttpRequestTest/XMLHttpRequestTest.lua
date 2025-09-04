@@ -13,7 +13,7 @@ local function XMLHttpRequestLayer()
         layer:addChild(label, 0)
 
         --Response Code Label
-        local labelStatusCode = cc.Label:createWithTTF("HTTP Status Code", s_markerFeltFontPath, 20)
+        local labelStatusCode = cc.Label:createWithTTF("HTTP Status:", s_markerFeltFontPath, 20)
         labelStatusCode:setAnchorPoint(cc.p(0.5, 0.5))
         labelStatusCode:setPosition(cc.p(winSize.width / 2,  winSize.height - margin - 6 * space))
         layer:addChild(labelStatusCode)
@@ -29,13 +29,13 @@ local function XMLHttpRequestLayer()
             xhr:open("GET", "https://httpbin.org/get")
 
             local function onReadyStateChanged()
+                if not tolua.isnull(labelStatusCode) then
+                    labelStatusCode:setString("Http Status:" .. xhr.statusText)
+                else
+                    print("ERROR: labelStatusCode is invalid!")
+                end
                 if xhr.readyState == 4 and (xhr.status >= 200 and xhr.status < 207) then
                     print(xhr.response)
-                    if not tolua.isnull(labelStatusCode) then
-                        labelStatusCode:setString("Http Status Code:" .. xhr.statusText)
-                    else
-                        print("ERROR: labelStatusCode is invalid!")
-                    end
                 else
                     print("xhr.readyState is:", xhr.readyState, "xhr.status is: ",xhr.status)
                 end
@@ -63,7 +63,7 @@ local function XMLHttpRequestLayer()
             local function onReadyStateChanged()
                 if xhr.readyState == 4 and (xhr.status >= 200 and xhr.status < 207) then
                     if not tolua.isnull(labelStatusCode) then
-                        labelStatusCode:setString("Http Status Code:" .. xhr.statusText)
+                        labelStatusCode:setString("Http Status:" .. xhr.statusText)
                     else
                         print("ERROR: labelStatusCode is invalid!")
                     end
@@ -95,7 +95,7 @@ local function XMLHttpRequestLayer()
             local function onReadyStateChanged()
                 if xhr.readyState == 4 and (xhr.status >= 200 and xhr.status < 207) then
                     local response   = xhr.response
-                    local size     = table.getn(response)
+                    local size     = #response
                     local strInfo = ""
 
                     for i = 1,size do
@@ -107,7 +107,7 @@ local function XMLHttpRequestLayer()
                     end
 
                     if not tolua.isnull(labelStatusCode) then
-                        labelStatusCode:setString("Http Status Code:" .. xhr.statusText)
+                        labelStatusCode:setString("Http Status:" .. xhr.statusText)
                     else
                         print("ERROR: labelStatusCode is invalid!")
                     end
@@ -142,7 +142,7 @@ local function XMLHttpRequestLayer()
             local function onReadyStateChanged()
                 if xhr.readyState == 4 and (xhr.status >= 200 and xhr.status < 207) then
                     if not tolua.isnull(labelStatusCode) then
-                        labelStatusCode:setString("Http Status Code:" .. xhr.statusText)
+                        labelStatusCode:setString("Http Status:" .. xhr.statusText)
                     else
                         print("ERROR: labelStatusCode is invalid!")
                     end
