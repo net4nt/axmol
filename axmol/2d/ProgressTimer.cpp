@@ -106,7 +106,7 @@ bool ProgressTimer::initWithSprite(Sprite* sp)
     setBarChangeRate(Vec2(1, 1));
     setSprite(sp);
 
-    setProgramState(initPipelineDesc(_customCommand, true, _locMVP1, _locTex1), true);
+    setProgramState(initPipelineDesc(_customCommand, true, _locMVP1, _locTex1));
     _programState2 = initPipelineDesc(_customCommand2, false, _locMVP2, _locTex2);
 
     return true;
@@ -115,7 +115,6 @@ bool ProgressTimer::initWithSprite(Sprite* sp)
 ProgressTimer::~ProgressTimer()
 {
     AX_SAFE_RELEASE(_sprite);
-    AX_SAFE_RELEASE(_programState2);
 
     _customCommand.releasePSVL();
     _customCommand2.releasePSVL();

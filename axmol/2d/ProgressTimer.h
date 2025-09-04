@@ -192,6 +192,7 @@ protected:
     CustomCommand _customCommand;
     CustomCommand _customCommand2;
 
+    // weak ref, managed by _customCommand2
     rhi::ProgramState* _programState2 = nullptr;
 
     rhi::UniformLocation _locMVP1;
