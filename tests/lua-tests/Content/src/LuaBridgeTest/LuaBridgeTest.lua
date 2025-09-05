@@ -63,8 +63,8 @@ local function LuaBridgeLayer()
         if (ax.PLATFORM_ANDROID == targetPlatform) then
             local args = { 2 , 3}
             local sigs = "(II)I"
-            local luaj = require "axmol.cocos2d.luaj"
-            local className = "com/cocos2dx/sample/LuaJavaBridgeTest/LuaJavaBridgeTest"
+            local luaj = require "axmol.core.luaj"
+            local className = "dev/axmol/sample/LuaJavaBridgeTest/LuaJavaBridgeTest"
             local ok,ret  = luaj.callStaticMethod(className,"addTwoNumbers",args,sigs)
             if not ok then
                 print("luaj error:", ret)
@@ -102,7 +102,7 @@ local function LuaBridgeLayer()
         subtitleLabel:setString("See the console.")
         if (ax.PLATFORM_IPHONE == targetPlatform) or (ax.PLATFORM_IPAD == targetPlatform) or (ax.PLATFORM_MAC == targetPlatform) then
             local args = { num1 = 2 , num2 = 3 }
-            local luaoc = require "axmol.cocos2d.luaoc"
+            local luaoc = require "axmol.core.luaoc"
             local className = "LuaObjectCBridgeTest"
             local ok,ret  = luaoc.callStaticMethod(className,"addTwoNumbers",args)
             if not ok then
@@ -138,7 +138,7 @@ local function LuaBridgeLayer()
         if (ax.PLATFORM_IPHONE == targetPlatform) or (ax.PLATFORM_IPAD == targetPlatform) or (ax.PLATFORM_MAC == targetPlatform) then
             local args = {name = "jett" ,method = "call OC"}
             local args_tab = {tab = args , name = "table_test"}
-            local luaoc = require "axmol.cocos2d.luaoc"
+            local luaoc = require "axmol.core.luaoc"
             local className = "LuaObjectCBridgeTest"
             local ok,ret  = luaoc.callStaticMethod(className,"printLuaTableToDictionary",args_tab)
 
