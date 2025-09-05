@@ -1,8 +1,8 @@
-# axmol-2.8.1 ?? 2025
+# axmol-2.8.1 Sep.5 2025
 
-## Bug Fixes
+## Bug fixes
 
-- **Fix a regression introduced by 2.8.0 that improper Content-Length setting in HTTP requests, see #2686** by @halx99
+- **Fix a regression introduced by 2.8.0 that improper Content-Length setting in HTTP requests, see [#2686](https://github.com/axmolengine/axmol/issues/2686)** by @halx99
 - Fix compile error when using AX_CORE_PROFILE option by @martinking71 in [#2677](https://github.com/axmolengine/axmol/pull/2677)
 - Fix lua-tests PhysicsTest not work by @halx99
 - Fix missing processor endif in platform/mac/GL-mac.h by @halx99
@@ -23,7 +23,7 @@
 - Remove entries for non-existent Lua test cases by @halx99
 - Fix incorrect fmt::format format string by @halx99
 - Remove "CC" from the menu entries (cpp-/lua-tests) by @aismann in [#2688](https://github.com/axmolengine/axmol/pull/2688)
-- Remove unnecessary Lua files: LayerEx.lua, DrawPrimitives.lua.lua by @halx99
+- Remove unnecessary Lua files: LayerEx.lua, DrawPrimitives.lua by @halx99
 - Use lua length operator `#` instead `table.getn` in CocoStudio.lua by @halx99
 - Update url of CurlTeset by @halx99
 - Ensure lua-tests RenderTextureTest case work as expected by @halx99

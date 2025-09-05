@@ -177,6 +177,11 @@ Director::~Director()
     _rendererRecreatedListener = nullptr;
 #endif
 
+#if AX_ENABLE_SCRIPT_BINDING
+    // !!!ScriptEngine instance depends on _scheduler, so must dtor before _scheduler
+    ScriptEngineManager::destroyInstance();
+#endif
+
     AX_SAFE_RELEASE(_scheduler);
     AX_SAFE_RELEASE(_actionManager);
 
@@ -197,10 +202,6 @@ Director::~Director()
     Configuration::destroyInstance();
     ObjectFactory::destroyInstance();
     QuadCommand::destroyIsolatedIndices();
-
-#if AX_ENABLE_SCRIPT_BINDING
-    ScriptEngineManager::destroyInstance();
-#endif
 
     /** clean auto release pool. */
     PoolManager::destroyInstance();
@@ -1109,7 +1110,7 @@ void Director::restartDirector()
     ScriptEngineManager::sendEventToLua(scriptEvent);
 #endif
 
-    setGLDefaultValues();
+    setRenderDefaults();
 
 #if AX_ENABLE_CONTEXT_LOSS_RECOVERY
     // listen the event that renderer was recreated on Android/WP8

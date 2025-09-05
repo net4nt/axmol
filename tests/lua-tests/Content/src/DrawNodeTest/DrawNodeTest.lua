@@ -1,6 +1,5 @@
 
-
-local function drawNodeMainLayer()
+local function DrawNodeMainLayer()
     local kItemTagBasic = 1000
     local testCount = 1
     local maxCases = testCount
@@ -197,7 +196,7 @@ end
 
 function DrawNodeTest()
     local scene = ax.Scene:create()
-    scene:addChild(drawNodeMainLayer())
+    scene:addChild(DrawNodeMainLayer())
     scene:addChild(CreateBackMenuItem())
     return scene
 end

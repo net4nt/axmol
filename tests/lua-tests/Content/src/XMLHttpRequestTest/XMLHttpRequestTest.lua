@@ -1,4 +1,4 @@
-local json = cjson
+local json = require 'cjson'
 
 local function XMLHttpRequestLayer()
     local layer = ax.Layer:create()
@@ -147,10 +147,16 @@ local function XMLHttpRequestLayer()
                         print("ERROR: labelStatusCode is invalid!")
                     end
                     local response   = xhr.response
-                    local output = json.decode(response,1)
-                    table.foreach(output,function(i, v) print (i, v) end)
+                    local output = json.decode(response)
+
+                    for k,v in pairs(output) do
+                        print (k, v)
+                    end
+
                     print("headers are")
-                    table.foreach(output.headers,print)
+                    for k,v in pairs(output.headers) do
+                        print (k, v)
+                    end
                 else
                     print("xhr.readyState is:", xhr.readyState, "xhr.status is: ",xhr.status)
                 end

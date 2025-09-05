@@ -36,7 +36,6 @@ local function TileMapTest()
 
     local  map = ax.TileMapAtlas:create(s_TilesPng,  s_LevelMapTga, 16, 16)
     -- Convert it to "alias" (GL_LINEAR filtering)
-    map:getTexture():setAntiAliasTexParameters()
 
     local  s = map:getContentSize()
     cclog("ContentSize: %f, %f", s.width,s.height)
@@ -144,7 +143,7 @@ local function TMXOrthoTest()
     --local  color = ax.LayerColor:create( ax.color32(64,64,64,255) )
     --addChild(color, -1)
 
-    local  map = ax.TMXTiledMap:create("TileMaps/orthogonal-test2.tmx")
+    local  map = ax.FastTMXTiledMap:create("TileMaps/orthogonal-test2.tmx")
     layer:addChild(map, 0, kTagTileMap)
 
     local  s = map:getContentSize()
@@ -162,8 +161,6 @@ local function TMXOrthoTest()
         if child == nil then
             break
         end
-
-        child:getTexture():setAntiAliasTexParameters()
     end
 
     -- local x = 0
@@ -198,7 +195,7 @@ end
 local function TMXOrthoTest2()
     local layer = createTileDemoLayer("TMX Ortho test2")
 
-    local  map = ax.TMXTiledMap:create("TileMaps/orthogonal-test1.tmx")
+    local  map = ax.FastTMXTiledMap:create("TileMaps/orthogonal-test1.tmx")
     layer:addChild(map, 0, kTagTileMap)
 
     local  s = map:getContentSize()
@@ -216,7 +213,6 @@ local function TMXOrthoTest2()
         if child == nil then
             break
         end
-        child:getTexture():setAntiAliasTexParameters()
     end
 
     map:runAction( ax.ScaleBy:create(2, 0.5) )
@@ -230,7 +226,7 @@ end
 --------------------------------------------------------------------
 local function TMXOrthoTest3()
     local layer = createTileDemoLayer("TMX anchorPoint test")
-    local map = ax.TMXTiledMap:create("TileMaps/orthogonal-test3.tmx")
+    local map = ax.FastTMXTiledMap:create("TileMaps/orthogonal-test3.tmx")
     layer:addChild(map, 0, kTagTileMap)
 
     local  s = map:getContentSize()
@@ -248,7 +244,6 @@ local function TMXOrthoTest3()
         if child == nil then
             break
         end
-        child:getTexture():setAntiAliasTexParameters()
     end
 
     map:setScale(0.2)
@@ -264,7 +259,7 @@ end
 --------------------------------------------------------------------
 local function TMXOrthoTest4()
     local ret = createTileDemoLayer("TMX width/height test")
-    local map = ax.TMXTiledMap:create("TileMaps/orthogonal-test4.tmx")
+    local map = ax.FastTMXTiledMap:create("TileMaps/orthogonal-test4.tmx")
     ret:addChild(map, 0, kTagTileMap)
 
     local  s1 = map:getContentSize()
@@ -282,7 +277,6 @@ local function TMXOrthoTest4()
         if child == nil then
             break
         end
-        child:getTexture():setAntiAliasTexParameters()
     end
 
     map:setAnchorPoint(ax.p(0, 0))
@@ -338,7 +332,7 @@ local function TMXReadWriteTest()
     local ret = createTileDemoLayer("TMX Read/Write test")
     local m_gid  = 0
     local m_gid2 = 0
-    local  map = ax.TMXTiledMap:create("TileMaps/orthogonal-test2.tmx")
+    local  map = ax.FastTMXTiledMap:create("TileMaps/orthogonal-test2.tmx")
     ret:addChild(map, 0, kTagTileMap)
 
     local  s = map:getContentSize()
@@ -346,8 +340,6 @@ local function TMXReadWriteTest()
 
 
     local  layer = map:getLayer("Layer 0")
-    layer:getTexture():setAntiAliasTexParameters()
-
     map:setScale( 1 )
 
     local tile0 = layer:getTileAt(ax.p(1,63))
@@ -482,7 +474,7 @@ local function TMXHexTest()
     local  color = ax.LayerColor:create( ax.color32(64,64,64,255) )
     ret:addChild(color, -1)
 
-    local  map = ax.TMXTiledMap:create("TileMaps/hexa-test.tmx")
+    local  map = ax.FastTMXTiledMap:create("TileMaps/hexa-test.tmx")
     ret:addChild(map, 0, kTagTileMap)
 
     local  s = map:getContentSize()
@@ -500,7 +492,7 @@ local function TMXIsoTest()
     local  color = ax.LayerColor:create( ax.color32(64,64,64,255) )
     ret:addChild(color, -1)
 
-    local  map = ax.TMXTiledMap:create("TileMaps/iso-test.tmx")
+    local  map = ax.FastTMXTiledMap:create("TileMaps/iso-test.tmx")
     ret:addChild(map, 0, kTagTileMap)
 
     -- move map to the center of the screen
@@ -520,7 +512,7 @@ local function TMXIsoTest1()
     local  color = ax.LayerColor:create( ax.color32(64,64,64,255) )
     ret:addChild(color, -1)
 
-    local map = ax.TMXTiledMap:create("TileMaps/iso-test1.tmx")
+    local map = ax.FastTMXTiledMap:create("TileMaps/iso-test1.tmx")
     ret:addChild(map, 0, kTagTileMap)
 
     local  s = map:getContentSize()
@@ -540,7 +532,7 @@ local function TMXIsoTest2()
     local  color = ax.LayerColor:create( ax.color32(64,64,64,255) )
     ret:addChild(color, -1)
 
-    local map = ax.TMXTiledMap:create("TileMaps/iso-test2.tmx")
+    local map = ax.FastTMXTiledMap:create("TileMaps/iso-test2.tmx")
     ret:addChild(map, 0, kTagTileMap)
 
     local  s = map:getContentSize()
@@ -563,7 +555,7 @@ local function TMXUncompressedTest()
     local  color = ax.LayerColor:create( ax.color32(64,64,64,255) )
     ret:addChild(color, -1)
 
-    local map = ax.TMXTiledMap:create("TileMaps/iso-test2-uncompressed.tmx")
+    local map = ax.FastTMXTiledMap:create("TileMaps/iso-test2-uncompressed.tmx")
     ret:addChild(map, 0, kTagTileMap)
 
     local  s = map:getContentSize()
@@ -584,7 +576,6 @@ local function TMXUncompressedTest()
         if layer == nil then
             break
         end
-        layer:releaseMap()
     end
     return ret
 end
@@ -596,20 +587,17 @@ end
 --------------------------------------------------------------------
 local function TMXTilesetTest()
     local ret = createTileDemoLayer("TMX Tileset test")
-    local map = ax.TMXTiledMap:create("TileMaps/orthogonal-test5.tmx")
+    local map = ax.FastTMXTiledMap:create("TileMaps/orthogonal-test5.tmx")
     ret:addChild(map, 0, kTagTileMap)
 
     local  s = map:getContentSize()
     cclog("ContentSize: %f, %f", s.width,s.height)
 
     local layer = map:getLayer("Layer 0")
-    layer:getTexture():setAntiAliasTexParameters()
 
     layer = map:getLayer("Layer 1")
-    layer:getTexture():setAntiAliasTexParameters()
 
     layer = map:getLayer("Layer 2")
-    layer:getTexture():setAntiAliasTexParameters()
     return ret
 end
 
@@ -620,7 +608,7 @@ end
 --------------------------------------------------------------------
 local function TMXOrthoObjectsTest()
     local ret = createTileDemoLayer("TMX Ortho object test", "You should see a white box around the 3 platforms")
-    local map = ax.TMXTiledMap:create("TileMaps/ortho-objects.tmx")
+    local map = ax.FastTMXTiledMap:create("TileMaps/ortho-objects.tmx")
     ret:addChild(map, -1, kTagTileMap)
 
     local  s = map:getContentSize()
@@ -676,7 +664,7 @@ end
 
 local function TMXIsoObjectsTest()
     local ret = createTileDemoLayer("TMX Iso object test", "You need to parse them manually. See bug #810")
-    local  map = ax.TMXTiledMap:create("TileMaps/iso-test-objectgroup.tmx")
+    local  map = ax.FastTMXTiledMap:create("TileMaps/iso-test-objectgroup.tmx")
     ret:addChild(map, -1, kTagTileMap)
 
     local  s = map:getContentSize()
@@ -727,7 +715,7 @@ end
 
 local function TMXResizeTest()
     local ret = createTileDemoLayer("TMX resize test", "Should not crash. Testing issue #740")
-    local  map = ax.TMXTiledMap:create("TileMaps/orthogonal-test5.tmx")
+    local  map = ax.FastTMXTiledMap:create("TileMaps/orthogonal-test5.tmx")
     ret:addChild(map, 0, kTagTileMap)
 
     local  s = map:getContentSize()
@@ -754,7 +742,7 @@ local function TMXIsoZorder()
     ax.Director:getInstance():getRenderer():setDepthTest(false)
     local m_tamara = nil
     local ret = createTileDemoLayer("TMX Iso Zorder", "Sprite should hide behind the trees")
-    local map = ax.TMXTiledMap:create("TileMaps/iso-test-zorder.tmx")
+    local map = ax.FastTMXTiledMap:create("TileMaps/iso-test-zorder.tmx")
     ret:addChild(map, 0, kTagTileMap)
 
     local s = map:getContentSize()
@@ -814,7 +802,7 @@ end
 local function TMXOrthoZorder()
     local m_tamara = nil
     local ret = createTileDemoLayer("TMX Ortho Zorder", "Sprite should hide behind the trees")
-    local map = ax.TMXTiledMap:create("TileMaps/orthogonal-test-zorder.tmx")
+    local map = ax.FastTMXTiledMap:create("TileMaps/orthogonal-test-zorder.tmx")
     ret:addChild(map, 0, kTagTileMap)
 
     local  s = map:getContentSize()
@@ -872,7 +860,7 @@ end
 local function TMXIsoVertexZ()
     local m_tamara = nil
     local ret = createTileDemoLayer("TMX Iso VertexZ", "Sprite should hide behind the trees")
-    local map = ax.TMXTiledMap:create("TileMaps/iso-test-vertexz.tmx")
+    local map = ax.FastTMXTiledMap:create("TileMaps/iso-test-vertexz.tmx")
     ret:addChild(map, 0, kTagTileMap)
 
     local s = map:getContentSize()
@@ -931,7 +919,7 @@ end
 local function TMXOrthoVertexZ()
     local m_tamara = nil
     local ret = createTileDemoLayer("TMX Ortho vertexZ", "Sprite should hide behind the trees")
-    local map = ax.TMXTiledMap:create("TileMaps/orthogonal-test-vertexz.tmx")
+    local map = ax.FastTMXTiledMap:create("TileMaps/orthogonal-test-vertexz.tmx")
     ret:addChild(map, 0, kTagTileMap)
 
     local  s = map:getContentSize()
@@ -989,7 +977,7 @@ end
 --------------------------------------------------------------------
 local function TMXIsoMoveLayer()
     local ret = createTileDemoLayer("TMX Iso Move Layer", "Trees should be horizontally aligned")
-    local  map = ax.TMXTiledMap:create("TileMaps/iso-test-movelayer.tmx")
+    local  map = ax.FastTMXTiledMap:create("TileMaps/iso-test-movelayer.tmx")
     ret:addChild(map, 0, kTagTileMap)
 
     map:setPosition(ax.p(-700,-50))
@@ -1007,7 +995,7 @@ end
 --------------------------------------------------------------------
 local function TMXOrthoMoveLayer()
     local ret = createTileDemoLayer("TMX Ortho Move Layer", "Trees should be horizontally aligned")
-    local map = ax.TMXTiledMap:create("TileMaps/orthogonal-test-movelayer.tmx")
+    local map = ax.FastTMXTiledMap:create("TileMaps/orthogonal-test-movelayer.tmx")
     ret:addChild(map, 0, kTagTileMap)
 
     local  s = map:getContentSize()
@@ -1023,7 +1011,7 @@ end
 
 local function TMXTilePropertyTest()
     local ret = createTileDemoLayer("TMX Tile Property Test", "In the console you should see tile properties")
-    local map = ax.TMXTiledMap:create("TileMaps/ortho-tile-property.tmx")
+    local map = ax.FastTMXTiledMap:create("TileMaps/ortho-tile-property.tmx")
     ret:addChild(map ,0 ,kTagTileMap)
     local i = 0
     for i=1, 20, 1 do
@@ -1040,17 +1028,11 @@ end
 
 local function TMXOrthoFlipTest()
     local ret = createTileDemoLayer("TMX tile flip test")
-    local map = ax.TMXTiledMap:create("TileMaps/ortho-rotation-test.tmx")
+    local map = ax.FastTMXTiledMap:create("TileMaps/ortho-rotation-test.tmx")
     ret:addChild(map, 0, kTagTileMap)
 
     local  s = map:getContentSize()
     cclog("ContentSize: %f, %f", s.width,s.height)
-
-    local i = 0
-    for i = 0, #(map:getChildren())-1, 1 do
-        local  child = map:getChildren()[i + 1]
-        child:getTexture():setAntiAliasTexParameters()
-    end
 
     local  action = ax.ScaleBy:create(2, 0.5)
     map:runAction(action)
@@ -1065,17 +1047,11 @@ end
 
 local function TMXOrthoFlipRunTimeTest()
     local ret = createTileDemoLayer("TMX tile flip run time test", "in 2 sec bottom left tiles will flip")
-    local map = ax.TMXTiledMap:create("TileMaps/ortho-rotation-test.tmx")
+    local map = ax.FastTMXTiledMap:create("TileMaps/ortho-rotation-test.tmx")
     ret:addChild(map, 0, kTagTileMap)
 
     local s = map:getContentSize()
     cclog("ContentSize: %f, %f", s.width,s.height)
-
-    local i = 0
-    for i = 0, #(map:getChildren())-1, 1 do
-        local child = map:getChildren()[i + 1]
-        child:getTexture():setAntiAliasTexParameters()
-    end
 
     local  action = ax.ScaleBy:create(2, 0.5)
     map:runAction(action)
@@ -1146,18 +1122,11 @@ local function TMXOrthoFromXMLTest()
         cclog("Unable to open file")
     end
 
-    local map = ax.TMXTiledMap:createWithXML(str ,resources)
+    local map = ax.FastTMXTiledMap:createWithXML(str ,resources)
     ret:addChild(map, 0, kTagTileMap)
 
     local s = map:getContentSize()
     cclog("ContentSize: %f, %f", s.width,s.height)
-
-    local i = 0
-    local len = #(map:getChildren())
-    for i = 0, len-1, 1 do
-        local  child = map:getChildren()[i + 1]
-        child:getTexture():setAntiAliasTexParameters()
-    end
 
     local  action = ax.ScaleBy:create(2, 0.5)
     map:runAction(action)
@@ -1171,7 +1140,7 @@ end
 --------------------------------------------------------------------
 local function TMXBug987()
     local ret = createTileDemoLayer("TMX Bug 987", "You should see an square")
-    local map = ax.TMXTiledMap:create("TileMaps/orthogonal-test6.tmx")
+    local map = ax.FastTMXTiledMap:create("TileMaps/orthogonal-test6.tmx")
     ret:addChild(map, 0, kTagTileMap)
 
     local  s1 = map:getContentSize()
@@ -1187,7 +1156,6 @@ local function TMXBug987()
         if pNode == nil then
             break
         end
-        pNode:getTexture():setAntiAliasTexParameters()
     end
 
     map:setAnchorPoint(ax.p(0, 0))
@@ -1203,7 +1171,7 @@ end
 --------------------------------------------------------------------
 local function TMXBug787()
     local ret = createTileDemoLayer("TMX Bug 787", "You should see a map")
-    local map = ax.TMXTiledMap:create("TileMaps/iso-test-bug787.tmx")
+    local map = ax.FastTMXTiledMap:create("TileMaps/iso-test-bug787.tmx")
     ret:addChild(map, 0, kTagTileMap)
     map:setScale(0.25)
     return ret

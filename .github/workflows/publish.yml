@@ -2,6 +2,9 @@ name: publish
 
 on:
   push:
+    branches:
+      - dev/*
+      - release/*
     paths:
       - CHANGELOG.md
   workflow_dispatch:

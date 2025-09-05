@@ -1,3 +1,22 @@
+--[[ https://websocket.org/
+ list of public test servers (Note, on china mainland, may need VPN):
+   - wss://ws.ifelse.io (available, test on Sep.5 2025)
+   - wss://echo.websocket.org (available, test on Sep.5 2025)
+   - wss://echo.websocket.events/.ws (unavailable, test on Sep.5 2025)
+   - wss://ws.postman-echo.com/raw (not test)
+   - wss://ws.postman-echo.com/socketio handshake path: random, handling (not test)
+   - wss://socketsbay.com/wss/v2/1/demo/ (not test)
+   - https://blog.postman.com/introducing-postman-websocket-echo-service/
+   - other https://www.lob.com/blog/websocket-org-is-down-here-is-an-alternative
+]]
+local ECHO_SERVER_URL = "wss://ws.ifelse.io"
+
+local function bin2hex(str)
+    return (str:gsub('.', function(c)
+        return string.format('%02X', string.byte(c))
+    end))
+end
+
 local function WebSocketTestLayer()
     local layer   = ax.Layer:create()
     local winSize = ax.Director:getInstance():getWinSize()
@@ -85,9 +104,9 @@ local function WebSocketTestLayer()
     toMainMenu:setPosition(ax.p(0, 0))
     layer:addChild(toMainMenu,10)
 
-    wsSendText   = ax.WebSocket:create("wss://echo.websocket.org", {"myprotocol_1", "myprotocol_2"}, "cacert.pem")
-    wsSendBinary = ax.WebSocket:create("ws://echo.websocket.org", {"hello"}, "cacert.pem")
-    wsError      = ax.WebSocket:create("ws://invalid.url.com", {"invalid_protocol"})
+    wsSendText   = ax.WebSocket:create(ECHO_SERVER_URL, "cacert.pem")
+    wsSendBinary = ax.WebSocket:create(ECHO_SERVER_URL, "cacert.pem")
+    wsError      = ax.WebSocket:create("ws://invalid.url.com")
 
     local function wsSendTextOpen(strData)
         if sendTextStatus ~= nil then
@@ -95,7 +114,7 @@ local function WebSocketTestLayer()
         end
     end
 
-    local function wsSendTextMessage(strData)
+    local function wsSendTextMessage(strData, isBinary)
         receiveTextTimes= receiveTextTimes + 1
         local strInfo= "response text msg: "..strData..", "..receiveTextTimes
         if sendTextStatus ~= nil then
@@ -122,19 +141,17 @@ local function WebSocketTestLayer()
         end
     end
 
-    local function wsSendBinaryMessage(paramTable)
-        local length = #(paramTable)
-        local i = 1
-        local strInfo = "response bin msg: "
-        for i = 1,length do
-            if 0 == paramTable[i] then
-                strInfo = strInfo.."\'\\0\'"
-            else
-                strInfo = strInfo..string.char(paramTable[i])
-            end
+    local function wsSendBinaryMessage(reply, isBinary)
+        local strInfo = nil
+        if not isBinary then
+            strInfo = reply
+        else
+            local length = #(reply)
+            local i = 1
+            receiveBinaryTimes = receiveBinaryTimes + 1
+            strInfo = '#' .. receiveBinaryTimes .. " response bin msg: "
+            strInfo = strInfo .. bin2hex(reply)
         end
-        receiveBinaryTimes = receiveBinaryTimes + 1
-        strInfo = strInfo..receiveBinaryTimes
         if sendBinaryStatus ~= nil then
             sendBinaryStatus:setString(strInfo)
         end
