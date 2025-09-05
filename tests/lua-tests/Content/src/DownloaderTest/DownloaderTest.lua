@@ -1,4 +1,4 @@
-local json = cjson
+local json = require 'cjson'
 
 
 local imgURI = "https://forum.cocos.com/images/logo.png"

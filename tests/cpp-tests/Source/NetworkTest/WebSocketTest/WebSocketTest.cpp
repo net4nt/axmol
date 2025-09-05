@@ -29,15 +29,18 @@
 
 #include "base/format.h"
 
-/* "ws://echo.websocket.org no longer avaiable: https://www.lob.com/blog/websocket-org-is-down-here-is-an-alternative
- list of public test servers:
-   - wss://echo.websocket.events/.ws
-   - wss://ws.postman-echo.com/raw
-   - wss://ws.postman-echo.com/socketio handshake path: random, handling
-   - wss://socketsbay.com/wss/v2/1/demo/
+/* https://websocket.org/
+ list of public test servers: (Note, on china mainland, may need VPN):
+   - wss://ws.ifelse.io (available, test on Sep.5 2025)
+   - wss://echo.websocket.org (available, test on Sep.5 2025)
+   - wss://echo.websocket.events/.ws (unavailable, test on Sep.5 2025)
+   - wss://ws.postman-echo.com/raw (not test)
+   - wss://ws.postman-echo.com/socketio handshake path: random, handling (not test)
+   - wss://socketsbay.com/wss/v2/1/demo/ (not test)
    - https://blog.postman.com/introducing-postman-websocket-echo-service/
+   - other https://www.lob.com/blog/websocket-org-is-down-here-is-an-alternative
 */
-#define ECHO_SERVER_URL "wss://echo.websocket.events/.ws" //"wss://ws.postman-echo.com/raw"
+#define ECHO_SERVER_URL "wss://ws.ifelse.io"
 #define SOCKETIO_SERVICE "wss://ws.postman-echo.com/socketio"
 
 using namespace ax;

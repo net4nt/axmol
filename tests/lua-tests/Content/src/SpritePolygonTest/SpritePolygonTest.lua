@@ -1,9 +1,9 @@
 local imageFileName = "Images/grossini.png"
 
 local SpritePolygonTestDemo = class("SpritePolygonTestDemo", function()
-    local layer = ax.Layer:create()
-    return layer
-end)
+        local layer = ax.Layer:create()
+        return layer
+    end)
 
 function SpritePolygonTestDemo:registerNodeEvent()
     local function onNodeEvent(event)
@@ -188,8 +188,11 @@ function SpritePolygonTest3:ctor()
     slider:loadProgressBarTexture("cocosui/sliderProgress.png")
     slider:setPosition(ax.p(vsize.width/2, vsize.height/4))
 
+    self._epsilonLabel = ax.Label:createWithTTF(self._ttfConfig, "Epsilon: 2.0")
+    self:addChild(self._epsilonLabel)
+    self._epsilonLabel:setPosition(ax.p(vsize.width/2, vsize.height/4 + 15))
 
-        local function percentChangedEvent(sender,eventType)
+    local function percentChangedEvent(sender,eventType)
         if eventType == ccui.SliderEventType.percentChanged then
             local slider = sender
             local percent = "Percent " .. slider:getPercent()
@@ -198,25 +201,22 @@ function SpritePolygonTest3:ctor()
     end
 
     slider:addEventListener(function(sender, eventType)
-        local epsilon = math.pow(sender:getPercent() / 100.0 , 2) * 19.0 + 1.0
-        local children = self:getChildren()
-        for i = 1, #children do
-            local child = children[i]
-            if child:getName() ~= nil and child:getName() ~= "" then
-                local file = child:getName()
-                local info = ax.AutoPolygon:generatePolygon(file, ax.rect(0, 0, 0, 0), epsilon)
-                child:setPolygonInfo(info)
-                self:updateLabel(child, info)
-            end
+            local epsilon = math.pow(sender:getPercent() / 100.0 , 2) * 19.0 + 1.0
+            local children = self:getChildren()
+            for i = 1, #children do
+                local child = children[i]
+                if child:getName() ~= nil and child:getName() ~= "" then
+                    local file = child:getName()
+                    local info = ax.AutoPolygon:generatePolygon(file, ax.rect(0, 0, 0, 0), epsilon)
+                    child:setPolygonInfo(info)
+                    self:updateLabel(child, info)
+                end
 
-        end
-        self._epsilonLabel:setString("Epsilon: " .. epsilon)
-    end)
+            end
+            self._epsilonLabel:setString("Epsilon: " .. epsilon)
+        end)
     slider:setPercent(math.sqrt(1.0 /19.0 )*100)
 
-    self._epsilonLabel = ax.Label:createWithTTF(self._ttfConfig, "Epsilon: 2.0")
-    self:addChild(self._epsilonLabel)
-    self._epsilonLabel:setPosition(ax.p(vsize.width/2, vsize.height/4 + 15))
     self:addChild(slider)
 
     local list = {
@@ -271,7 +271,7 @@ function SpritePolygonTest4:ctor()
     slider:setPosition(ax.p(vsize.width/2, vsize.height/4))
 
 
-        local function percentChangedEvent(sender,eventType)
+    local function percentChangedEvent(sender,eventType)
         if eventType == ccui.SliderEventType.percentChanged then
             local slider = sender
             local percent = "Percent " .. slider:getPercent()
@@ -280,20 +280,20 @@ function SpritePolygonTest4:ctor()
     end
 
     slider:addEventListener(function(sender, eventType)
-        local epsilon = math.pow(sender:getPercent() / 100.0 , 2) * 19.0 + 1.0
-        local children = self:getChildren()
-        for i = 1, #children do
-            local child = children[i]
-            if child:getName() ~= nil and child:getName() ~= "" then
-                local file = child:getName()
-                local info = ax.AutoPolygon:generatePolygon(file, ax.rect(0, 0, 0, 0), epsilon)
-                child:setPolygonInfo(info)
-                self:updateLabel(child, info)
-            end
+            local epsilon = math.pow(sender:getPercent() / 100.0 , 2) * 19.0 + 1.0
+            local children = self:getChildren()
+            for i = 1, #children do
+                local child = children[i]
+                if child:getName() ~= nil and child:getName() ~= "" then
+                    local file = child:getName()
+                    local info = ax.AutoPolygon:generatePolygon(file, ax.rect(0, 0, 0, 0), epsilon)
+                    child:setPolygonInfo(info)
+                    self:updateLabel(child, info)
+                end
 
-        end
-        self._epsilonLabel:setString("Epsilon: " .. epsilon)
-    end)
+            end
+            self._epsilonLabel:setString("Epsilon: " .. epsilon)
+        end)
     slider:setPercent(math.sqrt(1.0 /19.0 )*100)
 
     self._epsilonLabel = ax.Label:createWithTTF(self._ttfConfig, "Epsilon: 2.0")
@@ -428,50 +428,50 @@ function SpritePolygonPerformance:init()
     self._waitingTime = 0.0
 
     self:scheduleUpdateWithPriorityLua(function (dt)
-        dt = dt * 0.3 + self._prevDt * 0.7
-        self._prevDt = dt
-        self._elapsedTime = self._elapsedTime + dt
-        local loops = math.floor((0.025 - dt)*1000)
-        if dt < 0.025 and loops > 0 then
-            self._continuousHighDtTime = ax.clampf(self._continuousHighDtTime-dt*2, 0.0, 1.0)
-            self._waitingTime = ax.clampf(self._waitingTime-dt, 0.0, 5.0)
-            self._continuousLowDt = self._continuousLowDt + 1
-        else
-            self._continuousHighDtTime = self._continuousHighDtTime + dt
-            self._continuousLowDt = 0
-        end
-
-        if self._continuousLowDt >= 5 and loops > 0 then
-            for i = 1, loops do
-                if self._posX >= self._rightX then
-                    self._goRight = false
-                elseif self._posX <= self._leftX then
-                    self._goRight = true
-                end
-
-
-                local s = self:makeSprite()
-                self:addChild(s)
-                s:setPosition(self._posX, self._posY)
-                if self._goRight then
-                    self._posX = self._posX + 1
-                else
-                    self._posX = self._posX - 1
-                end
-                self:incrementStats()
+            dt = dt * 0.3 + self._prevDt * 0.7
+            self._prevDt = dt
+            self._elapsedTime = self._elapsedTime + dt
+            local loops = math.floor((0.025 - dt)*1000)
+            if dt < 0.025 and loops > 0 then
+                self._continuousHighDtTime = ax.clampf(self._continuousHighDtTime-dt*2, 0.0, 1.0)
+                self._waitingTime = ax.clampf(self._waitingTime-dt, 0.0, 5.0)
+                self._continuousLowDt = self._continuousLowDt + 1
+            else
+                self._continuousHighDtTime = self._continuousHighDtTime + dt
+                self._continuousLowDt = 0
             end
 
-            self:updateLabel()
-        elseif self._continuousHighDtTime >= 0.5 or self._waitingTime > 3.0 then
-            self._ended = true
-            self:unscheduleUpdate()
-            local labelInfo = "Test ended in" .. self._elapsedTime .. " seconds\nNodes: " .. self._spriteCount .. "   Triangles: " .. self._triCount .. "\nPixels: " .. self._pixelCount .. "   Vertices: " .. self._vertCount
-            self._perfLabel:setString(labelInfo)
-            Helper.subtitleLabel:setString("Test ended")
-        else
-            self._waitingTime = self._waitingTime + dt
-        end
-    end, 0)
+            if self._continuousLowDt >= 5 and loops > 0 then
+                for i = 1, loops do
+                    if self._posX >= self._rightX then
+                        self._goRight = false
+                    elseif self._posX <= self._leftX then
+                        self._goRight = true
+                    end
+
+
+                    local s = self:makeSprite()
+                    self:addChild(s)
+                    s:setPosition(self._posX, self._posY)
+                    if self._goRight then
+                        self._posX = self._posX + 1
+                    else
+                        self._posX = self._posX - 1
+                    end
+                    self:incrementStats()
+                end
+
+                self:updateLabel()
+            elseif self._continuousHighDtTime >= 0.5 or self._waitingTime > 3.0 then
+                self._ended = true
+                self:unscheduleUpdate()
+                local labelInfo = "Test ended in" .. self._elapsedTime .. " seconds\nNodes: " .. self._spriteCount .. "   Triangles: " .. self._triCount .. "\nPixels: " .. self._pixelCount .. "   Vertices: " .. self._vertCount
+                self._perfLabel:setString(labelInfo)
+                Helper.subtitleLabel:setString("Test ended")
+            else
+                self._waitingTime = self._waitingTime + dt
+            end
+        end, 0)
 end
 
 function SpritePolygonPerformance:initExtend()
