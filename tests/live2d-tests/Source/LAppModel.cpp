@@ -646,7 +646,8 @@ void LAppModel::SetupTextures()
         // テクスチャが読めていなければバインド処理をスキップ
         if(!texture) continue;
 
-        const SamplerDesc texParams = Texture2D::chooseSamplerDesc(true, true);
+        SamplerDesc texParams;
+        Texture2D::chooseSamplerDesc(true, true, texParams);
         texture->setTexParameters(texParams);
         _loadedTextures.PushBack(texture);
 

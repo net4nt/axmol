@@ -1098,6 +1098,8 @@ void CubismShader_Cocos2dx::SetupShaderProgram(CubismCommandBuffer_Cocos2dx::Dra
     ax::rhi::ProgramState* programState = cmd->unsafePS();
     VertexLayout* layout                    = nullptr;
 
+    auto needInit = !programState;
+
     if (renderer->GetClippingContextBufferForMask() != NULL) // マスク生成時
     {
         CubismShaderSet* shaderSet = _shaderSets[ShaderNames_SetupMask];
@@ -1121,6 +1123,8 @@ void CubismShader_Cocos2dx::SetupShaderProgram(CubismCommandBuffer_Cocos2dx::Dra
         layoutDesc.addAttrib("a_texCoord", shaderSet->AttributeTexCoordLocation, ax::rhi::VertexFormat::FLOAT2,
                           sizeof(csmFloat32) * 2, false);
         layoutDesc.endLayout();
+
+        layout = axvlm->acquireVertexLayout(std::move(layoutDesc));
 
         // チャンネル
         const csmInt32 channelNo = renderer->GetClippingContextBufferForMask()->_layoutChannelNo;
@@ -1228,7 +1232,8 @@ void CubismShader_Cocos2dx::SetupShaderProgram(CubismCommandBuffer_Cocos2dx::Dra
     }
 
     blendDescriptor->blendEnabled = true;
-    cmd->setOwnPSVL(programState, layout, RenderCommand::ADOPT_FLAG_ALL);
+    if (needInit)
+        cmd->setOwnPSVL(programState, layout, RenderCommand::ADOPT_FLAG_ALL);
 }
 
 ax::rhi::Program* CubismShader_Cocos2dx::LoadShaderProgram(const csmChar* vertShaderPath,
