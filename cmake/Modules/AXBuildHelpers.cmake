@@ -409,25 +409,56 @@ function(get_target_all_library_targets output_list target)
   set(${output_list} ${lib_targets} PARENT_SCOPE)
 endfunction()
 
-# Gets a list of all compiled shaders that a given target depends on.
+# Gets a list of all compiled shaders (include builtin shaders) that a given target depends on.
 #
 # A list of all compiled shaders that the executable or library target builds is kept in
 # `AX_COMPILED_SHADERS` property on the target. This function uses this property to gather
 # the list of all shaders from this target and all libraries that this target depends on.
 function(get_target_compiled_shaders output_list target)
-  get_target_all_library_targets(libs ${target})
-  list(APPEND libs ${target})
-  set(shaders)
+  set_property(GLOBAL PROPERTY _visited_targets "")
+  set_property(GLOBAL PROPERTY _all_shaders "")
 
-  foreach(lib ${libs})
-    get_target_property(target_shaders ${lib} AX_COMPILED_SHADERS)
-
-    if(target_shaders)
-      list(APPEND shaders ${target_shaders})
+  function(_collect_shaders_recursive tgt)
+    get_property(_visited GLOBAL PROPERTY _visited_targets)
+    list(FIND _visited "${tgt}" _found)
+    if(NOT _found EQUAL -1)
+      return()
     endif()
-  endforeach()
+    list(APPEND _visited "${tgt}")
+    set_property(GLOBAL PROPERTY _visited_targets "${_visited}")
 
-  set(${output_list} ${shaders} PARENT_SCOPE)
+    get_target_property(_shaders "${tgt}" AX_COMPILED_SHADERS)
+    if(_shaders)
+      get_property(_all GLOBAL PROPERTY _all_shaders)
+      list(APPEND _all ${_shaders})
+      set_property(GLOBAL PROPERTY _all_shaders "${_all}")
+    endif()
+
+    get_property(_depends TARGET "${tgt}" PROPERTY SHADER_DEPENDS)
+    foreach(dep IN LISTS _depends)
+      get_target_property(_dep_shaders "${dep}" AX_COMPILED_SHADERS)
+      if(_dep_shaders)
+        get_property(_all GLOBAL PROPERTY _all_shaders)
+        list(APPEND _all ${_dep_shaders})
+        set_property(GLOBAL PROPERTY _all_shaders "${_all}")
+      endif()
+    endforeach()
+
+    get_target_property(_linked_libs "${tgt}" LINK_LIBRARIES)
+    if(_linked_libs)
+      foreach(lib IN LISTS _linked_libs)
+        if(TARGET "${lib}")
+          _collect_shaders_recursive("${lib}")
+        endif()
+      endforeach()
+    endif()
+  endfunction()
+
+  _collect_shaders_recursive("${target}")
+
+  get_property(_all GLOBAL PROPERTY _all_shaders)
+  list(REMOVE_DUPLICATES _all)
+  set(${output_list} "${_all}" PARENT_SCOPE)
 endfunction()
 
 function(ax_add_delay_load_options target)
@@ -446,7 +477,7 @@ endfunction()
 function(ax_setup_app_config app_name)
   set(options CONSOLE)
   set(oneValueArgs RUNTIME_OUTPUT_DIR)
-  cmake_parse_arguments(opt "${options}" "${oneValueArgs}" ""
+  cmake_parse_arguments(opt "${options}" "${oneValueArgs}" "${multiValueArgs}"
     "" ${ARGN})
 
   if(WINRT)
@@ -537,13 +568,12 @@ function(ax_setup_app_config app_name)
   set(app_shaders_dir "${_APP_SOURCE_DIR}/Source/shaders")
 
   ax_find_shaders(${app_shaders_dir} app_shaders RECURSE)
-
   if(app_shaders)
     list(LENGTH app_shaders app_shaders_count)
     message(STATUS "${app_shaders_count} shader sources found in ${app_shaders_dir}")
 
-    # compile app shader to ${CMAKE_BINARY_DIR}/runtime/axslc/custom/
-    ax_target_compile_shaders(${app_name} FILES ${app_shaders} CUSTOM)
+    # add non-builtin shader build target, will output to: ${CMAKE_BINARY_DIR}/runtime/axslc/custom/
+    ax_add_shader_target_for(${app_name} FILES ${app_shaders})
     source_group("Source Files/Source/shaders" FILES ${app_shaders})
   endif()
 
@@ -560,17 +590,14 @@ function(ax_setup_app_config app_name)
       if(CMAKE_GENERATOR MATCHES "Xcode")
         set_target_properties(${app_name} PROPERTIES XCODE_EMBED_RESOURCES ${AXSLCC_OUT_DIR})
       else()
-        get_target_compiled_shaders(shaders ${app_name})
-        ax_mark_resources(FILES ${shaders} BASEDIR ${AXSLCC_OUT_DIR} RESOURCEBASE "Resources/axslc")
-        target_sources(${app_name} PRIVATE ${shaders})
+        get_target_compiled_shaders(all_compiled_shaders ${app_name})
+        ax_mark_resources(FILES ${all_compiled_shaders} BASEDIR ${AXSLCC_OUT_DIR} RESOURCEBASE "Resources/axslc")
+        target_sources(${app_name} PRIVATE ${all_compiled_shaders})
       endif()
     elseif(WINRT OR WASM)
-      set(app_all_shaders)
-      list(APPEND app_all_shaders ${ax_builtin_shaders})
-      list(APPEND app_all_shaders ${app_shaders})
-
       if(WINRT)
-        ax_target_embed_compiled_shaders(${app_name} ${rt_output} FILES ${app_all_shaders})
+        get_target_compiled_shaders(all_compiled_shaders ${app_name})
+        ax_target_embed_compiled_shaders(${app_name} ${rt_output} FILES ${all_compiled_shaders})
       else()
         # --preload-file
         # refer to: https://emscripten.org/docs/porting/files/packaging_files.html

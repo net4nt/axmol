@@ -46,7 +46,6 @@ target_include_directories(${target_name}
   INTERFACE src
 )
 
-ax_find_shaders(${CMAKE_CURRENT_LIST_DIR}/shaders IMGUI_SHADER_SOURCES)
-ax_target_compile_shaders(${target_name} FILES ${IMGUI_SHADER_SOURCES} CUSTOM)
+ax_add_shader_target_for(${target_name} PATH "${CMAKE_CURRENT_LIST_DIR}/shaders")
 
 setup_ax_extension_config(${target_name})

@@ -335,8 +335,8 @@ elseif(AX_ENABLE_MFMEDIA AND NOT WINRT)
   endif()
 endif()
 
-ax_find_shaders(${_AX_ROOT}/axmol/renderer/shaders BUILTIN_SHADER_SOURCES)
-set(ax_builtin_shaders ${BUILTIN_SHADER_SOURCES} CACHE STATIC "" FORCE)
+ax_find_shaders(${_AX_ROOT}/axmol/renderer/shaders _builtin_shaders)
+set(_AX_BUILTIN_SHADERS ${_builtin_shaders} CACHE STATIC "" FORCE)
 
 # configure engine builtin light num
 if(NOT DEFINED AX_MAX_DIRECTIONAL_LIGHT)
@@ -374,7 +374,7 @@ set_source_files_properties(
   ${_AX_ROOT}/axmol/renderer/shaders/skinPositionNormalTexture.vert
   PROPERTIES AXSLCC_OUTPUT1 "USE_NORMAL_MAPPING=1"
 )
-ax_target_compile_shaders(${_AX_CORE_LIB} FILES ${BUILTIN_SHADER_SOURCES})
+ax_add_shader_target_for(${_AX_CORE_LIB} FILES ${_builtin_shaders} BUILTIN)
 
 ax_config_pred(${_AX_CORE_LIB} AX_ENABLE_MFMEDIA)
 ax_config_pred(${_AX_CORE_LIB} AX_ENABLE_MSEDGE_WEBVIEW2)
@@ -405,7 +405,7 @@ set_target_properties(${_AX_CORE_LIB}
   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
   VERSION "${_AX_VERSION}"
-  FOLDER "Internal"
+  FOLDER "Engine"
 )
 
 if(XCODE OR VS)

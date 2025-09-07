@@ -48,6 +48,10 @@ define_property(SOURCE PROPERTY AXSLCC_OUTPUT
   BRIEF_DOCS "The compiled sources shader output path list"
   FULL_DOCS "The compiled shaders output list, seperated with comma")
 
+define_property(TARGET PROPERTY SHADER_DEPENDS
+  BRIEF_DOCS "The shader depends of normal target"
+  FULL_DOCS "The shader depends of normal target, seperated with comma")
+
 # Find shader sources in specified directory
 # syntax: ax_find_shaders(dir shader_sources [RECURSE])
 # examples:
@@ -78,17 +82,34 @@ endfunction()
 
 # This function allow make shader files (.frag, .vert) compiled with axslcc
 # usage:
-# - ax_target_compile_shaders(axmol FILES source_files): output compiled shader to ${CMAKE_BINARY_DIR}/runtime/axslc/xxx_fs
-# - ax_target_compile_shaders(axmol FILES source_files CUSTOM): output compiled shader to ${CMAKE_BINARY_DIR}/runtime/axslc/custom/xxx_fs
-# - ax_target_compile_shaders(axmol FILES source_files CVAR): the shader will compiled to c hex header for embed include by C/C++ use
+# - ax_add_shader_target(shader_target FILES source_files BUILTIN): output compiled shader to ${CMAKE_BINARY_DIR}/runtime/axslc/xxx_fs
+# - ax_add_shader_target(shader_target FILES source_files):         output compiled shader to ${CMAKE_BINARY_DIR}/runtime/axslc/custom/xxx_fs
+# - ax_add_shader_target(shader_target FILES source_files CVAR): the shader will compiled to c hex header for embed include by C/C++ use
 # Use global variable to control shader file extension:
 # - AXSLCC_FRAG_SOURCE_FILE_EXTENSIONS: default is .frag;.fsh
 # - AXSLCC_VERT_SOURCE_FILE_EXTENSIONS: default is .vert;.vsh
 #
-function(ax_target_compile_shaders target_name)
-  set(options RUNTIME CVAR CUSTOM)
+# CUSTOM operation is deprecated
+#
+function(ax_add_shader_target target_name)
+  set(options BUILTIN CVAR CUSTOM)
+  set(oneValueArgs PATH)
   set(multiValueArgs FILES)
-  cmake_parse_arguments(opt "${options}" "" "${multiValueArgs}" ${ARGN})
+  cmake_parse_arguments(opt "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+  if(NOT TARGET ${target_name})
+    message(STATUS "Add shader build target: ${target_name}, BUILTIN:${opt_BUILTIN}")
+    add_custom_target(${target_name})
+  endif()
+
+  set(_all_shader_files)
+
+  if(opt_PATH)
+    if(NOT opt_FILES)
+      set(opt_FILES "")
+    endif()
+    ax_find_shaders(${opt_PATH} opt_FILES)
+  endif()
 
   set(compiled_shaders)
 
@@ -191,7 +212,7 @@ function(ax_target_compile_shaders target_name)
     # output
     set(OUT_DIR ${AXSLCC_OUT_DIR})
 
-    if(opt_CUSTOM)
+    if(NOT opt_BUILTIN)
       set(OUT_DIR "${OUT_DIR}/custom")
     endif()
 
@@ -201,7 +222,8 @@ function(ax_target_compile_shaders target_name)
 
     set(SC_OUTPUT "${OUT_DIR}/${FILE_NAME}_${SC_TYPE}")
 
-    set(SC_COMMENT "Compiling shader ${SC_FILE} to ${OUT_LANG}${SC_PROFILE} ...")
+    file(TO_CMAKE_PATH "${SC_OUTPUT}" SC_OUTPUT)
+    set(SC_COMMENT "[${OUT_LANG}${SC_PROFILE}] Compiling shader ${SC_FILE} to ${SC_OUTPUT} ...")
 
     get_source_file_property(SOURCE_SC_OUTPUT1 ${SC_FILE} AXSLCC_OUTPUT1)
 
@@ -251,8 +273,25 @@ function(ax_target_compile_shaders target_name)
 
   list(APPEND target_compiled_shaders ${compiled_shaders})
   set_property(TARGET ${target_name} PROPERTY AX_COMPILED_SHADERS ${target_compiled_shaders})
+
+  # folder
+  set_target_properties(${target_name} PROPERTIES FOLDER "Shaders")
 endfunction()
 
+function(ax_add_shader_dependencies target)
+  foreach(shader_tgt IN LISTS ARGN)
+    add_dependencies(${target} ${shader_tgt})
+    set_property(TARGET ${target} APPEND PROPERTY SHADER_DEPENDS ${shader_tgt})
+  endforeach()
+endfunction()
+
+function(ax_add_shader_target_for target)
+  set(shader_tgt ${target}_shaders)
+  cmake_language(CALL ax_add_shader_target ${shader_tgt} ${ARGN})
+  ax_add_shader_dependencies(${target} ${shader_tgt})
+endfunction()
+
+# for winrt/uwp only
 function(ax_target_embed_compiled_shaders target_name rc_output)
   set(multiValueArgs FILES)
   cmake_parse_arguments(opt "" "" "${multiValueArgs}" ${ARGN})
@@ -264,30 +303,22 @@ function(ax_target_embed_compiled_shaders target_name rc_output)
   string(APPEND _props_xml_content "<Project DefaultTargets=\"Build\" ToolsVersion=\"12.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\n")
   string(APPEND _props_xml_content "  <ItemGroup Label=\"axslc\">\n")
 
-  foreach(shader ${opt_FILES})
-    get_source_file_property(compiled_shaders ${shader} DIRECTORY ${CMAKE_BINARY_DIR} AXSLCC_OUTPUT)
+  foreach(compiled_shader ${opt_FILES})
+    file(RELATIVE_PATH compiled_shader_rp ${AXSLCC_OUT_DIR} ${compiled_shader})
+    file(TO_NATIVE_PATH "Content/axslc/${compiled_shader_rp}" compiled_shader_target_dir)
+    file(TO_NATIVE_PATH "${compiled_shader}" compiled_shader_path)
+    set(app_all_shaders_filters "${app_all_shaders_filters}  <ItemGroup Label=\"axslc\">\n")
+    string(APPEND _props_xml_content "    <None Include=\"${compiled_shader_path}\">\n")
+    string(APPEND _props_xml_content "      <Link>${compiled_shader_target_dir}</Link>\n")
+    string(APPEND _props_xml_content "      <DeploymentContent Condition=\"'\$(Configuration)|\$(Platform)'=='Debug|x64'\">true</DeploymentContent>\n")
+    string(APPEND _props_xml_content "      <DeploymentContent Condition=\"'\$(Configuration)|\$(Platform)'=='Release|x64'\">true</DeploymentContent>\n")
+    string(APPEND _props_xml_content "      <DeploymentContent Condition=\"'\$(Configuration)|\$(Platform)'=='MinSizeRel|x64'\">true</DeploymentContent>\n")
+    string(APPEND _props_xml_content "      <DeploymentContent Condition=\"'\$(Configuration)|\$(Platform)'=='RelWithDebInfo|x64'\">true</DeploymentContent>\n")
+    string(APPEND _props_xml_content "    </None>\n")
 
-    if(compiled_shaders STREQUAL "NOTFOUND")
-      message(FATAL_ERROR "Not found property AXSLCC_OUTPUT of file: ${shader}")
-    endif()
-
-    foreach(compiled_shader ${compiled_shaders})
-      file(RELATIVE_PATH compiled_shader_rp ${AXSLCC_OUT_DIR} ${compiled_shader})
-      file(TO_NATIVE_PATH "Content/axslc/${compiled_shader_rp}" compiled_shader_target_dir)
-      file(TO_NATIVE_PATH "${compiled_shader}" compiled_shader_path)
-      set(app_all_shaders_filters "${app_all_shaders_filters}  <ItemGroup Label=\"axslc\">\n")
-      string(APPEND _props_xml_content "    <None Include=\"${compiled_shader_path}\">\n")
-      string(APPEND _props_xml_content "      <Link>${compiled_shader_target_dir}</Link>\n")
-      string(APPEND _props_xml_content "      <DeploymentContent Condition=\"'\$(Configuration)|\$(Platform)'=='Debug|x64'\">true</DeploymentContent>\n")
-      string(APPEND _props_xml_content "      <DeploymentContent Condition=\"'\$(Configuration)|\$(Platform)'=='Release|x64'\">true</DeploymentContent>\n")
-      string(APPEND _props_xml_content "      <DeploymentContent Condition=\"'\$(Configuration)|\$(Platform)'=='MinSizeRel|x64'\">true</DeploymentContent>\n")
-      string(APPEND _props_xml_content "      <DeploymentContent Condition=\"'\$(Configuration)|\$(Platform)'=='RelWithDebInfo|x64'\">true</DeploymentContent>\n")
-      string(APPEND _props_xml_content "    </None>\n")
-
-      string(APPEND _filters_xml_content "    <None Include=\"${compiled_shader_path}\">\n")
-      string(APPEND _filters_xml_content "      <Filter>Content\\axslc</Filter>\n")
-      string(APPEND _filters_xml_content "    </None>\n")
-    endforeach()
+    string(APPEND _filters_xml_content "    <None Include=\"${compiled_shader_path}\">\n")
+    string(APPEND _filters_xml_content "      <Filter>Content\\axslc</Filter>\n")
+    string(APPEND _filters_xml_content "    </None>\n")
   endforeach()
 
   string(APPEND _props_xml_content "  </ItemGroup>\n</Project>")
