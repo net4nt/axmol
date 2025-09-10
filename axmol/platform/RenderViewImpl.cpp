@@ -92,6 +92,10 @@ THE SOFTWARE.
 #    include <emscripten/html5.h>
 #endif
 
+#ifndef NDEBUG
+#    include "axmol/base/Scheduler.h"
+#endif
+
 namespace ax
 {
 
@@ -674,7 +678,7 @@ bool RenderViewImpl::initWithRect(std::string_view viewName,
     CHECK_GL_ERROR_DEBUG();
 #endif
     //    // GLFW v3.2 no longer emits "onGLFWWindowSizeFunCallback" at creation time. Force default viewport:
-    //    setViewPortInPoints(0, 0, neededWidth, neededHeight);
+    //    setViewportInPoints(0, 0, neededWidth, neededHeight);
     //
     return true;
 }
@@ -1046,13 +1050,13 @@ void RenderViewImpl::setFrameSize(float width, float height)
     updateFrameSize();
 }
 
-void RenderViewImpl::setViewPortInPoints(float x, float y, float w, float h)
+void RenderViewImpl::setViewportInPoints(float x, float y, float w, float h)
 {
     Viewport vp;
     vp.x = (int)(x * _scaleX * _retinaFactor * _frameZoomFactor +
-                 _viewPortRect.origin.x * _retinaFactor * _frameZoomFactor);
+                 _viewportRect.origin.x * _retinaFactor * _frameZoomFactor);
     vp.y = (int)(y * _scaleY * _retinaFactor * _frameZoomFactor +
-                 _viewPortRect.origin.y * _retinaFactor * _frameZoomFactor);
+                 _viewportRect.origin.y * _retinaFactor * _frameZoomFactor);
     vp.w = (unsigned int)(w * _scaleX * _retinaFactor * _frameZoomFactor);
     vp.h = (unsigned int)(h * _scaleY * _retinaFactor * _frameZoomFactor);
     Camera::setDefaultViewport(vp);
@@ -1060,24 +1064,23 @@ void RenderViewImpl::setViewPortInPoints(float x, float y, float w, float h)
 
 void RenderViewImpl::setScissorInPoints(float x, float y, float w, float h)
 {
-    auto x1       = (int)(x * _scaleX * _retinaFactor * _frameZoomFactor +
-                    _viewPortRect.origin.x * _retinaFactor * _frameZoomFactor);
-    auto y1       = (int)(y * _scaleY * _retinaFactor * _frameZoomFactor +
-                    _viewPortRect.origin.y * _retinaFactor * _frameZoomFactor);
-    auto width1   = (unsigned int)(w * _scaleX * _retinaFactor * _frameZoomFactor);
-    auto height1  = (unsigned int)(h * _scaleY * _retinaFactor * _frameZoomFactor);
-    auto renderer = Director::getInstance()->getRenderer();
-    renderer->setScissorRect(x1, y1, width1, height1);
+    auto x1      = (int)(x * _scaleX * _retinaFactor * _frameZoomFactor +
+                    _viewportRect.origin.x * _retinaFactor * _frameZoomFactor);
+    auto y1      = (int)(y * _scaleY * _retinaFactor * _frameZoomFactor +
+                    _viewportRect.origin.y * _retinaFactor * _frameZoomFactor);
+    auto width1  = (unsigned int)(w * _scaleX * _retinaFactor * _frameZoomFactor);
+    auto height1 = (unsigned int)(h * _scaleY * _retinaFactor * _frameZoomFactor);
+
+    setScissorRect(x1, y1, width1, height1);
 }
 
-ax::Rect RenderViewImpl::getScissorRect() const
+ax::Rect RenderViewImpl::getScissorInPoints() const
 {
-    auto renderer = Director::getInstance()->getRenderer();
-    auto& rect    = renderer->getScissorRect();
+    auto& rect = getScissorRect();
 
-    float x = (rect.x - _viewPortRect.origin.x * _retinaFactor * _frameZoomFactor) /
+    float x = (rect.x - _viewportRect.origin.x * _retinaFactor * _frameZoomFactor) /
               (_scaleX * _retinaFactor * _frameZoomFactor);
-    float y = (rect.y - _viewPortRect.origin.y * _retinaFactor * _frameZoomFactor) /
+    float y = (rect.y - _viewportRect.origin.y * _retinaFactor * _frameZoomFactor) /
               (_scaleY * _retinaFactor * _frameZoomFactor);
     float w = rect.width / (_scaleX * _retinaFactor * _frameZoomFactor);
     float h = rect.height / (_scaleY * _retinaFactor * _frameZoomFactor);
@@ -1276,7 +1279,7 @@ void RenderViewImpl::onGLFWKeyCallback(GLFWwindow* /*window*/, int key, int /*sc
             break;
         }
     }
-#if defined(AX_PLATFORM_PC) && defined(_DEBUG)
+#if defined(AX_PLATFORM_PC) && !defined(NDEBUG)
     else
     {
         auto director = Director::getInstance();
@@ -1323,31 +1326,27 @@ void RenderViewImpl::onGLFWCharCallback(GLFWwindow* /*window*/, unsigned int cha
 
 void RenderViewImpl::onGLFWWindowPosCallback(GLFWwindow* /*window*/, int x, int y)
 {
-    Director::getInstance()->setViewport();
+    auto director = Director::getInstance();
+    director->setViewport();
 
     Vec2 pos(x, y);
-    Director::getInstance()->getEventDispatcher()->dispatchCustomEvent(RenderViewImpl::EVENT_WINDOW_POSITIONED, &pos);
+    director->getEventDispatcher()->dispatchCustomEvent(RenderViewImpl::EVENT_WINDOW_POSITIONED, &pos);
 }
 
 void RenderViewImpl::onGLFWWindowSizeCallback(GLFWwindow* /*window*/, int w, int h)
 {
     if (w && h && _resolutionPolicy != ResolutionPolicy::UNKNOWN)
     {
+        auto director = Director::getInstance();
+
         handleWindowSize(w, h);
 
-#if AX_RENDER_API == AX_RENDER_API_MTL
-        // update metal attachment texture size.
         int fbWidth, fbHeight;
         glfwGetFramebufferSize(_mainWindow, &fbWidth, &fbHeight);
-        rhi::mtl::UtilsMTL::resizeDefaultAttachmentTexture(fbWidth, fbHeight);
-#elif AX_RENDER_API == AX_RENDER_API_D3D
-        int fbWidth, fbHeight;
-        glfwGetFramebufferSize(_mainWindow, &fbWidth, &fbHeight);
-        Director::getInstance()->getRenderer()->resizeSwapChain(fbWidth, fbHeight);
-#endif
+        onFrameBufferResized(fbWidth, fbHeight);
 
         Size size(w, h);
-        Director::getInstance()->getEventDispatcher()->dispatchCustomEvent(RenderViewImpl::EVENT_WINDOW_RESIZED, &size);
+        director->getEventDispatcher()->dispatchCustomEvent(RenderViewImpl::EVENT_WINDOW_RESIZED, &size);
     }
 }
 

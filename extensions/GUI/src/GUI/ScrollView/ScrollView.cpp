@@ -569,8 +569,7 @@ void ScrollView::beforeDraw()
     // ScrollView don't support drawing in 3D space
     //_beforeDrawCommand.init(_globalZOrder);
     //_beforeDrawCommand.func = AX_CALLBACK_0(ScrollView::onBeforeDraw, this);
-    Director::getInstance()->getRenderer()->addCallbackCommand(AX_CALLBACK_0(ScrollView::onBeforeDraw, this),
-                                                               _globalZOrder);
+    _director->getRenderer()->addCallbackCommand(AX_CALLBACK_0(ScrollView::onBeforeDraw, this), _globalZOrder);
 }
 
 /**
@@ -578,7 +577,6 @@ void ScrollView::beforeDraw()
  */
 void ScrollView::onBeforeDraw()
 {
-
     if (_clippingToBounds)
     {
         _scissorRestored = false;
@@ -588,7 +586,7 @@ void ScrollView::onBeforeDraw()
         if (renderView->isScissorEnabled())
         {
             _scissorRestored   = true;
-            _parentScissorRect = renderView->getScissorRect();
+            _parentScissorRect = renderView->getScissorInPoints();
             // set the intersection of _parentScissorRect and frame as the new scissor rect
             if (frame.intersectsRect(_parentScissorRect))
             {

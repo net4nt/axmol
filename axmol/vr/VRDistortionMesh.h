@@ -1,6 +1,8 @@
 /****************************************************************************
- Copyright (c) 2013 cocos2d-x.org
+ Copyright (c) 2016 Google Inc.
+ Copyright (c) 2016 Chukong Technologies Inc.
  Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ Copyright (c) 2019-present Axmol Engine contributors (see AUTHORS.md).
 
  https://axmol.dev/
 
@@ -23,30 +25,38 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#ifndef _VR_TEST_H_
-#define _VR_TEST_H_
+#pragma once
 
-#include "axmol/axmol.h"
-#include "../BaseTest.h"
-#include <string>
+#include "axmol/platform/PlatformMacros.h"
+#include "axmol/rhi/Buffer.h"
 
-DEFINE_TEST_SUITE(VRTests);
-
-class VRTestDemo : public TestCase
+namespace ax::experimental
 {
-protected:
-    std::string _title;
 
-public:
-};
+class Distortion;
 
-class VRTest1 : public VRTestDemo
+class AX_DLL DistortionMesh
 {
 public:
-    CREATE_FUNC(VRTest1);
-    VRTest1();
-    virtual std::string title() const override;
-    virtual std::string subtitle() const override;
+    ~DistortionMesh();
+    DistortionMesh(Distortion* distortion,
+                   float screenWidth,
+                   float screenHeight,
+                   float xEyeOffsetScreen,
+                   float yEyeOffsetScreen,
+                   float textureWidth,
+                   float textureHeight,
+                   float xEyeOffsetTexture,
+                   float yEyeOffsetTexture,
+                   float viewportXTexture,
+                   float viewportYTexture,
+                   float viewportWidthTexture,
+                   float viewportHeightTexture,
+                   bool vignetteEnabled);
+
+    int _indices{0};
+    rhi::Buffer* _vbo{nullptr};
+    rhi::Buffer* _ebo{nullptr};
 };
 
-#endif
+}  // namespace ax::experimental

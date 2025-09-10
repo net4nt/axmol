@@ -444,7 +444,7 @@ void Director::setViewport()
 {
     if (_renderView)
     {
-        _renderView->setViewPortInPoints(0, 0, _winSizeInPoints.width, _winSizeInPoints.height);
+        _renderView->setViewportInPoints(0, 0, _winSizeInPoints.width, _winSizeInPoints.height);
     }
 }
 
@@ -1580,6 +1580,12 @@ void Director::setAnimationInterval(float interval, SetIntervalReason reason)
         stopAnimation();
         startAnimation(reason);
     }
+}
+
+void Director::resizeSwapchain(uint32_t w, uint32_t h)
+{
+    if (_renderer)
+        _renderer->resizeSwapchain(w, h);
 }
 
 }  // namespace ax

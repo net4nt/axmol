@@ -24291,7 +24291,7 @@ int lua_ax_base_RenderView_getDesignResolutionSize(lua_State* tolua_S)
 
     return 0;
 }
-int lua_ax_base_RenderView_setViewPortInPoints(lua_State* tolua_S)
+int lua_ax_base_RenderView_setViewportInPoints(lua_State* tolua_S)
 {
     int argc = 0;
     ax::RenderView* cobj = nullptr;
@@ -24311,7 +24311,7 @@ int lua_ax_base_RenderView_setViewPortInPoints(lua_State* tolua_S)
 #if _AX_DEBUG >= 1
     if (!cobj)
     {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_ax_base_RenderView_setViewPortInPoints'", nullptr);
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_ax_base_RenderView_setViewportInPoints'", nullptr);
         return 0;
     }
 #endif
@@ -24324,28 +24324,28 @@ int lua_ax_base_RenderView_setViewPortInPoints(lua_State* tolua_S)
         double arg2;
         double arg3;
 
-        ok &= luaval_to_number(tolua_S, 2, &arg0, "ax.RenderView:setViewPortInPoints");
+        ok &= luaval_to_number(tolua_S, 2, &arg0, "ax.RenderView:setViewportInPoints");
 
-        ok &= luaval_to_number(tolua_S, 3, &arg1, "ax.RenderView:setViewPortInPoints");
+        ok &= luaval_to_number(tolua_S, 3, &arg1, "ax.RenderView:setViewportInPoints");
 
-        ok &= luaval_to_number(tolua_S, 4, &arg2, "ax.RenderView:setViewPortInPoints");
+        ok &= luaval_to_number(tolua_S, 4, &arg2, "ax.RenderView:setViewportInPoints");
 
-        ok &= luaval_to_number(tolua_S, 5, &arg3, "ax.RenderView:setViewPortInPoints");
+        ok &= luaval_to_number(tolua_S, 5, &arg3, "ax.RenderView:setViewportInPoints");
         if(!ok)
         {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_ax_base_RenderView_setViewPortInPoints'", nullptr);
+            tolua_error(tolua_S,"invalid arguments in function 'lua_ax_base_RenderView_setViewportInPoints'", nullptr);
             return 0;
         }
-        cobj->setViewPortInPoints(arg0, arg1, arg2, arg3);
+        cobj->setViewportInPoints(arg0, arg1, arg2, arg3);
         lua_settop(tolua_S, 1);
         return 1;
     }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "ax.RenderView:setViewPortInPoints",argc, 4);
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "ax.RenderView:setViewportInPoints",argc, 4);
     return 0;
 
 #if _AX_DEBUG >= 1
     tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_ax_base_RenderView_setViewPortInPoints'.",&tolua_err);
+    tolua_error(tolua_S,"#ferror in function 'lua_ax_base_RenderView_setViewportInPoints'.",&tolua_err);
 #endif
 
     return 0;
@@ -24456,7 +24456,7 @@ int lua_ax_base_RenderView_isScissorEnabled(lua_State* tolua_S)
 
     return 0;
 }
-int lua_ax_base_RenderView_getScissorRect(lua_State* tolua_S)
+int lua_ax_base_RenderView_getScissorInPoints(lua_State* tolua_S)
 {
     int argc = 0;
     ax::RenderView* cobj = nullptr;
@@ -24476,7 +24476,7 @@ int lua_ax_base_RenderView_getScissorRect(lua_State* tolua_S)
 #if _AX_DEBUG >= 1
     if (!cobj)
     {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_ax_base_RenderView_getScissorRect'", nullptr);
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_ax_base_RenderView_getScissorInPoints'", nullptr);
         return 0;
     }
 #endif
@@ -24486,19 +24486,19 @@ int lua_ax_base_RenderView_getScissorRect(lua_State* tolua_S)
     {
         if(!ok)
         {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_ax_base_RenderView_getScissorRect'", nullptr);
+            tolua_error(tolua_S,"invalid arguments in function 'lua_ax_base_RenderView_getScissorInPoints'", nullptr);
             return 0;
         }
-        auto&& ret = cobj->getScissorRect();
+        auto&& ret = cobj->getScissorInPoints();
         rect_to_luaval(tolua_S, ret);
         return 1;
     }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "ax.RenderView:getScissorRect",argc, 0);
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "ax.RenderView:getScissorInPoints",argc, 0);
     return 0;
 
 #if _AX_DEBUG >= 1
     tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_ax_base_RenderView_getScissorRect'.",&tolua_err);
+    tolua_error(tolua_S,"#ferror in function 'lua_ax_base_RenderView_getScissorInPoints'.",&tolua_err);
 #endif
 
     return 0;
@@ -25097,10 +25097,10 @@ int lua_register_ax_base_RenderView(lua_State* tolua_S)
         tolua_function(tolua_S,"getSafeAreaRect",lua_ax_base_RenderView_getSafeAreaRect);
         tolua_function(tolua_S,"setDesignResolutionSize",lua_ax_base_RenderView_setDesignResolutionSize);
         tolua_function(tolua_S,"getDesignResolutionSize",lua_ax_base_RenderView_getDesignResolutionSize);
-        tolua_function(tolua_S,"setViewPortInPoints",lua_ax_base_RenderView_setViewPortInPoints);
+        tolua_function(tolua_S,"setViewportInPoints",lua_ax_base_RenderView_setViewportInPoints);
         tolua_function(tolua_S,"setScissorInPoints",lua_ax_base_RenderView_setScissorInPoints);
         tolua_function(tolua_S,"isScissorEnabled",lua_ax_base_RenderView_isScissorEnabled);
-        tolua_function(tolua_S,"getScissorRect",lua_ax_base_RenderView_getScissorRect);
+        tolua_function(tolua_S,"getScissorInPoints",lua_ax_base_RenderView_getScissorInPoints);
         tolua_function(tolua_S,"setViewName",lua_ax_base_RenderView_setViewName);
         tolua_function(tolua_S,"getViewName",lua_ax_base_RenderView_getViewName);
         tolua_function(tolua_S,"setIcon",lua_ax_base_RenderView_setIcon);
@@ -27529,6 +27529,53 @@ int lua_ax_base_Director_setClearColor(lua_State* tolua_S)
 
     return 0;
 }
+int lua_ax_base_Director_getClearColor(lua_State* tolua_S)
+{
+    int argc = 0;
+    ax::Director* cobj = nullptr;
+    bool ok  = true;
+
+#if _AX_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if _AX_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"ax.Director",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (ax::Director*)tolua_tousertype(tolua_S,1,0);
+
+#if _AX_DEBUG >= 1
+    if (!cobj)
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_ax_base_Director_getClearColor'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 0)
+    {
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_ax_base_Director_getClearColor'", nullptr);
+            return 0;
+        }
+        auto&& ret = cobj->getClearColor();
+        color_to_luaval(tolua_S, ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "ax.Director:getClearColor",argc, 0);
+    return 0;
+
+#if _AX_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_ax_base_Director_getClearColor'.",&tolua_err);
+#endif
+
+    return 0;
+}
 int lua_ax_base_Director_mainLoop(lua_State* tolua_S)
 {
     int argc = 0;
@@ -28783,6 +28830,7 @@ int lua_register_ax_base_Director(lua_State* tolua_S)
         tolua_function(tolua_S,"setDefaultValues",lua_ax_base_Director_setDefaultValues);
         tolua_function(tolua_S,"setRenderDefaults",lua_ax_base_Director_setRenderDefaults);
         tolua_function(tolua_S,"setClearColor",lua_ax_base_Director_setClearColor);
+        tolua_function(tolua_S,"getClearColor",lua_ax_base_Director_getClearColor);
         tolua_function(tolua_S,"mainLoop",lua_ax_base_Director_mainLoop);
         tolua_function(tolua_S,"setContentScaleFactor",lua_ax_base_Director_setContentScaleFactor);
         tolua_function(tolua_S,"getContentScaleFactor",lua_ax_base_Director_getContentScaleFactor);
@@ -101324,7 +101372,7 @@ int lua_ax_base_Renderer_getWinding(lua_State* tolua_S)
 
     return 0;
 }
-int lua_ax_base_Renderer_setViewPort(lua_State* tolua_S)
+int lua_ax_base_Renderer_setViewport(lua_State* tolua_S)
 {
     int argc = 0;
     ax::Renderer* cobj = nullptr;
@@ -101344,7 +101392,7 @@ int lua_ax_base_Renderer_setViewPort(lua_State* tolua_S)
 #if _AX_DEBUG >= 1
     if (!cobj)
     {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_ax_base_Renderer_setViewPort'", nullptr);
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_ax_base_Renderer_setViewport'", nullptr);
         return 0;
     }
 #endif
@@ -101357,28 +101405,28 @@ int lua_ax_base_Renderer_setViewPort(lua_State* tolua_S)
         unsigned int arg2;
         unsigned int arg3;
 
-        ok &= luaval_to_int(tolua_S, 2, &arg0, "ax.Renderer:setViewPort");
+        ok &= luaval_to_int(tolua_S, 2, &arg0, "ax.Renderer:setViewport");
 
-        ok &= luaval_to_int(tolua_S, 3, &arg1, "ax.Renderer:setViewPort");
+        ok &= luaval_to_int(tolua_S, 3, &arg1, "ax.Renderer:setViewport");
 
-        ok &= luaval_to_int(tolua_S, 4, &arg2, "ax.Renderer:setViewPort");
+        ok &= luaval_to_int(tolua_S, 4, &arg2, "ax.Renderer:setViewport");
 
-        ok &= luaval_to_int(tolua_S, 5, &arg3, "ax.Renderer:setViewPort");
+        ok &= luaval_to_int(tolua_S, 5, &arg3, "ax.Renderer:setViewport");
         if(!ok)
         {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_ax_base_Renderer_setViewPort'", nullptr);
+            tolua_error(tolua_S,"invalid arguments in function 'lua_ax_base_Renderer_setViewport'", nullptr);
             return 0;
         }
-        cobj->setViewPort(arg0, arg1, arg2, arg3);
+        cobj->setViewport(arg0, arg1, arg2, arg3);
         lua_settop(tolua_S, 1);
         return 1;
     }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "ax.Renderer:setViewPort",argc, 4);
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "ax.Renderer:setViewport",argc, 4);
     return 0;
 
 #if _AX_DEBUG >= 1
     tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_ax_base_Renderer_setViewPort'.",&tolua_err);
+    tolua_error(tolua_S,"#ferror in function 'lua_ax_base_Renderer_setViewport'.",&tolua_err);
 #endif
 
     return 0;
@@ -101884,59 +101932,6 @@ int lua_ax_base_Renderer_nextCallbackCommand(lua_State* tolua_S)
 
     return 0;
 }
-int lua_ax_base_Renderer_resizeSwapChain(lua_State* tolua_S)
-{
-    int argc = 0;
-    ax::Renderer* cobj = nullptr;
-    bool ok  = true;
-
-#if _AX_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if _AX_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"ax.Renderer",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (ax::Renderer*)tolua_tousertype(tolua_S,1,0);
-
-#if _AX_DEBUG >= 1
-    if (!cobj)
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_ax_base_Renderer_resizeSwapChain'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 2)
-    {
-        unsigned int arg0;
-        unsigned int arg1;
-
-        ok &= luaval_to_int(tolua_S, 2, &arg0, "ax.Renderer:resizeSwapChain");
-
-        ok &= luaval_to_int(tolua_S, 3, &arg1, "ax.Renderer:resizeSwapChain");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_ax_base_Renderer_resizeSwapChain'", nullptr);
-            return 0;
-        }
-        cobj->resizeSwapChain(arg0, arg1);
-        lua_settop(tolua_S, 1);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "ax.Renderer:resizeSwapChain",argc, 2);
-    return 0;
-
-#if _AX_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_ax_base_Renderer_resizeSwapChain'.",&tolua_err);
-#endif
-
-    return 0;
-}
 int lua_ax_base_Renderer_constructor(lua_State* tolua_S)
 {
     int argc = 0;
@@ -102032,7 +102027,7 @@ int lua_register_ax_base_Renderer(lua_State* tolua_S)
         tolua_function(tolua_S,"getCullMode",lua_ax_base_Renderer_getCullMode);
         tolua_function(tolua_S,"setWinding",lua_ax_base_Renderer_setWinding);
         tolua_function(tolua_S,"getWinding",lua_ax_base_Renderer_getWinding);
-        tolua_function(tolua_S,"setViewPort",lua_ax_base_Renderer_setViewPort);
+        tolua_function(tolua_S,"setViewport",lua_ax_base_Renderer_setViewport);
         tolua_function(tolua_S,"getViewport",lua_ax_base_Renderer_getViewport);
         tolua_function(tolua_S,"setScissorTest",lua_ax_base_Renderer_setScissorTest);
         tolua_function(tolua_S,"setScissorRect",lua_ax_base_Renderer_setScissorRect);
@@ -102043,7 +102038,6 @@ int lua_register_ax_base_Renderer(lua_State* tolua_S)
         tolua_function(tolua_S,"beginRenderPass",lua_ax_base_Renderer_beginRenderPass);
         tolua_function(tolua_S,"endRenderPass",lua_ax_base_Renderer_endRenderPass);
         tolua_function(tolua_S,"nextCallbackCommand",lua_ax_base_Renderer_nextCallbackCommand);
-        tolua_function(tolua_S,"resizeSwapChain",lua_ax_base_Renderer_resizeSwapChain);
     tolua_endmodule(tolua_S);
     auto typeName = typeid(ax::Renderer).name(); // rtti is literal storage
     g_luaType[reinterpret_cast<uintptr_t>(typeName)] = "ax.Renderer";

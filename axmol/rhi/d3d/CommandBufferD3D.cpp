@@ -364,7 +364,7 @@ CommandBufferImpl::~CommandBufferImpl()
         _rasterState.Reset();
 }
 
-bool CommandBufferImpl::resizeSwapChain(uint32_t width, uint32_t height)
+bool CommandBufferImpl::resizeSwapchain(uint32_t width, uint32_t height)
 {
     if (!_swapChain || !_driverImpl || !_screenRT)
         return false;
@@ -768,16 +768,19 @@ void CommandBufferImpl::prepareDrawing()
 void CommandBufferImpl::endFrame()
 {
     HRESULT hr = _swapChain->Present(1, 0 /*DXGI_PRESENT_DO_NOT_WAIT*/);
-
+#ifdef NDEBUG
+    (void)hr;
+#else
     if (FAILED(hr))
     {
         if (hr == DXGI_ERROR_DEVICE_REMOVED)
         {
             auto device    = static_cast<DriverImpl*>(DriverBase::getInstance())->getDevice();
             HRESULT reason = device->GetDeviceRemovedReason();
-            // AXLOGD("D3D11 Device remove reason: {}", reason);
+            AXLOGD("D3D11 Device remove reason: {}", reason);
         }
     }
+#endif
 }
 
 void CommandBufferImpl::readPixels(RenderTarget* rt, std::function<void(const PixelBufferDesc&)> callback)

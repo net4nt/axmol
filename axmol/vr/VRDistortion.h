@@ -1,6 +1,8 @@
 /****************************************************************************
- Copyright (c) 2013 cocos2d-x.org
+ Copyright (c) 2016 Google Inc.
+ Copyright (c) 2016 Chukong Technologies Inc.
  Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ Copyright (c) 2019-present Axmol Engine contributors (see AUTHORS.md).
 
  https://axmol.dev/
 
@@ -23,30 +25,28 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#ifndef _VR_TEST_H_
-#define _VR_TEST_H_
+#pragma once
 
-#include "axmol/axmol.h"
-#include "../BaseTest.h"
-#include <string>
+#include "axmol/platform/PlatformMacros.h"
 
-DEFINE_TEST_SUITE(VRTests);
-
-class VRTestDemo : public TestCase
+namespace ax::experimental
 {
-protected:
-    std::string _title;
-
-public:
-};
-
-class VRTest1 : public VRTestDemo
+// Barrel Distortion
+class AX_DLL Distortion
 {
 public:
-    CREATE_FUNC(VRTest1);
-    VRTest1();
-    virtual std::string title() const override;
-    virtual std::string subtitle() const override;
+    Distortion();
+
+    void setCoefficients(float* coefficients);
+    float* coefficients();
+
+    float distortionFactor(float radius);
+    float distort(float radius);
+    float distortInverse(float radius);
+
+private:
+    static const int s_numberOfCoefficients = 2;
+    float _coefficients[s_numberOfCoefficients];
 };
 
-#endif
+}  // namespace ax::experimental

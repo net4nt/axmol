@@ -1,6 +1,8 @@
 /****************************************************************************
- Copyright (c) 2013 cocos2d-x.org
+ Copyright (c) 2016 Google Inc.
+ Copyright (c) 2016 Chukong Technologies Inc.
  Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ Copyright (c) 2019-present Axmol Engine contributors (see AUTHORS.md).
 
  https://axmol.dev/
 
@@ -23,30 +25,33 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#ifndef _VR_TEST_H_
-#define _VR_TEST_H_
+#pragma once
 
-#include "axmol/axmol.h"
-#include "../BaseTest.h"
-#include <string>
+#include "axmol/vr/VRBase.h"
+#include "axmol/math/Vec3.h"
+#include "axmol/math/Mat4.h"
 
-DEFINE_TEST_SUITE(VRTests);
-
-class VRTestDemo : public TestCase
+namespace ax::experimental
 {
+class AX_DLL VRGenericHeadTracker : public IVRHeadTracker
+{
+public:
+    VRGenericHeadTracker();
+    virtual ~VRGenericHeadTracker();
+
+    virtual Vec3 getLocalPosition();
+    virtual Mat4 getLocalRotation();
+
 protected:
-    std::string _title;
+    void startTracking();
+    void stopTracking();
 
-public:
+    Vec3 _localPosition;
+
+    Mat4 _deviceToDisplay;
+    Mat4 _worldToInertialReferenceFrame;
+
+    void* _motionMgr;
 };
 
-class VRTest1 : public VRTestDemo
-{
-public:
-    CREATE_FUNC(VRTest1);
-    VRTest1();
-    virtual std::string title() const override;
-    virtual std::string subtitle() const override;
-};
-
-#endif
+}  // namespace ax::experimental

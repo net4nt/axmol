@@ -385,7 +385,7 @@ public:
      * @param w The width of the viewport, in pixels.
      * @param h The height of the viewport, in pixels.
      */
-    void setViewPort(int x, int y, unsigned int w, unsigned int h);
+    void setViewport(int x, int y, unsigned int w, unsigned int h);
 
     /// Get viewport.
     const Viewport& getViewport() const { return _viewport; }
@@ -418,8 +418,6 @@ public:
     void endRenderPass();
 
     CallbackCommand* nextCallbackCommand();
-
-    void resizeSwapChain(uint32_t width, uint32_t height);
 
 protected:
     friend class Director;
@@ -491,6 +489,8 @@ protected:
     void pushStateBlock();
 
     void popStateBlock();
+
+    void resizeSwapchain(uint32_t width, uint32_t height);
 
     rhi::RenderPipeline* _renderPipeline = nullptr;
 

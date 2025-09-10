@@ -252,7 +252,7 @@ void Renderer::addCommand(RenderCommand* command, int renderQueueID)
     AXASSERT(renderQueueID >= 0, "Invalid render queue");
     AXASSERT(command->getType() != RenderCommand::Type::UNKNOWN_COMMAND, "Invalid Command Type");
 
-#ifdef _DEBUG
+#ifndef NDEBUG
     AXASSERT(command->checkPSVL(), "Command pipelineDesc incomplete");
 #endif
 
@@ -594,14 +594,6 @@ const rhi::DepthStencilDesc& Renderer::getDepthStencilDesc() const
     return _dsDesc;
 }
 
-void Renderer::setViewPort(int x, int y, unsigned int w, unsigned int h)
-{
-    _viewport.x      = x;
-    _viewport.y      = y;
-    _viewport.width  = w;
-    _viewport.height = h;
-}
-
 void Renderer::fillVerticesAndIndices(const TrianglesCommand* cmd, unsigned int vertexBufferOffset)
 {
     auto destVertices = &_verts[_filledVertex];
@@ -848,10 +840,10 @@ void Renderer::readPixels(rhi::RenderTarget* rt, std::function<void(const rhi::P
     _commandBuffer->readPixels(rt, std::move(callback));
 }
 
-void Renderer::resizeSwapChain(uint32_t width, uint32_t height)
+void Renderer::resizeSwapchain(uint32_t width, uint32_t height)
 {
     if (_commandBuffer)
-        _commandBuffer->resizeSwapChain(width, height);
+        _commandBuffer->resizeSwapchain(width, height);
 }
 
 void Renderer::beginRenderPass()
@@ -961,12 +953,20 @@ const ScissorRect& Renderer::getScissorRect() const
     return _scissorState.rect;
 }
 
-void Renderer::setScissorRect(float x, float y, float width, float height)
+void Renderer::setScissorRect(float x, float y, float w, float h)
 {
     _scissorState.rect.x      = x;
     _scissorState.rect.y      = y;
-    _scissorState.rect.width  = width;
-    _scissorState.rect.height = height;
+    _scissorState.rect.width  = w;
+    _scissorState.rect.height = h;
+}
+
+void Renderer::setViewport(int x, int y, unsigned int w, unsigned int h)
+{
+    _viewport.x      = x;
+    _viewport.y      = y;
+    _viewport.width  = w;
+    _viewport.height = h;
 }
 
 // TriangleCommandBufferManager

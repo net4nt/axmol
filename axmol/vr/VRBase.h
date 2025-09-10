@@ -1,6 +1,7 @@
 /****************************************************************************
- Copyright (c) 2013 cocos2d-x.org
+ Copyright (c) 2016 Chukong Technologies Inc.
  Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ Copyright (c) 2019-present Axmol Engine contributors (see AUTHORS.md).
 
  https://axmol.dev/
 
@@ -23,30 +24,45 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#ifndef _VR_TEST_H_
-#define _VR_TEST_H_
+#pragma once
 
-#include "axmol/axmol.h"
-#include "../BaseTest.h"
 #include <string>
 
-DEFINE_TEST_SUITE(VRTests);
+#include "axmol/base/Types.h"
+#include "axmol/renderer/Texture2D.h"
 
-class VRTestDemo : public TestCase
+namespace ax
 {
-protected:
-    std::string _title;
 
+class Scene;
+class Renderer;
+class RenderView;
+
+namespace experimental
+{
+class AX_DLL IVRHeadTracker
+{
 public:
+    virtual ~IVRHeadTracker() {}
+
+    // pose
+    virtual Vec3 getLocalPosition() = 0;
+    // rotation
+    virtual Mat4 getLocalRotation() = 0;
 };
 
-class VRTest1 : public VRTestDemo
+class AX_DLL IVRRenderer
 {
 public:
-    CREATE_FUNC(VRTest1);
-    VRTest1();
-    virtual std::string title() const override;
-    virtual std::string subtitle() const override;
+    virtual ~IVRRenderer() {}
+    virtual void init(RenderView* rv)                                        = 0;
+    virtual void cleanup()                                                   = 0;
+    virtual void onRenderViewResized(RenderView* rv)                         = 0;
+    virtual void setScissorRect(float x, float y, float width, float height) = 0;
+    virtual const ScissorRect& getScissorRect() const                        = 0;
+    virtual void render(Scene* scene, Renderer* renderer)                    = 0;
+    virtual IVRHeadTracker* getHeadTracker()                                 = 0;
 };
+}  // namespace experimental
 
-#endif
+}  // namespace ax
