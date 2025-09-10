@@ -421,7 +421,7 @@ void Director::setRenderView(RenderView* renderView)
 
         if (_renderView)
         {
-            setGLDefaultValues();
+            setRenderDefaults();
         }
 
         if (_eventDispatcher)

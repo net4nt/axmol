@@ -101,7 +101,7 @@ void AxmolRenderer::DeviceLost()
         ax::Director::getInstance()->resetMatrixStack();
         ax::EventCustom recreatedEvent(EVENT_RENDERER_RECREATED);
         director->getEventDispatcher()->dispatchEvent(&recreatedEvent, true);
-        director->setGLDefaultValues();
+        director->setRenderDefaults();
 #if AX_ENABLE_CACHE_TEXTURE_DATA
         ax::VolatileTextureMgr::reloadAllTextures();
 #endif
