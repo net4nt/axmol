@@ -337,9 +337,9 @@ HRESULT DriverImpl::createD3DDevice(int requestDriverType, int createFlags)
                                &_context);
 }
 
-CommandBuffer* DriverImpl::createCommandBuffer(void* presentTarget)
+CommandBuffer* DriverImpl::createCommandBuffer(void* surfaceContext)
 {
-    return new CommandBufferImpl(this, presentTarget);
+    return new CommandBufferImpl(this, surfaceContext);
 }
 
 Buffer* DriverImpl::createBuffer(std::size_t size, BufferType type, BufferUsage usage)

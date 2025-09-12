@@ -165,8 +165,11 @@ void RenderViewImpl::setDispatcher(winrt::agile_ref<Windows::UI::Core::CoreDispa
 void RenderViewImpl::setPanel(winrt::agile_ref<Windows::UI::Xaml::Controls::Panel> panel)
 {
     m_panel = panel;
+}
 
-    m_presentTarget.surface = winrt::get_unknown(m_panel.get());
+void* RenderViewImpl::getNativeWindow() const
+{
+    return winrt::get_unknown(m_panel.get());
 }
 
 void RenderViewImpl::setIMEKeyboardState(bool bOpen)
@@ -542,18 +545,12 @@ void RenderViewImpl::UpdateForWindowSizeChange(float width, float height)
         m_height = height;
         UpdateWindowSize();
 
-#if AX_RENDER_API == AX_RENDER_API_D3D
-        auto renderer = Director::getInstance()->getRenderer();
-        renderer->resizeSwapChain(static_cast<uint32_t>(m_width), static_cast<uint32_t>(m_height));
-#endif
+        onFramebufferResized(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
     }
 }
 
 void RenderViewImpl::UpdateWindowSize()
 {
-    m_presentTarget.width  = m_width;
-    m_presentTarget.height = m_height;
-
     RenderView::setWindowSize(m_width, m_height);
 
     updateDesignResolutionSize();
@@ -561,22 +558,7 @@ void RenderViewImpl::UpdateWindowSize()
 
 ax::Vec2 RenderViewImpl::TransformToOrientation(Windows::Foundation::Point const& p)
 {
-    ax::Vec2 returnValue;
-
-    float x     = p.X;
-    float y     = p.Y;
-    returnValue = Vec2(x, y);
-
-    float zoomFactor = RenderViewImpl::sharedRenderView()->getFrameZoomFactor();
-    if (zoomFactor > 0.0f)
-    {
-        returnValue.x /= zoomFactor;
-        returnValue.y /= zoomFactor;
-    }
-
-    // AXLOGD("{:.2f} {:.2f} : {:.2f} {:.2f}", p.X, p.Y,returnValue.x, returnValue.y);
-
-    return returnValue;
+    return Vec2{p.X, p.Y};
 }
 
 Vec2 RenderViewImpl::GetPoint(Windows::UI::Core::PointerEventArgs const& args)
@@ -586,19 +568,17 @@ Vec2 RenderViewImpl::GetPoint(Windows::UI::Core::PointerEventArgs const& args)
 
 void RenderViewImpl::QueueBackKeyPress()
 {
-    std::shared_ptr<BackButtonEvent> e(new BackButtonEvent());
-    mInputEvents.push(e);
+    mInputEvents.push(std::make_shared<BackButtonEvent>());
 }
 
 void RenderViewImpl::QueuePointerEvent(PointerEventType type, Windows::UI::Core::PointerEventArgs const& args)
 {
-    std::shared_ptr<PointerEvent> e(new PointerEvent(type, args));
-    mInputEvents.push(e);
+    mInputEvents.push(std::make_shared<PointerEvent>(type, args));
 }
 
 void RenderViewImpl::QueueWinRTKeyboardEvent(WinRTKeyboardEventType type, Windows::UI::Core::KeyEventArgs const& args)
 {
-    std::shared_ptr<WinRTKeyboardEvent> e(new WinRTKeyboardEvent(type, args));
+    auto e = std::make_shared<WinRTKeyboardEvent>(type, args);
     mInputEvents.push(e);
 }
 

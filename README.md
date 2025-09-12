@@ -69,13 +69,14 @@ Axmol Engine has iterated and improved over the Cocos2d-x v4.0 base. Now is fast
 * C++
 * Lua
 
-**Renderer backends**:
+**Renderer RHI**:
 * Metal for macOS, iOS and tvOS
 * OpenGL 3.3+ for Linux, macOS and Win32
 * OpenGL ES 2.0+ for Android
 * OpenGL ES 3.0+ for iOS and tvOS
 * ANGLE GLES 3.0+ for Win32 and UWP
 * WebGL 2.0 (OpenGL ES 3.0): WASM
+* D3D11 for Win32 and UWP (since axmol-v3)
 
 **Architectures**:
 * iOS/tvOS (x64, arm64)

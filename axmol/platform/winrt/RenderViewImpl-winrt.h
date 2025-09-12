@@ -144,7 +144,7 @@ public:
 
     void SetQueueOperationCb(std::function<void(AsyncOperation, void*)> cb);
 
-    void* getNativeWindow() const override { return &m_presentTarget; }
+    void* getNativeWindow() const override;
     WindowPlatform getWindowPlatform() const override { return WindowPlatform::CoreWindow; }
 
 protected:
@@ -185,8 +185,6 @@ private:
     bool m_running;
     bool m_initialized;
     bool m_appShouldExit;
-
-    mutable PresentTarget m_presentTarget;
 
     Concurrency::concurrent_queue<std::shared_ptr<InputEvent>> mInputEvents;
 

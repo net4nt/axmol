@@ -79,6 +79,7 @@ Axmol 引擎在 Cocos2d-x v4.0 的基础上进行迭代和改进。现在速度�
 * OpenGL ES 3.0+： iOS
 * ANGLE GLES 3.0+： Win32、 UWP
 * WebGL 2.0 (OpenGL ES 3.0): WASM
+* D3D11 for Win32 and UWP (axmol-v3 版本新增)
 
 **支持架构**:
 

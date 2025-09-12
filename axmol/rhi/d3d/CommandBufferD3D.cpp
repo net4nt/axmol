@@ -104,6 +104,7 @@ using IDispatchedHandler = ABI::Windows::UI::Core::IDispatchedHandler;
 using IAsyncAction       = ABI::Windows::Foundation::IAsyncAction;
 using ISwapChainPanel    = ABI::Windows::UI::Xaml::Controls::ISwapChainPanel;
 using IDependencyObject  = ABI::Windows::UI::Xaml::IDependencyObject;
+using IUIElement         = ABI::Windows::UI::Xaml::IUIElement;
 
 // Creates a COM/WinRT callback object for the specified interface type (_Ty)
 // that is implemented with Free‑Threaded Marshaler (FtmBase) support.
@@ -190,7 +191,7 @@ static HRESULT runOnUIThread(const ComPtr<ICoreDispatcher>& dispatcher, _Fty&& f
 
 static constexpr DXGI_FORMAT _AX_SWAPCHAIN_FORMAT = DXGI_FORMAT_R8G8B8A8_UNORM;
 
-CommandBufferImpl::CommandBufferImpl(DriverImpl* driver, void* presentTarget)
+CommandBufferImpl::CommandBufferImpl(DriverImpl* driver, void* surfaceContext)
 {
     _driverImpl = driver;
 
@@ -210,7 +211,7 @@ CommandBufferImpl::CommandBufferImpl(DriverImpl* driver, void* presentTarget)
     DXGI_SWAP_EFFECT swapEffect = DXGI_SWAP_EFFECT_DISCARD;  // Default is blt mode
 
     RECT clientRect;
-    auto hwnd = (HWND)presentTarget;
+    auto hwnd = (HWND)surfaceContext;
     GetClientRect(hwnd, &clientRect);
     _screenWidth  = clientRect.right - clientRect.left;
     _screenHeight = clientRect.bottom - clientRect.top;
@@ -272,29 +273,8 @@ CommandBufferImpl::CommandBufferImpl(DriverImpl* driver, void* presentTarget)
     {
         do
         {
-            auto presentDesc = static_cast<ax::PresentTarget*>(presentTarget);
-
-            // The swapchain size can't be zero for WinRT, maybe SwapChainPanel::ActualWidth/Height * DPI
-            _screenWidth  = static_cast<UINT>(presentDesc->width);
-            _screenHeight = static_cast<UINT>(presentDesc->height);
-
-            DXGI_SWAP_CHAIN_DESC1 desc1 = {};
-            desc1.Width                 = _screenWidth;
-            desc1.Height                = _screenHeight;
-            desc1.Format                = _AX_SWAPCHAIN_FORMAT;
-            desc1.SampleDesc.Count      = 1;  // Flip not support MSAA
-            desc1.BufferUsage           = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-            desc1.BufferCount           = 2;
-            desc1.SwapEffect            = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;  // UWP recommanded
-            desc1.Scaling               = DXGI_SCALING_STRETCH;
-            desc1.AlphaMode             = DXGI_ALPHA_MODE_IGNORE;
-
-            ComPtr<IDXGISwapChain1> swapChain1;
-            hr = factory2->CreateSwapChainForComposition(device, &desc1, nullptr, &swapChain1);
-            AX_BREAK_IF(FAILED(hr));
-
             // ISwapChainPanel
-            ComPtr<IUnknown> surfaceHold = reinterpret_cast<IUnknown*>(presentDesc->surface);
+            ComPtr<IUnknown> surfaceHold = reinterpret_cast<IUnknown*>(surfaceContext);
             ComPtr<ISwapChainPanel> swapChainPanel;
             hr = surfaceHold.As(&swapChainPanel);
             AX_BREAK_IF(FAILED(hr));
@@ -313,31 +293,52 @@ CommandBufferImpl::CommandBufferImpl(DriverImpl* driver, void* presentTarget)
             hr = swapChainPanel.As(&swapChainPanelNative);
             AX_BREAK_IF(FAILED(hr));
 
+            ABI::Windows::Foundation::Size panelSize;
+            ComPtr<IUIElement> uiElement;
+            hr = swapChainPanel.As(&uiElement);
+            AX_BREAK_IF(FAILED(hr));
+            Vec2 renderScale;
+            hr = runOnUIThread(dispatcher, [&panelSize, &renderScale, uiElement, swapChainPanel] {
+                HRESULT hr1 = uiElement->get_RenderSize(&panelSize);
+                if (FAILED(hr1))
+                    return hr1;
+                hr1 = swapChainPanel->get_CompositionScaleX(&renderScale.x);
+                if (FAILED(hr1))
+                    return hr1;
+                hr1 = swapChainPanel->get_CompositionScaleY(&renderScale.y);
+                return hr1;
+            });
+            AX_BREAK_IF(FAILED(hr));
+
+            // create swapchain
+            // The swapchain size can't be zero for WinRT, maybe SwapChainPanel::ActualWidth/Height * DPI
+            DXGI_SWAP_CHAIN_DESC1 desc1 = {};
+            desc1.Width                 = static_cast<UINT>(panelSize.Width);
+            desc1.Height                = static_cast<UINT>(panelSize.Height);
+            desc1.Format                = _AX_SWAPCHAIN_FORMAT;
+            desc1.SampleDesc.Count      = 1;  // Flip not support MSAA
+            desc1.BufferUsage           = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+            desc1.BufferCount           = 2;
+            desc1.SwapEffect            = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;  // UWP recommanded
+            desc1.Scaling               = DXGI_SCALING_STRETCH;
+            desc1.AlphaMode             = DXGI_ALPHA_MODE_IGNORE;
+
+            ComPtr<IDXGISwapChain1> swapChain1;
+            hr = factory2->CreateSwapChainForComposition(device, &desc1, nullptr, &swapChain1);
+            AX_BREAK_IF(FAILED(hr));
+            swapChain1.As(&swapChain);
+
             hr = runOnUIThread(dispatcher, [swapChainPanelNative, swapChain1] {
                 return swapChainPanelNative->SetSwapChain(swapChain1.Get());
             });
 
             AX_BREAK_IF(FAILED(hr));
 
-            swapChain1.As(&swapChain);
-
             DXGI_SWAP_CHAIN_DESC1 actualDesc = {};
             swapChain1->GetDesc1(&actualDesc);
 
             _screenWidth  = actualDesc.Width;
             _screenHeight = actualDesc.Height;
-
-            /* maybe: when ui extent changes
-            auto panel = reinterpret_cast<winrt::Windows::UI::Xaml::Controls::SwapChainPanel*>(outputContext);
-            float logicalWidth  = panel->ActualWidth();
-            float logicalHeight = panel->ActualHeight();
-
-            auto displayInfo = winrt::Windows::Graphics::Display::DisplayInformation::GetForCurrentView();
-            float dpi = displayInfo.LogicalDpi();
-
-            _screenWidth  = static_cast<uint32_t>(logicalWidth  * dpi / 96.0f + 0.5f);
-            _screenHeight = static_cast<uint32_t>(logicalHeight * dpi / 96.0f + 0.5f);
-            */
         } while (false);
     }
 #endif

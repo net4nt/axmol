@@ -64,9 +64,9 @@ public:
     /// @name Constructor, Destructor and Initializers
     /**
      * @param driver The device for which d3d::DriverImpl object was created.
-     * @param presentTarget hwnd or IUnkown*(SwapChainPanel)
+     * @param surfaceContext hwnd or IUnkown*(SwapChainPanel)
      */
-    CommandBufferImpl(DriverImpl* driver, void* presentTarget);
+    CommandBufferImpl(DriverImpl* driver, void* surfaceContext);
     ~CommandBufferImpl() override;
 
     bool resizeSwapchain(uint32_t width, uint32_t height) override;

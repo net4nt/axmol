@@ -76,7 +76,7 @@ public:
      * Create a CommandBuffer object.
      * @return A CommandBuffer object.
      */
-    CommandBuffer* createCommandBuffer(void* presentTarget) override;
+    CommandBuffer* createCommandBuffer(void* surfaceContext) override;
 
     /**
      * Create a Buffer object.

@@ -91,10 +91,10 @@ public:
 
     /**
      * New a CommandBuffer object, not auto released.
-     * @param presentTarget, current is win32 HWND or swapChainPanel
+     * @param surfaceContext, current is win32 HWND or IUnkown*(swapChainPanel)
      * @return A CommandBuffer object.
      */
-    virtual CommandBuffer* createCommandBuffer(void* presentTarget) = 0;
+    virtual CommandBuffer* createCommandBuffer(void* surfaceContext) = 0;
 
     /**
      * New a Buffer object, not auto released.
