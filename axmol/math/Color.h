@@ -85,6 +85,23 @@ struct AX_DLL Color32
 
     operator Color() const;
 
+    template <typename T>
+    Color32 withAlpha(T alpha) const
+    {
+        if constexpr (std::is_floating_point_v<T>)
+        {
+            return Color32{r, g, b, static_cast<uint8_t>(alpha * 255)};
+        }
+        else if constexpr (std::is_integral_v<T>)
+        {
+            return Color32{r, g, b, static_cast<uint8_t>(alpha)};
+        }
+        else
+        {
+            static_assert(std::is_arithmetic_v<T>, "alpha must be numeric");
+        }
+    }
+
     void set(uint8_t _r, uint8_t _g, uint8_t _b, uint8_t _a)
     {
         r = _r;
@@ -153,6 +170,23 @@ struct AX_DLL Color : public Vec4Adapter<Color>
         g *= a;
         b *= a;
         return *this;
+    }
+
+    template <typename T>
+    Color withAlpha(T alpha) const
+    {
+        if constexpr (std::is_floating_point_v<T>)
+        {
+            return Color{r, g, b, static_cast<float>(alpha)};
+        }
+        else if constexpr (std::is_integral_v<T>)
+        {
+            return Color32{r, g, b, alpha / 255.0f};
+        }
+        else
+        {
+            static_assert(std::is_arithmetic_v<T>, "alpha must be numeric");
+        }
     }
 
     bool operator==(const Color32& rhs) const;
