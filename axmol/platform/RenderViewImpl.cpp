@@ -158,13 +158,6 @@ public:
             _view->onGLFWWindowPosCallback(windows, x, y);
     }
 
-    // Notes: Unused on windows or macos Metal renderer backend
-    // static void onGLFWframebufferSize(GLFWwindow* window, int w, int h)
-    // {
-    //     if (_view)
-    //         _view->onGLFWframebufferSize(window, w, h);
-    // }
-
     static void onGLFWWindowSizeCallback(GLFWwindow* window, int width, int height)
     {
         if (_view)
@@ -371,16 +364,15 @@ static EventMouse::MouseButton checkMouseButton(GLFWwindow* window)
 
 RenderViewImpl::RenderViewImpl(bool initglfw)
     : _captured(false)
-    , _isInRetinaMonitor(false)
-    , _isRetinaEnabled(false)
-    , _retinaFactor(1)
-    , _frameZoomFactor(1.0f)
+    , _isHighDPI(false)
+    , _renderScale(1.0f)
+    , _windowZoomFactor(1.0f)
     , _mainWindow(nullptr)
     , _monitor(nullptr)
     , _mouseX(0.0f)
     , _mouseY(0.0f)
 {
-    _viewName = "axmol2";
+    _viewName = "axmol3";
     g_keyCodeMap.clear();
     for (auto&& item : g_keyCodeStructArray)
     {
@@ -425,7 +417,7 @@ void* RenderViewImpl::getX11Display()
 {
     return (void*)glfwGetX11Display();
 }
-/* TODO: Implement AX_PLATFORM_LINUX_WAYLAND
+#    ifdef AX_ENABLE_WAYLAND
 void* RenderViewImpl::getWaylandWindow()
 {
     return (void*)glfwGetWaylandWindow(_mainWindow);
@@ -434,7 +426,7 @@ void* RenderViewImpl::getWaylandDisplay()
 {
     return (void*)glfwGetWaylandDisplay();
 }
-*/
+#    endif
 #endif  // #if (AX_TARGET_PLATFORM == AX_PLATFORM_LINUX)
 
 RenderViewImpl* RenderViewImpl::create(std::string_view viewName)
@@ -456,11 +448,11 @@ RenderViewImpl* RenderViewImpl::create(std::string_view viewName, bool resizable
 
 RenderViewImpl* RenderViewImpl::createWithRect(std::string_view viewName,
                                                const ax::Rect& rect,
-                                               float frameZoomFactor,
+                                               float windowZoomFactor,
                                                bool resizable)
 {
     auto ret = new RenderViewImpl;
-    if (ret->initWithRect(viewName, rect, frameZoomFactor, resizable))
+    if (ret->initWithRect(viewName, rect, windowZoomFactor, resizable))
     {
         ret->autorelease();
         return ret;
@@ -469,7 +461,7 @@ RenderViewImpl* RenderViewImpl::createWithRect(std::string_view viewName,
     return nullptr;
 }
 
-RenderViewImpl* RenderViewImpl::createWithFullScreen(std::string_view viewName)
+RenderViewImpl* RenderViewImpl::createWithFullscreen(std::string_view viewName)
 {
     auto ret = new RenderViewImpl();
     if (ret->initWithFullScreen(viewName))
@@ -481,7 +473,7 @@ RenderViewImpl* RenderViewImpl::createWithFullScreen(std::string_view viewName)
     return nullptr;
 }
 
-RenderViewImpl* RenderViewImpl::createWithFullScreen(std::string_view viewName,
+RenderViewImpl* RenderViewImpl::createWithFullscreen(std::string_view viewName,
                                                      const GLFWvidmode& videoMode,
                                                      GLFWmonitor* monitor)
 {
@@ -497,14 +489,14 @@ RenderViewImpl* RenderViewImpl::createWithFullScreen(std::string_view viewName,
 
 bool RenderViewImpl::initWithRect(std::string_view viewName,
                                   const ax::Rect& rect,
-                                  float frameZoomFactor,
+                                  float windowZoomFactor,
                                   bool resizable)
 {
     setViewName(viewName);
 
-    _frameZoomFactor = frameZoomFactor;
+    _windowZoomFactor = windowZoomFactor;
 
-    Vec2 windowSize = rect.size * frameZoomFactor;
+    Vec2 requestWinSize = rect.size * windowZoomFactor;
 
 #if AX_RENDER_API == AX_RENDER_API_GL
 #    if AX_GLES_PROFILE
@@ -544,7 +536,7 @@ bool RenderViewImpl::initWithRect(std::string_view viewName,
     axdrv;
 #endif
 
-    _mainWindow = glfwCreateWindow(static_cast<int>(windowSize.width), static_cast<int>(windowSize.height),
+    _mainWindow = glfwCreateWindow(static_cast<int>(requestWinSize.width), static_cast<int>(requestWinSize.height),
                                    _viewName.c_str(), _monitor, nullptr);
 
     if (_mainWindow == nullptr)
@@ -571,17 +563,15 @@ bool RenderViewImpl::initWithRect(std::string_view viewName,
      *
      *  see declaration glfwCreateWindow
      */
-    int actualWidth, actualHeight;
-    glfwGetWindowSize(_mainWindow, &actualWidth, &actualHeight);
-    if (static_cast<int>(windowSize.width) != actualWidth)
-        windowSize.x = static_cast<float>(actualWidth);
-    if (static_cast<int>(windowSize.height) != actualHeight)
-        windowSize.y = static_cast<float>(actualHeight);
-
-#if AX_RENDER_API == AX_RENDER_API_MTL
     int fbWidth, fbHeight;
     glfwGetFramebufferSize(_mainWindow, &fbWidth, &fbHeight);
 
+    int w, h;
+    glfwGetWindowSize(_mainWindow, &w, &h);
+
+    handleWindowResized(w, h, fbWidth, fbHeight);
+
+#if AX_RENDER_API == AX_RENDER_API_MTL
     CGSize size;
     size.width  = static_cast<CGFloat>(fbWidth);
     size.height = static_cast<CGFloat>(fbHeight);
@@ -603,18 +593,9 @@ bool RenderViewImpl::initWithRect(std::string_view viewName,
     layer.displaySyncEnabled = _gfxContextAttrs.vsync;
     [contentView setLayer:layer];
     rhi::mtl::DriverImpl::setCAMetalLayer(layer);
-#endif
-
-#if AX_RENDER_API == AX_RENDER_API_GL
+#elif AX_RENDER_API == AX_RENDER_API_GL
     glfwMakeContextCurrent(_mainWindow);
     glfwSetWindowUserPointer(_mainWindow, rhi::gl::__state);
-#endif
-
-#if !defined(__APPLE__)
-    handleWindowSize(static_cast<int>(windowSize.width), static_cast<int>(windowSize.height));
-#else
-    // sense retina
-    setFrameSize(windowSize.width / frameZoomFactor, windowSize.height / frameZoomFactor);
 #endif
 
     glfwSetMouseButtonCallback(_mainWindow, GLFWEventHandler::onGLFWMouseCallBack);
@@ -677,9 +658,6 @@ bool RenderViewImpl::initWithRect(std::string_view viewName,
 #    endif
     CHECK_GL_ERROR_DEBUG();
 #endif
-    //    // GLFW v3.2 no longer emits "onGLFWWindowSizeFunCallback" at creation time. Force default viewport:
-    //    setViewportInPoints(0, 0, neededWidth, neededHeight);
-    //
     return true;
 }
 
@@ -758,14 +736,6 @@ void RenderViewImpl::pollEvents()
     glfwPollEvents();
 }
 
-void RenderViewImpl::enableRetina(bool enabled)
-{
-#if (AX_TARGET_PLATFORM == AX_PLATFORM_MAC)
-    _isRetinaEnabled = enabled;
-    updateFrameSize();
-#endif
-}
-
 void RenderViewImpl::setIMEKeyboardState(bool /*bOpen*/) {}
 
 #if AX_ICON_SET_SUPPORT
@@ -833,22 +803,20 @@ void RenderViewImpl::setCursorVisible(bool isVisible)
         glfwSetInputMode(_mainWindow, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 }
 
-void RenderViewImpl::setFrameZoomFactor(float zoomFactor)
+void RenderViewImpl::setWindowZoomFactor(float zoomFactor)
 {
     AXASSERT(zoomFactor > 0.0f, "zoomFactor must be larger than 0");
 
-    if (std::abs(_frameZoomFactor - zoomFactor) < FLT_EPSILON)
-    {
+    if (std::abs(_windowZoomFactor - zoomFactor) < FLT_EPSILON)
         return;
-    }
 
-    _frameZoomFactor = zoomFactor;
-    updateFrameSize();
+    _windowZoomFactor = zoomFactor;
+    applyWindowSize();
 }
 
-float RenderViewImpl::getFrameZoomFactor() const
+float RenderViewImpl::getWindowZoomFactor() const
 {
-    return _frameZoomFactor;
+    return _windowZoomFactor;
 }
 
 bool RenderViewImpl::isFullscreen() const
@@ -915,12 +883,12 @@ void RenderViewImpl::setWindowed(int width, int height, bool borderless)
 
         if (glfwGetWindowAttrib(_mainWindow, GLFW_MAXIMIZED))
             glfwRestoreWindow(_mainWindow);
-        this->setFrameSize((float)width, (float)height);
+        this->setWindowSize((float)width, (float)height);
     }
     else
     {
-        width *= _frameZoomFactor;
-        height *= _frameZoomFactor;
+        width *= _windowZoomFactor;
+        height *= _windowZoomFactor;
         const GLFWvidmode* videoMode = glfwGetVideoMode(_monitor);
         int xpos = 0, ypos = 0;
         glfwGetMonitorPos(_monitor, &xpos, &ypos);
@@ -936,20 +904,21 @@ void RenderViewImpl::setWindowed(int width, int height, bool borderless)
     }
 }
 
+Vec2 RenderViewImpl::getNativeWindowSize() const
+{
+    if (_mainWindow != nullptr)
+    {
+        int w = 0, h = 0;
+        glfwGetWindowSize(_mainWindow, &w, &h);
+        return Vec2(w, h);
+    }
+    return Vec2{};
+}
+
 void RenderViewImpl::getWindowPosition(int* xpos, int* ypos)
 {
     if (_mainWindow != nullptr)
-    {
         glfwGetWindowPos(_mainWindow, xpos, ypos);
-    }
-}
-
-void RenderViewImpl::getWindowSize(int* width, int* height)
-{
-    if (_mainWindow != nullptr)
-    {
-        glfwGetWindowSize(_mainWindow, width, height);
-    }
 }
 
 int RenderViewImpl::getMonitorCount() const
@@ -988,88 +957,79 @@ void RenderViewImpl::setWindowSizeLimits(int minwidth, int minheight, int maxwid
     glfwSetWindowSizeLimits(_mainWindow, minwidth, minheight, maxwidth, maxheight);
 }
 
-void RenderViewImpl::handleWindowSize(int w, int h)
+void RenderViewImpl::updateRenderScale(int windowWidth, int framebufferWidth)
 {
-    /*
-    * x-studio spec, fix view size incorrect when window size changed
-    * diff with cocos2d-x, axmol don't call this->setFrameSize when window size changed,
-    * instead, invoke this function to apply screenSize, update design size(update viewport)
+    _isHighDPI   = framebufferWidth > windowWidth;
+    _renderScale = static_cast<float>(framebufferWidth) / windowWidth;
+}
 
-      The cocos2d-x original behavior(incorrect):
-      1. first time enter full screen: w,h=1920,1080
-      2. second or later enter full screen: will trigger 2 times WindowSizeCallback
-        1). w,h=976,679
-        2). w,h=1024,768
+/*
+ * Handle window resize events (including fullscreen toggle, manual resize, HiDPI scaling).
+ * Updates HiDPI flag, render scale, logical window size, and design resolution (viewport)
+ * based on logical window size (w,h) and framebuffer size (fbWidth, fbHeight).
+ *
+ * Difference from cocos2d-x:
+ * - cocos2d-x calls setWindowSize() directly on window size change.
+ * - axmol uses this method instead to apply screen size and update viewport.
+ *
+ * The cocos2d-x original behavior (incorrect):
+ *   1. First time entering fullscreen: w,h = 1920,1080
+ *   2. Second or later entering fullscreen: triggers WindowSizeCallback twice:
+ *        1) w,h = 976,679
+ *        2) w,h = 1024,768
+ *
+ * Platform note (Windows + GLFW):
+ * - glfwSetWindowMonitor may trigger intermediate window size events when toggling fullscreen.
+ * - This happens because GLFW temporarily removes WS_OVERLAPPEDWINDOW style and calls SetWindowLong,
+ *   causing a windowed-size update before ChangeDisplaySettingsExW applies the final fullscreen resolution.
+ *
+ * Current GLFW fire event order:
+ *  -> framebufferSize
+ *  -> windowSize
+ */
+void RenderViewImpl::handleWindowResized(int w, int h, int fbWidth, int fbHeight)
+{
+    updateRenderScale(w, fbWidth);
 
-      @remark:
-      1. glfwSetWindowMonitor will fire window size change event in full screen mode
-    */
-    RenderView::setFrameSize(w / _frameZoomFactor, h / _frameZoomFactor);
-#if (AX_TARGET_PLATFORM == AX_PLATFORM_MAC)
-    // Fix #1787, update retina state when switch between fullscreen and windowed mode
-    int fbWidth = 0, fbHeight = 0;
-    glfwGetFramebufferSize(_mainWindow, &fbWidth, &fbHeight);
-    _isInRetinaMonitor = fbWidth == 2 * w && fbHeight == 2 * h;
-    if (_isInRetinaMonitor)
-        _retinaFactor = _isRetinaEnabled ? 1 : 2;
-    else
-        _retinaFactor = 1;
-#endif
+    RenderView::setWindowSize(w / _windowZoomFactor, h / _windowZoomFactor);
     updateDesignResolutionSize();
 }
 
-void RenderViewImpl::updateFrameSize()
+void RenderViewImpl::setWindowSize(float width, float height)
 {
-    if (_screenSize.width > 0 && _screenSize.height > 0)
-    {
-        int w = 0, h = 0;
-        glfwGetWindowSize(_mainWindow, &w, &h);
-
-        int fbWidth = 0, fbHeight = 0;
-        glfwGetFramebufferSize(_mainWindow, &fbWidth, &fbHeight);
-
-        _isInRetinaMonitor = fbWidth == 2 * w && fbHeight == 2 * h;
-        if (_isInRetinaMonitor)
-        {
-            _retinaFactor = _isRetinaEnabled ? 1 : 2;
-            glfwSetWindowSize(_mainWindow, _screenSize.width / 2 * _retinaFactor * _frameZoomFactor,
-                              _screenSize.height / 2 * _retinaFactor * _frameZoomFactor);
-        }
-        else
-        {
-            _retinaFactor = 1;
-            glfwSetWindowSize(_mainWindow, (int)(_screenSize.width * _retinaFactor * _frameZoomFactor),
-                              (int)(_screenSize.height * _retinaFactor * _frameZoomFactor));
-        }
-    }
+    RenderView::setWindowSize(width, height);
+    applyWindowSize();
 }
 
-void RenderViewImpl::setFrameSize(float width, float height)
+void RenderViewImpl::applyWindowSize()
 {
-    RenderView::setFrameSize(width, height);
-    updateFrameSize();
+    if (_windowSize.width > 0 && _windowSize.height > 0)
+    {
+        glfwSetWindowSize(_mainWindow, (int)(_windowSize.width * _windowZoomFactor),
+                          (int)(_windowSize.height * _windowZoomFactor));
+    }
 }
 
 void RenderViewImpl::setViewportInPoints(float x, float y, float w, float h)
 {
     Viewport vp;
-    vp.x = (int)(x * _scaleX * _retinaFactor * _frameZoomFactor +
-                 _viewportRect.origin.x * _retinaFactor * _frameZoomFactor);
-    vp.y = (int)(y * _scaleY * _retinaFactor * _frameZoomFactor +
-                 _viewportRect.origin.y * _retinaFactor * _frameZoomFactor);
-    vp.w = (unsigned int)(w * _scaleX * _retinaFactor * _frameZoomFactor);
-    vp.h = (unsigned int)(h * _scaleY * _retinaFactor * _frameZoomFactor);
+    vp.x = (int)(x * _viewScale.x * _renderScale * _windowZoomFactor +
+                 _viewportRect.origin.x * _renderScale * _windowZoomFactor);
+    vp.y = (int)(y * _viewScale.y * _renderScale * _windowZoomFactor +
+                 _viewportRect.origin.y * _renderScale * _windowZoomFactor);
+    vp.w = (unsigned int)(w * _viewScale.x * _renderScale * _windowZoomFactor);
+    vp.h = (unsigned int)(h * _viewScale.y * _renderScale * _windowZoomFactor);
     Camera::setDefaultViewport(vp);
 }
 
 void RenderViewImpl::setScissorInPoints(float x, float y, float w, float h)
 {
-    auto x1      = (int)(x * _scaleX * _retinaFactor * _frameZoomFactor +
-                    _viewportRect.origin.x * _retinaFactor * _frameZoomFactor);
-    auto y1      = (int)(y * _scaleY * _retinaFactor * _frameZoomFactor +
-                    _viewportRect.origin.y * _retinaFactor * _frameZoomFactor);
-    auto width1  = (unsigned int)(w * _scaleX * _retinaFactor * _frameZoomFactor);
-    auto height1 = (unsigned int)(h * _scaleY * _retinaFactor * _frameZoomFactor);
+    auto x1      = (int)(x * _viewScale.x * _renderScale * _windowZoomFactor +
+                    _viewportRect.origin.x * _renderScale * _windowZoomFactor);
+    auto y1      = (int)(y * _viewScale.y * _renderScale * _windowZoomFactor +
+                    _viewportRect.origin.y * _renderScale * _windowZoomFactor);
+    auto width1  = (unsigned int)(w * _viewScale.x * _renderScale * _windowZoomFactor);
+    auto height1 = (unsigned int)(h * _viewScale.y * _renderScale * _windowZoomFactor);
 
     setScissorRect(x1, y1, width1, height1);
 }
@@ -1078,12 +1038,12 @@ ax::Rect RenderViewImpl::getScissorInPoints() const
 {
     auto& rect = getScissorRect();
 
-    float x = (rect.x - _viewportRect.origin.x * _retinaFactor * _frameZoomFactor) /
-              (_scaleX * _retinaFactor * _frameZoomFactor);
-    float y = (rect.y - _viewportRect.origin.y * _retinaFactor * _frameZoomFactor) /
-              (_scaleY * _retinaFactor * _frameZoomFactor);
-    float w = rect.width / (_scaleX * _retinaFactor * _frameZoomFactor);
-    float h = rect.height / (_scaleY * _retinaFactor * _frameZoomFactor);
+    float x = (rect.x - _viewportRect.origin.x * _renderScale * _windowZoomFactor) /
+              (_viewScale.x * _renderScale * _windowZoomFactor);
+    float y = (rect.y - _viewportRect.origin.y * _renderScale * _windowZoomFactor) /
+              (_viewScale.y * _renderScale * _windowZoomFactor);
+    float w = rect.width / (_viewScale.x * _renderScale * _windowZoomFactor);
+    float h = rect.height / (_viewScale.y * _renderScale * _windowZoomFactor);
     return ax::Rect(x, y, w, h);
 }
 
@@ -1109,8 +1069,8 @@ void RenderViewImpl::onGLFWMouseCallBack(GLFWwindow* /*window*/, int button, int
             if (GLFW_PRESS == action)
             {
                 _captured = true;
-                if (this->getViewPortRect().equals(ax::Rect::ZERO) ||
-                    this->getViewPortRect().containsPoint(Vec2(_mouseX, _mouseY)))
+                if (this->getViewportRect().equals(ax::Rect::ZERO) ||
+                    this->getViewportRect().containsPoint(Vec2(_mouseX, _mouseY)))
                 {
                     intptr_t id = 0;
                     this->handleTouchesBegin(1, &id, &_mouseX, &_mouseY);
@@ -1150,17 +1110,9 @@ void RenderViewImpl::onGLFWMouseMoveCallBack(GLFWwindow* window, double x, doubl
     _mouseX = (float)x;
     _mouseY = (float)y;
 
-    _mouseX /= this->getFrameZoomFactor();
-    _mouseY /= this->getFrameZoomFactor();
+    _mouseX /= _windowZoomFactor;
+    _mouseY /= _windowZoomFactor;
 
-    if (_isInRetinaMonitor)
-    {
-        if (_retinaFactor == 1)
-        {
-            _mouseX *= 2;
-            _mouseY *= 2;
-        }
-    }
     if (!_isTouchDevice)
     {
         if (_captured)
@@ -1337,16 +1289,15 @@ void RenderViewImpl::onGLFWWindowSizeCallback(GLFWwindow* /*window*/, int w, int
 {
     if (w && h && _resolutionPolicy != ResolutionPolicy::UNKNOWN)
     {
-        auto director = Director::getInstance();
-
-        handleWindowSize(w, h);
-
-        int fbWidth, fbHeight;
+        // Query the actual framebuffer size here to handle HiDPI displays.
+        // On macOS/Windows/Linux with Retina/HiDPI, framebuffer size may differ from window size.
+        int fbWidth = 0, fbHeight = 0;
         glfwGetFramebufferSize(_mainWindow, &fbWidth, &fbHeight);
-        onFrameBufferResized(fbWidth, fbHeight);
 
+        handleWindowResized(w, h, fbWidth, fbHeight);
+        onFramebufferResized(fbWidth, fbHeight);
         Size size(w, h);
-        director->getEventDispatcher()->dispatchCustomEvent(RenderViewImpl::EVENT_WINDOW_RESIZED, &size);
+        Director::getInstance()->getEventDispatcher()->dispatchCustomEvent(RenderViewImpl::EVENT_WINDOW_RESIZED, &size);
     }
 }
 

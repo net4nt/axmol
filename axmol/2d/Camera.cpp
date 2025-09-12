@@ -187,7 +187,7 @@ void Camera::setAdditionalProjection(const Mat4& mat)
 
 void Camera::initDefault()
 {
-    auto& size = _director->getWinSize();
+    auto& size = _director->getLogicalSize();
     switch (_director->getProjection())
     {
     case Director::Projection::_2D:
@@ -225,7 +225,7 @@ void Camera::initDefault()
 
 void Camera::updateTransform()
 {
-    auto& size = _director->getWinSize();
+    auto& size = _director->getLogicalSize();
     // create default camera
     switch (_director->getProjection())
     {
@@ -286,7 +286,7 @@ Vec2 Camera::project(const Vec3& src) const
 {
     Vec2 screenPos;
 
-    auto viewport = _director->getWinSize();
+    auto worldSize = _director->getLogicalSize();
     Vec4 clipPos;
     getViewProjectionMatrix().transformVector(Vec4(src.x, src.y, src.z, 1.0f), &clipPos);
 
@@ -294,8 +294,8 @@ Vec2 Camera::project(const Vec3& src) const
     float ndcX = clipPos.x / clipPos.w;
     float ndcY = clipPos.y / clipPos.w;
 
-    screenPos.x = (ndcX + 1.0f) * 0.5f * viewport.width;
-    screenPos.y = (1.0f - (ndcY + 1.0f) * 0.5f) * viewport.height;
+    screenPos.x = (ndcX + 1.0f) * 0.5f * worldSize.width;
+    screenPos.y = (1.0f - (ndcY + 1.0f) * 0.5f) * worldSize.height;
     return screenPos;
 }
 
@@ -303,7 +303,7 @@ Vec2 Camera::projectGL(const Vec3& src) const
 {
     Vec2 screenPos;
 
-    auto viewport = _director->getWinSize();
+    auto worldSize = _director->getLogicalSize();
     Vec4 clipPos;
     getViewProjectionMatrix().transformVector(Vec4(src.x, src.y, src.z, 1.0f), &clipPos);
 
@@ -313,22 +313,22 @@ Vec2 Camera::projectGL(const Vec3& src) const
     float ndcX = clipPos.x / clipPos.w;
     float ndcY = clipPos.y / clipPos.w;
 
-    screenPos.x = (ndcX + 1.0f) * 0.5f * viewport.width;
-    screenPos.y = (ndcY + 1.0f) * 0.5f * viewport.height;
+    screenPos.x = (ndcX + 1.0f) * 0.5f * worldSize.width;
+    screenPos.y = (ndcY + 1.0f) * 0.5f * worldSize.height;
     return screenPos;
 }
 
 Vec3 Camera::unproject(const Vec3& src) const
 {
     Vec3 dst;
-    unproject(_director->getWinSize(), &src, &dst);
+    unproject(_director->getLogicalSize(), &src, &dst);
     return dst;
 }
 
 Vec3 Camera::unprojectGL(const Vec3& src) const
 {
     Vec3 dst;
-    unprojectGL(_director->getWinSize(), &src, &dst);
+    unprojectGL(_director->getLogicalSize(), &src, &dst);
     return dst;
 }
 

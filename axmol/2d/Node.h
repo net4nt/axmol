@@ -328,7 +328,7 @@ public:
      * Usually we use `Vec2(x,y)` to compose Vec2 object.
      * This code snippet sets the node in the center of screen.
      @code
-     Vec2 size = Director::getInstance()->getWinSize();
+     Vec2 size = Director::getInstance()->getLogicalSize();
      node->setPosition(size.width/2, size.height/2);
      @endcode
      *
@@ -1854,7 +1854,12 @@ protected:
     void detachChild(Node* child, ssize_t index, bool cleanup);
 
     /// Convert axmol coordinates to UI windows coordinate.
-    Vec2 convertToWindowSpace(const Vec2& nodePoint) const;
+    Vec2 convertToScreenSpace(const Vec2& nodePoint) const;
+
+    AX_DEPRECATED(3.0) Vec2 convertToWindowSpace(const Vec2& nodePoint) const
+    {
+        return convertToScreenSpace(nodePoint);
+    }
 
     Mat4 transform(const Mat4& parentTransform);
     uint32_t processParentFlags(const Mat4& parentTransform, uint32_t parentFlags);

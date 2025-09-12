@@ -211,7 +211,7 @@ bool Node::initLayer()
 {
     _ignoreAnchorPointForPosition = true;
     setAnchorPoint(Vec2(0.5f, 0.5f));
-    setContentSize(_director->getWinSize());
+    setContentSize(_director->getLogicalSize());
     return true;
 }
 
@@ -1914,10 +1914,10 @@ Vec2 Node::convertToWorldSpaceAR(const Vec2& nodePoint) const
     return convertToWorldSpace(nodePoint + _anchorPointInPoints);
 }
 
-Vec2 Node::convertToWindowSpace(const Vec2& nodePoint) const
+Vec2 Node::convertToScreenSpace(const Vec2& nodePoint) const
 {
     Vec2 worldPoint(this->convertToWorldSpace(nodePoint));
-    return _director->convertToUI(worldPoint);
+    return _director->worldToScreen(worldPoint);
 }
 
 // convenience methods which take a Touch instead of Vec2

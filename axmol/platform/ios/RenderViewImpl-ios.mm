@@ -66,7 +66,7 @@ RenderViewImpl* RenderViewImpl::createWithRect(std::string_view viewName,
     return nullptr;
 }
 
-RenderViewImpl* RenderViewImpl::createWithFullScreen(std::string_view viewName)
+RenderViewImpl* RenderViewImpl::createWithFullscreen(std::string_view viewName)
 {
     auto ret = new RenderViewImpl();
     if (ret->initWithFullScreen(viewName))
@@ -144,9 +144,9 @@ bool RenderViewImpl::initWithRect(std::string_view /*viewName*/,
     [eaView setMultipleTouchEnabled:YES];
 #endif
 
-    _screenSize.width = _designResolutionSize.width = [eaView getWidth];
-    _screenSize.height = _designResolutionSize.height = [eaView getHeight];
-    //    _scaleX = _scaleY = [eaView contentScaleFactor];
+    _windowSize.width = _designResolutionSize.width = [eaView getWidth];
+    _windowSize.height = _designResolutionSize.height = [eaView getHeight];
+    //    _viewScale.x = _viewScale.y = [eaView contentScaleFactor];
 
     _eaViewHandle = eaView;
 
@@ -218,7 +218,7 @@ bool RenderViewImpl::isGfxContextReady()
 bool RenderViewImpl::setContentScaleFactor(float contentScaleFactor)
 {
     AX_ASSERT(_resolutionPolicy == ResolutionPolicy::UNKNOWN);  // cannot enable retina mode
-    _scaleX = _scaleY = contentScaleFactor;
+    _viewScale.x = _viewScale.y = contentScaleFactor;
 
     [(__bridge EARenderView*)_eaViewHandle setNeedsLayout];
 
@@ -276,14 +276,14 @@ Rect RenderViewImpl::getSafeAreaRect() const
         safeAreaInsets.bottom *= eaView.contentScaleFactor;
 
         // Get leftBottom and rightTop point in UI coordinates
-        Vec2 leftBottom = Vec2(safeAreaInsets.left, _screenSize.height - safeAreaInsets.bottom);
-        Vec2 rightTop   = Vec2(_screenSize.width - safeAreaInsets.right, safeAreaInsets.top);
+        Vec2 leftBottom = Vec2(safeAreaInsets.left, _windowSize.height - safeAreaInsets.bottom);
+        Vec2 rightTop   = Vec2(_windowSize.width - safeAreaInsets.right, safeAreaInsets.top);
 
         // Convert a point from UI coordinates to which in design resolution coordinate.
-        leftBottom.x = (leftBottom.x - _viewportRect.origin.x) / _scaleX,
-        leftBottom.y = (leftBottom.y - _viewportRect.origin.y) / _scaleY;
-        rightTop.x   = (rightTop.x - _viewportRect.origin.x) / _scaleX,
-        rightTop.y   = (rightTop.y - _viewportRect.origin.y) / _scaleY;
+        leftBottom.x = (leftBottom.x - _viewportRect.origin.x) / _viewScale.x,
+        leftBottom.y = (leftBottom.y - _viewportRect.origin.y) / _viewScale.y;
+        rightTop.x   = (rightTop.x - _viewportRect.origin.x) / _viewScale.x,
+        rightTop.y   = (rightTop.y - _viewportRect.origin.y) / _viewScale.y;
 
         // Adjust points to make them inside design resolution
         leftBottom.x = MAX(leftBottom.x, 0);
@@ -292,8 +292,8 @@ Rect RenderViewImpl::getSafeAreaRect() const
         rightTop.y   = MAX(rightTop.y, 0);
 
         // Convert to GL coordinates
-        leftBottom = Director::getInstance()->convertToGL(leftBottom);
-        rightTop   = Director::getInstance()->convertToGL(rightTop);
+        leftBottom = Director::getInstance()->screenToWorld(leftBottom);
+        rightTop   = Director::getInstance()->screenToWorld(rightTop);
 
         return Rect(leftBottom.x, leftBottom.y, rightTop.x - leftBottom.x, rightTop.y - leftBottom.y);
     }

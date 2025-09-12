@@ -322,7 +322,12 @@ else {
                 $DEPENDS += 'g++'
                 $DEPENDS += 'libasound2-dev'
                 $DEPENDS += 'libxxf86vm-dev'
+
+                # vlc
                 $DEPENDS += 'libvlc-dev', 'libvlccore-dev', 'vlc'
+
+                # wayland
+                $DEPENDS += 'libwayland-dev', 'wayland-protocols', 'libwayland-cursor0', 'libwayland-egl1', 'libwayland-egl-backend-dev', 'libegl1-mesa-dev', 'libgl1-mesa-dev'
 
                 # if vlc encouter codec error, install
                 # sudo apt install ubuntu-restricted-extras
@@ -356,7 +361,10 @@ else {
                     'fontconfig',
                     'gtk3',
                     'webkit2gtk',
-                    'vlc'
+                    'vlc',
+                    'wayland',
+                    'wayland-protocols',
+                    'libglvnd'
                 )
                 sudo pacman -S --needed --noconfirm @DEPENDS
             }

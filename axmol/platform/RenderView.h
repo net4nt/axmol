@@ -155,50 +155,62 @@ public:
      */
     virtual bool windowShouldClose() { return false; };
 
-    /** Static method and member so that we can modify it on all platforms before create OpenGL context.
+    /** Static method and member so that we can modify it on all platforms before create graphics context.
      *
-     * @param gfxContextAttrs The OpenGL context attrs.
+     * @param gfxContextAttrs The graphics context attrs.
      */
     static void setGfxContextAttrs(GfxContextAttrs& gfxContextAttrs);
 
-    /** Return the OpenGL context attrs.
+    /** Return the graphics context attrs.
      *
-     * @return Return the OpenGL context attrs.
+     * @return Return the graphics context attrs.
      */
     static GfxContextAttrs& getGfxContextAttrs();
 
     /** Polls the events. */
     virtual void pollEvents();
 
-    /**
-     * Get the frame size of EGL view.
-     * In general, it returns the screen size since the EGL view is a fullscreen view.
-     *
-     * @return The frame size of EGL view.
-     */
-    virtual Vec2 getFrameSize() const;
+    virtual Vec2 getNativeWindowSize() const { return getWindowSize(); }
 
     /**
-     * Set the frame size of EGL view.
+     * Get the zoomed window size
+     * In general, it returns the screen size since the EGL view is a fullscreen view.
+     *
+     * @return The window size (aka logic size)
+     */
+    virtual const Vec2& getWindowSize() const;
+
+    /**
+     * Set the zoomed window size
      *
      * @param width The width of the fram size.
      * @param height The height of the fram size.
      */
-    virtual void setFrameSize(float width, float height);
+    virtual void setWindowSize(float width, float height);
 
     /** Set zoom factor for frame. This methods are for
      * debugging big resolution (e.g.new ipad) app on desktop.
      *
      * @param zoomFactor The zoom factor for frame.
      */
-    virtual void setFrameZoomFactor(float /*zoomFactor*/) {}
+    virtual void setWindowZoomFactor(float /*zoomFactor*/) {}
 
     /** Get zoom factor for frame. This methods are for
      * debugging big resolution (e.g.new ipad) app on desktop.
      *
      * @return The zoom factor for frame.
      */
-    virtual float getFrameZoomFactor() const { return 1.0; }
+    virtual float getWindowZoomFactor() const { return 1.0; }
+
+#ifndef _AX_GEN_SCRIPT_BINDINGS
+    /**
+     * implicit deprecated APIs, use getWindowSize instead
+     */
+    AX_DEPRECATED(3.0) const Vec2& getFrameSize() const { return getWindowSize(); }
+    AX_DEPRECATED(3.0) void setFrameSize(float width, float height) { setWindowSize(width, height); }
+    AX_DEPRECATED(3.0) float getFrameZoomFactor() const { return getWindowZoomFactor(); }
+    AX_DEPRECATED(3.0) void setFrameZoomFactor(float zoomFactor) { setWindowZoomFactor(zoomFactor); }
+#endif
 
     /**
      * Hide or Show the mouse cursor if there is one.
@@ -207,11 +219,11 @@ public:
      */
     virtual void setCursorVisible(bool /*isVisible*/) {}
 
-    /** Get retina factor.
+    /** Get device pixel ratio.
      *
-     * @return The retina factor.
+     * @return The render scale fbSize/windowSize
      */
-    virtual int getRetinaFactor() const { return 1; }
+    virtual int getRenderScale() const { return 1; }
 
     /** Only works on ios platform. Set Content Scale of the Factor. */
     virtual bool setContentScaleFactor(float /*scaleFactor*/) { return false; }
@@ -219,30 +231,30 @@ public:
     /** Only works on ios platform. Get Content Scale of the Factor. */
     virtual float getContentScaleFactor() const { return 1.0; }
 
-    /** Returns whether or not the view is in Retina Display mode.
+    /** Returns whether or not the view is in high DPI mode.
      *
-     * @return Returns whether or not the view is in Retina Display mode.
+     * @return Returns whether or not the view is in high DPI mode.
      */
-    virtual bool isRetinaDisplay() const { return false; }
+    virtual bool isHighDPI() const { return false; }
 
     /**
-     * Get the visible area size of opengl viewport.
+     * Get the visible area size of render viewport.
      *
-     * @return The visible area size of opengl viewport.
+     * @return The visible area size of render viewport.
      */
     virtual Vec2 getVisibleSize() const;
 
     /**
-     * Get the visible origin point of opengl viewport.
+     * Get the visible origin point of render viewport.
      *
-     * @return The visible origin point of opengl viewport.
+     * @return The visible origin point of render viewport.
      */
     virtual Vec2 getVisibleOrigin() const;
 
     /**
-     * Get the visible rectangle of opengl viewport.
+     * Get the visible rectangle of render viewport.
      *
-     * @return The visible rectangle of opengl viewport.
+     * @return The visible rectangle of render viewport.
      */
     virtual Rect getVisibleRect() const;
 
@@ -262,18 +274,19 @@ public:
      * ratio, two areas of your game view will be cut. [3] SHOW_ALL  Full screen with black border: if the design
      * resolution ratio of width to height is different from the screen resolution ratio, two black borders will be
      * shown.
+     * @remark You shoud only set once
      */
     virtual void setDesignResolutionSize(float width, float height, ResolutionPolicy resolutionPolicy);
 
     /** Get design resolution size.
-     *  Default resolution size is the same as 'getFrameSize'.
+     *  Default resolution size is the same as 'getWindowSize'.
      *
      * @return The design resolution size.
      */
     virtual const Vec2& getDesignResolutionSize() const;
 
     /**
-     * Set opengl view port rectangle with points.
+     * Set render view port rectangle with points.
      *
      * @param x Set the points of x.
      * @param y Set the points of y.
@@ -385,11 +398,11 @@ public:
     virtual void setDefaultIcon() const {};
 
     /**
-     * Get the opengl view port rectangle.
+     * Get the render view port rectangle.
      *
-     * @return Return the opengl view port rectangle.
+     * @return Return the render view port rectangle.
      */
-    const Rect& getViewPortRect() const;
+    const Rect& getViewportRect() const;
 
     /**
      * Get list of all active touches.
@@ -431,10 +444,10 @@ public:
 #elif (AX_TARGET_PLATFORM == AX_PLATFORM_LINUX)
     virtual void* getX11Window()  = 0;
     virtual void* getX11Display() = 0;
-    /* TODO: Implement AX_PLATFORM_LINUX_WAYLAND
-    virtual void* getWaylandWindow() = 0;
+#    ifdef AX_ENABLE_WAYLAND
+    virtual void* getWaylandWindow()  = 0;
     virtual void* getWaylandDisplay() = 0;
-    */
+#    endif
 #endif  // #if (AX_TARGET_PLATFORM == AX_PLATFORM_LINUX)
 
     /**
@@ -454,10 +467,10 @@ public:
 #endif
 
 protected:
-    float transformInputX(float x) { return (x - _viewportRect.origin.x) / _scaleX; }
-    float transformInputY(float y) { return (y - _viewportRect.origin.y) / _scaleY; }
+    float transformInputX(float x) { return (x - _viewportRect.origin.x) / _viewScale.x; }
+    float transformInputY(float y) { return (y - _viewportRect.origin.y) / _viewScale.y; }
 
-    void onFrameBufferResized(uint32_t fbWidth, uint32_t fbHeight);
+    void onFramebufferResized(uint32_t fbWidth, uint32_t fbHeight);
 
     void setScissorRect(float x, float y, float w, float h);
     const ScissorRect& getScissorRect() const;
@@ -475,8 +488,8 @@ protected:
     /** The graphics context attrs. */
     static GfxContextAttrs _gfxContextAttrs;
 
-    // real screen size
-    Vec2 _screenSize;
+    // The window size aka logic size, may scaled by windowZoomFactor in high DPI display
+    Vec2 _windowSize;
     // resolution size, it is the size appropriate for the app resources.
     Vec2 _designResolutionSize;
     // the view port size
@@ -484,8 +497,7 @@ protected:
     // the view name
     std::string _viewName;
 
-    float _scaleX;
-    float _scaleY;
+    Vec2 _viewScale;
     ResolutionPolicy _resolutionPolicy;
 
 #ifdef AX_ENABLE_VR

@@ -50,20 +50,14 @@ public:
     static RenderViewImpl* create(std::string_view viewName, bool resizable);
     static RenderViewImpl* createWithRect(std::string_view viewName,
                                           const Rect& rect,
-                                          float frameZoomFactor = 1.0f,
-                                          bool resizable        = false);
-    static RenderViewImpl* createWithFullScreen(std::string_view viewName);
-    static RenderViewImpl* createWithFullScreen(std::string_view viewName,
+                                          float zoomFactor = 1.0f,
+                                          bool resizable   = false);
+    static RenderViewImpl* createWithFullscreen(std::string_view viewName);
+    static RenderViewImpl* createWithFullscreen(std::string_view viewName,
                                                 const GLFWvidmode& videoMode,
                                                 GLFWmonitor* monitor);
 
-    /*
-     *frameZoomFactor for frame. This method is for debugging big resolution (e.g.new ipad) app on desktop.
-     */
-
-    // void resize(int width, int height);
-
-    float getFrameZoomFactor() const override;
+    float getWindowZoomFactor() const override;
     // void centerWindow();
 
     void setViewportInPoints(float x, float y, float w, float h) override;
@@ -96,8 +90,9 @@ public:
     void setFullscreen(GLFWmonitor* monitor, int w, int h, int refreshRate);
     void setWindowed(int width, int height, bool borderless = false);
 
+    Vec2 getNativeWindowSize() const override;
+
     void getWindowPosition(int* xpos, int* ypos);
-    void getWindowSize(int* width, int* height);
 
     void setWindowSizeLimits(int minwidth,
                              int minheight,
@@ -111,7 +106,7 @@ public:
     bool isGfxContextReady() override;
     void end() override;
     void swapBuffers() override;
-    void setFrameSize(float width, float height) override;
+    void setWindowSize(float width, float height) override;
     void setIMEKeyboardState(bool bOpen) override;
 
 #if AX_ICON_SET_SUPPORT
@@ -121,22 +116,18 @@ public:
 #endif /* AX_ICON_SET_SUPPORT */
 
     /*
-     * Set zoom factor for frame. This method is for debugging big resolution (e.g.new ipad) app on desktop.
+     * Set zoom factor for window. This method is for debugging big resolution (e.g.new ipad) app on desktop.
      */
-    void setFrameZoomFactor(float zoomFactor) override;
+    void setWindowZoomFactor(float zoomFactor) override;
     /**
      * Hide or Show the mouse cursor if there is one.
      */
     void setCursorVisible(bool isVisible) override;
-    /** Retina support is disabled by default
-     *  @note This method is only available on Mac.
-     */
-    void enableRetina(bool enabled);
-    /** Check whether retina display is enabled. */
-    bool isRetinaEnabled() const { return _isRetinaEnabled; };
 
-    /** Get retina factor */
-    int getRetinaFactor() const override { return _retinaFactor; }
+    /** Get render scale */
+    int getRenderScale() const override { return _renderScale; }
+
+    bool isHighDPI() const override { return _isHighDPI; }
 
 #if (AX_TARGET_PLATFORM == AX_PLATFORM_WIN32)
     HWND getWin32Window() override;
@@ -150,28 +141,22 @@ public:
 #if (AX_TARGET_PLATFORM == AX_PLATFORM_LINUX)
     void* getX11Window() override;
     void* getX11Display() override;
-    /* TODO: Implement AX_PLATFORM_LINUX_WAYLAND
+#    ifdef AX_ENABLE_WAYLAND
     void* getWaylandWindow() override;
     void* getWaylandDisplay() override;
-    */
+#    endif
 #endif  // #if (AX_TARGET_PLATFORM == AX_PLATFORM_LINUX)
 
 protected:
     RenderViewImpl(bool initglfw = true);
     ~RenderViewImpl() override;
 
-    bool initWithRect(std::string_view viewName, const Rect& rect, float frameZoomFactor, bool resizable);
+    bool initWithRect(std::string_view viewName, const Rect& rect, float zoomFactor, bool resizable);
     bool initWithFullScreen(std::string_view viewName);
     bool initWithFullscreen(std::string_view viewname, const GLFWvidmode& videoMode, GLFWmonitor* monitor);
 #if (AX_TARGET_PLATFORM != AX_PLATFORM_MAC)  // Windows, Linux: use glad to loadGL
     bool loadGL();
 #endif
-
-    /* invoke when window size changed */
-    void handleWindowSize(int w, int h);
-
-    /* update frame size when user set zoomFactor, retina, frameSize */
-    void updateFrameSize();
 
     // GLFW callbacks
     void onGLFWError(int errorID, const char* errorDesc);
@@ -185,18 +170,25 @@ protected:
     void onGLFWKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
     void onGLFWCharCallback(GLFWwindow* window, unsigned int character);
     void onGLFWWindowPosCallback(GLFWwindow* windows, int x, int y);
-    void onGLFWWindowSizeCallback(GLFWwindow* window, int width, int height);
+    void onGLFWWindowSizeCallback(GLFWwindow* window, int w, int h);
     void onGLFWWindowIconifyCallback(GLFWwindow* window, int iconified);
     void onGLFWWindowFocusCallback(GLFWwindow* window, int focused);
     void onGLFWWindowCloseCallback(GLFWwindow* window);
 
+protected:
+    void handleWindowResized(int w, int h, int fbWidth, int fbHeigh);
+
+    /* update window size when user set zoomFactor, retina, frameSize */
+    void applyWindowSize();
+
     bool _isTouchDevice = false;
     bool _captured;
-    bool _isInRetinaMonitor;
-    bool _isRetinaEnabled;
-    int _retinaFactor;  // Should be 1 or 2
 
-    float _frameZoomFactor;
+    bool _isHighDPI{false};
+
+    float _renderScale;  // >=1
+
+    float _windowZoomFactor;
 
     GLFWwindow* _mainWindow;
     GLFWmonitor* _monitor;
@@ -221,6 +213,7 @@ public:
     static const std::string EVENT_WINDOW_CLOSE;
 
 private:
+    void updateRenderScale(int windowWidth, int framebufferWidth);
     AX_DISALLOW_COPY_AND_ASSIGN(RenderViewImpl);
 };
 

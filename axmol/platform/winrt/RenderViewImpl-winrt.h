@@ -58,9 +58,9 @@ public:
     static RenderViewImpl* create(std::string_view viewName);
     static RenderViewImpl* createWithRect(std::string_view viewName,
                                           const Rect& rect,
-                                          float frameZoomFactor = 1.0f,
-                                          bool resizable        = false);
-    static RenderViewImpl* createWithFullScreen(std::string_view viewName);
+                                          float zoomFactor = 1.0f,
+                                          bool resizable   = false);
+    static RenderViewImpl* createWithFullscreen(std::string_view viewName);
 
     /* override functions */
     bool isGfxContextReady() override;
@@ -125,7 +125,6 @@ public:
     int Run();
     void Render();
 
-    float getFrameZoomFactor();
     void centerWindow();
 
     void UpdateOrientation(Windows::Graphics::Display::DisplayOrientations orientation);
@@ -154,16 +153,7 @@ protected:
     bool initWithRect(std::string_view viewName, const Rect& rect, float frameZoomFactor);
     bool initWithFullScreen(std::string_view viewName);
 
-    /*
-     * Set zoom factor for frame. This method is for debugging big resolution (e.g.new ipad) app on desktop.
-     */
-    void setFrameZoomFactor(float zoomFactor);
-
-    inline bool isRetina() { return _isRetina; };
-
-    float _frameZoomFactor;
     bool _supportTouch;
-    bool _isRetina;
     bool _isCursorVisible;
 
 private:

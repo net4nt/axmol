@@ -405,10 +405,8 @@ void Director::setRenderView(RenderView* renderView)
         _renderView = renderView;
         _renderView->retain();
 
-        // set size
-        _winSizeInPoints = _renderView->getDesignResolutionSize();
-
-        _isStatusLabelUpdated = true;
+        // set logical size equals to designResolutionSize
+        setLogicalSize(_renderView->getDesignResolutionSize());
 
         _renderer->init();
 
@@ -422,6 +420,12 @@ void Director::setRenderView(RenderView* renderView)
             _eventDispatcher->setEnabled(true);
         }
     }
+}
+
+void Director::setLogicalSize(const Vec2& logicalSize)
+{
+    _logicalSizeInPoints  = logicalSize;
+    _isStatusLabelUpdated = true;
 }
 
 TextureCache* Director::getTextureCache() const
@@ -447,7 +451,7 @@ void Director::setViewport()
 {
     if (_renderView)
     {
-        _renderView->setViewportInPoints(0, 0, _winSizeInPoints.width, _winSizeInPoints.height);
+        _renderView->setViewportInPoints(0, 0, _logicalSizeInPoints.width, _logicalSizeInPoints.height);
     }
 }
 
@@ -610,7 +614,7 @@ const Mat4& Director::getMatrix(MATRIX_STACK_TYPE type) const
 
 void Director::setProjection(Projection projection)
 {
-    Vec2 size = _winSizeInPoints;
+    Vec2 size = _logicalSizeInPoints;
 
     if (size.width == 0 || size.height == 0)
     {
@@ -684,7 +688,7 @@ void Director::purgeCachedData()
 
 float Director::getZEye() const
 {
-    return (_winSizeInPoints.height / 1.154700538379252f);  //(2 * tanf(M_PI/6))
+    return (_logicalSizeInPoints.height / 1.154700538379252f);  //(2 * tanf(M_PI/6))
 }
 
 void Director::setClearColor(const Color& clearColor)
@@ -692,7 +696,7 @@ void Director::setClearColor(const Color& clearColor)
     _clearColor = clearColor;
 }
 
-static void GLToClipTransform(Mat4* transformOut)
+static void getViewProjMatrix(Mat4* transformOut)
 {
     if (nullptr == transformOut)
         return;
@@ -705,18 +709,18 @@ static void GLToClipTransform(Mat4* transformOut)
     *transformOut    = projection * modelview;
 }
 
-Vec2 Director::convertToGL(const Vec2& uiPoint)
+Vec2 Director::screenToWorld(const Vec2& uiPoint)
 {
     Mat4 transform;
-    GLToClipTransform(&transform);
+    getViewProjMatrix(&transform);
 
     Mat4 transformInv = transform.getInversed();
 
     // Calculate z=0 using -> transform*[0, 0, 0, 1]/w
     float zClip = transform.m[14] / transform.m[15];
 
-    Vec2 glSize = _renderView->getDesignResolutionSize();
-    Vec4 clipCoord(2.0f * uiPoint.x / glSize.width - 1.0f, 1.0f - 2.0f * uiPoint.y / glSize.height, zClip, 1);
+    Vec2 designSize = _renderView->getDesignResolutionSize();
+    Vec4 clipCoord(2.0f * uiPoint.x / designSize.width - 1.0f, 1.0f - 2.0f * uiPoint.y / designSize.height, zClip, 1);
 
     Vec4 glCoord;
     // transformInv.transformPoint(clipCoord, &glCoord);
@@ -725,10 +729,10 @@ Vec2 Director::convertToGL(const Vec2& uiPoint)
     return Vec2(glCoord.x * factor, glCoord.y * factor);
 }
 
-Vec2 Director::convertToUI(const Vec2& glPoint)
+Vec2 Director::worldToScreen(const Vec2& glPoint)
 {
     Mat4 transform;
-    GLToClipTransform(&transform);
+    getViewProjMatrix(&transform);
 
     Vec4 clipCoord;
     // Need to calculate the zero depth from the transform.
@@ -747,20 +751,20 @@ Vec2 Director::convertToUI(const Vec2& glPoint)
     clipCoord.y = clipCoord.y / clipCoord.w;
     clipCoord.z = clipCoord.z / clipCoord.w;
 
-    Vec2 glSize  = _renderView->getDesignResolutionSize();
-    float factor = 1.0f / glCoord.w;
-    return Vec2(glSize.width * (clipCoord.x * 0.5f + 0.5f) * factor,
-                glSize.height * (-clipCoord.y * 0.5f + 0.5f) * factor);
+    Vec2 designSize = _renderView->getDesignResolutionSize();
+    float factor    = 1.0f / glCoord.w;
+    return Vec2(designSize.width * (clipCoord.x * 0.5f + 0.5f) * factor,
+                designSize.height * (-clipCoord.y * 0.5f + 0.5f) * factor);
 }
 
-const Vec2& Director::getWinSize() const
+const Vec2& Director::getLogicalSize() const
 {
-    return _winSizeInPoints;
+    return _logicalSizeInPoints;
 }
 
-Vec2 Director::getWinSizeInPixels() const
+Vec2 Director::getLogicalSizeInPixels() const
 {
-    return Vec2(_winSizeInPoints.width * _contentScaleFactor, _winSizeInPoints.height * _contentScaleFactor);
+    return Vec2(_logicalSizeInPoints.width * _contentScaleFactor, _logicalSizeInPoints.height * _contentScaleFactor);
 }
 
 Vec2 Director::getVisibleSize() const

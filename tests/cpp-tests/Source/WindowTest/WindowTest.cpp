@@ -110,21 +110,20 @@ void WindowTestResizedAndPositioned::onEnter()
 {
     WindowTest::onEnter();
 
-    auto s          = _director->getWinSize();
+    auto s          = _director->getLogicalSize();
     auto renderView = static_cast<RenderViewImpl*>(_director->getRenderView());
 
-    int x      = 0;
-    int y      = 0;
-    int width  = 0;
-    int height = 0;
+    int x = 0;
+    int y = 0;
     renderView->getWindowPosition(&x, &y);
-    renderView->getWindowSize(&width, &height);
+    auto winSize = renderView->getNativeWindowSize();
 
     label1 = Label::createWithTTF(fmt::format("pos : {}, {}", x, y), "fonts/Marker Felt.ttf", 16.0f);
     label1->setPosition(s.width / 3 * 1, s.height / 2);
     addChild(label1);
 
-    label2 = Label::createWithTTF(fmt::format("size : {}, {}", width, height), "fonts/Marker Felt.ttf", 16.0f);
+    label2 = Label::createWithTTF(fmt::format("size : {}, {}", winSize.width, winSize.height), "fonts/Marker Felt.ttf",
+                                  16.0f);
     label2->setPosition(s.width / 3 * 2, s.height / 2);
     addChild(label2);
 
@@ -202,7 +201,7 @@ void WindowTestClose::onWindowClose(EventCustom* e)
         label = nullptr;
     }
 
-    auto s = _director->getWinSize();
+    auto s = _director->getLogicalSize();
     label  = Label::createWithTTF("Window close button callback!", "fonts/Marker Felt.ttf", 16.0f);
     label->setPosition(s.width / 2, s.height / 2);
     addChild(label);

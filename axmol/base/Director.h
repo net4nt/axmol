@@ -76,8 +76,8 @@ using PowerPreference = rhi::PowerPreference;
  and when to execute the Scenes.
 
  The Director is also responsible for:
- - initializing the OpenGL context
- - setting the OpenGL buffer depth (default one is 0-bit)
+ - initializing the graphics context
+ - setting the buffer depth (default one is 0-bit)
  - setting the projection (default one is 3D)
 
  Since the Director is a singleton, the standard way to use it is by calling:
@@ -107,7 +107,7 @@ public:
     static const char* EVENT_BEFORE_DRAW;
 
     /**
-     * @brief Possible OpenGL projections used by director
+     * @brief Possible projection types used by the director.
      */
     enum class Projection
     {
@@ -230,15 +230,15 @@ public:
     /** How many frames were called since the director started */
     unsigned int getTotalFrames() { return _totalFrames; }
 
-    /** Gets an OpenGL projection.
+    /** Gets an projection.
      * @since v0.8.2
      * @lua NA
      */
     Projection getProjection() { return _projection; }
-    /** Sets OpenGL projection. */
+    /** Sets projection. */
     void setProjection(Projection projection);
 
-    /** Sets the glViewport.*/
+    /** Sets the viewport.*/
     void setViewport();
 
     /** Whether or not the replaced scene will receive the cleanup message.
@@ -260,39 +260,49 @@ public:
      */
     void setNotificationNode(Node* node);
 
-    // window size
+    // view size
 
-    /** Returns the size of the OpenGL view in points. */
-    const Vec2& getWinSize() const;
+    /** Returns the size of the render view in points.
+     */
+    const Vec2& getLogicalSize() const;
 
-    /** Returns the size of the OpenGL view in pixels. */
-    Vec2 getWinSizeInPixels() const;
+    /** Returns the size of the render view in pixels. */
+    Vec2 getLogicalSizeInPixels() const;
+
+    // implicit deprecated APIs
+#ifndef _AX_GEN_SCRIPT_BINDINGS
+    AX_DEPRECATED(3.0) const Vec2& getWinSize() const { return getLogicalSize(); }
+    AX_DEPRECATED(3.0) Vec2 getWinSizeInPixels() const { return getLogicalSizeInPixels(); }
+#endif
 
     /**
-     * Returns visible size of the OpenGL view in points.
-     * The value is equal to `Director::getWinSize()` if don't invoke `RenderView::setDesignResolutionSize()`.
+     * Returns visible size of the render view in points.
+     * The value is equal to `Director::getLogicalSize()` if don't invoke `RenderView::setDesignResolutionSize()`.
      */
     Vec2 getVisibleSize() const;
 
-    /** Returns visible origin coordinate of the OpenGL view in points. */
+    /** Returns visible origin coordinate of the render view in points. */
     Vec2 getVisibleOrigin() const;
 
     /**
-     * Returns safe area rectangle of the OpenGL view in points.
+     * Returns safe area rectangle of the render view in points.
      */
     Rect getSafeAreaRect() const;
 
     /**
-     * Converts a screen coordinate to an OpenGL coordinate.
-     * Useful to convert (multi) touch coordinates to the current layout (portrait or landscape).
+     * Converts a point from screen coordinates to the rendering coordinate system.
+     * Useful for mapping (multi)touch input to the current scene layout,
+     * taking into account orientation (portrait or landscape) and viewport settings.
      */
-    Vec2 convertToGL(const Vec2& point);
+    Vec2 screenToWorld(const Vec2& point);
+    AX_DEPRECATED(3.0) Vec2 convertToGL(const Vec2& point) { return screenToWorld(point); }
 
     /**
-     * Converts an OpenGL coordinate to a screen coordinate.
+     * Converts an rendering coordinate to a screen coordinate.
      * Useful to convert node points to window points for calls such as glScissor.
      */
-    Vec2 convertToUI(const Vec2& point);
+    Vec2 worldToScreen(const Vec2& point);
+    AX_DEPRECATED(3.0) Vec2 convertToUI(const Vec2& point) { return worldToScreen(point); }
 
     /**
      * Gets the distance between camera and near clipping frame.
@@ -563,6 +573,11 @@ protected:
      */
     void resizeSwapchain(uint32_t w, uint32_t h);
 
+    /**
+     * @brief Internal-only: Sets logical size aka design size, invoked by RenderView
+     */
+    void setLogicalSize(const Vec2& logicalSize);
+
 #if defined(AX_PLATFORM_PC)
     void processOperations();
 #endif
@@ -677,8 +692,8 @@ protected:
     /* projection used */
     Projection _projection = Projection::DEFAULT;
 
-    /* window size in points */
-    Vec2 _winSizeInPoints = Vec2::ZERO;
+    /* logical size in points */
+    Vec2 _logicalSizeInPoints = Vec2::ZERO;
 
     /* content scale factor */
     float _contentScaleFactor = 1.0f;

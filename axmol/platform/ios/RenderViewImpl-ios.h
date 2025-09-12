@@ -43,11 +43,11 @@ public:
     /** creates a RenderViewImpl with a title name, a rect and the zoom factor */
     static RenderViewImpl* createWithRect(std::string_view viewName,
                                           const Rect& rect,
-                                          float frameZoomFactor = 1.0f,
-                                          bool resizable        = false);
+                                          float zoomFactor = 1.0f,
+                                          bool resizable   = false);
 
     /** creates a RenderViewImpl with a name in fullscreen mode */
-    static RenderViewImpl* createWithFullScreen(std::string_view viewName);
+    static RenderViewImpl* createWithFullscreen(std::string_view viewName);
 
     static void choosePixelFormats();
     static PixelFormat _pixelFormat;
@@ -65,8 +65,8 @@ public:
     /** returns the content scale factor */
     float getContentScaleFactor() const override;
 
-    /** returns whether or not the view is in Retina Display mode */
-    bool isRetinaDisplay() const override { return getContentScaleFactor() == 2.0; }
+    /** returns whether or not the view is in high DPI mode */
+    bool isHighDPI() const override { return getContentScaleFactor() == 2.0; }
 
     /** @since axmol-2.8.0, returns the objective-c UIWindow instance */
     void* getEAWindow() const override { return _eaWindowHandle; }
