@@ -69,7 +69,10 @@ THE SOFTWARE.
 
 #include "axmol/rhi/SamplerCache.h"
 #include "axmol/renderer/VertexLayoutManager.h"
-#include "axmol/3d/VertexInputBinding.h"
+
+#if defined(AX_ENABLE_3D)
+#    include "axmol/3d/VertexInputBinding.h"
+#endif
 
 namespace ax
 {
@@ -1061,7 +1064,9 @@ void Director::reset()
 
     destroyTextureCache();
 
+#if defined(AX_ENABLE_3D)
     VertexInputBinding::clearCache();
+#endif
 
     rhi::SamplerCache::destroyInstance();
 }
