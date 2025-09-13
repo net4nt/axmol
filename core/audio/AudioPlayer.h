@@ -37,6 +37,7 @@
 #include "audio/AudioMacros.h"
 #include "platform/PlatformMacros.h"
 #include "audio/alconfig.h"
+#include "math/Vec3.h"
 
 namespace ax
 {
@@ -74,6 +75,9 @@ protected:
     float _volume;
     float _pitch;
     bool _loop;
+    float _pan{};
+    Vec3 _sourcePosition;
+
     std::function<void(AUDIO_ID, std::string_view)> _finishCallbak;
 
     bool _isDestroyed;
