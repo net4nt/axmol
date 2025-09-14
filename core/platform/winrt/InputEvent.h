@@ -27,6 +27,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "platform/PlatformMacros.h"
+#include "base/EventKeyboard.h"
 #include "platform/winrt/InputEventTypes.h"
 #include "base/Types.h"
 
@@ -99,10 +100,10 @@ private:
     winrt::hstring m_text;
 };
 
-enum WinRTKeyboardEventType
+enum class WinRTKeyboardEventType
 {
-	KeyPressed,
-	KeyReleased,
+    Up,
+    Down
 };
 
 class AX_DLL WinRTKeyboardEvent : public InputEvent
