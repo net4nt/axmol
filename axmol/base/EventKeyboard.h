@@ -45,7 +45,7 @@ public:
     /**
      * KeyCode The key (code).
      */
-    enum class KeyCode
+    enum class KeyCode : uint16_t
     {
         KEY_NONE,
         KEY_PAUSE,
@@ -222,13 +222,17 @@ public:
     /** Constructor.
      *
      * @param keyCode A given keycode.
-     * @param isPressed True if the key is pressed.
+     * @param isKeyDown whether is key down event
+     * @param isRepeat whether key down repeat
      */
-    EventKeyboard(KeyCode keyCode, bool isPressed);
+    EventKeyboard(KeyCode keyCode, bool isKeyDown, bool isRepeat = false);
+
+    bool isRepeat() const { return _isRepeat; }
 
 private:
     KeyCode _keyCode;
-    bool _isPressed;
+    bool _isKeyDown;
+    bool _isRepeat;
 
     friend class EventListenerKeyboard;
 };

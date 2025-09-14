@@ -35,6 +35,7 @@
 #include "axmol/audio/AudioMacros.h"
 #include "axmol/platform/PlatformMacros.h"
 #include "axmol/audio/alconfig.h"
+#include "axmol/math/Vec3.h"
 
 namespace ax
 {
@@ -84,6 +85,9 @@ protected:
     ALuint _bufferIds[QUEUEBUFFER_NUM] = {0};
 
     unsigned int _id;
+
+    float _pan{};
+    Vec3 _sourcePosition;
 
     bool _streamingSource{false};
     bool _timeDirty{false};

@@ -446,7 +446,7 @@ void SwapChainPage::OnKeyPressed(CoreWindow const& sender, KeyEventArgs const& a
 {
     if (m_renderer)
     {
-        m_renderer->QueueKeyboardEvent(WinRTKeyboardEventType::KeyPressed, args);
+        m_renderer->QueueKeyboardEvent(WinRTKeyboardEventType::Down, args);
     }
 }
 
@@ -456,7 +456,7 @@ void SwapChainPage::OnKeyReleased(CoreWindow const& /*sender*/, KeyEventArgs con
 {
     if (m_renderer)
     {
-        m_renderer->QueueKeyboardEvent(WinRTKeyboardEventType::KeyReleased, args);
+        m_renderer->QueueKeyboardEvent(WinRTKeyboardEventType::Up, args);
     }
 }
 

@@ -29,6 +29,7 @@ THE SOFTWARE.
 
 #include "axmol/platform/PlatformMacros.h"
 #include "axmol/platform/winrt/InputEventTypes.h"
+#include "axmol/base/EventKeyboard.h"
 #include "axmol/base/Types.h"
 
 #include <winrt/Windows.Foundation.h>
@@ -98,10 +99,10 @@ private:
     winrt::hstring m_text;
 };
 
-enum WinRTKeyboardEventType
+enum class WinRTKeyboardEventType
 {
-    KeyPressed,
-    KeyReleased,
+    Up,
+    Down
 };
 
 class AX_DLL WinRTKeyboardEvent : public InputEvent
