@@ -33,6 +33,7 @@ THE SOFTWARE.
 #include "axmol/2d/Camera.h"
 #include "axmol/2d/Scene.h"
 #include "axmol/renderer/Renderer.h"
+#include "axmol/rhi/DriverBase.h"
 
 namespace ax
 {
@@ -97,17 +98,14 @@ static void removeUsedIndexBit(int index)
 
 }  // namespace
 
-// default context attributions are set as follows
-GfxContextAttrs RenderView::_gfxContextAttrs = {8, 8, 8, 8, 24, 8, 0};
-
 void RenderView::setGfxContextAttrs(GfxContextAttrs& gfxContextAttrs)
 {
-    _gfxContextAttrs = gfxContextAttrs;
+    rhi::DriverBase::setContextAttrs(gfxContextAttrs);
 }
 
 GfxContextAttrs& RenderView::getGfxContextAttrs()
 {
-    return _gfxContextAttrs;
+    return rhi::DriverBase::getContextAttrs();
 }
 
 RenderView::RenderView()
@@ -122,7 +120,7 @@ RenderView::~RenderView() {}
 
 void RenderView::pollEvents() {}
 
-void RenderView::updateDesignResolutionSize()
+void RenderView::updateDesignResolution()
 {
     if (_windowSize.width > 0 && _windowSize.height > 0 && _designResolutionSize.width > 0 &&
         _designResolutionSize.height > 0)
@@ -177,7 +175,7 @@ void RenderView::setDesignResolutionSize(float width, float height, ResolutionPo
     _designResolutionSize.set(width, height);
     _resolutionPolicy = resolutionPolicy;
 
-    updateDesignResolutionSize();
+    updateDesignResolution();
 }
 
 const Vec2& RenderView::getDesignResolutionSize() const
@@ -198,6 +196,9 @@ void RenderView::setWindowSize(float width, float height)
     // only update the designResolution if it wasn't previously set
     if (_designResolutionSize.equals(Vec2::ZERO))
         _designResolutionSize = _windowSize;
+
+    if (_renderSize.equals(Vec2::ZERO))
+        _renderSize = _windowSize;
 }
 
 Rect RenderView::getVisibleRect() const
@@ -484,9 +485,10 @@ float RenderView::getScaleY() const
     return _viewScale.y;
 }
 
-void RenderView::onFramebufferResized(uint32_t fbWidth, uint32_t fbHeight)
+void RenderView::onRenderResized()
 {
-    Director::getInstance()->resizeSwapchain(fbWidth, fbHeight);
+    Director::getInstance()->resizeSwapchain(static_cast<uint32_t>(_renderSize.width),
+                                             static_cast<uint32_t>(_renderSize.height));
 
 #ifdef AX_ENABLE_VR
     if (_vrRenderer) [[unlikely]]

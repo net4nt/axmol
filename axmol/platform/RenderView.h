@@ -43,6 +43,16 @@ THE SOFTWARE.
 #    define AX_ICON_SET_SUPPORT true
 #endif /* (AX_TARGET_PLATFORM == AX_PLATFORM_WIN32) || (AX_TARGET_PLATFORM == AX_PLATFORM_LINUX) */
 
+namespace ax
+{
+
+using PowerPreference = rhi::PowerPreference;
+using RenderScaleMode = rhi::RenderScaleMode;
+
+class Scene;
+class Renderer;
+class Director;
+
 /** There are some Resolution Policy for Adapt to the screen. */
 enum class ResolutionPolicy
 {
@@ -74,41 +84,7 @@ enum class ResolutionPolicy
     UNKNOWN,
 };
 
-/** @struct GfxContextAttrs
- *
- * The graphics context attributes.
- */
-struct GfxContextAttrs
-{
-    int redBits;
-    int greenBits;
-    int blueBits;
-    int alphaBits;
-    int depthBits;
-    int stencilBits;
-    int multisamplingCount;
-    bool visible   = true;
-    bool decorated = true;
-    bool vsync     = true;
-#if defined(_WIN32)
-    void* viewParent = nullptr;
-#endif
-};
-
-namespace ax
-{
-#if AX_TARGET_PLATFORM == AX_PLATFORM_WINRT
-struct PresentTarget
-{
-    void* surface{nullptr};
-    float width{1};
-    float height{1};
-};
-#endif
-
-class Scene;
-class Renderer;
-class Director;
+using GfxContextAttrs = rhi::ContextAttrs;
 
 /**
  * @addtogroup platform
@@ -216,6 +192,8 @@ public:
      */
     virtual float getWindowZoomFactor() const { return 1.0; }
 
+    const Vec2& getRenderSize() const { return _renderSize; }
+
 #ifndef _AX_GEN_SCRIPT_BINDINGS
     /**
      * implicit deprecated APIs, use getWindowSize instead
@@ -237,19 +215,13 @@ public:
      *
      * @return The render scale fbSize/windowSize
      */
-    virtual int getRenderScale() const { return 1; }
+    virtual float getRenderScale() const { return 1.0f; }
 
     /** Only works on ios platform. Set Content Scale of the Factor. */
     virtual bool setContentScaleFactor(float /*scaleFactor*/) { return false; }
 
     /** Only works on ios platform. Get Content Scale of the Factor. */
     virtual float getContentScaleFactor() const { return 1.0; }
-
-    /** Returns whether or not the view is in high DPI mode.
-     *
-     * @return Returns whether or not the view is in high DPI mode.
-     */
-    virtual bool isHighDPI() const { return false; }
 
     /**
      * Get the visible area size of render viewport.
@@ -494,7 +466,7 @@ protected:
     float transformInputX(float x) { return (x - _viewportRect.origin.x) / _viewScale.x; }
     float transformInputY(float y) { return (y - _viewportRect.origin.y) / _viewScale.y; }
 
-    void onFramebufferResized(uint32_t fbWidth, uint32_t fbHeight);
+    void onRenderResized();
 
     void setScissorRect(float x, float y, float w, float h);
     const ScissorRect& getScissorRect() const;
@@ -505,13 +477,11 @@ protected:
      */
     virtual void queueOperation(AsyncOperation op, void* param = nullptr);
 
-    void updateDesignResolutionSize();
+    void updateDesignResolution();
 
     void handleTouchesOfEndOrCancel(EventTouch::EventCode eventCode, int num, intptr_t ids[], float xs[], float ys[]);
 
-    /** The graphics context attrs. */
-    static GfxContextAttrs _gfxContextAttrs;
-
+    Vec2 _renderSize;
     // The window size aka logic size, may scaled by windowZoomFactor in high DPI display
     Vec2 _windowSize;
     // resolution size, it is the size appropriate for the app resources.
@@ -533,6 +503,9 @@ private:
 
     bool _interactive;
 };
+
+using ResolutionPolicy = ax::ResolutionPolicy;
+using GfxContextAttrs  = ax::GfxContextAttrs;
 
 // end of platform group
 /// @}

@@ -29,6 +29,7 @@
 #include "axmol/platform/ios/EARenderView-ios.h"
 #include "axmol/platform/ios/DirectorCaller-ios.h"
 #include "axmol/platform/ios/RenderViewImpl-ios.h"
+#include "axmol/rhi/DriverBase.h"
 #include "axmol/base/Touch.h"
 #include "axmol/base/Director.h"
 
@@ -80,13 +81,15 @@ RenderViewImpl* RenderViewImpl::createWithFullscreen(std::string_view viewName)
 
 void RenderViewImpl::choosePixelFormats()
 {
-    if (_gfxContextAttrs.redBits == 8 && _gfxContextAttrs.greenBits == 8 && _gfxContextAttrs.blueBits == 8 &&
-        _gfxContextAttrs.alphaBits == 8)
+    const auto& contextAttrs = rhi::DriverBase::getContextAttrs();
+
+    if (contextAttrs.redBits == 8 && contextAttrs.greenBits == 8 && contextAttrs.blueBits == 8 &&
+        contextAttrs.alphaBits == 8)
     {
         _pixelFormat = PixelFormat::RGBA8;
     }
-    else if (_gfxContextAttrs.redBits == 5 && _gfxContextAttrs.greenBits == 6 && _gfxContextAttrs.blueBits == 5 &&
-             _gfxContextAttrs.alphaBits == 0)
+    else if (contextAttrs.redBits == 5 && contextAttrs.greenBits == 6 && contextAttrs.blueBits == 5 &&
+             contextAttrs.alphaBits == 0)
     {
         _pixelFormat = PixelFormat::RGB565;
     }
@@ -95,11 +98,11 @@ void RenderViewImpl::choosePixelFormats()
         AXASSERT(0, "Unsupported render buffer pixel format. Using default");
     }
 
-    if (_gfxContextAttrs.depthBits == 24 && _gfxContextAttrs.stencilBits == 8)
+    if (contextAttrs.depthBits == 24 && contextAttrs.stencilBits == 8)
     {
         _depthFormat = PixelFormat::D24S8;
     }
-    else if (_gfxContextAttrs.depthBits == 0 && _gfxContextAttrs.stencilBits == 0)
+    else if (contextAttrs.depthBits == 0 && contextAttrs.stencilBits == 0)
     {
         _depthFormat = PixelFormat::NONE;
     }
@@ -108,7 +111,7 @@ void RenderViewImpl::choosePixelFormats()
         AXASSERT(0, "Unsupported format for depth and stencil buffers. Using default");
     }
 
-    _multisamplingCount = _gfxContextAttrs.multisamplingCount;
+    _multisamplingCount = contextAttrs.multisamplingCount;
 }
 
 RenderViewImpl::RenderViewImpl() {}
@@ -144,8 +147,7 @@ bool RenderViewImpl::initWithRect(std::string_view /*viewName*/,
     [eaView setMultipleTouchEnabled:YES];
 #endif
 
-    _windowSize.width = _designResolutionSize.width = [eaView getWidth];
-    _windowSize.height = _designResolutionSize.height = [eaView getHeight];
+    RenderView::setWindowSize([eaView getWidth], [eaView getHeight]);
     //    _viewScale.x = _viewScale.y = [eaView contentScaleFactor];
 
     _eaViewHandle = eaView;

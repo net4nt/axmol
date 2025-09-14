@@ -125,9 +125,7 @@ public:
     void setCursorVisible(bool isVisible) override;
 
     /** Get render scale */
-    int getRenderScale() const override { return _renderScale; }
-
-    bool isHighDPI() const override { return _isHighDPI; }
+    float getRenderScale() const override { return _renderScale; }
 
     void* getNativeWindow() const override;
     void* getNativeDisplay() const override;
@@ -156,23 +154,31 @@ protected:
     void onGLFWKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
     void onGLFWCharCallback(GLFWwindow* window, unsigned int character);
     void onGLFWWindowPosCallback(GLFWwindow* windows, int x, int y);
+    void onGLFWFramebufferSizeCallback(GLFWwindow* window, int fbWidth, int fbHeight);
     void onGLFWWindowSizeCallback(GLFWwindow* window, int w, int h);
     void onGLFWWindowIconifyCallback(GLFWwindow* window, int iconified);
     void onGLFWWindowFocusCallback(GLFWwindow* window, int focused);
     void onGLFWWindowCloseCallback(GLFWwindow* window);
 
 protected:
-    void handleWindowResized(int w, int h, int fbWidth, int fbHeigh);
+    void updateScaledWindowSize(int w, int h);
 
-    /* update window size when user set zoomFactor, retina, frameSize */
-    void applyWindowSize();
+    // update window size, render scale, resolution(view layout)
+    void updateWindowAndResolution(float width, float height);
+
+    /* resize platform window when user set zoomFactor, windowSize */
+    void resizePlatformWindow(float w, float h);
 
     bool _isTouchDevice = false;
     bool _captured;
+    bool _renderSizeChanged{false};
+    bool _zoomFactorChanged{false};
 
-    bool _isHighDPI{false};
+    RenderScaleMode _renderScaleMode{};
 
-    float _renderScale;  // >=1
+    // The render scale aka backingScaleFactor
+    float _renderScale{1.0f};  // >=1
+    float _inputScale{1.0f};
 
     float _windowZoomFactor;
 
@@ -199,7 +205,7 @@ public:
     static const std::string EVENT_WINDOW_CLOSE;
 
 private:
-    void updateRenderScale(int windowWidth, int framebufferWidth);
+    void updateRenderScale();
     AX_DISALLOW_COPY_AND_ASSIGN(RenderViewImpl);
 };
 
