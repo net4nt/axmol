@@ -28,6 +28,8 @@
 #include "axmol/base/Object.h"
 #include "axmol/platform/PlatformMacros.h"
 
+#include <stdint.h>
+
 /**
  * @addtogroup base
  * @{
