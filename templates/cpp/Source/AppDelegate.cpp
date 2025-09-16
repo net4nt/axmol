@@ -45,10 +45,14 @@ AppDelegate::~AppDelegate() {}
 void AppDelegate::initGfxContextAttrs()
 {
     // set graphics context attributes: red,green,blue,alpha,depth,stencil,multisamplesCount
-    GfxContextAttrs gfxContextAttrs = {8, 8, 8, 8, 24, 8, 0};
+    // powerPreference only affect when RHI backend is D3D
+    GfxContextAttrs gfxContextAttrs = {.powerPreference = PowerPreference::HighPerformance};
+
     // since axmol-2.2 vsync was enabled in engine by default
     // gfxContextAttrs.vsync = false;
 
+    // uncomment if your app need adapt high DPI scale monitors
+    // gfxContextAttrs.renderScaleMode = RenderScaleMode::Physical;
     RenderView::setGfxContextAttrs(gfxContextAttrs);
 }
 

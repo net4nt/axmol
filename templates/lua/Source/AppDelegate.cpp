@@ -34,7 +34,6 @@
 #endif
 
 using namespace ax;
-using namespace std;
 
 AppDelegate::AppDelegate() {}
 
@@ -45,9 +44,14 @@ AppDelegate::~AppDelegate() {}
 void AppDelegate::initGfxContextAttrs()
 {
     // set graphics context attributes: red,green,blue,alpha,depth,stencil,multisamplesCount
-    GfxContextAttrs gfxContextAttrs = {8, 8, 8, 8, 24, 8, 0};
-    // gfxContextAttrs.vsync = false
-    RenderView::setGfxContextAttrs(gfxContextAttrs);
+    // powerPreference only affect when RHI backend is D3D
+    GfxContextAttrs gfxContextAttrs = {.powerPreference = PowerPreference::HighPerformance};
+
+    // Enable high-DPI scaling support (non-win32 platforms only)
+    // Note: on win32, cpp-tests keep the default render mode to ensure consistent performance benchmarks
+#if AX_TARGET_PLATFORM != AX_PLATFORM_WIN32
+    gfxContextAttrs.renderScaleMode = RenderScaleMode::Physical;
+#endif
 }
 
 bool AppDelegate::applicationDidFinishLaunching()
