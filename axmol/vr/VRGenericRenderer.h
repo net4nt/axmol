@@ -40,7 +40,7 @@ class RenderTexture;
 class Director;
 class RenderView;
 
-namespace experimental
+inline namespace experimental
 {
 class DistortionMesh;
 class Distortion;

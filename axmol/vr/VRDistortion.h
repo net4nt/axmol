@@ -29,7 +29,9 @@
 
 #include "axmol/platform/PlatformMacros.h"
 
-namespace ax::experimental
+namespace ax
+{
+inline namespace experimental
 {
 // Barrel Distortion
 class AX_DLL Distortion
@@ -49,4 +51,5 @@ private:
     float _coefficients[s_numberOfCoefficients];
 };
 
-}  // namespace ax::experimental
+}  // namespace experimental
+}  // namespace ax

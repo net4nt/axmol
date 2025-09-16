@@ -36,9 +36,10 @@
 #include "axmol/math/Vec2.h"
 #include "axmol/platform/GL.h"
 
-namespace ax::experimental
+namespace ax
 {
-
+inline namespace experimental
+{
 DistortionMesh::DistortionMesh(Distortion* distortion,
                                float screenWidth,
                                float screenHeight,
@@ -157,5 +158,5 @@ DistortionMesh ::~DistortionMesh()
     AX_SAFE_RELEASE(_ebo);
     AX_SAFE_RELEASE(_vbo);
 }
-
-}  // namespace ax::experimental
+}  // namespace experimental
+}  // namespace ax

@@ -30,9 +30,10 @@
 #include "axmol/platform/PlatformMacros.h"
 #include "axmol/rhi/Buffer.h"
 
-namespace ax::experimental
+namespace ax
 {
-
+inline namespace experimental
+{
 class Distortion;
 
 class AX_DLL DistortionMesh
@@ -58,5 +59,5 @@ public:
     rhi::Buffer* _vbo{nullptr};
     rhi::Buffer* _ebo{nullptr};
 };
-
-}  // namespace ax::experimental
+}  // namespace experimental
+}  // namespace ax

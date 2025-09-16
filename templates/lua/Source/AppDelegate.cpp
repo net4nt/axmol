@@ -27,10 +27,15 @@
 #include "lua-bindings/manual/LuaEngine.h"
 #include "lua-bindings/manual/lua_module_register.h"
 
+#define USE_VR_RENDERER  0
 #define USE_AUDIO_ENGINE 1
 
 #if USE_AUDIO_ENGINE
 #    include "axmol/audio/AudioEngine.h"
+#endif
+
+#if USE_VR_RENDERER && defined(AX_ENABLE_VR)
+#    include "axmol/vr/VRGenericRenderer.h"
 #endif
 
 using namespace ax;
@@ -47,11 +52,12 @@ void AppDelegate::initGfxContextAttrs()
     // powerPreference only affect when RHI backend is D3D
     GfxContextAttrs gfxContextAttrs = {.powerPreference = PowerPreference::HighPerformance};
 
-    // Enable high-DPI scaling support (non-win32 platforms only)
-    // Note: on win32, cpp-tests keep the default render mode to ensure consistent performance benchmarks
-#if AX_TARGET_PLATFORM != AX_PLATFORM_WIN32
-    gfxContextAttrs.renderScaleMode = RenderScaleMode::Physical;
-#endif
+    // since axmol-2.2 vsync was enabled in engine by default
+    // gfxContextAttrs.vsync = false;
+
+    // uncomment if your app need adapt high DPI scale monitors
+    // gfxContextAttrs.renderScaleMode = RenderScaleMode::Physical;
+    RenderView::setGfxContextAttrs(gfxContextAttrs);
 }
 
 bool AppDelegate::applicationDidFinishLaunching()
@@ -77,6 +83,18 @@ bool AppDelegate::applicationDidFinishLaunching()
     {
         return false;
     }
+
+#if USE_VR_RENDERER && defined(AX_ENABLE_VR)
+    auto renderView = Director::getInstance()->getRenderView();
+    if (renderView)
+    {
+        auto vrRenderer = std::make_unique<VRGenericRenderer>();
+        // On Android/iOS emulator devices, uncomment to visualize the left/right eye VR rendering output.
+        // Useful for debugging stereo rendering without a physical headset.
+        // vrRenderer->setDebugIgnoreHeadTracker(true);
+        renderView->setVR(std::move(vrRenderer));
+    }
+#endif
 
     return true;
 }

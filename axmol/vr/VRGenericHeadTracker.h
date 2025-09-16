@@ -31,7 +31,9 @@
 #include "axmol/math/Vec3.h"
 #include "axmol/math/Mat4.h"
 
-namespace ax::experimental
+namespace ax
+{
+inline namespace experimental
 {
 class AX_DLL VRGenericHeadTracker : public IVRHeadTracker
 {
@@ -53,5 +55,5 @@ protected:
 
     void* _motionMgr;
 };
-
-}  // namespace ax::experimental
+}  // namespace experimental
+}  // namespace ax

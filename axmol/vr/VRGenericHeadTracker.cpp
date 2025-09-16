@@ -44,7 +44,9 @@
 #    define AXMOLENGINE_JAVA_CLASS_NAME "dev.axmol.lib.AxmolEngine"
 #endif
 
-namespace ax::experimental
+namespace ax
+{
+inline namespace experimental
 {
 
 //////
@@ -262,5 +264,5 @@ Mat4 VRGenericHeadTracker::getLocalRotation()
     return Mat4::IDENTITY;
 #endif
 }
-
-}  // namespace ax::experimental
+}  // namespace experimental
+}  // namespace ax

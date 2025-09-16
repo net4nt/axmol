@@ -534,7 +534,7 @@ const ScissorRect& RenderView::getScissorRect() const
 }
 
 #ifdef AX_ENABLE_VR
-void RenderView::setVR(std::unique_ptr<experimental::IVRRenderer>&& impl)
+void RenderView::setVR(std::unique_ptr<IVRRenderer>&& impl)
 {
     if (_vrRenderer != impl)
     {

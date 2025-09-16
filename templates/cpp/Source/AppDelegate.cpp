@@ -26,10 +26,15 @@
 #include "AppDelegate.h"
 #include "MainScene.h"
 
+#define USE_VR_RENDERER 0
 #define USE_AUDIO_ENGINE 1
 
 #if USE_AUDIO_ENGINE
 #    include "axmol/audio/AudioEngine.h"
+#endif
+
+#if USE_VR_RENDERER && defined(AX_ENABLE_VR)
+#    include "axmol/vr/VRGenericRenderer.h"
 #endif
 
 using namespace ax;
@@ -72,6 +77,13 @@ bool AppDelegate::applicationDidFinishLaunching()
 #endif
         director->setRenderView(renderView);
     }
+#if USE_VR_RENDERER && defined(AX_ENABLE_VR)
+    auto vrRenderer = std::make_unique<VRGenericRenderer>();
+    // On Android/iOS emulator devices, uncomment to visualize the left/right eye VR rendering output.
+    // Useful for debugging stereo rendering without a physical headset.
+    // vrRenderer->setDebugIgnoreHeadTracker(true);
+    renderView->setVR(std::move(vrRenderer));
+#endif
 
     // turn on display FPS
     director->setStatsDisplay(true);

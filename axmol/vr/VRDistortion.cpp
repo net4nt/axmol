@@ -28,9 +28,10 @@
 #include "axmol/vr/VRDistortion.h"
 #include <math.h>
 
-namespace ax::experimental
+namespace ax
 {
-
+inline namespace experimental
+{
 Distortion::Distortion()
 {
     _coefficients[0] = 0.441f;
@@ -83,5 +84,5 @@ float Distortion::distortInverse(float radius)
     }
     return r;
 }
-
-}  // namespace ax::experimental
+}  // namespace experimental
+}  // namespace ax

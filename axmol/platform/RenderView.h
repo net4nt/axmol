@@ -452,8 +452,8 @@ public:
      */
     void setInteractive(bool interactive);
 #ifdef AX_ENABLE_VR
-    void setVR(std::unique_ptr<experimental::IVRRenderer>&& impl);
-    const std::unique_ptr<experimental::IVRRenderer>& getVR() const { return _vrRenderer; }
+    void setVR(std::unique_ptr<IVRRenderer>&& impl);
+    const std::unique_ptr<IVRRenderer>& getVR() const { return _vrRenderer; }
 #endif
 
 protected:
@@ -517,7 +517,7 @@ protected:
     ResolutionPolicy _resolutionPolicy;
 
 #ifdef AX_ENABLE_VR
-    std::unique_ptr<experimental::IVRRenderer> _vrRenderer{nullptr};
+    std::unique_ptr<IVRRenderer> _vrRenderer{nullptr};
 #endif
 
 private:

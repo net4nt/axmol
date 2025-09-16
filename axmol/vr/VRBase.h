@@ -38,7 +38,7 @@ class Scene;
 class Renderer;
 class RenderView;
 
-namespace experimental
+inline namespace experimental
 {
 class AX_DLL IVRHeadTracker
 {

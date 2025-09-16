@@ -37,9 +37,10 @@
 #include "axmol/2d/Sprite.h"
 #include "axmol/platform/RenderView.h"
 
-namespace ax::experimental
+namespace ax
 {
-
+inline namespace experimental
+{
 static RasterTransform makeEyeScissorTransform(const Viewport& eyeViewport,
                                                const Viewport& screenViewport,
                                                const Size& rtSize)
@@ -318,5 +319,5 @@ void VRGenericRenderer::setupProgram()
     _leftEyeCmd.setWeakPSVL(_programState, _vertexLayout);
     _rightEyeCmd.setWeakPSVL(_programState, _vertexLayout);
 }
-
-}  // namespace ax::experimental
+}  // namespace experimental
+}  // namespace ax
