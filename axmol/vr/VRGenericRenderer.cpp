@@ -64,7 +64,6 @@ VRGenericRenderer::VRGenericRenderer()
 {
     _headTracker = new VRGenericHeadTracker();
     _director    = Director::getInstance();
-
     setupProgram();
 }
 
@@ -117,8 +116,8 @@ const ScissorRect& VRGenericRenderer::getScissorRect() const
 
 void VRGenericRenderer::init(RenderView* rv)
 {
-    // Use scaled window size as screenSize, maybe use rv->getRenderSize() for HiDPI rendering
-    const auto screenSize = rv->getRenderSize();
+    // Ensure VR render view uses the same resolution policy as the normal render view by basing it on the viewport size
+    const auto screenSize = rv->getViewportRect().size;
     _renderTexture        = RenderTexture::create(screenSize.width, screenSize.height);
     _renderTexture->retain();
 
