@@ -34,8 +34,7 @@
 
 USING_NS_AX;
 #define EVENT_AFTER_DRAW_RESET_POSITION "director_after_draw"
-using std::max;
-#define INITIAL_SIZE (10000)
+#define INITIAL_SIZE (2000)
 
 #include "axmol/rhi/DriverBase.h"
 #include "axmol/renderer/Shaders.h"

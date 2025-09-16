@@ -41,8 +41,7 @@
 
 USING_NS_AX;
 #define EVENT_AFTER_DRAW_RESET_POSITION "director_after_draw"
-using std::max;
-#define INITIAL_SIZE (10000)
+#define INITIAL_SIZE (2000)
 #define MAX_VERTICES 64000
 #define MAX_INDICES 64000
 
