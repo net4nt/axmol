@@ -118,14 +118,14 @@ DriverImpl::DriverImpl()
     {
 #if AX_GLES_PROFILE == 0
         auto msg = fmt::format(
-            "OpeGL 3.3+ is required (your version is {}). Please upgrade the driver of your video card.", _version);
+            "OpeGL 3.3+ is required. Current version:{} incompatible (update driver or make current context).", _version);
 #else
         auto msg = fmt::format(
-            "OpeGL ES {}.{}+ is required (your version is {}). Please upgrade the driver of your video card.",
+            "OpeGL ES {}.{}+ is required. Current version:{} incompatible (update driver or make current context).",
             REQUIRED_GLES_MAJOR, AX_GLES_PROFILE % AX_GLES_PROFILE, _version);
 #endif
         AXLOGE("{}", msg);
-        showAlert(msg, "OpenGL version too old");
+        showAlert(msg, "OpenGL init failed", AlertStyle::RequireSync);
         utils::killCurrentProcess();  // kill current process, don't cause crash when driver issue.
         return;
     }

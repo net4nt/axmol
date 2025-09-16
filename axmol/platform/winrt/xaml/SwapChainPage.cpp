@@ -261,6 +261,10 @@ void SwapChainPage::StartRenderLoop()
                                                          swapChainPanel());
         }
 
+#if AX_RENDER_API == AX_RENDER_API_GL
+        m_eglSurfaceProvider->MakeCurrent(m_eglSurface);
+#endif
+
         // !!!Start the engine renderer on the render thread so that WICImageDecoder
         // initializes COM in multi-threaded apartment (MTA) mode.
         m_renderer->Resume();
