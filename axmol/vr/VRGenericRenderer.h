@@ -81,6 +81,9 @@ public:
      */
     void setDebugIgnoreHeadTracker(bool debug) { _debugIgnoreHeadTracker = debug; }
 
+    void setVignetteEnabled(bool enabled) { _vignetteEnabled = enabled; }
+    bool isVignetteEnabled() const { return _vignetteEnabled; }
+
     IVRHeadTracker* getHeadTracker() override;
 
     void setScissorRect(float x, float y, float w, float h) override;
