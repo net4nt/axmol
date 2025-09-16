@@ -656,6 +656,7 @@ struct ZipFilePrivate
     unzFile zipFile;
     std::mutex zipFileMtx;
 
+    Data memdata;  // hold memfs data
     std::unique_ptr<ourmemory_s> memfs;
 
     // std::unordered_map is faster if available on the platform
@@ -676,8 +677,15 @@ ZipFile* ZipFile::createFromFile(std::string_view zipFile, std::string_view filt
 
 ZipFile* ZipFile::createWithBuffer(const void* buffer, uLong size)
 {
+    Data data;
+    data.copy((const uint8_t*)buffer, size);
+    return createWithData(data);
+}
+
+ZipFile* ZipFile::createWithData(Data data)
+{
     ZipFile* zip = new ZipFile();
-    if (zip->initWithBuffer(buffer, size))
+    if (zip->initWithData(std::move(data)))
     {
         return zip;
     }
@@ -864,16 +872,15 @@ int ZipFile::getCurrentFileInfo(std::string* filename, unz_file_info_s* info)
     return ret;
 }
 
-bool ZipFile::initWithBuffer(const void* buffer, uLong size)
+bool ZipFile::initWithData(Data data)
 {
-    if (!buffer || size == 0)
+    if (data.isNull())
         return false;
     zlib_filefunc_def memory_file = {0};
 
     std::unique_ptr<ourmemory_t> memfs(
-        new ourmemory_t{(char*)const_cast<void*>(buffer), static_cast<uint32_t>(size), 0, 0, 0});
-    if (!memfs)
-        return false;
+        new ourmemory_t{(char*)(data.getBytes()), static_cast<uint32_t>(data.getSize()), 0, 0, 0});
+    _data->memdata = std::move(data);
     fill_memory_filefunc(&memory_file, memfs.get());
 
     _data->zipFile = unzOpen2(nullptr, &memory_file);
