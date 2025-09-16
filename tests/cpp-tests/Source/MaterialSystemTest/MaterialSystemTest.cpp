@@ -491,8 +491,8 @@ static void printProperties(Properties* properties, int indent)
 
     // Print all properties in this namespace.
     const char* name  = properties->getNextProperty();
-    const char* value = NULL;
-    while (name != NULL)
+    const char* value = nullptr;
+    while (name != nullptr)
     {
         value = properties->getString(name);
         AXLOGD("{}{} = {}", chindent, name, value);
@@ -500,7 +500,7 @@ static void printProperties(Properties* properties, int indent)
     }
 
     Properties* space = properties->getNextNamespace();
-    while (space != NULL)
+    while (space != nullptr)
     {
         printProperties(space, indent + 1);
         space = properties->getNextNamespace();

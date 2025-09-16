@@ -729,7 +729,7 @@ public:
 		void* userDataA = b2Shape_GetUserData( shapeIdA );
 		void* userDataB = b2Shape_GetUserData( shapeIdB );
 
-		if ( userDataA == NULL || userDataB == NULL )
+		if ( userDataA == nullptr || userDataB == nullptr )
 		{
 			return true;
 		}

@@ -530,7 +530,7 @@ bool SpineboyExample::init()
 
     // skeletonNode->addAnimation(1, "test", true);
     // skeletonNode->runAction(RepeatForever::create(Sequence::create(FadeOut::create(1), FadeIn::create(1),
-    // DelayTime::create(5), NULL)));
+    // DelayTime::create(5), nullptr)));
 
     skeletonNode->setPosition(Vec2(_contentSize.width / 2, 20));
     addChild(skeletonNode);

@@ -78,7 +78,7 @@ bool UIScale9SpriteTest::init()
         auto moveBack = moveTo->reverse();
         auto rotateBy = RotateBy::create(1.0f, 180.0f);
         auto scaleBy  = ScaleTo::create(1.0f, -2.0f);
-        auto action   = Sequence::create(moveTo, moveBack, rotateBy, scaleBy, NULL);
+        auto action   = Sequence::create(moveTo, moveBack, rotateBy, scaleBy, nullptr);
 
         Sprite* normalSprite1 = Sprite::create("cocosui/animationbuttonnormal.png");
         normalSprite1->setPosition(100, 270);
@@ -135,7 +135,7 @@ bool UIScale9SpriteHierarchialTest::init()
         auto rotateBy = RotateBy::create(1.0f, 180.0f);
         auto fadeOut  = FadeOut::create(2.0f);
         auto scaleTo  = ScaleTo::create(1.0f, 2.0f);
-        auto action   = Sequence::create(moveTo, moveBack, rotateBy, fadeOut, scaleTo, NULL);
+        auto action   = Sequence::create(moveTo, moveBack, rotateBy, fadeOut, scaleTo, nullptr);
 
         Sprite* normalSprite1 = Sprite::create("cocosui/animationbuttonnormal.png");
         normalSprite1->setPosition(100, 270);

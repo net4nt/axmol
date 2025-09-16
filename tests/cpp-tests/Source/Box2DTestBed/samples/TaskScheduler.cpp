@@ -503,9 +503,9 @@ void TaskScheduler::StopThreads( bool bWait_ )
         for( int priority = 0; priority < TASK_PRIORITY_NUM; ++priority )
         {
             DeleteArray( m_pPipesPerThread[ priority ], m_NumThreads, ENKI_FILE_AND_LINE );
-            m_pPipesPerThread[ priority ] = NULL;
+            m_pPipesPerThread[ priority ] = nullptr;
             DeleteArray( m_pPinnedTaskListPerThread[ priority ], m_NumThreads, ENKI_FILE_AND_LINE );
-            m_pPinnedTaskListPerThread[ priority ] = NULL;
+            m_pPinnedTaskListPerThread[ priority ] = nullptr;
         }
         m_NumThreads = 0;
     }
@@ -965,7 +965,7 @@ void TaskScheduler::RunPinnedTasks()
 
 void TaskScheduler::RunPinnedTasks( uint32_t threadNum_, uint32_t priority_ )
 {
-    IPinnedTask* pPinnedTaskSet = NULL;
+    IPinnedTask* pPinnedTaskSet = nullptr;
     do
     {
         pPinnedTaskSet = m_pPinnedTaskListPerThread[ priority_ ][ threadNum_ ].ReaderReadBack();
@@ -1271,15 +1271,15 @@ TaskScheduler::TaskScheduler()
         : m_pPipesPerThread()
         , m_pPinnedTaskListPerThread()
         , m_NumThreads(0)
-        , m_pThreadDataStore(NULL)
-        , m_pThreads(NULL)
+        , m_pThreadDataStore(nullptr)
+        , m_pThreads(nullptr)
         , m_bRunning(false)
         , m_NumInternalTaskThreadsRunning(0)
         , m_NumThreadsWaitingForNewTasks(0)
         , m_NumThreadsWaitingForTaskCompletion(0)
         , m_NumPartitions(0)
-        , m_pNewTaskSemaphore(NULL)
-        , m_pTaskCompleteSemaphore(NULL)
+        , m_pNewTaskSemaphore(nullptr)
+        , m_pTaskCompleteSemaphore(nullptr)
         , m_NumInitialPartitions(0)
         , m_bHaveThreads(false)
         , m_NumExternalTaskThreadsRegistered(0)
@@ -1332,9 +1332,9 @@ namespace enki
     inline void SemaphoreCreate( semaphoreid_t& semaphoreid )
     {
 #ifdef _XBOX_ONE
-        semaphoreid.sem = CreateSemaphoreExW( NULL, 0, MAXLONG, NULL, 0, SEMAPHORE_ALL_ACCESS );
+        semaphoreid.sem = CreateSemaphoreExW( nullptr, 0, MAXLONG, nullptr, 0, SEMAPHORE_ALL_ACCESS );
 #else
-        semaphoreid.sem = CreateSemaphore( NULL, 0, MAXLONG, NULL );
+        semaphoreid.sem = CreateSemaphore( nullptr, 0, MAXLONG, nullptr );
 #endif
     }
 
@@ -1354,7 +1354,7 @@ namespace enki
     {
         if( countWaiting )
         {
-            ReleaseSemaphore( semaphoreid.sem, countWaiting, NULL );
+            ReleaseSemaphore( semaphoreid.sem, countWaiting, nullptr );
         }
     }
 }
@@ -1541,7 +1541,7 @@ void Dependency::ClearDependency()
             }
         }
     }
-    pDependencyTask = NULL;
-    pDependencyTask =  NULL;
-    pNext = NULL;
+    pDependencyTask = nullptr;
+    pDependencyTask =  nullptr;
+    pNext = nullptr;
 }

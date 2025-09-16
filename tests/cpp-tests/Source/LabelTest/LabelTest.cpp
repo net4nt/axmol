@@ -2470,7 +2470,7 @@ LabelIssue10688Test::LabelIssue10688Test()
     menuItem1->setAnchorPoint(Vec2::ANCHOR_MIDDLE_LEFT);
     menuItem1->setPosition(center.x - label->getContentSize().width / 2, center.y);
 
-    auto menu = Menu::create(menuItem1, NULL);
+    auto menu = Menu::create(menuItem1, nullptr);
     menu->setPosition(Vec2::ZERO);
     this->addChild(menu);
 }
@@ -3755,7 +3755,7 @@ LabelUnderlineStrikethroughMultiline::LabelUnderlineStrikethroughMultiline()
     });
     menuItemS->setFontSizeObj(12);
 
-    auto menu = Menu::create(menuItemU, menuItemS, NULL);
+    auto menu = Menu::create(menuItemU, menuItemS, nullptr);
     addChild(menu);
 
     menu->setPosition(s.width * 0.8, s.height * 0.20f);

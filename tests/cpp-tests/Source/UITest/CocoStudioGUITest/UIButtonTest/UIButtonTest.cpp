@@ -189,7 +189,7 @@ bool UIButtonTest_Scale9::init()
         button->setPosition(Vec2(-button->getContentSize().width - 10, widgetSize.height / 2.0f));
         auto moveBy        = MoveBy::create(1.0f, Vec2(widgetSize.width / 2, 0.0f));
         auto moveByReverse = moveBy->reverse()->clone();
-        button->runAction(RepeatForever::create(Sequence::create(moveBy, moveByReverse, NULL)));
+        button->runAction(RepeatForever::create(Sequence::create(moveBy, moveByReverse, nullptr)));
         button->setPressedActionEnabled(true);
         button->addTouchEventListener(AX_CALLBACK_2(UIButtonTest_Scale9::touchEvent, this));
         _uiLayer->addChild(button);

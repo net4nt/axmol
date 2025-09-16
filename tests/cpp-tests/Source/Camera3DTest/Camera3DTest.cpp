@@ -741,7 +741,7 @@ void CameraCullingDemo::onEnter()
 
     auto menuItem1 = MenuItemFont::create("Switch Camera", AX_CALLBACK_1(CameraCullingDemo::switchViewCallback, this));
     menuItem1->setColor(Color32(0, 200, 20));
-    auto menu = Menu::create(menuItem1, NULL);
+    auto menu = Menu::create(menuItem1, nullptr);
     menu->setPosition(Vec2::ZERO);
     menuItem1->setPosition(VisibleRect::left().x + 80, VisibleRect::top().y - 70);
     addChild(menu, 1);
@@ -1024,7 +1024,7 @@ void CameraArcBallDemo::onEnter()
     auto menuItem2 =
         MenuItemFont::create("Switch Target", AX_CALLBACK_1(CameraArcBallDemo::switchTargetCallback, this));
     menuItem2->setColor(Color32(0, 200, 20));
-    auto menu = Menu::create(menuItem1, menuItem2, NULL);
+    auto menu = Menu::create(menuItem1, menuItem2, nullptr);
     menu->setPosition(Vec2::ZERO);
     menuItem1->setPosition(VisibleRect::left().x + 80, VisibleRect::top().y - 70);
     menuItem2->setPosition(VisibleRect::left().x + 80, VisibleRect::top().y - 100);

@@ -433,7 +433,7 @@ MenuLayer4::MenuLayer4()
 
     auto menu = Menu::create(title1, title2, item1, item2, title3, title4, item3, item4, back, nullptr);  // 9 items.
 
-    menu->alignItemsInColumns(2, 2, 2, 2, 1, NULL);
+    menu->alignItemsInColumns(2, 2, 2, 2, 1, nullptr);
 
     addChild(menu);
 

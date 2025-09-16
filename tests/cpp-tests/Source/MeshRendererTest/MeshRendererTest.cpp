@@ -1065,7 +1065,7 @@ MeshRendererWithSkinTest::MeshRendererWithSkinTest()
     _menuItem       = MenuItemFont::create(getAnimationQualityMessage(),
                                            AX_CALLBACK_1(MeshRendererWithSkinTest::switchAnimationQualityCallback, this));
     _menuItem->setColor(Color32(0, 200, 20));
-    auto menu = Menu::create(_menuItem, NULL);
+    auto menu = Menu::create(_menuItem, nullptr);
     menu->setPosition(Vec2::ZERO);
     _menuItem->setPosition(VisibleRect::left().x + 50, VisibleRect::top().y - 70);
     addChild(menu, 1);
@@ -2380,7 +2380,7 @@ MeshRendererClippingTest::MeshRendererClippingTest()
 
     clipMeshRenderer->setPosition(Vec2(size.width / 2, size.height / 2));
 
-    auto seq = Sequence::create(ScaleTo::create(2.f, 3), ScaleTo::create(2.f, 0.5f), NULL);
+    auto seq = Sequence::create(ScaleTo::create(2.f, 3), ScaleTo::create(2.f, 0.5f), nullptr);
     mesh3D->runAction(RepeatForever::create(seq));
     auto animation = Animation3D::create("MeshRendererTest/orc.c3b");
     auto animate   = Animate3D::create(animation);
