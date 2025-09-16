@@ -89,12 +89,12 @@ Axmol 引擎在 Cocos2d-x v4.0 的基础上进行迭代和改进。现在速度�
 * Linux (x64)
 * OSX (x64, arm64)
 * UWP (x64, arm64)
-* Wasm32, Wasm64
+* Wasm32, Wasm64(axmo-v3 版本新增)
 
 **支持2D物理引擎** ([更多相关信息](https://github.com/axmolengine/axmol/wiki/2D-Physics-Engines-informations)):
 
 * Box2D
-* Chipmunk2D  (将从 axmol-v3 版本移除)
+* ~~Chipmunk2D~~  (已从 `dev` (axmol-v3) 分支移除)
 
 **支持3D物理引擎**:
 
@@ -115,6 +115,8 @@ Axmol 引擎在 Cocos2d-x v4.0 的基础上进行迭代和改进。现在速度�
 
 一些亮点:
 
+- **新增 D3D11 渲染后端支持** (axmol-v3)
+- **新增桌面平台 Windows/Linux/WebAssembly 高分屏(HiDPI) 支持** (axmol-v3)
 - **图形驱动升级：GLES3.0、OpenGL3.3核心模式支持，3D模型实例化渲染支持，全新跨平台 Shader 工作流**。
 - **全新媒体播放器**: 基于 MediaEngine 的视频纹理渲染，支持所有 Native 平台. [详见我们的 Wiki 页](https://github.com/axmolengine/axmol/wiki/Media-Player)。
 - **WebAssembly 支持** (by @nowasm) - Preview: [Axmol tests](https://axmol.netlify.app/wasm/cpp-tests/cpp-tests)
@@ -136,6 +138,7 @@ Axmol 引擎在 Cocos2d-x v4.0 的基础上进行迭代和改进。现在速度�
 - 使用 SAX 解析 .plist 文件。
 - 新增 ASTC 4x4 / 6x6 / 8x8 格式支持 (如果硬件不支持，则使用SIMD加速指令集进并行解码)。
 - 新增 ETC2 RGB / RGBA 格式支持 (如果硬件不支持，则使用 ANGLE 提供的 API 进行软解)。
+- 从旧项目迁移 VR 渲染支持，并加以增强 (axmol-v3)
  
 [请阅读相对于 Cocos2d-x-4.0 的完整改动列表](CHANGELOG.md)。
 

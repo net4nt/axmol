@@ -85,11 +85,11 @@ Axmol Engine has iterated and improved over the Cocos2d-x v4.0 base. Now is fast
 * Linux (x64)
 * OSX (x64, arm64)
 * UWP (x64, arm64)
-* Wasm32, Wasm64
+* Wasm32, Wasm64(since axmol-v3)
 
 **Supported 2D physics engines** ([more info here](https://github.com/axmolengine/axmol/wiki/2D-Physics-Engines-Information)):
 * Box2D
-* Chipmunk2D (Removed in `dev/v3`)
+* ~~Chipmunk2D~~ (Removed in `dev` (v3))
 
 **Supported 3D physics engines**:
 * Bullet Physics SDK
@@ -108,6 +108,8 @@ Axmol Engine has iterated and improved over the Cocos2d-x v4.0 base. Now is fast
 
 Some highlights:
 
+- Added **D3D11** render support (axmol-v3)
+- **Add HiDPI support for Windows/Linux/WebAssembly desktop platforms** (axmol-v3)
 - **New MediaPlayer**: render video as texture2D using MediaEngine. [More info in our Wiki](https://github.com/axmolengine/axmol/wiki/Media-Player).
 - Windows video player support (based on Microsoft Media Foundation)
 - **WebAssembly support** (by @nowasm) - Preview: [Axmol tests](https://axmol.netlify.app/wasm/cpp-tests/cpp-tests)
@@ -135,6 +137,7 @@ Some highlights:
 - Using SAX parser for .plist files
 - ASTC 4x4 / 6x6 / 8x8 support (if hardware decoding is not supported, then software decoding is used)
 - ETC2 RGB / RGBA support (if hardware decoding is not supported, then software decoding is used)
+- Migrate VR rendering support from the legacy project and enhance it (axmol-v3)
  
 Please read the [full list of changes since Cocos2d-x v4.0](CHANGELOG.md). 
 
