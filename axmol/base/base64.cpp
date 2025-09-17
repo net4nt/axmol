@@ -28,9 +28,9 @@ AX_DLL char const* get_alphabet()
 AX_DLL signed char const* get_inverse()
 {
     static signed char constexpr tab[] = {
-        -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  //   0-15
+        -1, -1, -1, -1, -1, -1, -1, -1, -1, -2, -2, -1, -1, -2, -1, -1,  //   0-15
         -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  //  16-31
-        -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 62, -1, -1, -1, 63,  //  32-47
+        -2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 62, -1, -1, -1, 63,  //  32-47
         52, 53, 54, 55, 56, 57, 58, 59, 60, 61, -1, -1, -1, -1, -1, -1,  //  48-63
         -1, 0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14,  //  64-79
         15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, -1, -1, -1, -1, -1,  //  80-95
@@ -96,12 +96,13 @@ AX_DLL std::size_t decode(void* dest, char const* src, std::size_t len)
 
     auto const inverse = base64::get_inverse();
 
-    while (len-- && *in != '=')
+    while (len--)
     {
-        auto const v = inverse[*in];
-        if (v == -1)
+        auto const v = inverse[*in++];
+        if (v == -2) [[unlikely]]
+            continue;
+        if (v == -1) [[unlikely]]
             break;
-        ++in;
         c4[i] = v;
         if (++i == 4)
         {
