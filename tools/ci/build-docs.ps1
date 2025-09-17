@@ -114,7 +114,7 @@ function parse_current_rev() {
     $axver = "$(&$parse_axver 'MAJOR').$(&$parse_axver 'MINOR').$(&$parse_axver 'PATCH')"
 
     $branch_name = $(git -C $AX_ROOT branch --show-current)
-    if ($branch_name.StartsWith('dev/') -or $branch_name.StartsWith('release/')) {
+    if ($branch_name.StartsWith('dev') -or $branch_name.StartsWith('release/')) {
         $short_sha = $(git -C $AX_ROOT rev-parse --short=7 HEAD)
         $axver += "-$short_sha"
     }
