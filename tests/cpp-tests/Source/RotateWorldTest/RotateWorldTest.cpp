@@ -1,5 +1,6 @@
 /****************************************************************************
  Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ Copyright (c) 2019-present Axmol Engine contributors (see AUTHORS.md).
 
  https://axmol.dev/
 
@@ -50,7 +51,7 @@ void TestLayer::onEnter()
     // auto array = [UIFont familyNames];
     // for( String *s in array )
     //     NSLog( s );
-    auto label = Label::createWithSystemFont("a Cocos2D-4.0 fork", "Tahoma", 52);
+    auto label = Label::createWithSystemFont("Axmol (Cocos2D-4.0 fork)", "Tahoma", 52);
     label->setPosition(Vec2(x / 2, y / 3.5));
     addChild(label);
 

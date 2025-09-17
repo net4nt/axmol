@@ -2,6 +2,7 @@
 Copyright (c) 2012 cocos2d-x.org
 Copyright (c) 2013-2016 Chukong Technologies Inc.
 Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+Copyright (c) 2019-present Axmol Engine contributors (see AUTHORS.md).
 
 https://axmol.dev/
 
@@ -348,7 +349,7 @@ void ActionRotationalSkewVSStandardSkew::onEnter()
     box->setPosition(s.width / 2, s.height - 100 - box->getContentSize().height / 2);
     this->addChild(box);
 
-    auto label = Label::createWithTTF("Standard cocos2d Skew", "fonts/Marker Felt.ttf", 16.0f);
+    auto label = Label::createWithTTF("Standard axmol Skew", "fonts/Marker Felt.ttf", 16.0f);
     label->setPosition(s.width / 2, s.height - 100 + label->getContentSize().height);
     this->addChild(label);
 

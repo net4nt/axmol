@@ -2,6 +2,7 @@
  Copyright (c) 2012 cocos2d-x.org
  Copyright (c) 2013-2016 Chukong Technologies Inc.
  Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ Copyright (c) 2019-present Axmol Engine contributors (see AUTHORS.md).
 
  https://axmol.dev/
 
@@ -40,11 +41,11 @@ enum
 
 //------------------------------------------------------------------
 //
-// TestCocosNodeDemo
+// TestNodeDemo
 //
 //------------------------------------------------------------------
 
-CocosNodeTests::CocosNodeTests()
+NodeTests::NodeTests()
 {
     ADD_TEST_CASE(CameraTest1);
     ADD_TEST_CASE(CameraTest2);
@@ -75,11 +76,11 @@ CocosNodeTests::CocosNodeTests()
     ADD_TEST_CASE(NodeWorldSpace);
 }
 
-TestCocosNodeDemo::TestCocosNodeDemo(void) {}
+TestNodeDemo::TestNodeDemo(void) {}
 
-TestCocosNodeDemo::~TestCocosNodeDemo(void) {}
+TestNodeDemo::~TestNodeDemo(void) {}
 
-std::string TestCocosNodeDemo::title() const
+std::string TestNodeDemo::title() const
 {
     return "Node Test";
 }
@@ -92,7 +93,7 @@ std::string TestCocosNodeDemo::title() const
 
 void NodeTest2::onEnter()
 {
-    TestCocosNodeDemo::onEnter();
+    TestNodeDemo::onEnter();
 
     auto s = Director::getInstance()->getLogicalSize();
 
@@ -403,7 +404,7 @@ void SchedulerTest1::doSomething(float dt) {}
 
 std::string SchedulerTest1::subtitle() const
 {
-    return "cocosnode scheduler test #1";
+    return "Node scheduler test #1";
 }
 
 //------------------------------------------------------------------
@@ -432,7 +433,7 @@ SchedulerCallbackTest::SchedulerCallbackTest()
 
 void SchedulerCallbackTest::onEnter()
 {
-    TestCocosNodeDemo::onEnter();
+    TestNodeDemo::onEnter();
     AXLOGD("--onEnter-- Must be called before the scheduled lambdas");
 }
 
@@ -536,7 +537,7 @@ std::string NodeToWorld3D::subtitle() const
 //------------------------------------------------------------------
 void CameraOrbitTest::onEnter()
 {
-    TestCocosNodeDemo::onEnter();
+    TestNodeDemo::onEnter();
     _preProjection = Director::getInstance()->getProjection();
     Director::getInstance()->getRenderer()->setDepthTest(true);
     Director::getInstance()->getRenderer()->setDepthWrite(true);
@@ -548,7 +549,7 @@ void CameraOrbitTest::onExit()
     Director::getInstance()->getRenderer()->setDepthTest(false);
     Director::getInstance()->getRenderer()->setDepthWrite(false);
     Director::getInstance()->setProjection(_preProjection);
-    TestCocosNodeDemo::onExit();
+    TestNodeDemo::onExit();
 }
 
 CameraOrbitTest::CameraOrbitTest()
@@ -609,7 +610,7 @@ std::string CameraOrbitTest::subtitle() const
 
 void CameraZoomTest::onEnter()
 {
-    TestCocosNodeDemo::onEnter();
+    TestNodeDemo::onEnter();
     _preProjection = Director::getInstance()->getProjection();
     Director::getInstance()->setProjection(Director::Projection::_3D);
 }
@@ -617,7 +618,7 @@ void CameraZoomTest::onEnter()
 void CameraZoomTest::onExit()
 {
     Director::getInstance()->setProjection(_preProjection);
-    TestCocosNodeDemo::onExit();
+    TestNodeDemo::onExit();
 }
 
 CameraZoomTest::CameraZoomTest()
@@ -677,14 +678,14 @@ std::string CameraZoomTest::subtitle() const
 //------------------------------------------------------------------
 void CameraCenterTest::onEnter()
 {
-    TestCocosNodeDemo::onEnter();
+    TestNodeDemo::onEnter();
     _preProjection = Director::getInstance()->getProjection();
     Director::getInstance()->setProjection(Director::Projection::_3D);
 }
 
 void CameraCenterTest::onExit()
 {
-    TestCocosNodeDemo::onExit();
+    TestNodeDemo::onExit();
     Director::getInstance()->setProjection(_preProjection);
 }
 
@@ -982,7 +983,7 @@ void MySprite::draw(Renderer* renderer, const Mat4& transform, uint32_t flags)
 
 void CameraTest1::onEnter()
 {
-    TestCocosNodeDemo::onEnter();
+    TestNodeDemo::onEnter();
     _preProjection = Director::getInstance()->getProjection();
     Director::getInstance()->setProjection(Director::Projection::_3D);
     Director::getInstance()->getRenderer()->setDepthTest(true);
@@ -994,7 +995,7 @@ void CameraTest1::onExit()
     Director::getInstance()->setProjection(_preProjection);
     Director::getInstance()->getRenderer()->setDepthTest(false);
     Director::getInstance()->getRenderer()->setDepthWrite(false);
-    TestCocosNodeDemo::onExit();
+    TestNodeDemo::onExit();
 }
 
 CameraTest1::CameraTest1()
@@ -1033,7 +1034,7 @@ std::string CameraTest1::subtitle() const
 //------------------------------------------------------------------
 void CameraTest2::onEnter()
 {
-    TestCocosNodeDemo::onEnter();
+    TestNodeDemo::onEnter();
     _preProjection = Director::getInstance()->getProjection();
     Director::getInstance()->setProjection(Director::Projection::_3D);
     Director::getInstance()->getRenderer()->setDepthTest(true);
@@ -1045,7 +1046,7 @@ void CameraTest2::onExit()
     Director::getInstance()->setProjection(_preProjection);
     Director::getInstance()->getRenderer()->setDepthTest(false);
     Director::getInstance()->getRenderer()->setDepthWrite(false);
-    TestCocosNodeDemo::onExit();
+    TestNodeDemo::onExit();
 }
 
 CameraTest2::CameraTest2()
@@ -1217,14 +1218,14 @@ std::string NodeNameTest::subtitle() const
 
 void NodeNameTest::onEnter()
 {
-    TestCocosNodeDemo::onEnter();
+    TestNodeDemo::onEnter();
 
     this->scheduleOnce(AX_CALLBACK_1(NodeNameTest::test, this), 0.05f, "test_key");
 }
 
 void NodeNameTest::onExit()
 {
-    TestCocosNodeDemo::onExit();
+    TestNodeDemo::onExit();
 }
 
 void NodeNameTest::test(float dt)
@@ -1413,7 +1414,7 @@ void NodeNameTest::test(float dt)
 //------------------------------------------------------------------
 void Issue16100Test::onEnter()
 {
-    TestCocosNodeDemo::onEnter();
+    TestNodeDemo::onEnter();
 
     // create user camera
     auto s = Director::getInstance()->getLogicalSize();
@@ -1456,7 +1457,7 @@ void Issue16100Test::onEnter()
 
 void Issue16100Test::onExit()
 {
-    TestCocosNodeDemo::onExit();
+    TestNodeDemo::onExit();
 }
 
 std::string Issue16100Test::title() const
@@ -1476,7 +1477,7 @@ std::string Issue16100Test::subtitle() const
 //------------------------------------------------------------------
 void Issue16735Test::onEnter()
 {
-    TestCocosNodeDemo::onEnter();
+    TestNodeDemo::onEnter();
 
     auto visibleSize = Director::getInstance()->getVisibleSize();
     auto origin      = Director::getInstance()->getVisibleOrigin();
@@ -1503,7 +1504,7 @@ void Issue16735Test::onEnter()
 
 void Issue16735Test::onExit()
 {
-    TestCocosNodeDemo::onExit();
+    TestNodeDemo::onExit();
 }
 
 std::string Issue16735Test::title() const
@@ -1523,7 +1524,7 @@ std::string Issue16735Test::subtitle() const
 //------------------------------------------------------------------
 void NodeWorldSpace::onEnter()
 {
-    TestCocosNodeDemo::onEnter();
+    TestNodeDemo::onEnter();
 
     scheduleUpdate();
 
@@ -1537,7 +1538,7 @@ void NodeWorldSpace::onEnter()
 
 void NodeWorldSpace::onExit()
 {
-    TestCocosNodeDemo::onExit();
+    TestNodeDemo::onExit();
 }
 
 void NodeWorldSpace::update(float dt)

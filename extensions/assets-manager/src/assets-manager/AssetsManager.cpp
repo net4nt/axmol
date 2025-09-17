@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (c) 2013 cocos2d-x.org
  Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ Copyright (c) 2019-present Axmol Engine contributors (see AUTHORS.md).
 
  https://axmol.dev/
 
@@ -49,7 +50,7 @@ using namespace ax::network;
 
 #define KEY_OF_VERSION            "current-version-code"
 #define KEY_OF_DOWNLOADED_VERSION "downloaded-version-code"
-#define TEMP_PACKAGE_FILE_NAME    "cocos2dx-update-temp-package.zip"
+#define TEMP_PACKAGE_FILE_NAME    "axmol-update-temp-package.zip"
 #define BUFFER_SIZE               8192
 #define MAX_FILENAME              512
 
