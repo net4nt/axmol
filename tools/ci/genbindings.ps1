@@ -10,7 +10,7 @@ if (($stage -band 1)) {
     Push-Location $AX_ROOT
     ## setup ndk
     . ./setup.ps1 -p android
-    # axmol -c
+    axmol -c
     Pop-Location
 
     $pip_cmd = @('pip3', 'pip')[$IsWin]
@@ -64,7 +64,7 @@ if (($stage -band 1)) {
     if (!(Test-Path "$AX_ROOT/axmol/axmolver.h" -PathType Leaf)) {
         $content = [System.IO.File]::ReadAllText("$AX_ROOT/axmol/axmolver.h.in")
         $content = $content.Replace('@AX_GIT_PRESENT@', '0')
-        [System.IO.File]::WriteAllText("$AX_ROOT/axmol/axmolver.h")
+        [System.IO.File]::WriteAllText("$AX_ROOT/axmol/axmolver.h", $content)
     }
 
     ## run genbindings.py
