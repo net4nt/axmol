@@ -44,15 +44,13 @@ endif()
 
 include(AXSLCC)
 
-include(FindWindowsSDK)
-
-# include helper functions
-include(AXBuildHelpers)
-
 # set common compiler options
 # add target compile define function
 # add target compile options function
 include(AXConfigDefine)
+
+# include helper functions
+include(AXBuildHelpers)
 
 # config libraries dependence
 include(AXConfigDepend)
