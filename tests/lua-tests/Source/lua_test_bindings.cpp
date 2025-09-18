@@ -1,5 +1,6 @@
 /****************************************************************************
  Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ Copyright (c) 2019-present Axmol Engine contributors (see AUTHORS.md).
 
  https://axmol.dev/
 
@@ -334,11 +335,11 @@ ValueTypeJudgeInTable* ValueTypeJudgeInTable::create(ValueMap valueMap)
 }
 }  // namespace ax
 
-int lua_cocos2dx_DrawNode3D_getBlendFunc(lua_State* L)
+int axlua_DrawNode3D_getBlendFunc(lua_State* L)
 {
-    int argc             = 0;
-    ax::DrawNode3D* cobj = nullptr;
-    bool ok              = true;
+    int argc            = 0;
+    ax::DrawNode3D* obj = nullptr;
+    bool ok             = true;
 
 #if _AX_DEBUG >= 1
     tolua_Error tolua_err;
@@ -349,12 +350,12 @@ int lua_cocos2dx_DrawNode3D_getBlendFunc(lua_State* L)
         goto tolua_lerror;
 #endif
 
-    cobj = (ax::DrawNode3D*)tolua_tousertype(L, 1, 0);
+    obj = (ax::DrawNode3D*)tolua_tousertype(L, 1, 0);
 
 #if _AX_DEBUG >= 1
-    if (!cobj)
+    if (!obj)
     {
-        tolua_error(L, "invalid 'cobj' in function 'lua_cocos2dx_DrawNode3D_getBlendFunc'", nullptr);
+        tolua_error(L, "invalid 'obj' in function 'axlua_DrawNode3D_getBlendFunc'", nullptr);
         return 0;
     }
 #endif
@@ -364,7 +365,7 @@ int lua_cocos2dx_DrawNode3D_getBlendFunc(lua_State* L)
     {
         if (!ok)
             return 0;
-        const ax::BlendFunc& ret = cobj->getBlendFunc();
+        const ax::BlendFunc& ret = obj->getBlendFunc();
         blendfunc_to_luaval(L, ret);
         return 1;
     }
@@ -373,17 +374,17 @@ int lua_cocos2dx_DrawNode3D_getBlendFunc(lua_State* L)
 
 #if _AX_DEBUG >= 1
 tolua_lerror:
-    tolua_error(L, "#ferror in function 'lua_cocos2dx_DrawNode3D_getBlendFunc'.", &tolua_err);
+    tolua_error(L, "#ferror in function 'axlua_DrawNode3D_getBlendFunc'.", &tolua_err);
 #endif
 
     return 0;
 }
 
-int lua_cocos2dx_DrawNode3D_setBlendFunc(lua_State* L)
+int axlua_DrawNode3D_setBlendFunc(lua_State* L)
 {
-    int argc             = 0;
-    ax::DrawNode3D* cobj = nullptr;
-    bool ok              = true;
+    int argc            = 0;
+    ax::DrawNode3D* obj = nullptr;
+    bool ok             = true;
 
 #if _AX_DEBUG >= 1
     tolua_Error tolua_err;
@@ -394,12 +395,12 @@ int lua_cocos2dx_DrawNode3D_setBlendFunc(lua_State* L)
         goto tolua_lerror;
 #endif
 
-    cobj = (ax::DrawNode3D*)tolua_tousertype(L, 1, 0);
+    obj = (ax::DrawNode3D*)tolua_tousertype(L, 1, 0);
 
 #if _AX_DEBUG >= 1
-    if (!cobj)
+    if (!obj)
     {
-        tolua_error(L, "invalid 'cobj' in function 'lua_cocos2dx_DrawNode3D_setBlendFunc'", nullptr);
+        tolua_error(L, "invalid 'obj' in function 'axlua_DrawNode3D_setBlendFunc'", nullptr);
         return 0;
     }
 #endif
@@ -412,10 +413,10 @@ int lua_cocos2dx_DrawNode3D_setBlendFunc(lua_State* L)
         ok &= luaval_to_blendfunc(L, 2, &arg0, "ax.Sprite3D:setBlendFunc");
         if (!ok)
         {
-            tolua_error(L, "invalid arguments in function 'lua_cocos2dx_DrawNode3D_setBlendFunc'", nullptr);
+            tolua_error(L, "invalid arguments in function 'axlua_DrawNode3D_setBlendFunc'", nullptr);
             return 0;
         }
-        cobj->setBlendFunc(arg0);
+        obj->setBlendFunc(arg0);
         return 0;
     }
 
@@ -424,17 +425,17 @@ int lua_cocos2dx_DrawNode3D_setBlendFunc(lua_State* L)
 
 #if _AX_DEBUG >= 1
 tolua_lerror:
-    tolua_error(L, "#ferror in function 'lua_cocos2dx_DrawNode3D_setBlendFunc'.", &tolua_err);
+    tolua_error(L, "#ferror in function 'axlua_DrawNode3D_setBlendFunc'.", &tolua_err);
 #endif
 
     return 0;
 }
 
-int lua_cocos2dx_DrawNode3D_drawLine(lua_State* L)
+int axlua_DrawNode3D_drawLine(lua_State* L)
 {
-    int argc             = 0;
-    ax::DrawNode3D* cobj = nullptr;
-    bool ok              = true;
+    int argc            = 0;
+    ax::DrawNode3D* obj = nullptr;
+    bool ok             = true;
 
 #if _AX_DEBUG >= 1
     tolua_Error tolua_err;
@@ -445,12 +446,12 @@ int lua_cocos2dx_DrawNode3D_drawLine(lua_State* L)
         goto tolua_lerror;
 #endif
 
-    cobj = (ax::DrawNode3D*)tolua_tousertype(L, 1, 0);
+    obj = (ax::DrawNode3D*)tolua_tousertype(L, 1, 0);
 
 #if _AX_DEBUG >= 1
-    if (!cobj)
+    if (!obj)
     {
-        tolua_error(L, "invalid 'cobj' in function 'lua_cocos2dx_DrawNode3D_drawLine'", nullptr);
+        tolua_error(L, "invalid 'obj' in function 'axlua_DrawNode3D_drawLine'", nullptr);
         return 0;
     }
 #endif
@@ -469,7 +470,7 @@ int lua_cocos2dx_DrawNode3D_drawLine(lua_State* L)
         ok &= luaval_to_color(L, 4, &arg2, "ax.DrawNode3D:drawLine");
         if (!ok)
             return 0;
-        cobj->drawLine(arg0, arg1, arg2);
+        obj->drawLine(arg0, arg1, arg2);
         return 0;
     }
     AXLOGD("{} has wrong number of arguments: {}, was expecting {} \n", "ax.DrawNode3D:drawLine", argc, 3);
@@ -477,17 +478,17 @@ int lua_cocos2dx_DrawNode3D_drawLine(lua_State* L)
 
 #if _AX_DEBUG >= 1
 tolua_lerror:
-    tolua_error(L, "#ferror in function 'lua_cocos2dx_DrawNode3D_drawLine'.", &tolua_err);
+    tolua_error(L, "#ferror in function 'axlua_DrawNode3D_drawLine'.", &tolua_err);
 #endif
 
     return 0;
 }
 
-int lua_cocos2dx_DrawNode3D_clear(lua_State* L)
+int axlua_DrawNode3D_clear(lua_State* L)
 {
-    int argc             = 0;
-    ax::DrawNode3D* cobj = nullptr;
-    bool ok              = true;
+    int argc            = 0;
+    ax::DrawNode3D* obj = nullptr;
+    bool ok             = true;
 
 #if _AX_DEBUG >= 1
     tolua_Error tolua_err;
@@ -498,12 +499,12 @@ int lua_cocos2dx_DrawNode3D_clear(lua_State* L)
         goto tolua_lerror;
 #endif
 
-    cobj = (ax::DrawNode3D*)tolua_tousertype(L, 1, 0);
+    obj = (ax::DrawNode3D*)tolua_tousertype(L, 1, 0);
 
 #if _AX_DEBUG >= 1
-    if (!cobj)
+    if (!obj)
     {
-        tolua_error(L, "invalid 'cobj' in function 'lua_cocos2dx_DrawNode3D_clear'", nullptr);
+        tolua_error(L, "invalid 'obj' in function 'axlua_DrawNode3D_clear'", nullptr);
         return 0;
     }
 #endif
@@ -513,7 +514,7 @@ int lua_cocos2dx_DrawNode3D_clear(lua_State* L)
     {
         if (!ok)
             return 0;
-        cobj->clear();
+        obj->clear();
         return 0;
     }
     AXLOGD("{} has wrong number of arguments: {}, was expecting {} \n", "ax.DrawNode3D:clear", argc, 0);
@@ -521,17 +522,17 @@ int lua_cocos2dx_DrawNode3D_clear(lua_State* L)
 
 #if _AX_DEBUG >= 1
 tolua_lerror:
-    tolua_error(L, "#ferror in function 'lua_cocos2dx_DrawNode3D_clear'.", &tolua_err);
+    tolua_error(L, "#ferror in function 'axlua_DrawNode3D_clear'.", &tolua_err);
 #endif
 
     return 0;
 }
 
-int lua_cocos2dx_DrawNode3D_drawCube(lua_State* L)
+int axlua_DrawNode3D_drawCube(lua_State* L)
 {
-    int argc             = 0;
-    ax::DrawNode3D* cobj = nullptr;
-    bool ok              = true;
+    int argc            = 0;
+    ax::DrawNode3D* obj = nullptr;
+    bool ok             = true;
 
 #if _AX_DEBUG >= 1
     tolua_Error tolua_err;
@@ -542,12 +543,12 @@ int lua_cocos2dx_DrawNode3D_drawCube(lua_State* L)
         goto tolua_lerror;
 #endif
 
-    cobj = (ax::DrawNode3D*)tolua_tousertype(L, 1, 0);
+    obj = (ax::DrawNode3D*)tolua_tousertype(L, 1, 0);
 
 #if _AX_DEBUG >= 1
-    if (!cobj)
+    if (!obj)
     {
-        tolua_error(L, "invalid 'cobj' in function 'lua_cocos2dx_DrawNode3D_drawCube'", nullptr);
+        tolua_error(L, "invalid 'obj' in function 'axlua_DrawNode3D_drawCube'", nullptr);
         return 0;
     }
 #endif
@@ -591,7 +592,7 @@ int lua_cocos2dx_DrawNode3D_drawCube(lua_State* L)
         ok &= luaval_to_color(L, 3, &arg1, "ax.DrawNode3D:drawCube");
         if (!ok)
             return 0;
-        cobj->drawCube(&arg0[0], arg1);
+        obj->drawCube(&arg0[0], arg1);
         return 0;
     }
     AXLOGD("{} has wrong number of arguments: {}, was expecting {} \n", "ax.DrawNode3D:drawCube", argc, 2);
@@ -599,13 +600,13 @@ int lua_cocos2dx_DrawNode3D_drawCube(lua_State* L)
 
 #if _AX_DEBUG >= 1
 tolua_lerror:
-    tolua_error(L, "#ferror in function 'lua_cocos2dx_DrawNode3D_drawCube'.", &tolua_err);
+    tolua_error(L, "#ferror in function 'axlua_DrawNode3D_drawCube'.", &tolua_err);
 #endif
 
     return 0;
 }
 
-int lua_cocos2dx_DrawNode3D_create(lua_State* L)
+int axlua_DrawNode3D_create(lua_State* L)
 {
     int argc = 0;
     bool ok  = true;
@@ -633,7 +634,7 @@ int lua_cocos2dx_DrawNode3D_create(lua_State* L)
     return 0;
 #if _AX_DEBUG >= 1
 tolua_lerror:
-    tolua_error(L, "#ferror in function 'lua_cocos2dx_DrawNode3D_create'.", &tolua_err);
+    tolua_error(L, "#ferror in function 'axlua_DrawNode3D_create'.", &tolua_err);
 #endif
     return 0;
 }
@@ -644,11 +645,11 @@ int lua_register_cocos2dx_DrawNode3D(lua_State* L)
     tolua_cclass(L, "DrawNode3D", "ax.DrawNode3D", "ax.Node", nullptr);
 
     tolua_beginmodule(L, "DrawNode3D");
-    tolua_function(L, "getBlendFunc", lua_cocos2dx_DrawNode3D_getBlendFunc);
-    tolua_function(L, "drawLine", lua_cocos2dx_DrawNode3D_drawLine);
-    tolua_function(L, "clear", lua_cocos2dx_DrawNode3D_clear);
-    tolua_function(L, "drawCube", lua_cocos2dx_DrawNode3D_drawCube);
-    tolua_function(L, "create", lua_cocos2dx_DrawNode3D_create);
+    tolua_function(L, "getBlendFunc", axlua_DrawNode3D_getBlendFunc);
+    tolua_function(L, "drawLine", axlua_DrawNode3D_drawLine);
+    tolua_function(L, "clear", axlua_DrawNode3D_clear);
+    tolua_function(L, "drawCube", axlua_DrawNode3D_drawCube);
+    tolua_function(L, "create", axlua_DrawNode3D_create);
     tolua_endmodule(L);
     auto typeName                                    = typeid(ax::DrawNode3D).name();
     g_luaType[reinterpret_cast<uintptr_t>(typeName)] = "ax.DrawNode3D";
@@ -656,7 +657,7 @@ int lua_register_cocos2dx_DrawNode3D(lua_State* L)
     return 1;
 }
 
-int lua_cocos2dx_ValueTypeJudgeInTable_create(lua_State* L)
+int axlua_ValueTypeJudgeInTable_create(lua_State* L)
 {
     int argc = 0;
     bool ok  = true;
@@ -686,7 +687,7 @@ int lua_cocos2dx_ValueTypeJudgeInTable_create(lua_State* L)
     return 0;
 #if _AX_DEBUG >= 1
 tolua_lerror:
-    tolua_error(L, "#ferror in function 'lua_cocos2dx_ValueTypeJudgeInTable_create'.", &tolua_err);
+    tolua_error(L, "#ferror in function 'axlua_ValueTypeJudgeInTable_create'.", &tolua_err);
 #endif
     return 0;
 }
@@ -697,7 +698,7 @@ int lua_register_cocos2dx_ValueTypeJudgeInTable(lua_State* L)
     tolua_cclass(L, "ValueTypeJudgeInTable", "ax.ValueTypeJudgeInTable", "ax.Node", nullptr);
 
     tolua_beginmodule(L, "ValueTypeJudgeInTable");
-    tolua_function(L, "create", lua_cocos2dx_ValueTypeJudgeInTable_create);
+    tolua_function(L, "create", axlua_ValueTypeJudgeInTable_create);
     tolua_endmodule(L);
     auto typeName                                    = typeid(ax::ValueTypeJudgeInTable).name();
     g_luaType[reinterpret_cast<uintptr_t>(typeName)] = "ax.ValueTypeJudgeInTable";

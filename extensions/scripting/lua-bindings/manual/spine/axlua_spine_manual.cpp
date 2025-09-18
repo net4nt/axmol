@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (c) 2013-2016 Chukong Technologies Inc.
  Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ Copyright (c) 2019-present Axmol Engine contributors (see AUTHORS.md).
 
  https://axmol.dev/
 
@@ -37,7 +38,7 @@
 
 using namespace spine;
 
-static int axlua_CCSkeletonAnimation_createWithFile(lua_State* L)
+static int axlua_SkeletonAnimation_createWithFile(lua_State* L)
 {
     if (nullptr == L)
         return 0;
@@ -190,7 +191,7 @@ int executeSpineEvent(LuaSkeletonAnimation* skeletonAnimation,
     return ret;
 }
 
-int tolua_Cocos2d_CCSkeletonAnimation_registerSpineEventHandler00(lua_State* tolua_S)
+int axlua_SkeletonAnimation_registerSpineEventHandler00(lua_State* tolua_S)
 {
 #    ifndef TOLUA_RELEASE
     tolua_Error tolua_err;
@@ -271,7 +272,7 @@ tolua_lerror:
 #    endif
 }
 
-int tolua_Cocos2d_CCSkeletonAnimation_unregisterSpineEventHandler00(lua_State* tolua_S)
+int axlua_SkeletonAnimation_unregisterSpineEventHandler00(lua_State* tolua_S)
 {
 #    ifndef TOLUA_RELEASE
     tolua_Error tolua_err;
@@ -327,9 +328,9 @@ tolua_lerror:
 
 static int axlua_spine_SkeletonAnimation_addAnimation(lua_State* tolua_S)
 {
-    int argc                       = 0;
-    spine::SkeletonAnimation* cobj = nullptr;
-    bool ok                        = true;
+    int argc                      = 0;
+    spine::SkeletonAnimation* obj = nullptr;
+    bool ok                       = true;
 
 #    if _AX_DEBUG >= 1
     tolua_Error tolua_err;
@@ -340,12 +341,12 @@ static int axlua_spine_SkeletonAnimation_addAnimation(lua_State* tolua_S)
         goto tolua_lerror;
 #    endif
 
-    cobj = (spine::SkeletonAnimation*)tolua_tousertype(tolua_S, 1, 0);
+    obj = (spine::SkeletonAnimation*)tolua_tousertype(tolua_S, 1, 0);
 
 #    if _AX_DEBUG >= 1
-    if (!cobj)
+    if (!obj)
     {
-        tolua_error(tolua_S, "invalid 'cobj' in function 'axlua_spine_SkeletonAnimation_addAnimation'", nullptr);
+        tolua_error(tolua_S, "invalid 'obj' in function 'axlua_spine_SkeletonAnimation_addAnimation'", nullptr);
         return 0;
     }
 #    endif
@@ -366,7 +367,7 @@ static int axlua_spine_SkeletonAnimation_addAnimation(lua_State* tolua_S)
         ok &= luaval_to_boolean(tolua_S, 4, &arg2, "sp.SkeletonAnimation:addAnimation");
         if (!ok)
             return 0;
-        cobj->addAnimation(arg0, arg1, arg2);
+        obj->addAnimation(arg0, arg1, arg2);
 
         lua_settop(tolua_S, 1);
         return 1;
@@ -390,7 +391,7 @@ static int axlua_spine_SkeletonAnimation_addAnimation(lua_State* tolua_S)
         if (!ok)
             return 0;
 
-        cobj->addAnimation(arg0, arg1, arg2, arg3);
+        obj->addAnimation(arg0, arg1, arg2, arg3);
 
         lua_settop(tolua_S, 1);
         return 1;
@@ -408,9 +409,9 @@ tolua_lerror:
 
 static int axlua_spine_SkeletonAnimation_setAnimation(lua_State* tolua_S)
 {
-    int argc                       = 0;
-    spine::SkeletonAnimation* cobj = nullptr;
-    bool ok                        = true;
+    int argc                      = 0;
+    spine::SkeletonAnimation* obj = nullptr;
+    bool ok                       = true;
 
 #    if _AX_DEBUG >= 1
     tolua_Error tolua_err;
@@ -421,12 +422,12 @@ static int axlua_spine_SkeletonAnimation_setAnimation(lua_State* tolua_S)
         goto tolua_lerror;
 #    endif
 
-    cobj = (spine::SkeletonAnimation*)tolua_tousertype(tolua_S, 1, 0);
+    obj = (spine::SkeletonAnimation*)tolua_tousertype(tolua_S, 1, 0);
 
 #    if _AX_DEBUG >= 1
-    if (!cobj)
+    if (!obj)
     {
-        tolua_error(tolua_S, "invalid 'cobj' in function 'axlua_spine_SkeletonAnimation_setAnimation'", nullptr);
+        tolua_error(tolua_S, "invalid 'obj' in function 'axlua_spine_SkeletonAnimation_setAnimation'", nullptr);
         return 0;
     }
 #    endif
@@ -448,7 +449,7 @@ static int axlua_spine_SkeletonAnimation_setAnimation(lua_State* tolua_S)
         if (!ok)
             return 0;
 
-        cobj->setAnimation(arg0, arg1, arg2);
+        obj->setAnimation(arg0, arg1, arg2);
 
         lua_settop(tolua_S, 1);
         return 1;
@@ -466,16 +467,16 @@ tolua_lerror:
 
 static int axlua_spine_SkeletonAnimation_getBoundingBox(lua_State* tolua_S)
 {
-    spine::SkeletonAnimation* cobj = (spine::SkeletonAnimation*)tolua_tousertype(tolua_S, 1, 0);
+    spine::SkeletonAnimation* obj = (spine::SkeletonAnimation*)tolua_tousertype(tolua_S, 1, 0);
 
 #    if _AX_DEBUG >= 1
-    if (!cobj)
+    if (!obj)
     {
-        tolua_error(tolua_S, "invalid 'cobj' in function 'axlua_spine_SkeletonAnimation_getBoundingBox'", nullptr);
+        tolua_error(tolua_S, "invalid 'obj' in function 'axlua_spine_SkeletonAnimation_getBoundingBox'", nullptr);
         return 0;
     }
 #    endif
-    Rect rect = cobj->getBoundingBox();
+    Rect rect = obj->getBoundingBox();
     // return a table
     lua_newtable(tolua_S);
     lua_pushstring(tolua_S, "x");
@@ -495,8 +496,8 @@ static int axlua_spine_SkeletonAnimation_getBoundingBox(lua_State* tolua_S)
 
 static int axlua_spine_SkeletonAnimation_findBone(lua_State* tolua_S)
 {
-    int argc                       = 0;
-    spine::SkeletonAnimation* cobj = nullptr;
+    int argc                      = 0;
+    spine::SkeletonAnimation* obj = nullptr;
 
 #    if _AX_DEBUG >= 1
     tolua_Error tolua_err;
@@ -504,12 +505,12 @@ static int axlua_spine_SkeletonAnimation_findBone(lua_State* tolua_S)
         goto tolua_lerror;
 #    endif
 
-    cobj = (spine::SkeletonAnimation*)tolua_tousertype(tolua_S, 1, 0);
+    obj = (spine::SkeletonAnimation*)tolua_tousertype(tolua_S, 1, 0);
 
 #    if _AX_DEBUG >= 1
-    if (!cobj)
+    if (!obj)
     {
-        tolua_error(tolua_S, "invalid 'cobj' in function 'axlua_spine_SkeletonAnimation_findBone'", nullptr);
+        tolua_error(tolua_S, "invalid 'obj' in function 'axlua_spine_SkeletonAnimation_findBone'", nullptr);
         return 0;
     }
 #    endif
@@ -524,7 +525,7 @@ static int axlua_spine_SkeletonAnimation_findBone(lua_State* tolua_S)
             return 0;
         }
 
-        auto bone = cobj->findBone(arg0);
+        auto bone = obj->findBone(arg0);
 
         lua_newtable(tolua_S);
 
@@ -569,16 +570,15 @@ tolua_lerror:
     return 0;
 }
 
-static void extendCCSkeletonAnimation(lua_State* L)
+static void extendSkeletonAnimation(lua_State* L)
 {
     lua_pushstring(L, "sp.SkeletonAnimation");
     lua_rawget(L, LUA_REGISTRYINDEX);
     if (lua_istable(L, -1))
     {
-        tolua_function(L, "create", axlua_CCSkeletonAnimation_createWithFile);
-        tolua_function(L, "registerSpineEventHandler", tolua_Cocos2d_CCSkeletonAnimation_registerSpineEventHandler00);
-        tolua_function(L, "unregisterSpineEventHandler",
-                       tolua_Cocos2d_CCSkeletonAnimation_unregisterSpineEventHandler00);
+        tolua_function(L, "create", axlua_SkeletonAnimation_createWithFile);
+        tolua_function(L, "registerSpineEventHandler", axlua_SkeletonAnimation_registerSpineEventHandler00);
+        tolua_function(L, "unregisterSpineEventHandler", axlua_SkeletonAnimation_unregisterSpineEventHandler00);
         tolua_function(L, "addAnimation", axlua_spine_SkeletonAnimation_addAnimation);
         tolua_function(L, "setAnimation", axlua_spine_SkeletonAnimation_setAnimation);
         tolua_function(L, "findBone", axlua_spine_SkeletonAnimation_findBone);
@@ -586,7 +586,7 @@ static void extendCCSkeletonAnimation(lua_State* L)
     }
     lua_pop(L, 1);
 
-    /*Because sp.SkeletonAnimation:create creat a LuaSkeletonAnimation object,so we need use LuaSkeletonAnimation
+    /*Because sp.SkeletonAnimation:create a LuaSkeletonAnimation object, so we need use LuaSkeletonAnimation
      * typename for g_luaType*/
     auto typeName                                    = typeid(LuaSkeletonAnimation).name();
     g_luaType[reinterpret_cast<uintptr_t>(typeName)] = "sp.SkeletonAnimation";
@@ -598,7 +598,7 @@ int register_all_ax_spine_manual(lua_State* L)
     if (nullptr == L)
         return 0;
 
-    extendCCSkeletonAnimation(L);
+    extendSkeletonAnimation(L);
 
     return 0;
 }
