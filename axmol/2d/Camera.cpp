@@ -215,6 +215,8 @@ void Camera::initDefault()
         _eyeZdistance = eye.z;
         break;
     }
+    default:
+        break;
     }
 
     setDepth(0);
@@ -244,6 +246,8 @@ void Camera::updateTransform()
         _eyeZdistance = eye.z;
         break;
     }
+    default:
+        break;
     }
 }
 
@@ -440,6 +444,8 @@ void Camera::applyZoom()
         this->setPositionZ(_eyeZdistance * _zoomFactor);
         break;
     }
+    default:
+        break;
     }
 }
 

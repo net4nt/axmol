@@ -297,7 +297,7 @@ void NewClippingNodeTest::onTouchesBegan(const std::vector<Touch*>& touches, Eve
 {
     Touch* touch = touches[0];
     auto clipper = this->getChildByTag(kTagClipperNode);
-    Vec2 point   = clipper->convertToNodeSpace(Director::getInstance()->convertToGL(touch->getLocationInView()));
+    Vec2 point   = clipper->convertToNodeSpace(Director::getInstance()->screenToWorld(touch->getLocationInView()));
     auto rect    = Rect(0, 0, clipper->getContentSize().width, clipper->getContentSize().height);
     _scrolling   = rect.containsPoint(point);
     _lastPoint   = point;
@@ -309,7 +309,7 @@ void NewClippingNodeTest::onTouchesMoved(const std::vector<Touch*>& touches, Eve
         return;
     Touch* touch = touches[0];
     auto clipper = this->getChildByTag(kTagClipperNode);
-    auto point   = clipper->convertToNodeSpace(Director::getInstance()->convertToGL(touch->getLocationInView()));
+    auto point   = clipper->convertToNodeSpace(Director::getInstance()->screenToWorld(touch->getLocationInView()));
     Vec2 diff    = point - _lastPoint;
     auto content = clipper->getChildByTag(kTagContentNode);
     content->setPosition(content->getPosition() + diff);
@@ -585,8 +585,8 @@ VBOFullTest::VBOFullTest()
     {
         Sprite* sprite = Sprite::create("Images/grossini_dance_01.png");
         sprite->setScale(0.1f, 0.1f);
-        float x = ((float)std::rand()) / RAND_MAX;
-        float y = ((float)std::rand()) / RAND_MAX;
+        float x = AXRANDOM_0_1();
+        float y = AXRANDOM_0_1();
         sprite->setPosition(Vec2(x * s.width, y * s.height));
         parent->addChild(sprite);
     }
@@ -990,8 +990,8 @@ void NonBatchSprites::createSprite()
         return;
     auto r = rand_0_1() * 0.6 + 0.2;
     sprite->setScale(r, r);
-    float x = ((float)std::rand()) / RAND_MAX;
-    float y = ((float)std::rand()) / RAND_MAX;
+    float x = AXRANDOM_0_1();
+    float y = AXRANDOM_0_1();
     sprite->runAction(RepeatForever::create(RotateBy::create(1, 45)));
 
     sprite->setPosition(Vec2(x * s.width, y * s.height));

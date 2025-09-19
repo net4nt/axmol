@@ -69,7 +69,7 @@ public:
 
     void submitDrawCommand(Renderer* renderer, CustomCommand& cmd, const Mat4& transform);
 
-    void draw(Renderer* renderer, const Mat4& transform, uint32_t flags);
+    void draw(Renderer* renderer, const Mat4& transform, uint32_t flags) override;
     void clear() override;
 
     b2DebugDraw& m_debugDraw;

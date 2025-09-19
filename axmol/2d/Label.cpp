@@ -2459,6 +2459,8 @@ void Label::setTextColor(const Color32& color)
         case LabelType::TTF:
             _contentDirty = true;
             break;
+        default:
+            break;
         }
 
         _textColor   = color;

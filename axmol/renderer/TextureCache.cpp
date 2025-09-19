@@ -1032,6 +1032,8 @@ void VolatileTextureMgr::reloadTexture(VolatileTexture* vt)
         case VolatileTexture::kString:
             texture->updateData(vt->_text, vt->_fontDefinition);
             break;
+        default:
+            break;
         }
     }
     else

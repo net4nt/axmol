@@ -137,8 +137,9 @@ bool UtilsGL::isFloatFormat(VertexFormat vfmt)
     case VertexFormat::FLOAT:
     case VertexFormat::MAT4:
         return true;
+    default:
+        return false;
     }
-    return false;
 }
 
 GLsizei UtilsGL::getGLAttributeSize(VertexFormat vertexFormat)

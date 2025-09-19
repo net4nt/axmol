@@ -428,7 +428,7 @@ void HoleDemo::pokeHoleAtPoint(Vec2 point)
 void HoleDemo::onTouchesBegan(const std::vector<Touch*>& touches, Event* event)
 {
     Touch* touch = (Touch*)touches[0];
-    Vec2 point   = _outerClipper->convertToNodeSpace(Director::getInstance()->convertToGL(touch->getLocationInView()));
+    Vec2 point   = _outerClipper->convertToNodeSpace(Director::getInstance()->screenToWorld(touch->getLocationInView()));
     auto rect    = Rect(0, 0, _outerClipper->getContentSize().width, _outerClipper->getContentSize().height);
     if (!rect.containsPoint(point))
         return;
@@ -487,7 +487,7 @@ void ScrollViewDemo::onTouchesBegan(const std::vector<Touch*>& touches, Event* e
 {
     Touch* touch = touches[0];
     auto clipper = this->getChildByTag(kTagClipperNode);
-    Vec2 point   = clipper->convertToNodeSpace(Director::getInstance()->convertToGL(touch->getLocationInView()));
+    Vec2 point   = clipper->convertToNodeSpace(Director::getInstance()->screenToWorld(touch->getLocationInView()));
     auto rect    = Rect(0, 0, clipper->getContentSize().width, clipper->getContentSize().height);
     _scrolling   = rect.containsPoint(point);
     _lastPoint   = point;
@@ -499,7 +499,7 @@ void ScrollViewDemo::onTouchesMoved(const std::vector<Touch*>& touches, Event* e
         return;
     Touch* touch = touches[0];
     auto clipper = this->getChildByTag(kTagClipperNode);
-    auto point   = clipper->convertToNodeSpace(Director::getInstance()->convertToGL(touch->getLocationInView()));
+    auto point   = clipper->convertToNodeSpace(Director::getInstance()->screenToWorld(touch->getLocationInView()));
     Vec2 diff    = point - _lastPoint;
     auto content = clipper->getChildByTag(kTagContentNode);
     content->setPosition(content->getPosition() + diff);
