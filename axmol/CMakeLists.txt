@@ -488,6 +488,8 @@ if(NOT WASM) # native platforms auto detect from cmake or preprocessor check
         list(APPEND _simdc_options -msse4.1)
       endif()
     endif()
+  elseif(AX_ISA_SIMD MATCHES "neon")
+    list(APPEND _simdc_defines AX_NEON_INTRINSICS=1)
   endif()
 else() # wasm requires user specify SIMD intrinsics manually
   if(AX_WASM_ISA_SIMD MATCHES "sse")

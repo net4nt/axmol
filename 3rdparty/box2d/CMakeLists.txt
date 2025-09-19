@@ -28,6 +28,8 @@ if(_simdc_defines)
   if(_simdc_options)
     target_compile_options(${target_name} PRIVATE ${_simdc_options})
   endif()
+else()
+  target_compile_definitions(${target_name} PUBLIC BOX2D_DISABLE_SIMD=1)
 endif()
 
 target_include_directories(${target_name}
