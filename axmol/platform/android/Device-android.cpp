@@ -214,6 +214,8 @@ void Device::selectionChanged()
 int Device::getDisplayRefreshRate()
 {
     int hz = static_cast<int>(JniHelper::callStaticFloatMethod(deviceHelperClassName, "getDisplayRefreshRate"));
+    if (hz < MIN_REFRESH_RATE || hz > MAX_REFRESH_RATE)
+        hz = DEFAULT_REFRESH_RATE;
     return hz;
 }
 
