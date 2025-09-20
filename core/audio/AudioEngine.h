@@ -35,6 +35,8 @@
 #include <string>
 #include <unordered_map>
 
+#include "AudioEffects.h"
+
 #ifdef ERROR
 #    undef ERROR
 #endif  // ERROR
@@ -443,6 +445,16 @@ public:
      * @return float distance used for 3D audio source to listener calculations
      */
     static float getDistanceScale();
+
+#if AX_USE_ALSOFT
+    /**
+     * Sets and enables reverb for an audio track.
+     *
+     * @param audioId        An audioID returned by the play2d function.
+     * @param reverbProperties The pointer to reverb effect settings. If this is nullptr, then reverb effect will be disabled.
+     */
+    static void setReverbProperties(AUDIO_ID audioId, const ReverbProperties* reverbProperties);
+#endif
 
 protected:
     static void addTask(const std::function<void()>& task);

@@ -1020,7 +1020,7 @@ void AudioEngineImpl::setPan(AUDIO_ID audioId, float value, float distance)
         panAngles[0] = (1.0f - value) * angle;
         panAngles[1] = (1.0f + value) * -angle;
 
-        alSourcefv(player->_alSource, 0x1030, panAngles); // AL_STEREO_ANGLES = 0x1030
+        alSourcefv(player->_alSource, AL_STEREO_ANGLES, panAngles);
     }
 }
 
@@ -1078,6 +1078,21 @@ ax::Vec3 AudioEngineImpl::getListenerPosition()
 
     return pos;
 }
+
+#if AX_USE_ALSOFT
+void AudioEngineImpl::setReverbProperties(AUDIO_ID audioId, const ReverbProperties* reverbProperties)
+{
+    std::unique_lock<std::recursive_mutex> lck(_threadMutex);
+    auto iter = _audioPlayers.find(audioId);
+    if (iter == _audioPlayers.end())
+        return;
+
+    auto player = iter->second;
+    lck.unlock();
+
+    player->setReverbProperties(reverbProperties);
+}
+#endif
 
 bool AudioEngineImpl::isExtensionPresent(const char* extensionId)
 {

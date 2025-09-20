@@ -34,14 +34,14 @@
 #include <thread>
 #include <atomic>
 
+#include "AudioEffects.h"
 #include "audio/AudioMacros.h"
 #include "platform/PlatformMacros.h"
-#include "audio/alconfig.h"
+#include "audio/oal_port.h"
 #include "math/Vec3.h"
 
 namespace ax
 {
-
 class AudioCache;
 class AudioEngineImpl;
 
@@ -57,10 +57,14 @@ public:
 
     // queue buffer related stuff
     bool setTime(float time);
-    float getTime() { return _currTime; }
+    float getTime() const { return _currTime; }
     bool setLoop(bool loop);
 
     bool isFinished() const;
+
+#if AX_USE_ALSOFT
+    void setReverbProperties(const ReverbProperties* reverbProperties);
+#endif
 
 protected:
     void setCache(AudioCache* cache);
@@ -70,6 +74,7 @@ protected:
 #if defined(__APPLE__)
     void wakeupRotateThread();
 #endif
+    void clearEffects();
 
     AudioCache* _audioCache;
 
@@ -87,6 +92,10 @@ protected:
     bool _ready;
     ALuint _alSource;
 
+#if AX_USE_ALSOFT
+    ReverbProperties _reverbProperties;
+#endif
+
     // play by circular buffer
     float _currTime;
     bool _streamingSource;
@@ -103,6 +112,9 @@ protected:
     std::mutex _play2dMutex;
 
     unsigned int _id;
+    uint32_t _reverbSlot{};
+    uint32_t _reverbEffect{};
+
     friend class AudioEngineImpl;
 };
 
