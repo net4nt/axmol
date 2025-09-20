@@ -585,9 +585,9 @@ bool AudioPlayer::isFinished() const
     }
 }
 
-#if AX_USE_ALSOFT
 void AudioPlayer::setReverbProperties(const ReverbProperties* reverbProperties)
 {
+#if AX_USE_ALSOFT
     auto&& efx = AudioEffectsExtension::getInstance();
 
     if (!efx->isAvailable())
@@ -641,8 +641,8 @@ void AudioPlayer::setReverbProperties(const ReverbProperties* reverbProperties)
                                      _reverbProperties.flModulationDepth);
             efx->setEffectParamFloat(_reverbEffect, AL_EAXREVERB_AIR_ABSORPTION_GAINHF,
                                      _reverbProperties.flAirAbsorptionGainHF);
-            efx->setEffectParamFloat(_reverbEffect, AL_EAXREVERB_HFREFERENCE, _reverbProperties.flLFReference);
-            efx->setEffectParamFloat(_reverbEffect, AL_EAXREVERB_LFREFERENCE, _reverbProperties.flHFReference);
+            efx->setEffectParamFloat(_reverbEffect, AL_EAXREVERB_LFREFERENCE, _reverbProperties.flLFReference);
+            efx->setEffectParamFloat(_reverbEffect, AL_EAXREVERB_HFREFERENCE, _reverbProperties.flHFReference);
             efx->setEffectParamFloat(_reverbEffect, AL_EAXREVERB_ROOM_ROLLOFF_FACTOR,
                                _reverbProperties.flRoomRolloffFactor);
             efx->setEffectParamInt(_reverbEffect, AL_EAXREVERB_DECAY_HFLIMIT, _reverbProperties.iDecayHFLimit);
@@ -678,8 +678,8 @@ void AudioPlayer::setReverbProperties(const ReverbProperties* reverbProperties)
         _reverbProperties = {};
         clearEffects();
     }
-}
 #endif
+}
 
 bool AudioPlayer::setLoop(bool loop)
 {
