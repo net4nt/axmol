@@ -86,6 +86,8 @@ elseif(APPLE)
       platform/ios/RenderViewImpl-ios.h
       platform/ios/StdC-ios.h
       platform/ios/InputView-ios.h
+      platform/ios/AxmolAppController.h
+      platform/ios/AxmolViewController.h
     )
     set(_AX_PLATFORM_SPECIFIC_SRC
       ${_AX_PLATFORM_SPECIFIC_SRC}
@@ -97,6 +99,8 @@ elseif(APPLE)
       platform/ios/RenderViewImpl-ios.mm
       platform/ios/Image-ios.mm
       platform/ios/InputView-ios.mm
+      platform/ios/AxmolAppController.mm
+      platform/ios/AxmolViewController.mm
     )
 
     if(AX_USE_GL)
@@ -160,6 +164,11 @@ elseif(EMSCRIPTEN)
   if(AX_WASM_ENABLE_DEVTOOLS)
     list(APPEND _AX_PLATFORM_SPECIFIC_SRC platform/wasm/devtools-wasm.cpp)
   endif()
+endif()
+
+# Add desktop-specific sources for platforms where GLFW is available
+if((WIN32 AND NOT WINRT) OR LINUX OR MACOSX OR WASM)
+  list(APPEND _AX_PLATFORM_SPECIFIC_SRC "platform/desktop/Device-desktop.cpp")
 endif()
 
 set(_AX_PLATFORM_HEADER

@@ -575,6 +575,23 @@ void Device::prepareSelectionFeedbackGenerator() {}
 
 void Device::selectionChanged() {}
 
+void Device::setPreferredOrientation(Device::Orientation /*orientation*/) {}
+
+Device::Orientation Device::getPreferredOrientation()
+{
+    return Orientation::Unknown;
+}
+
+Device::OrientationMask Device::getSupportedOrientations()
+{
+    return OrientationMask::All;
+}
+
+Device::Orientation Device::getPhysicalOrientation()
+{
+    return Orientation::Unknown;
+}
+
 }
 
 #endif  // (AX_TARGET_PLATFORM == AX_PLATFORM_WINRT)
