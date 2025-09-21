@@ -97,8 +97,8 @@ static void ImGui_ImplAxmol_UpdateTexture(ImTextureData* tex)
         const void* pixels = tex->GetPixels();
 
         auto texture = new Texture2D();
-        texture->initWithData(pixels, tex->Width * tex->Height * 4, rhi::PixelFormat::RGBA8, tex->Width,
-                              tex->Height, true);
+        texture->initWithData(pixels, tex->Width * tex->Height * 4, rhi::PixelFormat::RGBA8, tex->Width, tex->Height,
+                              true);
 
         rhi::SamplerDesc desc{};
         texture->getRHITexture()->updateSamplerDesc(desc);
@@ -373,31 +373,60 @@ IMGUI_IMPL_API void ImGui_ImplAxmol_RenderPlatform()
 #if AX_RENDER_API == AX_RENDER_API_GL && !defined(__ANDROID__)
         // restore context
         GLFWwindow* prev_current_context = glfwGetCurrentContext();
-        ImGui_ImplAxmol_PostCommand([=]() { ImGui_ImplAxmol_MakeCurrent(prev_current_context); });
+        ImGui_ImplAxmol_PostCommand([=]() { ImGui_ImplAxmol_MakeCurrent(prev_current_context, nullptr); });
 #endif
     }
 }
 
-IMGUI_IMPL_API void ImGui_ImplAxmol_MakeCurrent(GLFWwindow* window)
+IMGUI_IMPL_API void ImGui_ImplAxmol_MakeCurrent(GLFWwindow* window, ImGuiViewport* viewport)
 {
-#if !defined(__ANDROID__)
+#    if AX_RENDER_API == AX_RENDER_API_GL && defined(GLFW_VERSION_MAJOR)
     glfwMakeContextCurrent(window);
-
-#    if AX_RENDER_API == AX_RENDER_API_GL
-    auto currentState = glfwGetWindowUserPointer(window);
-    if (!currentState)
-    { // create gl state for imgui mutli-viewport window
-        currentState = new gl::OpenGLState();
-        glfwSetWindowUserPointer(window, currentState);
+    auto state = static_cast<gl::OpenGLState*>(glfwGetWindowUserPointer(window));
+    if (!state)
+    {
+        assert(viewport);  // must be valid for new window when state is null
+        // create gl state for imgui mutli-viewport window
+        // this is a new OpenGLContext, create default VAO for it when core profile enabled
+        GLuint vao;
+        glGenVertexArrays(1, &vao);
+        state = new gl::OpenGLState();
+        glfwSetWindowUserPointer(window, state);
+        state->bindVertexArray(vao);
+        viewport->RendererUserData = reinterpret_cast<void*>(static_cast<uintptr_t>(vao));
     }
 
     // switch state for current gl context
-    if (gl::__state != currentState)
+    if (gl::__state != state)
     {
-        gl::__state->resetVAO();
-        gl::__state = (rhi::gl::OpenGLState*)currentState;
+        gl::__state->invalidateVertexArrayState();
+        gl::__state = state;
     }
 #    endif
+}
+
+IMGUI_IMPL_API void ImGui_ImplAxmol_OnDestroyWindow(GLFWwindow* window, ImGuiViewport* viewport)
+{
+#if AX_RENDER_API == AX_RENDER_API_GL && defined(GLFW_VERSION_MAJOR)
+    if (viewport->RendererUserData)
+    {
+        auto prev_context = glfwGetCurrentContext();
+        if (prev_context != window)
+        {
+            // ensure context to viewport avoid delete VAO from wrong context
+            glfwMakeContextCurrent(window);
+            GLuint vao = static_cast<GLuint>(reinterpret_cast<uintptr_t>(viewport->RendererUserData));
+            glDeleteVertexArrays(1, &vao);
+
+            glfwMakeContextCurrent(prev_context);
+        }
+
+        viewport->RendererUserData = nullptr;
+
+    }
+    auto state = static_cast<gl::OpenGLState*>(glfwGetWindowUserPointer(window));
+    if (state)
+        delete state;
 #endif
 }
 
