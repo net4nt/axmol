@@ -90,15 +90,12 @@ jobs:
           run: .\tools\cmdline\axmol -p winuwp -a x64 -O3 -xc '-DAX_RENDER_API=d3d'
   win32-clang-ogl:
         runs-on: windows-latest
-        env:
-          # Test winsdk < 10.0.22000.0 (missing C11 standard stdalign.h), axmol will auto fallback to C99 for resolving compiling issue.
-          WINSDK_VER: '10.0.19041.0'
         steps:
         - uses: actions/checkout@v5
 
         - name: Build
           shell: pwsh
-          run: .\tools\cmdline\axmol -p win32 -a 'x64' -cc clang -sdk $env:WINSDK_VER -O3
+          run: .\tools\cmdline\axmol -p win32 -a 'x64' -cc clang -O3
   win32-dll-ogl:
         runs-on: windows-latest
         steps:
