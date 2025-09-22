@@ -33,11 +33,11 @@ class TestController;
 class AppDelegate : private ax::Application
 {
 public:
-    virtual void initGfxContextAttrs();
+    void initContextAttrs() override;
 
-    virtual bool applicationDidFinishLaunching();
-    virtual void applicationDidEnterBackground();
-    virtual void applicationWillEnterForeground();
+    bool applicationDidFinishLaunching() override;
+    void applicationDidEnterBackground() override;
+    void applicationWillEnterForeground() override;
 
     int run(int argc, char** argv);
 };

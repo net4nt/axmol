@@ -34,6 +34,7 @@
 #include <dxgi1_5.h>
 #include <VersionHelpers.h>
 #include "axmol/base/Logging.h"
+#include "axmol/platform/Application.h"
 
 #if AX_TARGET_PLATFORM == AX_PLATFORM_WINRT
 #    include <windows.ui.xaml.media.dxinterop.h>
@@ -197,7 +198,7 @@ CommandBufferImpl::CommandBufferImpl(DriverImpl* driver, void* surfaceContext)
 {
     _driverImpl = driver;
 
-    auto& contextAttrs = driver->getContextAttrs();
+    auto& contextAttrs = Application::getContextAttrs();
     _renderScaleMode   = contextAttrs.renderScaleMode;
 
     auto context         = driver->getContext();

@@ -29,7 +29,7 @@
 #include "axmol/platform/ios/EARenderView-ios.h"
 #include "axmol/platform/ios/DirectorCaller-ios.h"
 #include "axmol/platform/ios/RenderViewImpl-ios.h"
-#include "axmol/rhi/DriverBase.h"
+#include "axmol/platform/Application.h"
 #include "axmol/base/Touch.h"
 #include "axmol/base/Director.h"
 
@@ -81,7 +81,7 @@ RenderViewImpl* RenderViewImpl::createWithFullscreen(std::string_view viewName)
 
 void RenderViewImpl::choosePixelFormats()
 {
-    const auto& contextAttrs = rhi::DriverBase::getContextAttrs();
+    const auto& contextAttrs = Application::getContextAttrs();
 
     if (contextAttrs.redBits == 8 && contextAttrs.greenBits == 8 && contextAttrs.blueBits == 8 &&
         contextAttrs.alphaBits == 8)

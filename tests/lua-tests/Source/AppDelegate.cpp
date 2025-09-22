@@ -36,11 +36,11 @@ AppDelegate::AppDelegate() {}
 
 AppDelegate::~AppDelegate() {}
 
-void AppDelegate::initGfxContextAttrs()
+void AppDelegate::initContextAttrs()
 {
-    GfxContextAttrs gfxContextAttrs = {8, 8, 8, 8, 24, 8, 0};
+    ContextAttrs gfxContextAttrs = {8, 8, 8, 8, 24, 8, 0};
 
-    RenderView::setGfxContextAttrs(gfxContextAttrs);
+    setContextAttrs(gfxContextAttrs);
 }
 
 bool AppDelegate::applicationDidFinishLaunching()

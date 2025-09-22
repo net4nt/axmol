@@ -19,14 +19,14 @@ AppDelegate::~AppDelegate()
     AudioEngine::end();
 }
 
-// if you want a different context, modify the value of gfxContextAttrs
+// if you want a different context, modify the value of contextAttrs
 // it will affect all platforms
-void AppDelegate::initGfxContextAttrs()
+void AppDelegate::initContextAttrs()
 {
-    // set graphics context attributes: red,green,blue,alpha,depth,stencil
-    GfxContextAttrs gfxContextAttrs = { 8, 8, 8, 8, 24, 8 };
+    // set context attributes: red,green,blue,alpha,depth,stencil
+    ContextAttrs contextAttrs = { 8, 8, 8, 8, 24, 8 };
 
-    RenderView::setGfxContextAttrs(gfxContextAttrs);
+    setContextAttrs(contextAttrs);
 }
 
 // if you want to use the package manager to install more packages,

@@ -32,6 +32,7 @@
 #include "axmol/rhi/metal/BufferManager.h"
 #include "axmol/rhi/metal/DepthStencilStateMTL.h"
 #include "axmol/rhi/metal/RenderTargetMTL.h"
+#include "axmol/platform/Application.h"
 
 #if AX_TARGET_PLATFORM == AX_PLATFORM_MAC
 #    import <AppKit/AppKit.h>
@@ -151,7 +152,7 @@ CommandBufferImpl::CommandBufferImpl(DriverImpl* driver, void* surfaceContext)
     _frameBoundarySemaphore = dispatch_semaphore_create(MAX_INFLIGHT_BUFFER);
     auto mtlDevice          = driver->getMTLDevice();
     _mtlCmdQueue            = driver->getMTLCmdQueue();
-    auto& contextAttrs      = driver->getContextAttrs();
+    auto& contextAttrs      = Application::getContextAttrs();
 #if AX_TARGET_PLATFORM == AX_PLATFORM_MAC
     CGSize fbSize;
     NSView* contentView = (id)surfaceContext;

@@ -33,6 +33,7 @@
 #include "axmol/rhi/d3d/VertexLayoutD3D.h"
 #include "axmol/rhi/d3d/UtilsD3D.h"
 #include "axmol/base/Logging.h"
+#include "axmol/platform/Application.h"
 #include "ntcvt/ntcvt.hpp"
 
 #pragma comment(lib, "D3D11.lib")
@@ -224,7 +225,7 @@ void DriverImpl::initializeDevice()
     constexpr UINT debugFlags   = releaseFlags | D3D11_CREATE_DEVICE_DEBUG;
 
     HRESULT hr              = E_FAIL;
-    const bool isDebugLayer = Director::getInstance()->isDebugLayerEnabled();
+    const bool isDebugLayer = Application::getContextAttrs().debugLayerEnabled;
 
     if (isDebugLayer) [[unlikely]]
     {
@@ -262,7 +263,8 @@ L_ReleaseRuntime:
 
 void DriverImpl::initializeAdapter()
 {
-    const auto powerPreferrence = _contextAttrs.powerPreference;
+    auto& contextAttrs          = Application::getContextAttrs();
+    const auto powerPreferrence = contextAttrs.powerPreference;
 
     if (powerPreferrence == PowerPreference::Auto)
         return;

@@ -573,7 +573,7 @@ bool RenderViewImpl::initWithRect(std::string_view viewName,
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 #endif
 
-    auto& contextAttrs = getGfxContextAttrs();
+    auto& contextAttrs = Application::getContextAttrs();
 
     glfwWindowHint(GLFW_RESIZABLE, resizable ? GL_TRUE : GL_FALSE);
     glfwWindowHint(GLFW_RED_BITS, contextAttrs.redBits);
