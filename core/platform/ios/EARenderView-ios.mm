@@ -68,6 +68,7 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 #import "base/Touch.h"
 #import "base/IMEDispatcher.h"
 #import "platform/ios/InputView-ios.h"
+#import "platform/Application.h"
 
 #if defined(AX_USE_METAL)
 #    import <Metal/Metal.h>
@@ -342,6 +343,8 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
         renderView->setFrameSize(size_.width, size_.height);
         renderView->setDesignResolutionSize(designSize.width, designSize.height, resolutionPolicy);
     }
+    
+    ax::Application::getInstance()->applicationScreenSizeChanged(size_.width, size_.height);
 
     // Avoid flicker. Issue #350
     if ([NSThread isMainThread])
