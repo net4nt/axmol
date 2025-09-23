@@ -30,7 +30,7 @@
 #import "ui/UIEditBox/iOS/UISingleLineTextField.h"
 #import "ui/UIEditBox/iOS/UIMultilineTextField.h"
 
-#import "platform/ios/EARenderView-ios.h"
+#import "platform/ios/RenderHostView-ios.h"
 #include "base/Director.h"
 
 #define getEditBoxImplIOS() ((ax::ui::EditBoxImplIOS*)_editBox)
@@ -320,7 +320,7 @@
 - (void)doAnimationWhenKeyboardMoveWithDuration:(float)duration distance:(float)distance
 {
     auto view            = ax::Director::getInstance()->getRenderView();
-    EARenderView* eaView = (__bridge EARenderView*)view->getEARenderView();
+    RenderHostView* eaView = (__bridge RenderHostView*)view->getEARenderView();
 
     [eaView doAnimationWhenKeyboardMoveWithDuration:duration distance:distance];
 }
@@ -337,7 +337,7 @@
 - (void)openKeyboard
 {
     auto view            = ax::Director::getInstance()->getRenderView();
-    EARenderView* eaView = (__bridge EARenderView*)view->getEARenderView();
+    RenderHostView* eaView = (__bridge RenderHostView*)view->getEARenderView();
 
     [eaView addSubview:self.textInput];
     [self.textInput becomeFirstResponder];
@@ -362,7 +362,7 @@
 - (void)animationSelector
 {
     auto view            = ax::Director::getInstance()->getRenderView();
-    EARenderView* eaView = (__bridge EARenderView*)view->getEARenderView();
+    RenderHostView* eaView = (__bridge RenderHostView*)view->getEARenderView();
 
     [eaView doAnimationWhenAnotherEditBeClicked];
 }
@@ -376,7 +376,7 @@
     _returnPressed = NO;
 
     auto view            = ax::Director::getInstance()->getRenderView();
-    EARenderView* eaView = (__bridge EARenderView*)view->getEARenderView();
+    RenderHostView* eaView = (__bridge RenderHostView*)view->getEARenderView();
 
     if ([eaView isKeyboardShown])
     {
@@ -469,7 +469,7 @@
     _returnPressed = NO;
 
     auto view            = ax::Director::getInstance()->getRenderView();
-    EARenderView* eaView = (__bridge EARenderView*)view->getEARenderView();
+    RenderHostView* eaView = (__bridge RenderHostView*)view->getEARenderView();
 
     if ([eaView isKeyboardShown])
     {

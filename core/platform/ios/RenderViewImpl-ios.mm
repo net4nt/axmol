@@ -26,7 +26,7 @@
  ****************************************************************************/
 #import <UIKit/UIKit.h>
 
-#include "platform/ios/EARenderView-ios.h"
+#include "platform/ios/RenderHostView-ios.h"
 #include "platform/ios/DirectorCaller-ios.h"
 #include "platform/ios/RenderViewImpl-ios.h"
 #include "platform/Device.h"
@@ -147,15 +147,15 @@ RenderViewImpl::RenderViewImpl() {}
 
 RenderViewImpl::~RenderViewImpl()
 {
-    // auto eaView = (__bridge EARenderView*) _eaViewHandle;
+    // auto eaView = (__bridge RenderHostView*) _hostViewHandle;
     //[eaView release];
 }
 
 #ifndef AX_CORE_PROFILE
 bool RenderViewImpl::initWithEARenderView(void* viewHandle)
 {
-    _eaViewHandle          = viewHandle;
-    EARenderView* eaView  = (__bridge EARenderView*)_eaViewHandle;
+    _hostViewHandle          = viewHandle;
+    RenderHostView* eaView  = (__bridge RenderHostView*)_hostViewHandle;
 
     _screenSize.width = _designResolutionSize.width = [eaView getWidth];
     _screenSize.height = _designResolutionSize.height = [eaView getHeight];
@@ -171,10 +171,10 @@ bool RenderViewImpl::initWithRect(std::string_view /*viewName*/, const Rect& rec
     choosePixelFormats();
 
     // create platform window
-    _eaWindowHandle = [[UIWindow alloc] initWithFrame:r];
+    _hostWindowHandle = [[UIWindow alloc] initWithFrame:r];
 
     // create platform render view
-    EARenderView* eaView = [EARenderView viewWithFrame:r
+    RenderHostView* hostView = [RenderHostView viewWithFrame:r
                                          pixelFormat:(int)_pixelFormat
                                          depthFormat:(int)_depthFormat
                                   preserveBackbuffer:NO
@@ -184,16 +184,18 @@ bool RenderViewImpl::initWithRect(std::string_view /*viewName*/, const Rect& rec
 
     // Not available on tvOS
 #if !defined(AX_TARGET_OS_TVOS)
-    [eaView setMultipleTouchEnabled:YES];
+    [hostView setMultipleTouchEnabled:YES];
 #endif
 
     auto logicalSize = computeLogicalScreenSize();
+    
+    const auto backingScaleFactor = hostView.contentScaleFactor;
 
-    _screenSize.width = _designResolutionSize.width = logicalSize.width;
-    _screenSize.height = _designResolutionSize.height = logicalSize.height;
+    _screenSize.width = _designResolutionSize.width = logicalSize.width * backingScaleFactor;
+    _screenSize.height = _designResolutionSize.height = logicalSize.height * backingScaleFactor;
     //    _scaleX = _scaleY = [eaView contentScaleFactor];
 
-    _eaViewHandle = eaView;
+    _hostViewHandle = hostView;
 
     return true;
 }
@@ -213,7 +215,7 @@ bool RenderViewImpl::initWithFullScreen(std::string_view viewName)
 void RenderViewImpl::setMultipleTouchEnabled(bool enabled)
 {
 #if !defined(AX_TARGET_OS_TVOS)
-    [(__bridge EARenderView*)_eaViewHandle setMultipleTouchEnabled:enabled];
+    [(__bridge RenderHostView*)_hostViewHandle setMultipleTouchEnabled:enabled];
 #else
     AX_UNUSED_PARAM(enabled);
 #endif
@@ -221,13 +223,13 @@ void RenderViewImpl::setMultipleTouchEnabled(bool enabled)
 
 void RenderViewImpl::showWindow(void* viewController)
 {
-    auto window = (__bridge UIWindow*)_eaWindowHandle;
+    auto window = (__bridge UIWindow*)_hostWindowHandle;
     auto controller = (__bridge UIViewController*)viewController;
 
 #if !defined(AX_TARGET_OS_TVOS)
     controller.extendedLayoutIncludesOpaqueBars = YES;
 #endif
-    auto view = (__bridge EARenderView*)_eaViewHandle;
+    auto view = (__bridge RenderHostView*)_hostViewHandle;
     controller.view = view;
 
     // Set RootViewController to window
@@ -257,7 +259,7 @@ void RenderViewImpl::showWindow(void* viewController)
 
 bool RenderViewImpl::isGfxContextReady()
 {
-    return _eaViewHandle != nullptr;
+    return _hostViewHandle != nullptr;
 }
 
 bool RenderViewImpl::setContentScaleFactor(float contentScaleFactor)
@@ -265,32 +267,32 @@ bool RenderViewImpl::setContentScaleFactor(float contentScaleFactor)
     AX_ASSERT(_resolutionPolicy == ResolutionPolicy::UNKNOWN);  // cannot enable retina mode
     _scaleX = _scaleY = contentScaleFactor;
 
-    [(__bridge EARenderView*)_eaViewHandle setNeedsLayout];
+    [(__bridge RenderHostView*)_hostViewHandle setNeedsLayout];
 
     return true;
 }
 
 float RenderViewImpl::getContentScaleFactor() const
 {
-    return [(__bridge EARenderView*)_eaViewHandle contentScaleFactor];
+    return [(__bridge RenderHostView*)_hostViewHandle contentScaleFactor];
 }
 
 void RenderViewImpl::end()
 {
     [CCDirectorCaller destroy];
 
-    [(__bridge EARenderView*)_eaViewHandle removeFromSuperview];
+    [(__bridge RenderHostView*)_hostViewHandle removeFromSuperview];
     release();
 }
 
 void RenderViewImpl::swapBuffers()
 {
-    [(__bridge EARenderView*)_eaViewHandle swapBuffers];
+    [(__bridge RenderHostView*)_hostViewHandle swapBuffers];
 }
 
 void RenderViewImpl::setIMEKeyboardState(bool open)
 {
-    auto eaView = (__bridge EARenderView*)_eaViewHandle;
+    auto eaView = (__bridge RenderHostView*)_hostViewHandle;
     if (open)
     {
         [eaView showKeyboard];
@@ -303,7 +305,7 @@ void RenderViewImpl::setIMEKeyboardState(bool open)
 
 Rect RenderViewImpl::getSafeAreaRect() const
 {
-    EARenderView* eaView = (__bridge EARenderView*)_eaViewHandle;
+    RenderHostView* eaView = (__bridge RenderHostView*)_hostViewHandle;
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000
     float version = [[UIDevice currentDevice].systemVersion floatValue];

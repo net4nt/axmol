@@ -23,7 +23,7 @@
  ****************************************************************************/
 
 #import "AxmolViewController.h"
-#import "platform/ios/EARenderView-ios.h"
+#import "platform/ios/RenderHostView-ios.h"
 #include "platform/Device.h"
 #include "platform/Application.h"
 #include "base/Director.h"

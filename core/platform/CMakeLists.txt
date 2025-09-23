@@ -82,7 +82,7 @@ elseif(APPLE)
       ${_AX_PLATFORM_SPECIFIC_HEADER}
       platform/ios/Application-ios.h
       platform/ios/DirectorCaller-ios.h
-      platform/ios/EARenderView-ios.h
+      platform/ios/RenderHostView-ios.h
       platform/ios/RenderViewImpl-ios.h
       platform/ios/StdC-ios.h
       platform/ios/InputView-ios.h
@@ -95,7 +95,7 @@ elseif(APPLE)
       platform/ios/Common-ios.mm
       platform/ios/Device-ios.mm
       platform/ios/DirectorCaller-ios.mm
-      platform/ios/EARenderView-ios.mm
+      platform/ios/RenderHostView-ios.mm
       platform/ios/RenderViewImpl-ios.mm
       platform/ios/Image-ios.mm
       platform/ios/InputView-ios.mm

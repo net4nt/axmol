@@ -15,7 +15,7 @@ seeds.
 
 =====================
 
-File: EARenderView.m
+File: RenderHostView.m
 Abstract: Convenience class that wraps the CAEAGLLayer from CoreAnimation into a
 UIView subclass.
 
@@ -60,7 +60,7 @@ APPLE HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Copyright (C) 2008 Apple Inc. All Rights Reserved.
 
 */
-#import "platform/ios/EARenderView-ios.h"
+#import "platform/ios/RenderHostView-ios.h"
 
 #import <QuartzCore/QuartzCore.h>
 
@@ -84,14 +84,14 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 
 #define IOS_MAX_TOUCHES_COUNT 10
 
-@interface EARenderView ()
+@interface RenderHostView ()
 @property(nonatomic) TextInputView* textInputView;
 @property(nonatomic, readwrite, assign) BOOL isKeyboardShown;
 @property(nonatomic, copy) NSNotification* keyboardShowNotification;
 @property(nonatomic, assign) CGRect originalRect;
 @end
 
-@implementation EARenderView
+@implementation RenderHostView
 
 @synthesize surfaceSize = size_;
 @synthesize pixelFormat = pixelformat_, depthFormat = depthFormat_;
@@ -432,7 +432,7 @@ static ax::Rect convertKeyboardRectToViewport(CGRect rect, CGSize viewSize)
 }
 #endif
 
-#pragma mark EARenderView - Point conversion
+#pragma mark RenderHostView - Point conversion
 
 - (CGPoint)convertPointFromViewToSurface:(CGPoint)point
 {
@@ -459,7 +459,7 @@ static ax::Rect convertKeyboardRectToViewport(CGRect rect, CGSize viewSize)
 }
 
 // Pass the touches to the superview
-#pragma mark EARenderView - Touch Delegate
+#pragma mark RenderHostView - Touch Delegate
 - (void)touchesBegan:(NSSet*)touches withEvent:(UIEvent*)event
 {
     if (self.isKeyboardShown)

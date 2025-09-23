@@ -904,14 +904,6 @@ static Device::Orientation pickFirstSupported(Device::OrientationMask mask)
     return Device::Orientation::Portrait; // fallback
 }
 
-static bool isPhone()
-{
-#if !defined(AX_TARGET_OS_TVOS)
-    return [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone;
-#else
-    return false;
-#endif
-}
 Device::Orientation Device::resolveOrientation()
 {
     auto supported = getSupportedOrientations();
@@ -919,9 +911,6 @@ Device::Orientation Device::resolveOrientation()
     auto physical  = getPhysicalOrientation();
 
     auto tryUse = [&](Orientation o) -> Orientation {
-        if (isPhone() && o == Orientation::ReversePortrait)
-            return Orientation::Portrait; // iPhone treats ReversePortrait as Portrait
-
         return ((supported & toMask(o)) == toMask(o)) ? o : Orientation::Unknown;
     };
 

@@ -77,10 +77,10 @@ public:
     bool isRetinaDisplay() const override { return getContentScaleFactor() == 2.0; }
 
     /** @since axmol-2.8.0, returns the objective-c UIWindow instance */
-    void* getEAWindow() const override { return _eaWindowHandle; }
+    void* getEAWindow() const override { return _hostWindowHandle; }
 
-    /** @since axmol-2.8.0, returns the objective-c EARenderView instance */
-    void* getEARenderView() const override { return _eaViewHandle; }
+    /** @since axmol-2.8.0, returns the objective-c RenderHostView instance */
+    void* getEARenderView() const override { return _hostViewHandle; }
 
     // overrides
     bool isGfxContextReady() override;
@@ -102,8 +102,8 @@ protected:
     bool initWithFullScreen(std::string_view viewName);
 
     // the objective-c instance handles
-    void* _eaViewHandle;
-    void* _eaWindowHandle;
+    void* _hostViewHandle;
+    void* _hostWindowHandle;
 };
 
 #ifndef AX_CORE_PROFILE
