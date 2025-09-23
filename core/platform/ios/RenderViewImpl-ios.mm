@@ -29,6 +29,7 @@
 #include "platform/ios/EARenderView-ios.h"
 #include "platform/ios/DirectorCaller-ios.h"
 #include "platform/ios/RenderViewImpl-ios.h"
+#include "platform/Device.h"
 #include "base/Touch.h"
 #include "base/Director.h"
 
@@ -52,6 +53,23 @@ RenderViewImpl* RenderViewImpl::createWithEARenderView(void* viewHandle)
     return nullptr;
 }
 #endif
+
+// helper to compute the logical screen size based on the current orientation
+static CGSize computeLogicalScreenSize()
+{
+    CGSize screenSize = [UIScreen mainScreen].bounds.size;
+    auto resolvedOrientation = Device::resolveOrientation();
+
+    bool isLandscapeSize = screenSize.width > screenSize.height;
+    bool shouldBeLandscape = (resolvedOrientation == Device::Orientation::Landscape ||
+                              resolvedOrientation == Device::Orientation::ReverseLandscape);
+
+    // If orientation and actual size basis mismatch, swap
+    if ((shouldBeLandscape && !isLandscapeSize) || (!shouldBeLandscape && isLandscapeSize))
+        std::swap(screenSize.width, screenSize.height);
+
+    return screenSize;
+}
 
 RenderViewImpl* RenderViewImpl::create(std::string_view viewName)
 {
@@ -169,8 +187,10 @@ bool RenderViewImpl::initWithRect(std::string_view /*viewName*/, const Rect& rec
     [eaView setMultipleTouchEnabled:YES];
 #endif
 
-    _screenSize.width = _designResolutionSize.width = [eaView getWidth];
-    _screenSize.height = _designResolutionSize.height = [eaView getHeight];
+    auto logicalSize = computeLogicalScreenSize();
+
+    _screenSize.width = _designResolutionSize.width = logicalSize.width;
+    _screenSize.height = _designResolutionSize.height = logicalSize.height;
     //    _scaleX = _scaleY = [eaView contentScaleFactor];
 
     _eaViewHandle = eaView;
