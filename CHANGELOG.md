@@ -15,6 +15,7 @@
 - Add new API `EventKeyboard::isRepeat` by @halx99 in [#2735](https://github.com/axmolengine/axmol/pull/2735)
 - Add new API `ZipFile::createWithData` and mark `ZipFile::createWithBuffer` as deprecated by @halx99
 - Enhance Base64 decoder to skip whitespace/newlines and prevent premature termination by @halx99
+- Add Device::resolveOrientation and compact resolution logic by @halx99 in [#2792](https://github.com/axmolengine/axmol/pull/2792)
 
 ## Bug fixes
 
@@ -22,8 +23,11 @@
 - Fix occasional missing Android assets in AAB build by @paulocoutinhox in [#2713](https://github.com/axmolengine/axmol/pull/2713)
 - Fix format specifiers in logging calls by @rh101 in [#2749](https://github.com/axmolengine/axmol/pull/2749)
 
+
 ## Improvements
 
+- Improve ios EditBox orientation handling with keyboard by @halx99 in [#2791](https://github.com/axmolengine/axmol/pull/2791) and [#2795](https://github.com/axmolengine/axmol/pull/2795)
+- Add support for extracting the previous scene from the scene stack by @rh101 in [#2793](https://github.com/axmolengine/axmol/pull/2793)
 - Destroy `ScriptEngine` instance before `_scheduler` to respect dependency by @halx99
 - Fix SpineTest aim y-axis by @halx99
 - Replace deprecated calls with new API in engine by @halx99
@@ -32,6 +36,7 @@
 - Remove non-existent yaml-cpp from template cmake modules by @halx99
 - Remove CI pull-request trigger event: `ready_for_review` by @halx99
 - Update kcp to resolve cmake error by @halx99
+- Dispatch applicationScreenSizeChanged when layoutSubviews on ios by @halx99
 
 ## SDK & Tools updates
 
