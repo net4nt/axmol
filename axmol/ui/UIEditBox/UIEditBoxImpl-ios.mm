@@ -34,7 +34,7 @@
 #    include "axmol/ui/UIEditBox/UIEditBox.h"
 #    include "axmol/base/Director.h"
 #    include "axmol/2d/Label.h"
-#    import "axmol/platform/ios/EARenderView-ios.h"
+#    import "axmol/platform/ios/RenderHostView-ios.h"
 
 #    import <Foundation/Foundation.h>
 #    import <UIKit/UIKit.h>
@@ -181,10 +181,10 @@ void EditBoxImplIOS::setNativeVisible(bool visible)
 
 void EditBoxImplIOS::updateNativeFrame(const Rect& rect)
 {
-    auto renderView      = ax::Director::getInstance()->getRenderView();
-    EARenderView* eaView = (__bridge EARenderView*)renderView->getNativeDisplay();
+    auto renderView = ax::Director::getInstance()->getRenderView();
+    auto hostView   = (__bridge RenderHostView*)renderView->getNativeDisplay();
 
-    float factor = eaView.contentScaleFactor;
+    float factor = hostView.contentScaleFactor;
 
     [_systemControl updateFrame:CGRectMake(rect.origin.x / factor, rect.origin.y / factor, rect.size.width / factor,
                                            rect.size.height / factor)];
@@ -210,8 +210,8 @@ void EditBoxImplIOS::nativeCloseKeyboard()
 UIFont* EditBoxImplIOS::constructFont(const char* fontName, int fontSize)
 {
     AXASSERT(fontName != nullptr, "fontName can't be nullptr");
-    auto eaView        = static_cast<EARenderView*>(ax::Director::getInstance()->getRenderView()->getNativeDisplay());
-    float retinaFactor = eaView.contentScaleFactor;
+    auto hostView      = static_cast<RenderHostView*>(ax::Director::getInstance()->getRenderView()->getNativeDisplay());
+    float retinaFactor = hostView.contentScaleFactor;
     NSString* fntName  = [NSString stringWithUTF8String:fontName];
 
     fntName = [[fntName lastPathComponent] stringByDeletingPathExtension];

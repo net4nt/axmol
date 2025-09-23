@@ -26,10 +26,11 @@
  ****************************************************************************/
 #import <UIKit/UIKit.h>
 
-#include "axmol/platform/ios/EARenderView-ios.h"
+#include "axmol/platform/ios/RenderHostView-ios.h"
 #include "axmol/platform/ios/DirectorCaller-ios.h"
 #include "axmol/platform/ios/RenderViewImpl-ios.h"
 #include "axmol/platform/Application.h"
+#include "axmol/platform/Device.h"
 #include "axmol/base/Touch.h"
 #include "axmol/base/Director.h"
 
@@ -39,6 +40,39 @@ namespace ax
 PixelFormat RenderViewImpl::_pixelFormat = PixelFormat::RGB565;
 PixelFormat RenderViewImpl::_depthFormat = PixelFormat::D24S8;
 int RenderViewImpl::_multisamplingCount  = 0;
+
+/**
+ * Adjusts a UIView's size to match the resolved device orientation.
+ *
+ * UIKit reports UIView sizes based on the system's initial orientation assumptions.
+ * At app launch, even if the device is physically in landscape, iOS may still report
+ * the view size in portrait layout-especially when Info.plist declares support for
+ * both portrait and landscape orientations.
+ *
+ * This function corrects that mismatch by comparing the aspect ratio of the input
+ * UIView size with the resolved device orientation. If the orientation and size basis
+ * disagree, it swaps width and height to produce a logical size that matches the
+ * actual screen orientation.
+ *
+ * This is especially useful before layoutSubviews is triggered, when view.bounds
+ * may not yet reflect the final orientation.
+ *
+ * @param viewSize The raw size of a UIView, typically from view.bounds or view.frame
+ * @return A CGSize representing the logical screen size in the resolved orientation
+ */
+static CGSize resolveViewSizeToOrientation(CGSize viewSize)
+{
+    auto resolvedOrientation = Device::resolveOrientation();
+
+    bool isLandscapeSize   = viewSize.width > viewSize.height;
+    bool shouldBeLandscape = (resolvedOrientation == Device::Orientation::Landscape ||
+                              resolvedOrientation == Device::Orientation::ReverseLandscape);
+
+    if ((shouldBeLandscape && !isLandscapeSize) || (!shouldBeLandscape && isLandscapeSize))
+        std::swap(viewSize.width, viewSize.height);
+
+    return viewSize;
+}
 
 RenderViewImpl* RenderViewImpl::create(std::string_view viewName)
 {
@@ -118,8 +152,8 @@ RenderViewImpl::RenderViewImpl() {}
 
 RenderViewImpl::~RenderViewImpl()
 {
-    // auto eaView = (__bridge EARenderView*) _eaViewHandle;
-    //[eaView release];
+    // auto hostView = (__bridge RenderHostView*) _hostViewHandle;
+    //[hostView release];
 }
 
 bool RenderViewImpl::initWithRect(std::string_view /*viewName*/,
@@ -131,29 +165,29 @@ bool RenderViewImpl::initWithRect(std::string_view /*viewName*/,
     choosePixelFormats();
 
     // create platform window
-    _eaWindowHandle = [[UIWindow alloc] initWithFrame:r];
+    _hostWindowHandle = [[UIWindow alloc] initWithFrame:r];
 
     // create platform render view
-    EARenderView* eaView = [EARenderView viewWithFrame:r
-                                           pixelFormat:(int)_pixelFormat
-                                           depthFormat:(int)_depthFormat
-                                    preserveBackbuffer:NO
-                                            sharegroup:nil
-                                         multiSampling:_multisamplingCount > 0 ? YES : NO
-                                       numberOfSamples:_multisamplingCount];
+    RenderHostView* hostView = [RenderHostView viewWithFrame:r
+                                                 pixelFormat:(int)_pixelFormat
+                                                 depthFormat:(int)_depthFormat
+                                          preserveBackbuffer:NO
+                                                  sharegroup:nil
+                                               multiSampling:_multisamplingCount > 0 ? YES : NO
+                                             numberOfSamples:_multisamplingCount];
 
     // Not available on tvOS
 #if !defined(AX_TARGET_OS_TVOS)
-    [eaView setMultipleTouchEnabled:YES];
+    [hostView setMultipleTouchEnabled:YES];
 #endif
-    auto size                     = [eaView bounds].size;
-    const auto backingScaleFactor = [eaView contentScaleFactor];
+    const auto size               = resolveViewSizeToOrientation([hostView bounds].size);
+    const auto backingScaleFactor = [hostView contentScaleFactor];
 
     // simply set renderSize, renderSize to framebufferSize with renderScale=1.0
     updateRenderSurface(size.width * backingScaleFactor, size.height * backingScaleFactor,
                         SurfaceUpdateFlag::AllUpdatesSilently);
 
-    _eaViewHandle = eaView;
+    _hostViewHandle = hostView;
 
     return true;
 }
@@ -173,7 +207,7 @@ bool RenderViewImpl::initWithFullScreen(std::string_view viewName)
 void RenderViewImpl::setMultipleTouchEnabled(bool enabled)
 {
 #if !defined(AX_TARGET_OS_TVOS)
-    [(__bridge EARenderView*)_eaViewHandle setMultipleTouchEnabled:enabled];
+    [(__bridge RenderHostView*)_hostViewHandle setMultipleTouchEnabled:enabled];
 #else
     AX_UNUSED_PARAM(enabled);
 #endif
@@ -181,13 +215,13 @@ void RenderViewImpl::setMultipleTouchEnabled(bool enabled)
 
 void RenderViewImpl::showWindow(void* viewController)
 {
-    auto window     = (__bridge UIWindow*)_eaWindowHandle;
+    auto window     = (__bridge UIWindow*)_hostWindowHandle;
     auto controller = (__bridge UIViewController*)viewController;
 
 #if !defined(AX_TARGET_OS_TVOS)
     controller.extendedLayoutIncludesOpaqueBars = YES;
 #endif
-    auto view       = (__bridge EARenderView*)_eaViewHandle;
+    auto view       = (__bridge RenderHostView*)_hostViewHandle;
     controller.view = view;
 
     // Set RootViewController to window
@@ -217,43 +251,43 @@ void RenderViewImpl::showWindow(void* viewController)
 
 bool RenderViewImpl::isGfxContextReady()
 {
-    return _eaViewHandle != nullptr;
+    return _hostViewHandle != nullptr;
 }
 
 float RenderViewImpl::getRenderScale() const
 {
-    return [(__bridge EARenderView*)_eaViewHandle contentScaleFactor];
+    return [(__bridge RenderHostView*)_hostViewHandle contentScaleFactor];
 }
 
 void RenderViewImpl::end()
 {
     [CCDirectorCaller destroy];
 
-    [(__bridge EARenderView*)_eaViewHandle removeFromSuperview];
+    [(__bridge RenderHostView*)_hostViewHandle removeFromSuperview];
     release();
 }
 
 void RenderViewImpl::swapBuffers()
 {
-    [(__bridge EARenderView*)_eaViewHandle swapBuffers];
+    [(__bridge RenderHostView*)_hostViewHandle swapBuffers];
 }
 
 void RenderViewImpl::setIMEKeyboardState(bool open)
 {
-    auto eaView = (__bridge EARenderView*)_eaViewHandle;
+    auto hostView = (__bridge RenderHostView*)_hostViewHandle;
     if (open)
     {
-        [eaView showKeyboard];
+        [hostView showKeyboard];
     }
     else
     {
-        [eaView hideKeyboard];
+        [hostView hideKeyboard];
     }
 }
 
 Rect RenderViewImpl::getSafeAreaRect() const
 {
-    EARenderView* eaView = (__bridge EARenderView*)_eaViewHandle;
+    RenderHostView* hostView = (__bridge RenderHostView*)_hostViewHandle;
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000
     float version = [[UIDevice currentDevice].systemVersion floatValue];
@@ -261,14 +295,14 @@ Rect RenderViewImpl::getSafeAreaRect() const
     {
 #    pragma clang diagnostic push
 #    pragma clang diagnostic ignored "-Wpartial-availability"
-        UIEdgeInsets safeAreaInsets = eaView.safeAreaInsets;
+        UIEdgeInsets safeAreaInsets = hostView.safeAreaInsets;
 #    pragma clang diagnostic pop
 
         // Multiply contentScaleFactor since safeAreaInsets return points.
-        safeAreaInsets.left *= eaView.contentScaleFactor;
-        safeAreaInsets.right *= eaView.contentScaleFactor;
-        safeAreaInsets.top *= eaView.contentScaleFactor;
-        safeAreaInsets.bottom *= eaView.contentScaleFactor;
+        safeAreaInsets.left *= hostView.contentScaleFactor;
+        safeAreaInsets.right *= hostView.contentScaleFactor;
+        safeAreaInsets.top *= hostView.contentScaleFactor;
+        safeAreaInsets.bottom *= hostView.contentScaleFactor;
 
         // Get leftBottom and rightTop point in UI coordinates
         Vec2 leftBottom = Vec2(safeAreaInsets.left, _windowSize.height - safeAreaInsets.bottom);

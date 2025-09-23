@@ -63,10 +63,10 @@ public:
     float getRenderScale() const override;
 
     /** @since axmol-3.0, returns the objective-c UIWindow instance */
-    void* getNativeWindow() const override { return _eaWindowHandle; }
+    void* getNativeWindow() const override { return _hostWindowHandle; }
 
     /** @since axmol-3.0, returns the objective-c EARenderView instance */
-    void* getNativeDisplay() const override { return _eaViewHandle; }
+    void* getNativeDisplay() const override { return _hostViewHandle; }
 
     WindowPlatform getWindowPlatform() const override { return WindowPlatform::UIKit; }
 
@@ -87,8 +87,8 @@ protected:
     bool initWithFullScreen(std::string_view viewName);
 
     // the objective-c instance handles
-    void* _eaViewHandle;
-    void* _eaWindowHandle;
+    void* _hostViewHandle;
+    void* _hostWindowHandle;
 };
 
 }  // namespace ax

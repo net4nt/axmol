@@ -6,7 +6,7 @@ Copyright (c) 2019-present Axmol Engine contributors (see AUTHORS.md).
 
 =====================
 
-File: EARenderView.m
+File: RenderHostView.m
 Abstract: Convenience class that wraps the CAEAGLLayer from CoreAnimation into a
 UIView subclass.
 
@@ -51,7 +51,7 @@ APPLE HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Copyright (C) 2008 Apple Inc. All Rights Reserved.
 
 */
-#import "axmol/platform/ios/EARenderView-ios.h"
+#import "axmol/platform/ios/RenderHostView-ios.h"
 
 #import <QuartzCore/QuartzCore.h>
 
@@ -74,24 +74,30 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 
 #define IOS_MAX_TOUCHES_COUNT 10
 
-@interface EARenderView ()
+@interface RenderHostView ()
 @property(nonatomic) TextInputView* textInputView;
 @property(nonatomic, readwrite, assign) BOOL isKeyboardShown;
 @property(nonatomic, copy) NSNotification* keyboardShowNotification;
-@property(nonatomic, assign) CGRect originalRect;
+@property(nonatomic, assign) CGRect savedBounds;
 @end
 
-@implementation EARenderView
+@implementation RenderHostView
 
-@synthesize surfaceSize = size_;
+@synthesize backingSize = backingSize_;
 @synthesize pixelFormat = pixelformat_, depthFormat = depthFormat_;
 #if AX_RENDER_API == AX_RENDER_API_GL
 @synthesize context = context_;
 #endif
 @synthesize multiSampling            = multiSampling_;
 @synthesize keyboardShowNotification = keyboardShowNotification_;
-@synthesize isKeyboardShown;
-@synthesize originalRect = originalRect_;
+@synthesize isKeyboardShown          = isKeyboardShown_;
+@synthesize savedBounds              = savedBounds_;
+
+static ax::Rect convertKeyboardRectToViewport(CGRect rect, CGSize viewSize)
+{
+    float flippedY = viewSize.height - rect.origin.y - rect.size.height;
+    return ax::Rect(rect.origin.x, flippedY, rect.size.width, rect.size.height);
+}
 
 + (Class)layerClass
 {
@@ -175,7 +181,7 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
     {
         self.textInputView = [[TextInputView alloc] initWithFrame:frame];
 
-        originalRect_                 = self.frame;
+        savedBounds_                  = [self bounds];
         self.keyboardShowNotification = nil;
         if ([self respondsToSelector:@selector(setContentScaleFactor:)])
         {
@@ -209,7 +215,7 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
     {
         self.textInputView = [[TextInputView alloc] initWithCoder:aDecoder];
 #if AX_RENDER_API == AX_RENDER_API_MTL
-        size_ = [self bounds].size;
+        backingSize_ = [self bounds].size;
 #else
         CAEAGLLayer* eaglLayer = (CAEAGLLayer*)[self layer];
 
@@ -217,7 +223,7 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
         depthFormat_      = (int)ax::PixelFormat::D24S8;
         multiSampling_    = NO;
         requestedSamples_ = 0;
-        size_             = [eaglLayer bounds].size;
+        backingSize_      = [eaglLayer bounds].size;
 
         if (![self setupSurfaceWithSharegroup:nil])
         {
@@ -286,18 +292,20 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
     if (!director->isValid())
         return;
 
+    savedBounds_              = [self bounds];
+    self.textInputView.bounds = savedBounds_;
 #if AX_RENDER_API == AX_RENDER_API_MTL
-    size_ = [self bounds].size;
-    size_.width *= self.contentScaleFactor;
-    size_.height *= self.contentScaleFactor;
+    backingSize_ = savedBounds_.size;
+    backingSize_.width *= self.contentScaleFactor;
+    backingSize_.height *= self.contentScaleFactor;
 #else
     [renderer_ resizeFromLayer:(CAEAGLLayer*)self.layer];
-    size_ = [renderer_ backingSize];
+    backingSize_ = [renderer_ backingSize];
 #endif
 
     auto renderView = director->getRenderView();
     if (renderView)
-        renderView->updateRenderSurface(size_.width, size_.height, ax::RenderView::AllUpdates);
+        renderView->updateRenderSurface(backingSize_.width, backingSize_.height, ax::RenderView::AllUpdates);
 
     // Avoid flicker. Issue #350
     if ([NSThread isMainThread])
@@ -367,15 +375,15 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 #endif
 }
 
-#pragma mark EARenderView - Point conversion
+#pragma mark RenderHostView - Point conversion
 
 - (CGPoint)convertPointFromViewToSurface:(CGPoint)point
 {
     CGRect bounds = [self bounds];
 
     CGPoint ret;
-    ret.x = (point.x - bounds.origin.x) / bounds.size.width * size_.width;
-    ret.y = (point.y - bounds.origin.y) / bounds.size.height * size_.height;
+    ret.x = (point.x - bounds.origin.x) / bounds.size.width * backingSize_.width;
+    ret.y = (point.y - bounds.origin.y) / bounds.size.height * backingSize_.height;
 
     return ret;
 }
@@ -385,16 +393,16 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
     CGRect bounds = [self bounds];
 
     CGRect ret;
-    ret.origin.x    = (rect.origin.x - bounds.origin.x) / bounds.size.width * size_.width;
-    ret.origin.y    = (rect.origin.y - bounds.origin.y) / bounds.size.height * size_.height;
-    ret.size.width  = rect.size.width / bounds.size.width * size_.width;
-    ret.size.height = rect.size.height / bounds.size.height * size_.height;
+    ret.origin.x    = (rect.origin.x - bounds.origin.x) / bounds.size.width * backingSize_.width;
+    ret.origin.y    = (rect.origin.y - bounds.origin.y) / bounds.size.height * backingSize_.height;
+    ret.size.width  = rect.size.width / bounds.size.width * backingSize_.width;
+    ret.size.height = rect.size.height / bounds.size.height * backingSize_.height;
 
     return ret;
 }
 
 // Pass the touches to the superview
-#pragma mark EARenderView - Touch Delegate
+#pragma mark RenderHostView - Touch Delegate
 - (void)touchesBegan:(NSSet*)touches withEvent:(UIEvent*)event
 {
     if (self.isKeyboardShown)
@@ -522,53 +530,20 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 
 - (void)doAnimationWhenKeyboardMoveWithDuration:(float)duration distance:(float)dis
 {
-    [UIView beginAnimations:nil context:nullptr];
-    [UIView setAnimationDelegate:self];
-    [UIView setAnimationDuration:duration];
-    [UIView setAnimationBeginsFromCurrentState:YES];
-
-    // NSLog(@"[animation] dis = %f, scale = %f \n", dis, ax::RenderView::getInstance()->getScaleY());
-
     if (dis < 0.0f)
         dis = 0.0f;
 
     auto renderView = ax::Director::getInstance()->getRenderView();
     dis *= renderView->getScaleY();
-
     dis /= self.contentScaleFactor;
 
-#if defined(AX_TARGET_OS_TVOS)
-    self.frame = CGRectMake(originalRect_.origin.x, originalRect_.origin.y - dis, originalRect_.size.width,
-                            originalRect_.size.height);
-#else
-    switch (getFixedOrientation([[UIApplication sharedApplication] statusBarOrientation]))
-    {
-    case UIInterfaceOrientationPortrait:
-        self.frame = CGRectMake(originalRect_.origin.x, originalRect_.origin.y - dis, originalRect_.size.width,
-                                originalRect_.size.height);
-        break;
+    CGRect newFrame = savedBounds_;
+    newFrame.origin.y -= dis;
 
-    case UIInterfaceOrientationPortraitUpsideDown:
-        self.frame = CGRectMake(originalRect_.origin.x, originalRect_.origin.y + dis, originalRect_.size.width,
-                                originalRect_.size.height);
-        break;
-
-    case UIInterfaceOrientationLandscapeLeft:
-        self.frame = CGRectMake(originalRect_.origin.x - dis, originalRect_.origin.y, originalRect_.size.width,
-                                originalRect_.size.height);
-        break;
-
-    case UIInterfaceOrientationLandscapeRight:
-        self.frame = CGRectMake(originalRect_.origin.x + dis, originalRect_.origin.y, originalRect_.size.width,
-                                originalRect_.size.height);
-        break;
-
-    default:
-        break;
-    }
-#endif
-
-    [UIView commitAnimations];
+    [UIView animateWithDuration:duration
+                     animations:^{
+                       self.frame = newFrame;
+                     }];
 }
 
 - (void)doAnimationWhenAnotherEditBeClicked
@@ -622,67 +597,28 @@ UIInterfaceOrientation getFixedOrientation(UIInterfaceOrientation statusBarOrien
 - (void)onUIKeyboardNotification:(NSNotification*)notif
 {
 #if !defined(AX_TARGET_OS_TVOS)
-    NSString* type = notif.name;
-
+    NSString* type     = notif.name;
     NSDictionary* info = [notif userInfo];
-    CGRect begin = [self convertRect:[[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue] fromView:self];
-    CGRect end   = [self convertRect:[[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue] fromView:self];
+
+    CGRect begin       = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
+    CGRect end         = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
     double aniDuration = [[info objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
 
-    CGSize viewSize = self.frame.size;
-
-    CGFloat tmp;
-    switch (getFixedOrientation([[UIApplication sharedApplication] statusBarOrientation]))
-    {
-    case UIInterfaceOrientationPortrait:
-        begin.origin.y = viewSize.height - begin.origin.y - begin.size.height;
-        end.origin.y   = viewSize.height - end.origin.y - end.size.height;
-        break;
-
-    case UIInterfaceOrientationPortraitUpsideDown:
-        begin.origin.x = viewSize.width - (begin.origin.x + begin.size.width);
-        end.origin.x   = viewSize.width - (end.origin.x + end.size.width);
-        break;
-
-    case UIInterfaceOrientationLandscapeLeft:
-        std::swap(begin.size.width, begin.size.height);
-        std::swap(end.size.width, end.size.height);
-        std::swap(viewSize.width, viewSize.height);
-
-        tmp            = begin.origin.x;
-        begin.origin.x = begin.origin.y;
-        begin.origin.y = viewSize.height - tmp - begin.size.height;
-        tmp            = end.origin.x;
-        end.origin.x   = end.origin.y;
-        end.origin.y   = viewSize.height - tmp - end.size.height;
-        break;
-
-    case UIInterfaceOrientationLandscapeRight:
-        std::swap(begin.size.width, begin.size.height);
-        std::swap(end.size.width, end.size.height);
-        std::swap(viewSize.width, viewSize.height);
-
-        tmp            = begin.origin.x;
-        begin.origin.x = begin.origin.y;
-        begin.origin.y = tmp;
-        tmp            = end.origin.x;
-        end.origin.x   = end.origin.y;
-        end.origin.y   = tmp;
-        break;
-
-    default:
-        break;
-    }
+    // Convert to current view's coordinate system
+    begin = [self convertRect:begin fromView:nil];
+    end   = [self convertRect:end fromView:nil];
 
     auto renderView = ax::Director::getInstance()->getRenderView();
     float scaleX    = renderView->getScaleX();
     float scaleY    = renderView->getScaleY();
 
-    // Convert to pixel coordinate
+    const auto backingScaleFactor = self.contentScaleFactor;
+
+    // Convert to pixel coordinates
     begin = CGRectApplyAffineTransform(
-        begin, CGAffineTransformScale(CGAffineTransformIdentity, self.contentScaleFactor, self.contentScaleFactor));
+        begin, CGAffineTransformScale(CGAffineTransformIdentity, backingScaleFactor, backingScaleFactor));
     end = CGRectApplyAffineTransform(
-        end, CGAffineTransformScale(CGAffineTransformIdentity, self.contentScaleFactor, self.contentScaleFactor));
+        end, CGAffineTransformScale(CGAffineTransformIdentity, backingScaleFactor, backingScaleFactor));
 
     float offestY = renderView->getViewportRect().origin.y;
     if (offestY < 0.0f)
@@ -692,16 +628,21 @@ UIInterfaceOrientation getFixedOrientation(UIInterfaceOrientation statusBarOrien
         end.size.height -= offestY;
     }
 
-    // Convert to design coordinate
+    // Convert to design resolution coordinates
     begin = CGRectApplyAffineTransform(begin,
                                        CGAffineTransformScale(CGAffineTransformIdentity, 1.0f / scaleX, 1.0f / scaleY));
     end   = CGRectApplyAffineTransform(end,
                                        CGAffineTransformScale(CGAffineTransformIdentity, 1.0f / scaleX, 1.0f / scaleY));
 
+    // Fill notification info for Axmol IME dispatcher
+    auto winSize = savedBounds_.size;
+    CGSize viewSize =
+        CGSizeMake(winSize.width * backingScaleFactor / scaleX, winSize.height * backingScaleFactor / scaleY);
+
     ax::IMEKeyboardNotificationInfo notiInfo;
-    notiInfo.begin    = ax::Rect(begin.origin.x, begin.origin.y, begin.size.width, begin.size.height);
-    notiInfo.end      = ax::Rect(end.origin.x, end.origin.y, end.size.width, end.size.height);
-    notiInfo.duration = (float)aniDuration;
+    notiInfo.begin    = convertKeyboardRectToViewport(begin, viewSize);
+    notiInfo.end      = convertKeyboardRectToViewport(end, viewSize);
+    notiInfo.duration = aniDuration;
 
     ax::IMEDispatcher* dispatcher = ax::IMEDispatcher::sharedDispatcher();
     if (UIKeyboardWillShowNotification == type)

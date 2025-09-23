@@ -250,6 +250,11 @@ Device::Orientation Device::getPhysicalOrientation()
     return static_cast<Device::Orientation>(orientation);
 }
 
+Device::Orientation Device::resolveOrientation()
+{
+    return s_preferredOrientation;
+}
+
 }  // namespace ax
 
 // this method is called by BitmapHelper

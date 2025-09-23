@@ -48,7 +48,7 @@ EditBoxImpl* __createSystemEditBox(EditBox* pEditBox)
 EditBoxImplMac::EditBoxImplMac(EditBox* pEditText) : EditBoxImplCommon(pEditText), _sysEdit(nullptr)
 {
     //! TODO: Retina on Mac
-    //! _inRetinaMode = [[EARenderView sharedERenderView] contentScaleFactor] == 2.0f ? true : false;
+    //! _inRetinaMode = [[RenderHostView sharedERenderView] contentScaleFactor] == 2.0f ? true : false;
     _inRetinaMode = false;
 }
 

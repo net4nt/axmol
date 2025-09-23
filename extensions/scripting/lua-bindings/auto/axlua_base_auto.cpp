@@ -26881,6 +26881,53 @@ int lua_ax_base_Director_replaceScene(lua_State* tolua_S)
 
     return 0;
 }
+int lua_ax_base_Director_popPreviousSceneOut(lua_State* tolua_S)
+{
+    int argc = 0;
+    ax::Director* obj = nullptr;
+    bool ok  = true;
+
+#if _AX_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if _AX_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"ax.Director",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    obj = (ax::Director*)tolua_tousertype(tolua_S,1,0);
+
+#if _AX_DEBUG >= 1
+    if (!obj)
+    {
+        tolua_error(tolua_S,"invalid 'obj' in function 'lua_ax_base_Director_popPreviousSceneOut'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 0)
+    {
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_ax_base_Director_popPreviousSceneOut'", nullptr);
+            return 0;
+        }
+        auto&& ret = obj->popPreviousSceneOut();
+        object_to_luaval<ax::Scene>(tolua_S, "ax.Scene",(ax::Scene*)ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "ax.Director:popPreviousSceneOut",argc, 0);
+    return 0;
+
+#if _AX_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_ax_base_Director_popPreviousSceneOut'.",&tolua_err);
+#endif
+
+    return 0;
+}
 int lua_ax_base_Director_end(lua_State* tolua_S)
 {
     int argc = 0;
@@ -28687,6 +28734,7 @@ int lua_register_ax_base_Director(lua_State* tolua_S)
         tolua_function(tolua_S,"popToRootScene",lua_ax_base_Director_popToRootScene);
         tolua_function(tolua_S,"popToSceneStackLevel",lua_ax_base_Director_popToSceneStackLevel);
         tolua_function(tolua_S,"replaceScene",lua_ax_base_Director_replaceScene);
+        tolua_function(tolua_S,"popPreviousSceneOut",lua_ax_base_Director_popPreviousSceneOut);
         tolua_function(tolua_S,"endToLua",lua_ax_base_Director_end);
         tolua_function(tolua_S,"pause",lua_ax_base_Director_pause);
         tolua_function(tolua_S,"resume",lua_ax_base_Director_resume);
@@ -103508,6 +103556,40 @@ int lua_ax_base_Device_getPhysicalOrientation(lua_State* tolua_S)
 #endif
     return 0;
 }
+int lua_ax_base_Device_resolveOrientation(lua_State* tolua_S)
+{
+    int argc = 0;
+    bool ok  = true;
+
+#if _AX_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+#if _AX_DEBUG >= 1
+    if (!tolua_isusertable(tolua_S,1,"ax.Device",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    argc = lua_gettop(tolua_S) - 1;
+
+    if (argc == 0)
+    {
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_ax_base_Device_resolveOrientation'", nullptr);
+            return 0;
+        }
+        int ret = (int)ax::Device::resolveOrientation();
+        tolua_pushnumber(tolua_S,(lua_Number)ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "ax.Device:resolveOrientation",argc, 0);
+    return 0;
+#if _AX_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_ax_base_Device_resolveOrientation'.",&tolua_err);
+#endif
+    return 0;
+}
 int lua_ax_base_Device_getDisplayRefreshRate(lua_State* tolua_S)
 {
     int argc = 0;
@@ -103571,6 +103653,7 @@ int lua_register_ax_base_Device(lua_State* tolua_S)
         tolua_function(tolua_S,"getSupportedOrientations", lua_ax_base_Device_getSupportedOrientations);
         tolua_function(tolua_S,"getCurrentOrientation", lua_ax_base_Device_getCurrentOrientation);
         tolua_function(tolua_S,"getPhysicalOrientation", lua_ax_base_Device_getPhysicalOrientation);
+        tolua_function(tolua_S,"resolveOrientation", lua_ax_base_Device_resolveOrientation);
         tolua_function(tolua_S,"getDisplayRefreshRate", lua_ax_base_Device_getDisplayRefreshRate);
     tolua_endmodule(tolua_S);
     auto typeName = typeid(ax::Device).name(); // rtti is literal storage

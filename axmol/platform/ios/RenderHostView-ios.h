@@ -4,7 +4,7 @@ Copyright (c) 2019-present Axmol Engine contributors (see AUTHORS.md).
 
  https://axmol.dev/
 
-File: EARenderView.h
+File: RenderHostView.h
 Abstract: Convenience class that wraps the CAEAGLLayer from CoreAnimation into a
 UIView subclass.
 
@@ -66,12 +66,12 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 
 // CLASS INTERFACE:
 
-/** EARenderView Class.
+/** RenderHostView Class.
  * This class wraps the CAEAGLLayer from CoreAnimation into a convenient UIView subclass.
  * The view content is basically an EAGL surface you render your OpenGL scene into.
  * Note that setting the view non-opaque will only work if the EAGL surface has an alpha channel.
  */
-@interface EARenderView : UIView {
+@interface RenderHostView : UIView {
 #if AX_GLES_PROFILE
     id<ESRenderer> renderer_;
 #endif
@@ -83,14 +83,14 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
     unsigned int requestedSamples_;
 }
 
-/** creates an initializes an EARenderView with a frame and 0-bit depth buffer, and a RGB565 color buffer */
+/** creates an initializes an RenderHostView with a frame and 0-bit depth buffer, and a RGB565 color buffer */
 + (id)viewWithFrame:(CGRect)frame;
-/** creates an initializes an EARenderView with a frame, a color buffer format, and 0-bit depth buffer */
+/** creates an initializes an RenderHostView with a frame, a color buffer format, and 0-bit depth buffer */
 + (id)viewWithFrame:(CGRect)frame pixelFormat:(int)format;
-/** creates an initializes an EARenderView with a frame, a color buffer format, and a depth buffer format */
+/** creates an initializes an RenderHostView with a frame, a color buffer format, and a depth buffer format */
 + (id)viewWithFrame:(CGRect)frame pixelFormat:(int)format depthFormat:(int)depth;
-/** creates an initializes an EARenderView with a frame, a color buffer format, a depth buffer format, a sharegroup, and
- * multisampling */
+/** creates an initializes an RenderHostView with a frame, a color buffer format, a depth buffer format, a sharegroup,
+ * and multisampling */
 + (id)viewWithFrame:(CGRect)frame
            pixelFormat:(int)format
            depthFormat:(int)depth
@@ -99,9 +99,9 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
          multiSampling:(BOOL)multisampling
        numberOfSamples:(unsigned int)samples;
 
-/** Initializes an EARenderView with a frame and 0-bit depth buffer, and a RGB565 color buffer */
+/** Initializes an RenderHostView with a frame and 0-bit depth buffer, and a RGB565 color buffer */
 - (id)initWithFrame:(CGRect)frame;  // These also set the current context
-/** Initializes an EARenderView with a frame, a color buffer format, and 0-bit depth buffer */
+/** Initializes an RenderHostView with a frame, a color buffer format, and 0-bit depth buffer */
 - (id)initWithFrame:(CGRect)frame pixelFormat:(int)format;
 /** Initializes an EARenderView with a frame, a color buffer format, a depth buffer format, a sharegroup and
  * multisampling support */
@@ -118,8 +118,8 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 /** depth format of the render buffer: 0, 16 or 24 bits*/
 @property(nonatomic, readonly) int depthFormat;
 
-/** returns surface size in pixels */
-@property(nonatomic, readonly) CGSize surfaceSize;
+/** returns backing buffer size in pixels */
+@property(nonatomic, readonly) CGSize backingSize;
 
 #if AX_GLES_PROFILE
 /** OpenGL context */
@@ -129,7 +129,7 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 @property(nonatomic, readwrite) BOOL multiSampling;
 @property(nonatomic, readonly) BOOL isKeyboardShown;
 
-/** EARenderView uses double-buffer. This method swaps the buffers */
+/** RenderHostView uses double-buffer. This method swaps the buffers */
 - (void)swapBuffers;
 
 - (CGRect)convertRectFromViewToSurface:(CGRect)rect;

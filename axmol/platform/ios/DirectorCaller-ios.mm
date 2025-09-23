@@ -32,7 +32,7 @@
 #import <OpenGLES/EAGL.h>
 
 #import "axmol/base/Director.h"
-#import "axmol/platform/ios/EARenderView-ios.h"
+#import "axmol/platform/ios/RenderHostView-ios.h"
 
 static id s_sharedDirectorCaller;
 
@@ -140,7 +140,7 @@ static id s_sharedDirectorCaller;
     {
         ax::Director* director = ax::Director::getInstance();
 #if AX_GLES_PROFILE
-        EAGLContext* context = [(__bridge EARenderView*)director->getRenderView()->getNativeDisplay() context];
+        EAGLContext* context = [(__bridge RenderHostView*)director->getRenderView()->getNativeDisplay() context];
         if (context != [EAGLContext currentContext])
             glFlush();
 

@@ -30,7 +30,7 @@
 #import "axmol/ui/UIEditBox/iOS/UISingleLineTextField.h"
 #import "axmol/ui/UIEditBox/iOS/UIMultilineTextField.h"
 
-#import "axmol/platform/ios/EARenderView-ios.h"
+#import "axmol/platform/ios/RenderHostView-ios.h"
 #include "axmol/base/Director.h"
 
 #define getEditBoxImplIOS() ((ax::ui::EditBoxImplIOS*)_editBox)
@@ -319,10 +319,10 @@
 
 - (void)doAnimationWhenKeyboardMoveWithDuration:(float)duration distance:(float)distance
 {
-    auto view            = ax::Director::getInstance()->getRenderView();
-    EARenderView* eaView = (__bridge EARenderView*)view->getNativeDisplay();
+    auto view     = ax::Director::getInstance()->getRenderView();
+    auto hostView = (__bridge RenderHostView*)view->getNativeDisplay();
 
-    [eaView doAnimationWhenKeyboardMoveWithDuration:duration distance:distance];
+    [hostView doAnimationWhenKeyboardMoveWithDuration:duration distance:distance];
 }
 
 - (void)updateFrame:(CGRect)rect
@@ -336,10 +336,10 @@
 
 - (void)openKeyboard
 {
-    auto view            = ax::Director::getInstance()->getRenderView();
-    EARenderView* eaView = (__bridge EARenderView*)view->getNativeDisplay();
+    auto view     = ax::Director::getInstance()->getRenderView();
+    auto hostView = (__bridge RenderHostView*)view->getNativeDisplay();
 
-    [eaView addSubview:self.textInput];
+    [hostView addSubview:self.textInput];
     [self.textInput becomeFirstResponder];
 }
 
@@ -361,10 +361,10 @@
 
 - (void)animationSelector
 {
-    auto view            = ax::Director::getInstance()->getRenderView();
-    EARenderView* eaView = (__bridge EARenderView*)view->getNativeDisplay();
+    auto view     = ax::Director::getInstance()->getRenderView();
+    auto hostView = (__bridge RenderHostView*)view->getNativeDisplay();
 
-    [eaView doAnimationWhenAnotherEditBeClicked];
+    [hostView doAnimationWhenAnotherEditBeClicked];
 }
 
 #pragma mark - UITextView delegate methods
@@ -375,10 +375,10 @@
     _editState     = YES;
     _returnPressed = NO;
 
-    auto view            = ax::Director::getInstance()->getRenderView();
-    EARenderView* eaView = (__bridge EARenderView*)view->getNativeDisplay();
+    auto view     = ax::Director::getInstance()->getRenderView();
+    auto hostView = (__bridge RenderHostView*)view->getNativeDisplay();
 
-    if ([eaView isKeyboardShown])
+    if ([hostView isKeyboardShown])
     {
         [self performSelector:@selector(animationSelector) withObject:nil afterDelay:0.0f];
     }
@@ -468,10 +468,10 @@
     _editState     = YES;
     _returnPressed = NO;
 
-    auto view            = ax::Director::getInstance()->getRenderView();
-    EARenderView* eaView = (__bridge EARenderView*)view->getNativeDisplay();
+    auto view     = ax::Director::getInstance()->getRenderView();
+    auto hostView = (__bridge RenderHostView*)view->getNativeDisplay();
 
-    if ([eaView isKeyboardShown])
+    if ([hostView isKeyboardShown])
     {
         [self performSelector:@selector(animationSelector) withObject:nil afterDelay:0.0f];
     }

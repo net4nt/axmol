@@ -32,7 +32,7 @@
 #include "axmol/renderer/Renderer.h"
 #include "axmol/base/Director.h"
 #include "axmol/platform/RenderView.h"
-#include "axmol/platform/ios/EARenderView-ios.h"
+#include "axmol/platform/ios/RenderHostView-ios.h"
 #include "axmol/platform/FileUtils.h"
 
 @interface UIWebViewWrapper : NSObject
@@ -132,9 +132,9 @@
     }
     if (!self.wkWebView.superview)
     {
-        auto view   = ax::Director::getInstance()->getRenderView();
-        auto eaView = (__bridge EARenderView*)view->getNativeDisplay();
-        [eaView addSubview:self.wkWebView];
+        auto view     = ax::Director::getInstance()->getRenderView();
+        auto hostView = (__bridge RenderHostView*)view->getNativeDisplay();
+        [hostView addSubview:self.wkWebView];
     }
 }
 
@@ -503,7 +503,7 @@ void WebViewImpl::draw(ax::Renderer* renderer, ax::Mat4 const& transform, uint32
         auto renderView = director->getRenderView();
         auto windowSize = renderView->getWindowSize();
 
-        auto scaleFactor = [static_cast<EARenderView*>(renderView->getNativeDisplay()) contentScaleFactor];
+        auto scaleFactor = [static_cast<RenderHostView*>(renderView->getNativeDisplay()) contentScaleFactor];
 
         auto logicalSize = director->getLogicalSize();
 
