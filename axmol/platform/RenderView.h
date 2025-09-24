@@ -458,7 +458,7 @@ public:
      * - On desktop platforms, `_windowSize` is only initialized to `_renderSize` if it hasn't been set yet;
      * - If `_designResolutionSize` is unset (`Vec2::ZERO`), it is initialized to `_renderSize`;
      * - Calls `updateDesignResolution()` to recalculate `_viewScale` and `_viewportRect` based on the current
-     *   `ResolutionPolicy`, and updates the Director's logical size and projection matrix accordingly.
+     *   `ResolutionPolicy`, and updates the Director's canvas size and projection matrix accordingly.
      *
      * @param width      The target width of the render surface. Its meaning depends on `updateFlag`:
      *                   it may represent the framebuffer width, logical window width, or design resolution width.

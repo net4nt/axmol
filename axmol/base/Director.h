@@ -660,7 +660,7 @@ protected:
     /* projection used */
     Projection _projection = Projection::DEFAULT;
 
-    /* logical size in points */
+    /* canvas size in points */
     Vec2 _canvasSizeInPoints = Vec2::ZERO;
 
     /* content scale factor */

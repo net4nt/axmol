@@ -405,7 +405,7 @@ void Director::setRenderView(RenderView* renderView)
         _renderView = renderView;
         _renderView->retain();
 
-        // set logical size equals to designResolutionSize
+        // set canvas size equals to designResolutionSize
         setCanvasSize(_renderView->getDesignResolutionSize());
 
         _renderer->init();
