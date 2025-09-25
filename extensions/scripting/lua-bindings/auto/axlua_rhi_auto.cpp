@@ -1688,57 +1688,6 @@ int lua_ax_rhi_Texture_updateSamplerDesc(lua_State* tolua_S)
 
     return 0;
 }
-int lua_ax_rhi_Texture_updateTextureDesc(lua_State* tolua_S)
-{
-    int argc = 0;
-    ax::rhi::Texture* obj = nullptr;
-    bool ok  = true;
-
-#if _AX_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if _AX_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"axrhi.Texture",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    obj = (ax::rhi::Texture*)tolua_tousertype(tolua_S,1,0);
-
-#if _AX_DEBUG >= 1
-    if (!obj)
-    {
-        tolua_error(tolua_S,"invalid 'obj' in function 'lua_ax_rhi_Texture_updateTextureDesc'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 1)
-    {
-        ax::rhi::TextureDesc arg0;
-
-        #pragma warning NO CONVERSION TO NATIVE FOR TextureDesc
-        ok = false;
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_ax_rhi_Texture_updateTextureDesc'", nullptr);
-            return 0;
-        }
-        obj->updateTextureDesc(arg0);
-        lua_settop(tolua_S, 1);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "axrhi.Texture:updateTextureDesc",argc, 1);
-    return 0;
-
-#if _AX_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_ax_rhi_Texture_updateTextureDesc'.",&tolua_err);
-#endif
-
-    return 0;
-}
 int lua_ax_rhi_Texture_getPixelFormat(lua_State* tolua_S)
 {
     int argc = 0;
@@ -2207,53 +2156,6 @@ int lua_ax_rhi_Texture_updateFaceData(lua_State* tolua_S)
 
     return 0;
 }
-int lua_ax_rhi_Texture_invalidate(lua_State* tolua_S)
-{
-    int argc = 0;
-    ax::rhi::Texture* obj = nullptr;
-    bool ok  = true;
-
-#if _AX_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if _AX_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"axrhi.Texture",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    obj = (ax::rhi::Texture*)tolua_tousertype(tolua_S,1,0);
-
-#if _AX_DEBUG >= 1
-    if (!obj)
-    {
-        tolua_error(tolua_S,"invalid 'obj' in function 'lua_ax_rhi_Texture_invalidate'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 0)
-    {
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_ax_rhi_Texture_invalidate'", nullptr);
-            return 0;
-        }
-        obj->invalidate();
-        lua_settop(tolua_S, 1);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "axrhi.Texture:invalidate",argc, 0);
-    return 0;
-
-#if _AX_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_ax_rhi_Texture_invalidate'.",&tolua_err);
-#endif
-
-    return 0;
-}
 int lua_ax_rhi_Texture_shouldGenMipmaps(lua_State* tolua_S)
 {
     int argc = 0;
@@ -2315,53 +2217,6 @@ int lua_ax_rhi_Texture_shouldGenMipmaps(lua_State* tolua_S)
 
     return 0;
 }
-int lua_ax_rhi_Texture_zeroTexData(lua_State* tolua_S)
-{
-    int argc = 0;
-    ax::rhi::Texture* obj = nullptr;
-    bool ok  = true;
-
-#if _AX_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if _AX_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"axrhi.Texture",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    obj = (ax::rhi::Texture*)tolua_tousertype(tolua_S,1,0);
-
-#if _AX_DEBUG >= 1
-    if (!obj)
-    {
-        tolua_error(tolua_S,"invalid 'obj' in function 'lua_ax_rhi_Texture_zeroTexData'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 0)
-    {
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_ax_rhi_Texture_zeroTexData'", nullptr);
-            return 0;
-        }
-        obj->zeroTexData();
-        lua_settop(tolua_S, 1);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "axrhi.Texture:zeroTexData",argc, 0);
-    return 0;
-
-#if _AX_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_ax_rhi_Texture_zeroTexData'.",&tolua_err);
-#endif
-
-    return 0;
-}
 static int lua_ax_rhi_Texture_finalize(lua_State* tolua_S)
 {
     AXLOGV("luabindings: finalizing LUA object (Texture)");
@@ -2375,7 +2230,6 @@ int lua_register_ax_rhi_Texture(lua_State* tolua_S)
 
     tolua_beginmodule(tolua_S,"Texture");
         tolua_function(tolua_S,"updateSamplerDesc",lua_ax_rhi_Texture_updateSamplerDesc);
-        tolua_function(tolua_S,"updateTextureDesc",lua_ax_rhi_Texture_updateTextureDesc);
         tolua_function(tolua_S,"getPixelFormat",lua_ax_rhi_Texture_getPixelFormat);
         tolua_function(tolua_S,"getTextureUsage",lua_ax_rhi_Texture_getTextureUsage);
         tolua_function(tolua_S,"getTextureType",lua_ax_rhi_Texture_getTextureType);
@@ -2385,9 +2239,7 @@ int lua_register_ax_rhi_Texture(lua_State* tolua_S)
         tolua_function(tolua_S,"updateData",lua_ax_rhi_Texture_updateData);
         tolua_function(tolua_S,"updateSubData",lua_ax_rhi_Texture_updateSubData);
         tolua_function(tolua_S,"updateFaceData",lua_ax_rhi_Texture_updateFaceData);
-        tolua_function(tolua_S,"invalidate",lua_ax_rhi_Texture_invalidate);
         tolua_function(tolua_S,"shouldGenMipmaps",lua_ax_rhi_Texture_shouldGenMipmaps);
-        tolua_function(tolua_S,"zeroTexData",lua_ax_rhi_Texture_zeroTexData);
     tolua_endmodule(tolua_S);
     auto typeName = typeid(ax::rhi::Texture).name(); // rtti is literal storage
     g_luaType[reinterpret_cast<uintptr_t>(typeName)] = "axrhi.Texture";

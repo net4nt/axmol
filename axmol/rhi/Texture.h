@@ -54,7 +54,7 @@ public:
      * Update texture description.
      * @param descriptor Specifies texture and sampler descriptor.
      */
-    virtual void updateTextureDesc(const TextureDesc& desc);
+    [[internal]] virtual void updateTextureDesc(const TextureDesc& desc);
 
     /**
      * Get texture format.
@@ -153,7 +153,7 @@ public:
      */
     virtual void updateFaceData(TextureCubeFace side, const void* data) = 0;
 
-    virtual void invalidate();
+    [[internal]] virtual void invalidate();
 
     bool shouldGenMipmaps(int level = 0) const { return _desc.mipLevels == 0 && level == 0 && !_overrideMipLevels; }
 
@@ -161,7 +161,7 @@ public:
      * clear texture data to zero.
      * @remark: only works for uncompressed texture.
      */
-    void zeroTexData();
+    [[internal]] void zeroTexData();
 
 protected:
     /**
