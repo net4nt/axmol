@@ -1875,6 +1875,15 @@ if (!$setupOnly) {
     $SOURCE_DIR = $null
 
     function resolve_out_dir($prefix) {
+        if ($prefix.EndsWith('/') -or $prefix.EndsWith('\')) {
+          if ($is_host_target) {
+            return $1k.realpath("$prefix$TARGET_CPU/")
+          }
+          else {
+              return $1k.realpath("$prefix${TARGET_OS}_$TARGET_CPU/")
+          }
+        }
+        
         if ($is_host_target) {
             if (!$is_host_cpu) {
                 $out_dir = "${prefix}${TARGET_CPU}"
@@ -2246,7 +2255,6 @@ if (!$setupOnly) {
         Write-Output ("gn_buildargs_overrides=$gn_buildargs_overrides, Count={0}" -f $gn_buildargs_overrides.Count)
 
         $BUILD_DIR = resolve_out_dir 'out/'
-
         if ($rebuild) {
             $1k.rmdirs($BUILD_DIR)
         }
