@@ -22,6 +22,7 @@
 - Fix `ui::MediaPlayer` may crash on Apple platforms by @halx99 in [#2704](https://github.com/axmolengine/axmol/pull/2704)
 - Fix occasional missing Android assets in AAB build by @paulocoutinhox in [#2713](https://github.com/axmolengine/axmol/pull/2713)
 - Fix format specifiers in logging calls by @rh101 in [#2749](https://github.com/axmolengine/axmol/pull/2749)
+- Fix for crash when director is reset during scene transition by @halx99 [#2802](https://github.com/axmolengine/axmol/pull/2802)
 
 
 ## Improvements
@@ -37,6 +38,8 @@
 - Remove CI pull-request trigger event: `ready_for_review` by @halx99
 - Update kcp to resolve cmake error by @halx99
 - Dispatch applicationScreenSizeChanged when layoutSubviews on ios by @halx99
+- Rename internal ios class: EARenderView => RenderHostView by @halx99
+- Make Director::getRunningScene() return the expected result for any type of scene switch when called from Node::onEnter() by @rh101 in [#2799](https://github.com/axmolengine/axmol/pull/2799)
 
 ## SDK & Tools updates
 
