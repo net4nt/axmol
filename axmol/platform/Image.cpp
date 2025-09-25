@@ -116,7 +116,7 @@ struct dirent* readdir$INODE64(DIR* dir)
 #include "axmol/base/astc.h"
 
 #if AX_USE_WEBP
-#    include "decode.h"
+#    include "webp/decode.h"
 #endif  // AX_USE_WEBP
 
 #include "axmol/base/Macros.h"
