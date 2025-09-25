@@ -22,6 +22,7 @@
 #pragma once
 
 #include "fmt/format.h"
+#include <iterator>
 
 namespace fmt
 {
