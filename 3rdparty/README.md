@@ -114,7 +114,7 @@
 ## lua
 - plainlua
   - [![Upstream](https://img.shields.io/github/v/release/lua/lua?label=Upstream)](https://github.com/lua/lua) http://www.lua.org/
-  - Version: 5.4.8
+  - Version: 5.5.0-beta
   - License: MIT (http://www.lua.org/license.html)
   
 - sol2
