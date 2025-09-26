@@ -228,6 +228,12 @@ private:
 
     const Uri& getRequestUri() const { return _requestUri; }
 
+    void finish()
+    {
+        if (!_finished)
+            llhttp_finish(&_context);
+    }
+
     static int on_status(llhttp_t* context, const char* at, size_t length)
     {
         auto thiz = (HttpResponse*)context->data;
@@ -294,8 +300,7 @@ protected:
 
 }  // namespace network
 
-}
+}  // namespace ax
 
 // end group
 /// @}
-

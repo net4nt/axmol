@@ -390,6 +390,7 @@ void HttpClient::handleNetworkEvent(yasio::io_event* event)
         }
         break;
     case YEK_ON_CLOSE:
+        response->finish();
         handleNetworkEOF(response, channel, event->status());
         break;
     }
