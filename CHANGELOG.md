@@ -1,4 +1,4 @@
-# axmol-2.9.0 ?? 2025
+# axmol-2.9.0 Oct.5 2025
 
 ## Significant changes relative to 2.8.x:
 
@@ -27,6 +27,7 @@
 
 ## Improvements
 
+- Add Http setDataCallback for streaming data support by @halx99 in [#2805](https://github.com/axmolengine/axmol/pull/2805)
 - Improve ios EditBox orientation handling with keyboard by @halx99 in [#2791](https://github.com/axmolengine/axmol/pull/2791) and [#2795](https://github.com/axmolengine/axmol/pull/2795)
 - Add support for extracting the previous scene from the scene stack by @rh101 in [#2793](https://github.com/axmolengine/axmol/pull/2793)
 - Destroy `ScriptEngine` instance before `_scheduler` to respect dependency by @halx99
