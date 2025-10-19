@@ -49,22 +49,6 @@
 namespace ax
 {
 
-namespace
-{
-std::string replaceDefines(std::string_view compileTimeDefines)
-{
-    std::stringstream ss;
-    axstd::split_cb(compileTimeDefines, ';', [&ss](const char* start, const char* end) {
-        std::string_view p{start, static_cast<size_t>(end - start)};
-        if (p.find("#define ") == std::string_view::npos)
-            ss << "#define " << p << std::endl;
-        else
-            ss << p << std::endl;
-    });
-    return ss.str();
-}
-}  // namespace
-
 // Helpers declaration
 static const char* getOptionalString(Properties* properties, const char* key, const char* defaultValue);
 static bool isValidUniform(const char* name);
