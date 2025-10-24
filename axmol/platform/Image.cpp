@@ -30,6 +30,7 @@ THE SOFTWARE.
 
 #include <string>
 #include <ctype.h>
+#include <algorithm>
 
 #include "axmol/tlx/utility.hpp"
 #include "axmol/base/Config.h"  // AX_USE_JPEG, AX_USE_WEBP
@@ -186,38 +187,51 @@ enum class PVR2TexturePixelFormat : uint8_t
 // v3
 enum class PVR3TexturePixelFormat : uint64_t
 {
-    PVRTC2BPP_RGB     = 0ULL,
-    PVRTC2BPP_RGBA    = 1ULL,
-    PVRTC4BPP_RGB     = 2ULL,
-    PVRTC4BPP_RGBA    = 3ULL,
-    PVRTC2_2BPP_RGBA  = 4ULL,
-    PVRTC2_4BPP_RGBA  = 5ULL,
-    ETC1              = 6ULL,
-    DXT1              = 7ULL,
-    DXT2              = 8ULL,
-    DXT3              = 9ULL,
-    DXT4              = 10ULL,
-    DXT5              = 11ULL,
-    BC1               = 7ULL,
-    BC2               = 9ULL,
-    BC3               = 11ULL,
-    BC4               = 12ULL,
-    BC5               = 13ULL,
-    BC6               = 14ULL,
-    BC7               = 15ULL,
-    UYVY              = 16ULL,
-    YUY2              = 17ULL,
-    BW1bpp            = 18ULL,
-    R9G9B9E5          = 19ULL,
-    RGBG8888          = 20ULL,
-    GRGB8888          = 21ULL,
-    ETC2_RGB          = 22ULL,
-    ETC2_RGBA         = 23ULL,
-    ETC2_RGBA1        = 24ULL,
-    EAC_R11_Unsigned  = 25ULL,
-    EAC_R11_Signed    = 26ULL,
-    EAC_RG11_Unsigned = 27ULL,
-    EAC_RG11_Signed   = 28ULL,
+    PVRTC2BPP_RGB    = 0ULL,
+    PVRTC2BPP_RGBA   = 1ULL,
+    PVRTC4BPP_RGB    = 2ULL,
+    PVRTC4BPP_RGBA   = 3ULL,
+    PVRTC2_2BPP_RGBA = 4ULL,
+    PVRTC2_4BPP_RGBA = 5ULL,
+    ETC1             = 6ULL,
+    DXT1             = 7ULL,
+    DXT2             = 8ULL,
+    DXT3             = 9ULL,
+    DXT4             = 10ULL,
+    DXT5             = 11ULL,
+    BC1              = 7ULL,
+    BC2              = 9ULL,
+    BC3              = 11ULL,
+    BC4              = 12ULL,
+    BC5              = 13ULL,
+    BC6              = 14ULL,
+    BC7              = 15ULL,
+    UYVY             = 16ULL,
+    YUY2             = 17ULL,
+    BW1bpp           = 18ULL,
+    R9G9B9E5         = 19ULL,
+    RGBG8888         = 20ULL,
+    GRGB8888         = 21ULL,
+    ETC2_RGB         = 22ULL,
+    ETC2_RGBA        = 23ULL,
+    ETC2_RGBA1       = 24ULL,
+    EAC_R11          = 25ULL,
+    EAC_RG11         = 26ULL,
+
+    ASTC_4x4   = 27ULL,
+    ASTC_5x4   = 28ULL,
+    ASTC_5x5   = 29ULL,
+    ASTC_6x5   = 30ULL,
+    ASTC_6x6   = 31ULL,
+    ASTC_8x5   = 32ULL,
+    ASTC_8x6   = 33ULL,
+    ASTC_8x8   = 34ULL,
+    ASTC_10x5  = 35ULL,
+    ASTC_10x6  = 36ULL,
+    ASTC_10x8  = 37ULL,
+    ASTC_10x10 = 38ULL,
+    ASTC_12x10 = 39ULL,
+    ASTC_12x12 = 40ULL,
 
     BGRA8888 = 0x0808080861726762ULL,
     RGBA8888 = 0x0808080861626772ULL,
@@ -273,6 +287,21 @@ static _pixel3_formathash::value_type v3_pixel_formathash_value[] = {
     _pixel3_formathash::value_type(PVR3TexturePixelFormat::ETC1, rhi::PixelFormat::ETC1),
     _pixel3_formathash::value_type(PVR3TexturePixelFormat::ETC2_RGB, rhi::PixelFormat::ETC2_RGB),
     _pixel3_formathash::value_type(PVR3TexturePixelFormat::ETC2_RGBA, rhi::PixelFormat::ETC2_RGBA),
+
+    _pixel3_formathash::value_type(PVR3TexturePixelFormat::ASTC_4x4, rhi::PixelFormat::ASTC4x4),
+    _pixel3_formathash::value_type(PVR3TexturePixelFormat::ASTC_5x4, rhi::PixelFormat::ASTC5x4),
+    _pixel3_formathash::value_type(PVR3TexturePixelFormat::ASTC_5x5, rhi::PixelFormat::ASTC5x5),
+    _pixel3_formathash::value_type(PVR3TexturePixelFormat::ASTC_6x5, rhi::PixelFormat::ASTC6x5),
+    _pixel3_formathash::value_type(PVR3TexturePixelFormat::ASTC_6x6, rhi::PixelFormat::ASTC6x6),
+    _pixel3_formathash::value_type(PVR3TexturePixelFormat::ASTC_8x5, rhi::PixelFormat::ASTC8x5),
+    _pixel3_formathash::value_type(PVR3TexturePixelFormat::ASTC_8x6, rhi::PixelFormat::ASTC8x6),
+    _pixel3_formathash::value_type(PVR3TexturePixelFormat::ASTC_8x8, rhi::PixelFormat::ASTC8x8),
+    _pixel3_formathash::value_type(PVR3TexturePixelFormat::ASTC_10x5, rhi::PixelFormat::ASTC10x5),
+    _pixel3_formathash::value_type(PVR3TexturePixelFormat::ASTC_10x6, rhi::PixelFormat::ASTC10x6),
+    _pixel3_formathash::value_type(PVR3TexturePixelFormat::ASTC_10x8, rhi::PixelFormat::ASTC10x8),
+    _pixel3_formathash::value_type(PVR3TexturePixelFormat::ASTC_10x10, rhi::PixelFormat::ASTC10x10),
+    _pixel3_formathash::value_type(PVR3TexturePixelFormat::ASTC_12x10, rhi::PixelFormat::ASTC12x10),
+    _pixel3_formathash::value_type(PVR3TexturePixelFormat::ASTC_12x12, rhi::PixelFormat::ASTC12x12),
 };
 
 static const int PVR3_MAX_TABLE_ELEMENTS = sizeof(v3_pixel_formathash_value) / sizeof(v3_pixel_formathash_value[0]);
@@ -480,6 +509,23 @@ static rhi::PixelFormat getDevicePVRPixelFormat(rhi::PixelFormat format)
             return rhi::PixelFormat::ETC2_RGB;
         else
             return rhi::PixelFormat::RGBA8;
+
+    case rhi::PixelFormat::ASTC4x4:
+    case rhi::PixelFormat::ASTC5x4:
+    case rhi::PixelFormat::ASTC5x5:
+    case rhi::PixelFormat::ASTC6x5:
+    case rhi::PixelFormat::ASTC6x6:
+    case rhi::PixelFormat::ASTC8x5:
+    case rhi::PixelFormat::ASTC8x6:
+    case rhi::PixelFormat::ASTC8x8:
+    case rhi::PixelFormat::ASTC10x5:
+    case rhi::PixelFormat::ASTC10x6:
+    case rhi::PixelFormat::ASTC10x8:
+    case rhi::PixelFormat::ASTC10x10:
+    case rhi::PixelFormat::ASTC12x10:
+    case rhi::PixelFormat::ASTC12x12:
+        return Configuration::getInstance()->supportsASTC() ? format : rhi::PixelFormat::RGBA8;
+
     default:
         return format;
     }
@@ -521,6 +567,22 @@ bool testFormatForPvr3TCSupport(PVR3TexturePixelFormat format)
     case PVR3TexturePixelFormat::L8:
     case PVR3TexturePixelFormat::LA88:
         return true;
+
+    case PVR3TexturePixelFormat::ASTC_4x4:
+    case PVR3TexturePixelFormat::ASTC_5x4:
+    case PVR3TexturePixelFormat::ASTC_5x5:
+    case PVR3TexturePixelFormat::ASTC_6x5:
+    case PVR3TexturePixelFormat::ASTC_6x6:
+    case PVR3TexturePixelFormat::ASTC_8x5:
+    case PVR3TexturePixelFormat::ASTC_8x6:
+    case PVR3TexturePixelFormat::ASTC_8x8:
+    case PVR3TexturePixelFormat::ASTC_10x5:
+    case PVR3TexturePixelFormat::ASTC_10x6:
+    case PVR3TexturePixelFormat::ASTC_10x8:
+    case PVR3TexturePixelFormat::ASTC_10x10:
+    case PVR3TexturePixelFormat::ASTC_12x10:
+    case PVR3TexturePixelFormat::ASTC_12x12:
+        return Configuration::getInstance()->supportsASTC();
 
     default:
         return false;
@@ -797,7 +859,7 @@ bool Image::isEtc1(const uint8_t* data, ssize_t /*dataLen*/)
     return !!etc1_pkm_is_valid((etc1_byte*)data);
 }
 
-bool Image::isEtc2(const uint8_t* data, ssize_t dataLen)
+bool Image::isEtc2(const uint8_t* data, ssize_t /*dataLen*/)
 {
     return !!etc2_pkm_is_valid((etc2_byte*)data);
 }
@@ -846,7 +908,7 @@ bool Image::isWebp(const uint8_t* data, ssize_t dataLen)
 
 bool Image::isPvr(const uint8_t* data, ssize_t dataLen)
 {
-    if (static_cast<size_t>(dataLen) < sizeof(PVRv2TexHeader) || static_cast<size_t>(dataLen) < sizeof(PVRv3TexHeader))
+    if (static_cast<size_t>(dataLen) < std::max(sizeof(PVRv2TexHeader), sizeof(PVRv3TexHeader)))
     {
         return false;
     }
@@ -1599,6 +1661,7 @@ bool Image::initWithPVRv2Data(uint8_t* data, ssize_t dataLen, bool ownData)
                 AXLOGD("Image. BGRA8888 not supported on this device");
                 return false;
             }
+            [[fallthrough]];
         default:
             blockSize    = 1;
             widthBlocks  = width;
@@ -1787,6 +1850,130 @@ bool Image::initWithPVRv3Data(uint8_t* data, ssize_t dataLen, bool ownData)
                 AXLOGW("Image. BGRA8888 not supported on this device");
                 return false;
             }
+            blockSize    = 1;
+            widthBlocks  = width;
+            heightBlocks = height;
+            break;
+
+        case PVR3TexturePixelFormat::ASTC_4x4:
+        case PVR3TexturePixelFormat::ASTC_5x4:
+        case PVR3TexturePixelFormat::ASTC_5x5:
+        case PVR3TexturePixelFormat::ASTC_6x5:
+        case PVR3TexturePixelFormat::ASTC_6x6:
+        case PVR3TexturePixelFormat::ASTC_8x5:
+        case PVR3TexturePixelFormat::ASTC_8x6:
+        case PVR3TexturePixelFormat::ASTC_8x8:
+        case PVR3TexturePixelFormat::ASTC_10x5:
+        case PVR3TexturePixelFormat::ASTC_10x6:
+        case PVR3TexturePixelFormat::ASTC_10x8:
+        case PVR3TexturePixelFormat::ASTC_10x10:
+        case PVR3TexturePixelFormat::ASTC_12x10:
+        case PVR3TexturePixelFormat::ASTC_12x12:
+        {
+
+            if (!(_hasPremultipliedAlpha) && !(flags & (unsigned)PVR3TextureFlag::PremultipliedAlpha))
+            {
+                _hasPremultipliedAlpha = isCompressedImageHavePMA(CompressedImagePMAFlag::ASTC);
+            }
+
+            int bx = 4, by = 4;
+            switch ((PVR3TexturePixelFormat)pixelFormat)
+            {
+            case PVR3TexturePixelFormat::ASTC_4x4:
+                bx = 4;
+                by = 4;
+                break;
+            case PVR3TexturePixelFormat::ASTC_5x4:
+                bx = 5;
+                by = 4;
+                break;
+            case PVR3TexturePixelFormat::ASTC_5x5:
+                bx = 5;
+                by = 5;
+                break;
+            case PVR3TexturePixelFormat::ASTC_6x5:
+                bx = 6;
+                by = 5;
+                break;
+            case PVR3TexturePixelFormat::ASTC_6x6:
+                bx = 6;
+                by = 6;
+                break;
+            case PVR3TexturePixelFormat::ASTC_8x5:
+                bx = 8;
+                by = 5;
+                break;
+            case PVR3TexturePixelFormat::ASTC_8x6:
+                bx = 8;
+                by = 6;
+                break;
+            case PVR3TexturePixelFormat::ASTC_8x8:
+                bx = 8;
+                by = 8;
+                break;
+            case PVR3TexturePixelFormat::ASTC_10x5:
+                bx = 10;
+                by = 5;
+                break;
+            case PVR3TexturePixelFormat::ASTC_10x6:
+                bx = 10;
+                by = 6;
+                break;
+            case PVR3TexturePixelFormat::ASTC_10x8:
+                bx = 10;
+                by = 8;
+                break;
+            case PVR3TexturePixelFormat::ASTC_10x10:
+                bx = 10;
+                by = 10;
+                break;
+            case PVR3TexturePixelFormat::ASTC_12x10:
+                bx = 12;
+                by = 10;
+                break;
+            case PVR3TexturePixelFormat::ASTC_12x12:
+                bx = 12;
+                by = 12;
+                break;
+            default:
+                break;
+            }
+
+            const bool hw =
+                Configuration::getInstance()->supportsASTC() &&
+                (v3_pixel_formathash.find((PVR3TexturePixelFormat)pixelFormat) != v3_pixel_formathash.end());
+
+            int wBlocks = (width + bx - 1) / bx;
+            int hBlocks = (height + by - 1) / by;
+            dataSize    = wBlocks * hBlocks * 16;
+
+            if (hw)
+            {
+
+                _mipmaps[i].data     = pixelData + dataOffset;
+                _mipmaps[i].dataSize = dataSize;
+            }
+            else
+            {
+
+                _unpack              = true;
+                _mipmaps[i].dataSize = width * height * 4;
+                _mipmaps[i].data     = (uint8_t*)malloc(_mipmaps[i].dataSize);
+                if (AX_UNLIKELY(astc_decompress_image(pixelData + dataOffset, dataSize,
+                                                      static_cast<uint8_t*>(_mipmaps[i].data), width, height, bx,
+                                                      by) != 0))
+                    return false;
+                _pixelFormat = rhi::PixelFormat::RGBA8;
+                dataSize     = ((width + bx - 1) / bx) * ((height + by - 1) / by) * 16;
+            }
+
+            dataOffset += dataSize;
+            AXASSERT(dataOffset <= pixelLen, "Image: Invalid length");
+            width  = MAX(width >> 1, 1);
+            height = MAX(height >> 1, 1);
+            continue;
+        }
+
         default:
             blockSize    = 1;
             widthBlocks  = width;
@@ -1993,9 +2180,17 @@ bool Image::initWithASTCData(uint8_t* data, ssize_t dataLen, bool ownData)
             {
                 _pixelFormat = rhi::PixelFormat::ASTC4x4;
             }
+            else if (block_x == 5 && block_y == 4)
+            {
+                _pixelFormat = rhi::PixelFormat::ASTC5x4;
+            }
             else if (block_x == 5 && block_y == 5)
             {
                 _pixelFormat = rhi::PixelFormat::ASTC5x5;
+            }
+            else if (block_x == 6 && block_y == 5)
+            {
+                _pixelFormat = rhi::PixelFormat::ASTC6x5;
             }
             else if (block_x == 6 && block_y == 6)
             {
@@ -2016,6 +2211,26 @@ bool Image::initWithASTCData(uint8_t* data, ssize_t dataLen, bool ownData)
             else if (block_x == 10 && block_y == 5)
             {
                 _pixelFormat = rhi::PixelFormat::ASTC10x5;
+            }
+            else if (block_x == 10 && block_y == 6)
+            {
+                _pixelFormat = rhi::PixelFormat::ASTC10x6;
+            }
+            else if (block_x == 10 && block_y == 8)
+            {
+                _pixelFormat = rhi::PixelFormat::ASTC10x8;
+            }
+            else if (block_x == 10 && block_y == 10)
+            {
+                _pixelFormat = rhi::PixelFormat::ASTC10x10;
+            }
+            else if (block_x == 12 && block_y == 10)
+            {
+                _pixelFormat = rhi::PixelFormat::ASTC12x10;
+            }
+            else if (block_x == 12 && block_y == 12)
+            {
+                _pixelFormat = rhi::PixelFormat::ASTC12x12;
             }
 
             forwardPixels(data, dataLen, ASTC_HEAD_SIZE, ownData);
@@ -2619,7 +2834,7 @@ void Image::premultiplyAlpha()
 {
 #if AX_ENABLE_PREMULTIPLIED_ALPHA
     AXASSERT((_pixelFormat == rhi::PixelFormat::RGBA8) || (_pixelFormat == rhi::PixelFormat::RG8),
-             "The pixel format should be RGBA8888 or RG88.");
+             "The pixel format should be RGBA8888 or RG8.");
 
     if (_pixelFormat == rhi::PixelFormat::RGBA8)
     {

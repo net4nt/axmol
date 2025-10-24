@@ -2516,6 +2516,9 @@ const Vec2& Label::getContentSize() const
 {
     if (_systemFontDirty || _contentDirty)
     {
+        if (_overflow == Overflow::SHRINK && this->getRenderingFontSize() < _originalFontSize)
+            const_cast<Label*>(this)->rescaleWithOriginalFontSize();
+
         const_cast<Label*>(this)->updateContent();
     }
     return _contentSize;
