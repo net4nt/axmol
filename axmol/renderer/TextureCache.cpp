@@ -356,7 +356,7 @@ void TextureCache::addImageAsyncCallBack(float /*dt*/)
 
                 if (task->imageAlpha.getFileType() != Image::Format::ETC1)
                 {
-                    texture->initWithImage(image, task->pixelFormat);
+                    texture->initWithImage(image, task->pixelFormat, task->autoGenMipmaps);
                 }
                 else
                 {
