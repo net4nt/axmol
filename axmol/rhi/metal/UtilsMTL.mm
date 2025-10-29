@@ -109,6 +109,7 @@ static GPUTextureFormatInfo s_textureFormats[] = {
     {MTLPixelFormatInvalid, MTLPixelFormatInvalid},  // ASTC12x12
 #endif
 
+
     /* normal */
     {MTLPixelFormatRGBA8Unorm, MTLPixelFormatRGBA8Unorm_sRGB},    // RGBA8
     {MTLPixelFormatBGRA8Unorm, MTLPixelFormatBGRA8Unorm_sRGB},    // BGRA8
