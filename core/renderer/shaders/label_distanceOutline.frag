@@ -19,6 +19,7 @@ layout(binding = 0) uniform sampler2D u_tex0;
 layout(std140) uniform fs_ub {
     vec4 u_textColor;
     vec4 u_effectColor;
+    int u_effectType; // 0 = text+outline, 2 = shadow
 };
 
 layout(location = SV_Target0) out vec4 FragColor;
@@ -27,12 +28,21 @@ void main()
 {
     float dist = texture(u_tex0, v_texCoord).x;
     float smoothing = fwidth(dist);
-    float outlineSize = clamp(u_effectColor.w * outlineScale, 0.0, spread * 0.5);
-    float thickness = outlineSize / (2.0 * spread);
-    float pivot = 0.5 - thickness;
 
-    float alpha  = smoothstep(pivot - smoothing, pivot + smoothing, dist);
-    float border = smoothstep(0.5 - smoothing, 0.5 + smoothing, dist);
+    if (u_effectType == 2) {
+        // Shadow: only need alpha from distance field, no outline calculation
+        float alpha = smoothstep(0.5 - smoothing, 0.5 + smoothing, dist);
+        FragColor = v_color * vec4(u_effectColor.rgb, u_effectColor.a * alpha);
+    } else {
+        // Text + outline
+        float outlineSize = clamp(u_effectColor.w * outlineScale, 0.0, spread * 0.5);
+        float thickness   = outlineSize / (2.0 * spread);
+        float pivot       = 0.5 - thickness;
 
-    FragColor = v_color * vec4(mix(u_effectColor.rgb, u_textColor.rgb, border), alpha);
+        float alpha  = smoothstep(pivot - smoothing, pivot + smoothing, dist);
+        float border = smoothstep(0.5 - smoothing, 0.5 + smoothing, dist);
+
+        // Mix outline color and text color based on border value
+        FragColor = v_color * vec4(mix(u_effectColor.rgb, u_textColor.rgb, border), alpha);
+    }
 }
