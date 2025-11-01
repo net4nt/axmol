@@ -741,11 +741,12 @@ void Label::updateBatchCommand(Label::BatchCommand& batch)
 
 void Label::updateUniformLocations()
 {
-    _mvpMatrixLocation   = _programState->getUniformLocation(rhi::Uniform::MVP_MATRIX);
-    _textureLocation     = _programState->getUniformLocation(rhi::Uniform::TEXTURE);
-    _textColorLocation   = _programState->getUniformLocation(rhi::Uniform::TEXT_COLOR);
-    _effectColorLocation = _programState->getUniformLocation(rhi::Uniform::EFFECT_COLOR);
-    _effectTypeLocation  = _programState->getUniformLocation(rhi::Uniform::EFFECT_TYPE);
+    _mvpMatrixLocation      = _programState->getUniformLocation(rhi::Uniform::MVP_MATRIX);
+    _textureLocation        = _programState->getUniformLocation(rhi::Uniform::TEXTURE);
+    _textColorLocation      = _programState->getUniformLocation(rhi::Uniform::TEXT_COLOR);
+    _effectColorLocation    = _programState->getUniformLocation(rhi::Uniform::EFFECT_COLOR);
+    _passLocation           = _programState->getUniformLocation(rhi::Uniform::LABEL_PASS);
+    _distanceSpreadLocation = _programState->getUniformLocation(rhi::Uniform::DISTANCE_SPREAD);
 }
 
 bool Label::setFontAtlas(FontAtlas* atlas, bool distanceFieldEnabled /* = false */, bool useA8Shader /* = false */)
@@ -1379,7 +1380,7 @@ void Label::enableGlow(const Color32& glowColor)
     }
 }
 
-void Label::enableOutline(const Color32& outlineColor, int outlineSize /* = -1 */)
+void Label::enableOutline(const Color32& outlineColor, float outlineSize /* = -1 */)
 {
     AXASSERT(_currentLabelType == LabelType::STRING_TEXTURE || _currentLabelType == LabelType::TTF,
              "Only supported system font and TTF!");
@@ -1396,7 +1397,7 @@ void Label::enableOutline(const Color32& outlineColor, int outlineSize /* = -1 *
             if (outlineSize > 0 && _fontConfig.outlineSize != outlineSize)
             {
 
-                _fontConfig.outlineSize = outlineSize;
+                _fontConfig.outlineSize = static_cast<int>(outlineSize);
                 setTTFConfig(_fontConfig);
             }
             if (_useDistanceField && outlineSize > 0)
@@ -1905,44 +1906,66 @@ void Label::updateEffectUniforms(BatchCommand& batch,
         {
         case LabelEffect::OUTLINE:
         {
-            int effectType = 0;
+            int pass = 0;
             Vec4 effectColor(_effectColor.r, _effectColor.g, _effectColor.b, _effectColor.a);
             // draw shadow
             if (_shadowEnabled)
             {
-                effectType              = 2;
-                auto programStateShadow = batch.shadowCommand.unsafePS();
-                programStateShadow->setUniform(_effectColorLocation, &_shadowColor, sizeof(ax::Color));
-                programStateShadow->setUniform(_effectTypeLocation, &effectType, sizeof(effectType));
+                pass                     = 2;
+                Vec4 shadowColor         = Vec4(_shadowColor.r, _shadowColor.g, _shadowColor.b, _shadowColor.a);
+                auto* programStateShadow = batch.shadowCommand.unsafePS();
+                programStateShadow->setUniform(_effectColorLocation, &shadowColor, sizeof(Vec4));
+                programStateShadow->setUniform(_passLocation, &pass, sizeof(pass));
                 batch.shadowCommand.init(_globalZOrder);
                 renderer->addCommand(&batch.shadowCommand);
             }
 
             if (_useDistanceField)
-            {  // distance outline
-                effectColor.w = _outlineSize > 0 ? _outlineSize : _fontConfig.outlineSize;
-                batch.textCommand.unsafePS()->setUniform(_effectColorLocation, &effectColor, sizeof(ax::Color));
-            }
-            else
-            {
-                // draw outline
+            {  // distance field
+                // outline pass
                 {
-                    effectType = 1;
+                    pass          = 1;
+                    effectColor.w = (_outlineSize > 0 ? _outlineSize : _fontConfig.outlineSize) *
+                                    _director->getContentScaleFactor();
+                    auto outlinePS = batch.outLineCommand.unsafePS();
                     updateBuffer(textureAtlas, batch.outLineCommand);
-                    auto programStateOutline = batch.outLineCommand.unsafePS();
-                    programStateOutline->setUniform(_effectColorLocation, &effectColor, sizeof(Vec4));
-                    programStateOutline->setUniform(_effectTypeLocation, &effectType, sizeof(effectType));
+                    outlinePS->setUniform(_effectColorLocation, &effectColor, sizeof(Vec4));
+                    outlinePS->setUniform(_passLocation, &pass, sizeof(pass));
+                    float distanceFieldSpread = FontFreeType::DistanceMapSpread * _director->getContentScaleFactor();
+                    outlinePS->setUniform(_distanceSpreadLocation, &distanceFieldSpread, sizeof(distanceFieldSpread));
                     batch.outLineCommand.init(_globalZOrder);
                     renderer->addCommand(&batch.outLineCommand);
                 }
 
-                // draw text
+                // text pass
                 {
-                    effectType            = 0;
-                    auto programStateText = batch.textCommand.unsafePS();
+                    pass        = 0;
+                    auto textPS = batch.textCommand.unsafePS();
 
-                    programStateText->setUniform(_effectColorLocation, &effectColor, sizeof(effectColor));
-                    programStateText->setUniform(_effectTypeLocation, &effectType, sizeof(effectType));
+                    textPS->setUniform(_effectColorLocation, &effectColor, sizeof(effectColor));
+                    textPS->setUniform(_passLocation, &pass, sizeof(pass));
+                }
+            }
+            else
+            {
+                // outline pass
+                {
+                    pass = 1;
+                    updateBuffer(textureAtlas, batch.outLineCommand);
+                    auto outlinePS = batch.outLineCommand.unsafePS();
+                    outlinePS->setUniform(_effectColorLocation, &effectColor, sizeof(Vec4));
+                    outlinePS->setUniform(_passLocation, &pass, sizeof(pass));
+                    batch.outLineCommand.init(_globalZOrder);
+                    renderer->addCommand(&batch.outLineCommand);
+                }
+
+                // text pass
+                {
+                    pass        = 0;
+                    auto textPS = batch.textCommand.unsafePS();
+
+                    textPS->setUniform(_effectColorLocation, &effectColor, sizeof(effectColor));
+                    textPS->setUniform(_passLocation, &pass, sizeof(pass));
                 }
             }
         }

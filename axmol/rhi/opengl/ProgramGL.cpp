@@ -211,8 +211,11 @@ void ProgramImpl::setBuiltinLocations()
     /// u_effectColor
     _builtinUniformLocation[Uniform::EFFECT_COLOR] = getUniformLocation(UNIFORM_NAME_EFFECT_COLOR);
 
-    /// u_effectType
-    _builtinUniformLocation[Uniform::EFFECT_TYPE] = getUniformLocation(UNIFORM_NAME_EFFECT_TYPE);
+    /// u_textPass
+    _builtinUniformLocation[Uniform::LABEL_PASS] = getUniformLocation(UNIFORM_NAME_LABEL_PASS);
+
+    /// u_distanceSpread
+    _builtinUniformLocation[Uniform::DISTANCE_SPREAD] = getUniformLocation(UNIFORM_NAME_DISTANCE_SPREAD);
 }
 
 void ProgramImpl::reflectVertexInputs()

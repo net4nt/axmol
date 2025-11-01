@@ -411,7 +411,7 @@ public:
      * Enable outline effect to Label.
      * @warning Limiting use to only when the Label created with true type font or system font.
      */
-    virtual void enableOutline(const Color32& outlineColor, int outlineSize = -1);
+    virtual void enableOutline(const Color32& outlineColor, float outlineSize = -1);
 
     /**
      * Enable glow effect to Label.
@@ -913,7 +913,8 @@ protected:
     rhi::UniformLocation _textureLocation;
     rhi::UniformLocation _textColorLocation;
     rhi::UniformLocation _effectColorLocation;
-    rhi::UniformLocation _effectTypeLocation;
+    rhi::UniformLocation _passLocation;
+    rhi::UniformLocation _distanceSpreadLocation;
 
 private:
     AX_DISALLOW_COPY_AND_ASSIGN(Label);
