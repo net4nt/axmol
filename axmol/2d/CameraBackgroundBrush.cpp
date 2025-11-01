@@ -212,8 +212,6 @@ CameraBackgroundColorBrush::CameraBackgroundColorBrush() : _color(0.f, 0.f, 0.f,
 
 CameraBackgroundColorBrush::~CameraBackgroundColorBrush()
 {
-    AX_SAFE_RELEASE(_programState);
-    AX_SAFE_RELEASE(_vertexLayout);
 }
 
 bool CameraBackgroundColorBrush::init()
