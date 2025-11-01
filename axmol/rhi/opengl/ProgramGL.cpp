@@ -37,39 +37,6 @@
 
 namespace ax::rhi::gl
 {
-inline static std::string_view mapLocationEnumToUBO(rhi::Uniform name)
-{
-    switch (name)
-    {
-    case Uniform::MVP_MATRIX:
-        return UNIFORM_NAME_MVP_MATRIX;
-        break;
-    case Uniform::TEXTURE:
-        return UNIFORM_NAME_TEXTURE;
-        break;
-    case Uniform::TEXTURE1:
-        return UNIFORM_NAME_TEXTURE1;
-        break;
-    case Uniform::TEXTURE2:
-        return UNIFORM_NAME_TEXTURE2;
-        break;
-    case Uniform::TEXTURE3:
-        return UNIFORM_NAME_TEXTURE3;
-        break;
-    case Uniform::TEXT_COLOR:
-        return UNIFORM_NAME_TEXT_COLOR;
-        break;
-    case Uniform::EFFECT_COLOR:
-        return UNIFORM_NAME_EFFECT_COLOR;
-        break;
-    case Uniform::EFFECT_TYPE:
-        return UNIFORM_NAME_EFFECT_TYPE;
-        break;
-    default:;
-    }
-    return ""sv;
-}
-
 ProgramImpl::ProgramImpl(std::string_view vertexShader, std::string_view fragmentShader)
     : Program(vertexShader, fragmentShader)
 {
