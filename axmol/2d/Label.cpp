@@ -198,15 +198,15 @@ Label::BatchCommand::BatchCommand()
     textCommand.setPrimitiveType(CustomCommand::PrimitiveType::TRIANGLE);
     shadowCommand.setDrawType(CustomCommand::DrawType::ELEMENT);
     shadowCommand.setPrimitiveType(CustomCommand::PrimitiveType::TRIANGLE);
-    outLineCommand.setDrawType(CustomCommand::DrawType::ELEMENT);
-    outLineCommand.setPrimitiveType(CustomCommand::PrimitiveType::TRIANGLE);
+    effectCommand.setDrawType(CustomCommand::DrawType::ELEMENT);
+    effectCommand.setPrimitiveType(CustomCommand::PrimitiveType::TRIANGLE);
 }
 
 Label::BatchCommand::~BatchCommand()
 {
     textCommand.releasePSVL();
     shadowCommand.releasePSVL();
-    outLineCommand.releasePSVL();
+    effectCommand.releasePSVL();
 }
 
 void Label::BatchCommand::setProgramState(rhi::ProgramState* programState)
@@ -217,12 +217,12 @@ void Label::BatchCommand::setProgramState(rhi::ProgramState* programState)
     assert(layout && "Program vertex layout incomplete");
     textCommand.setOwnPSVL(programState->clone(), layout, RenderCommand::ADOPT_FLAG_PS);
     shadowCommand.setOwnPSVL(programState->clone(), layout, RenderCommand::ADOPT_FLAG_PS);
-    outLineCommand.setOwnPSVL(programState->clone(), layout, RenderCommand::ADOPT_FLAG_PS);
+    effectCommand.setOwnPSVL(programState->clone(), layout, RenderCommand::ADOPT_FLAG_PS);
 }
 
 std::array<CustomCommand*, 3> Label::BatchCommand::getCommandArray()
 {
-    return std::array<CustomCommand*, 3>{&textCommand, &shadowCommand, &outLineCommand};
+    return std::array<CustomCommand*, 3>{&textCommand, &shadowCommand, &effectCommand};
 }
 
 Label* Label::create()
@@ -576,6 +576,7 @@ void Label::reset()
     TTFConfig temp;
     _fontConfig  = temp;
     _outlineSize = 0.f;
+    _glowRadius  = 0.f;
 
     _bmFontPath      = "";
     _bmSubTextureKey = "";
@@ -745,6 +746,7 @@ void Label::updateUniformLocations()
     _textureLocation        = _programState->getUniformLocation(rhi::Uniform::TEXTURE);
     _textColorLocation      = _programState->getUniformLocation(rhi::Uniform::TEXT_COLOR);
     _effectColorLocation    = _programState->getUniformLocation(rhi::Uniform::EFFECT_COLOR);
+    _effectWidthLocation    = _programState->getUniformLocation(rhi::Uniform::EFFECT_WIDTH);
     _passLocation           = _programState->getUniformLocation(rhi::Uniform::LABEL_PASS);
     _distanceSpreadLocation = _programState->getUniformLocation(rhi::Uniform::DISTANCE_SPREAD);
 }
@@ -1251,6 +1253,7 @@ bool Label::setTTFConfigInternal(const TTFConfig& ttfConfig)
     unsigned int mods = 0;
     mods |= (ttfConfig.fontSize != _fontConfig.fontSize);
     mods |= (ttfConfig.outlineSize != _fontConfig.outlineSize);
+    mods |= (ttfConfig.distanceFieldEnabled != _fontConfig.distanceFieldEnabled);
     _fontConfig = ttfConfig;
     return updateTTFConfigInternal(mods);
 }
@@ -1348,17 +1351,17 @@ void Label::scaleFontSize(float fontSize)
     }
 }
 
-void Label::enableGlow(const Color32& glowColor)
+void Label::enableGlow(const Color32& glowColor, float glowRadius)
 {
-    if (_currentLabelType == LabelType::TTF)
+    if (glowRadius <= 0)
+        glowRadius = FontFreeType::DistanceMapSpread / 2.0f;
+
+    if (_currentLabelType == LabelType::TTF && (glowRadius > 0 || _currLabelEffect == LabelEffect::GLOW))
     {
+        _glowRadius = glowRadius;
+
         auto config = _fontConfig;
         int mods    = 0;
-        if (config.outlineSize > 0)
-        {
-            config.outlineSize = 0;
-            ++mods;
-        }
         // Note: axmol only support Glow effect in SDF rendering mode
         if (!_fontConfig.distanceFieldEnabled)
         {
@@ -1911,11 +1914,11 @@ void Label::updateEffectUniforms(BatchCommand& batch,
             // draw shadow
             if (_shadowEnabled)
             {
-                pass                     = 2;
-                Vec4 shadowColor         = Vec4(_shadowColor.r, _shadowColor.g, _shadowColor.b, _shadowColor.a);
-                auto* programStateShadow = batch.shadowCommand.unsafePS();
-                programStateShadow->setUniform(_effectColorLocation, &shadowColor, sizeof(Vec4));
-                programStateShadow->setUniform(_passLocation, &pass, sizeof(pass));
+                pass             = 2;
+                Vec4 shadowColor = Vec4(_shadowColor.r, _shadowColor.g, _shadowColor.b, _shadowColor.a);
+                auto shadowPS    = batch.shadowCommand.unsafePS();
+                shadowPS->setUniform(_effectColorLocation, &shadowColor, sizeof(Vec4));
+                shadowPS->setUniform(_passLocation, &pass, sizeof(pass));
                 batch.shadowCommand.init(_globalZOrder);
                 renderer->addCommand(&batch.shadowCommand);
             }
@@ -1924,17 +1927,18 @@ void Label::updateEffectUniforms(BatchCommand& batch,
             {  // distance field
                 // outline pass
                 {
-                    pass          = 1;
-                    effectColor.w = (_outlineSize > 0 ? _outlineSize : _fontConfig.outlineSize) *
-                                    _director->getContentScaleFactor();
-                    auto outlinePS = batch.outLineCommand.unsafePS();
-                    updateBuffer(textureAtlas, batch.outLineCommand);
-                    outlinePS->setUniform(_effectColorLocation, &effectColor, sizeof(Vec4));
-                    outlinePS->setUniform(_passLocation, &pass, sizeof(pass));
+                    pass               = 1;
+                    float outlineWidth = (_outlineSize > 0 ? _outlineSize : _fontConfig.outlineSize) *
+                                         _director->getContentScaleFactor();
                     float distanceFieldSpread = FontFreeType::DistanceMapSpread * _director->getContentScaleFactor();
-                    outlinePS->setUniform(_distanceSpreadLocation, &distanceFieldSpread, sizeof(distanceFieldSpread));
-                    batch.outLineCommand.init(_globalZOrder);
-                    renderer->addCommand(&batch.outLineCommand);
+                    auto effectPS             = batch.effectCommand.unsafePS();
+                    updateBuffer(textureAtlas, batch.effectCommand);
+                    effectPS->setUniform(_effectColorLocation, &effectColor, sizeof(Vec4));
+                    effectPS->setUniform(_effectWidthLocation, &outlineWidth, sizeof(float));
+                    effectPS->setUniform(_distanceSpreadLocation, &distanceFieldSpread, sizeof(distanceFieldSpread));
+                    effectPS->setUniform(_passLocation, &pass, sizeof(pass));
+                    batch.effectCommand.init(_globalZOrder);
+                    renderer->addCommand(&batch.effectCommand);
                 }
 
                 // text pass
@@ -1951,12 +1955,12 @@ void Label::updateEffectUniforms(BatchCommand& batch,
                 // outline pass
                 {
                     pass = 1;
-                    updateBuffer(textureAtlas, batch.outLineCommand);
-                    auto outlinePS = batch.outLineCommand.unsafePS();
-                    outlinePS->setUniform(_effectColorLocation, &effectColor, sizeof(Vec4));
-                    outlinePS->setUniform(_passLocation, &pass, sizeof(pass));
-                    batch.outLineCommand.init(_globalZOrder);
-                    renderer->addCommand(&batch.outLineCommand);
+                    updateBuffer(textureAtlas, batch.effectCommand);
+                    auto effectPS = batch.effectCommand.unsafePS();
+                    effectPS->setUniform(_effectColorLocation, &effectColor, sizeof(Vec4));
+                    effectPS->setUniform(_passLocation, &pass, sizeof(pass));
+                    batch.effectCommand.init(_globalZOrder);
+                    renderer->addCommand(&batch.effectCommand);
                 }
 
                 // text pass
@@ -1974,8 +1978,8 @@ void Label::updateEffectUniforms(BatchCommand& batch,
         {
             if (_shadowEnabled)
             {
-                auto programStateShadow = batch.shadowCommand.unsafePS();
-                programStateShadow->setUniform(_textColorLocation, &_shadowColor, sizeof(Vec4));
+                auto shadowPS = batch.shadowCommand.unsafePS();
+                shadowPS->setUniform(_textColorLocation, &_shadowColor, sizeof(Vec4));
                 batch.shadowCommand.init(_globalZOrder);
                 renderer->addCommand(&batch.shadowCommand);
             }
@@ -1983,17 +1987,39 @@ void Label::updateEffectUniforms(BatchCommand& batch,
         break;
         case LabelEffect::GLOW:
         {
-            // draw shadow
+            int pass = 0;
+            // shadow pass
             if (_shadowEnabled)
             {
-                auto programStateShadow = batch.shadowCommand.unsafePS();
-                programStateShadow->setUniform(_textColorLocation, &_shadowColor, sizeof(Vec4));
-                programStateShadow->setUniform(_effectColorLocation, &_shadowColor, sizeof(Vec4));
+                pass          = 2;
+                auto shadowPS = batch.shadowCommand.unsafePS();
+                shadowPS->setUniform(_textColorLocation, &_shadowColor, sizeof(Vec4));
+                shadowPS->setUniform(_effectColorLocation, &_shadowColor, sizeof(Vec4));
+                shadowPS->setUniform(_passLocation, &pass, sizeof(pass));
                 batch.shadowCommand.init(_globalZOrder);
                 renderer->addCommand(&batch.shadowCommand);
             }
 
-            batch.textCommand.unsafePS()->setUniform(_effectColorLocation, &_effectColor, sizeof(Vec4));
+            // glow pass
+            {
+                pass                            = 1;
+                const float glowRadius          = _glowRadius * _director->getContentScaleFactor();
+                const float distanceFieldSpread = FontFreeType::DistanceMapSpread * _director->getContentScaleFactor();
+                updateBuffer(textureAtlas, batch.effectCommand);
+                auto effectPS = batch.effectCommand.unsafePS();
+                effectPS->setUniform(_effectColorLocation, &_effectColor, sizeof(Vec4));
+                effectPS->setUniform(_effectWidthLocation, &glowRadius, sizeof(float));
+                effectPS->setUniform(_distanceSpreadLocation, &distanceFieldSpread, sizeof(distanceFieldSpread));
+                effectPS->setUniform(_passLocation, &pass, sizeof(pass));
+                batch.effectCommand.init(_globalZOrder);
+                renderer->addCommand(&batch.effectCommand);
+            }
+
+            // text pass
+            pass        = 0;
+            auto textPS = batch.textCommand.unsafePS();
+            textPS->setUniform(_effectColorLocation, &_effectColor, sizeof(Vec4));
+            textPS->setUniform(_passLocation, &pass, sizeof(pass));
         }
         break;
         default:
@@ -2100,7 +2126,7 @@ void Label::draw(Renderer* renderer, const Mat4& transform, uint32_t flags)
                     programState->setTexture(textureAtlas->getTexture()->getRHITexture());
                 }
                 batch.textCommand.unsafePS()->setUniform(_mvpMatrixLocation, matrixMVP.m, sizeof(matrixMVP.m));
-                batch.outLineCommand.unsafePS()->setUniform(_mvpMatrixLocation, matrixMVP.m, sizeof(matrixMVP.m));
+                batch.effectCommand.unsafePS()->setUniform(_mvpMatrixLocation, matrixMVP.m, sizeof(matrixMVP.m));
                 updateEffectUniforms(batch, textureAtlas, renderer, transform);
             }
         }

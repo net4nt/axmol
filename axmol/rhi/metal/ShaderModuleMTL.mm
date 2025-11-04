@@ -324,6 +324,9 @@ void ShaderModuleImpl::setBuiltinLocations()
     /// u_effectColor
     _builtinUniforms[Uniform::EFFECT_COLOR] = getUniformInfo(UNIFORM_NAME_EFFECT_COLOR);
 
+    /// u_effectWidth
+    _builtinUniforms[Uniform::EFFECT_WIDTH] = getUniformInfo(UNIFORM_NAME_EFFECT_WIDTH);
+
     /// u_textPass
     _builtinUniforms[Uniform::LABEL_PASS] = getUniformInfo(UNIFORM_NAME_LABEL_PASS);
 

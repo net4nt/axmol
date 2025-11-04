@@ -375,6 +375,7 @@ public:
     ax::Label* _labelNormal;
     ax::Label* _labelSDF;
     ax::ui::Slider* _sliderOutline;
+    ax::ui::Slider* _sliderGlow;
     void initToggleLabel(std::string content,
                          ax::Vec2 pos,
                          std::function<void(Object*, ax::ui::CheckBox::EventType)> callback);

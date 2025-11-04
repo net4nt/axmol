@@ -178,6 +178,9 @@ void ProgramImpl::setBuiltinLocations()
     /// u_effectColor
     _builtinUniformLocation[Uniform::EFFECT_COLOR] = getUniformLocation(UNIFORM_NAME_EFFECT_COLOR);
 
+    /// u_effectWidth
+    _builtinUniformLocation[Uniform::EFFECT_WIDTH] = getUniformLocation(UNIFORM_NAME_EFFECT_WIDTH);
+
     /// u_textPass
     _builtinUniformLocation[Uniform::LABEL_PASS] = getUniformLocation(UNIFORM_NAME_LABEL_PASS);
 
