@@ -366,26 +366,25 @@ bool FontAtlas::prepareLetterDefinitions(const std::u32string& utf32Text)
         FontFreeType* charRenderer = _fontFreeType;
         if (missingIt == _missingGlyphFallbackFonts.end())
         {
-            FontFaceInfo* fallbackFaceInfo = nullptr;
-            bitmap = charRenderer->getGlyphBitmap(charCode, bitmapWidth, bitmapHeight, tempRect, tempDef.xAdvance,
-                                                  &fallbackFaceInfo);
-            if (!bitmap && fallbackFaceInfo)
+            const GlyphResolution* res{nullptr};
+            bitmap = charRenderer->getGlyphBitmap(charCode, bitmapWidth, bitmapHeight, tempRect, tempDef.xAdvance, res);
+            if (!bitmap && res)
             {
-                auto fallbackIt = _missingFallbackFonts.find(fallbackFaceInfo->family);
+                auto fallbackIt = _missingFallbackFonts.find(res->faceInfo.family);
                 if (fallbackIt != _missingFallbackFonts.end())
                 {
                     charRenderer = fallbackIt->second;
                 }
                 else
                 {
-                    charRenderer = FontFreeType::createWithFaceInfo(fallbackFaceInfo, _fontFreeType);
+                    charRenderer = FontFreeType::createFallbackFont(res->faceInfo, _fontFreeType);
                     if (charRenderer)
-                        _missingFallbackFonts.insert(fallbackFaceInfo->family, charRenderer);
+                        _missingFallbackFonts.insert(res->faceInfo.family, charRenderer);
                 }
 
                 if (charRenderer)
                 {
-                    unsigned int glyphIndex = fallbackFaceInfo->currentGlyphIndex;
+                    unsigned int glyphIndex = res->glyphIndex;
                     bitmap = charRenderer->getGlyphBitmapByIndex(glyphIndex, bitmapWidth, bitmapHeight, tempRect,
                                                                  tempDef.xAdvance);
                     _missingGlyphFallbackFonts.emplace(charCode, std::make_pair(charRenderer, glyphIndex));

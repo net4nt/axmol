@@ -99,7 +99,10 @@ public:
                                 bool distanceFieldEnabled = false,
                                 float outline             = 0);
 
-    static FontFreeType* createWithFaceInfo(FontFaceInfo* info, FontFreeType* mainFont);
+    /**
+     * create fallback font with font face info & mainFont
+     */
+    static FontFreeType* createFallbackFont(const FontFaceInfo& faceInfo, FontFreeType* mainFont);
 
     static void shutdownFreeType();
 
@@ -123,7 +126,7 @@ public:
                                   int& outHeight,
                                   Rect& outRect,
                                   int& xAdvance,
-                                  FontFaceInfo** ppFallbackInfo = nullptr);
+                                  const GlyphResolution*& fallbackRes);
 
     unsigned char* getGlyphBitmapByIndex(unsigned int glyphIndex,
                                          int& outWidth,

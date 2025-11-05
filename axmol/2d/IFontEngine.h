@@ -24,7 +24,7 @@
 #pragma once
 
 #include <string_view>
-#include "axmol/base/Config.h"
+#include <limits>
 
 /* freetype fwd decls */
 
@@ -44,18 +44,23 @@ namespace ax
 
 struct FontFaceInfo
 {
-    FT_Face face                   = nullptr;
-    long index                     = 0;
-    unsigned int currentGlyphIndex = 0;
-
     std::string_view family;
     std::string_view path;
+    int faceIndex{-1};
+};
+
+struct GlyphResolution
+{
+    static constexpr unsigned InvalidGlyph = std::numeric_limits<unsigned>::max();
+
+    FontFaceInfo faceInfo;
+    unsigned glyphIndex{InvalidGlyph};
 };
 
 class IFontEngine
 {
 public:
-    virtual FontFaceInfo* lookupFontFaceForCodepoint(char32_t charCode) = 0;
+    virtual const GlyphResolution* resolveGlyph(char32_t charCode) const = 0;
 };
 
 }  // namespace ax

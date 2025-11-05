@@ -101,18 +101,18 @@ static void ft_stream_close_callback(FT_Stream stream)
 
 static IFontEngine* s_FontEngine{nullptr};
 
-FontFreeType* FontFreeType::createWithFaceInfo(FontFaceInfo* info, FontFreeType* mainFont)
+FontFreeType* FontFreeType::createFallbackFont(const FontFaceInfo& faceInfo, FontFreeType* mainFont)
 {
-    if (stdfs::is_regular_file(info->path))
+    if (stdfs::is_regular_file(faceInfo.path))
     {
         // create our new face for render
-        FT_Face face;
-        auto error = FT_New_Face(getFTLibrary(), info->path.data(), info->face->face_index, &face);
+        FT_Face face{nullptr};
+        auto error = FT_New_Face(getFTLibrary(), faceInfo.path.data(), faceInfo.faceIndex, &face);
         if (!error)
         {
             FontFreeType* tempFont = new FontFreeType(mainFont->isDistanceFieldEnabled(), mainFont->getOutlineSize());
             tempFont->setGlyphCollection(mainFont->_usedGlyphs, mainFont->getGlyphCollection());
-            if (tempFont->initWithFontFace(face, info->path, mainFont->_faceSize))
+            if (tempFont->initWithFontFace(face, faceInfo.path, mainFont->_faceSize))
             {
                 tempFont->autorelease();
                 return tempFont;
@@ -424,7 +424,7 @@ unsigned char* FontFreeType::getGlyphBitmap(char32_t charCode,
                                             int& outHeight,
                                             Rect& outRect,
                                             int& xAdvance,
-                                            FontFaceInfo** ppFallbackInfo)
+                                            const GlyphResolution*& outFallbackRes)
 {
     unsigned char* ret = nullptr;
 
@@ -443,12 +443,12 @@ unsigned char* FontFreeType::getGlyphBitmap(char32_t charCode,
         AXLOGW("The font face: {} doesn't contains char: <{}>", _fontFace->charmap->face->family_name, charUTF8);
 #endif
 
-        if (ppFallbackInfo && s_FontEngine)
-        {  // try fallback
-            auto faceInfo = s_FontEngine->lookupFontFaceForCodepoint(charCode);
-            if (faceInfo)
+        if (s_FontEngine)
+        {  // resolving glyph by font engine
+            auto res = s_FontEngine->resolveGlyph(charCode);
+            if (res)
             {
-                *ppFallbackInfo = faceInfo;
+                outFallbackRes = res;
                 return nullptr;
             }
         }
