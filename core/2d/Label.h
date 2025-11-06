@@ -948,7 +948,6 @@ protected:
     backend::UniformLocation _effectColorLocation;
     backend::UniformLocation _effectWidthLocation;
     backend::UniformLocation _passLocation;
-    backend::UniformLocation _distanceSpreadLocation;
 
 private:
     AX_DISALLOW_COPY_AND_ASSIGN(Label);
