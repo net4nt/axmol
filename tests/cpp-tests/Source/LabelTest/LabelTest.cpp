@@ -1464,7 +1464,7 @@ LabelTTFSDF::LabelTTFSDF()
     _sliderOutline = initSlider("Outline", Vec2(size.width * 0.5, size.height * 0.30),
                                 [=, this](Object* obj, ui::Slider::EventType type) {
         Slider* slider = (Slider*)obj;
-        float size     = 1 + slider->getPercent() / 10;
+        float size     = 1 + slider->getPercent() / 10.0f;
         if (!slider->isEnabled())
             return;
         _labelSDF->enableOutline(Color4B::GREEN, size);
@@ -1476,7 +1476,7 @@ LabelTTFSDF::LabelTTFSDF()
     _sliderGlow = initSlider("Glow", Vec2(size.width * 0.5, size.height * 0.35),
                                 [=, this](Object* obj, ui::Slider::EventType type) {
         Slider* slider = (Slider*)obj;
-        float size     = 1 + slider->getPercent() / 10;
+        float size     = 1 + slider->getPercent() / 10.0f;
         if (!slider->isEnabled())
             return;
         _labelSDF->enableGlow(Color4B::RED, size);
