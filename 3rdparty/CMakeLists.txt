@@ -310,7 +310,9 @@ if(AX_ENABLE_AUDIO)
 endif()
 
 if(WINDOWS OR LINUX OR ANDROID OR WASM)
-  ax_add_3rd(glad)
+  if(AX_RENDER_API STREQUAL "gl" OR AX_RENDER_API STREQUAL "vk")
+    ax_add_3rd(glad)
+  endif()
 endif()
 
 if((WINDOWS AND NOT WINRT) OR MACOSX OR LINUX)
