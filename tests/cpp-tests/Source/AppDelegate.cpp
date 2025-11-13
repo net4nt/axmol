@@ -184,6 +184,11 @@ void AppDelegate::applicationWillEnterForeground()
     Director::getInstance()->startAnimation();
 }
 
+void AppDelegate::applicationWillQuit()
+{
+    TestController::destroyInstance();
+}
+
 void AppDelegate::applicationScreenSizeChanged(int newWidth, int newHeight)
 {
     AXLOGI("AppDelegate::applicationScreenSizeChanged: ({},{})", newWidth, newHeight);
