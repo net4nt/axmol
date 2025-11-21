@@ -336,6 +336,7 @@ void DriverImpl::initializeFactory()
     createInfo.enabledExtensionCount   = static_cast<uint32_t>(extensions.size());
     createInfo.ppEnabledExtensionNames = extensions.data();
 
+    constexpr std::array<const char*, 1> validationLayers = {"VK_LAYER_KHRONOS_validation"};
     if (shouldCreateDebugLayer)
     {
         _debugCreateInfo.sType           = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
@@ -346,11 +347,9 @@ void DriverImpl::initializeFactory()
                                        VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
                                        VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
         _debugCreateInfo.pfnUserCallback = vkDebugCallback;
-
-        const std::array<const char*, 1> validationLayers = {"VK_LAYER_KHRONOS_validation"};
-        createInfo.enabledLayerCount                      = static_cast<uint32_t>(validationLayers.size());
-        createInfo.ppEnabledLayerNames                    = validationLayers.data();
-        createInfo.pNext                                  = (VkDebugUtilsMessengerCreateInfoEXT*)&_debugCreateInfo;
+        createInfo.enabledLayerCount     = static_cast<uint32_t>(validationLayers.size());
+        createInfo.ppEnabledLayerNames   = validationLayers.data();
+        createInfo.pNext                 = (VkDebugUtilsMessengerCreateInfoEXT*)&_debugCreateInfo;
     }
     else
     {
