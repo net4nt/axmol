@@ -421,12 +421,16 @@ void RenderContextImpl::recreateSwapchain()
     VkPresentModeKHR chosenPresentMode = VK_PRESENT_MODE_FIFO_KHR;  // guaranteed
 
 #if !defined(__ANDROID__)
-    for (auto& pm : presentModes)
+    auto& contextAttrs = Application::getContextAttrs();
+    if (!contextAttrs.vsync)
     {
-        if (pm == VK_PRESENT_MODE_MAILBOX_KHR)
+        for (auto& pm : presentModes)
         {
-            chosenPresentMode = pm;
-            break;
+            if (pm == VK_PRESENT_MODE_MAILBOX_KHR)
+            {
+                chosenPresentMode = pm;
+                break;
+            }
         }
     }
 #endif
