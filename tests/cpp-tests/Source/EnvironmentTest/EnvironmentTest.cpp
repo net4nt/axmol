@@ -22,133 +22,133 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#include "ConfigurationTest.h"
+#include "EnvironmentTest.h"
 #include "../testResource.h"
 #include "axmol/axmol.h"
 
 using namespace ax;
 
-ConfigurationTests::ConfigurationTests()
+EnvironmentTests::EnvironmentTests()
 {
-    ADD_TEST_CASE(ConfigurationLoadConfig);
-    ADD_TEST_CASE(ConfigurationQuery);
-    ADD_TEST_CASE(ConfigurationInvalid);
-    ADD_TEST_CASE(ConfigurationDefault);
-    ADD_TEST_CASE(ConfigurationSet);
+    ADD_TEST_CASE(EnvironmentLoadConfig);
+    ADD_TEST_CASE(EnvironmentQuery);
+    ADD_TEST_CASE(EnvironmentInvalid);
+    ADD_TEST_CASE(EnvironmentDefault);
+    ADD_TEST_CASE(EnvironmentSet);
 }
 
-std::string ConfigurationBase::title() const
+std::string EnvironmentBase::title() const
 {
-    return "Configuration Test";
+    return "Environment Test";
 }
 
 //------------------------------------------------------------------
 //
-// ConfigurationLoadConfig
+// EnvironmentLoadConfig
 //
 //------------------------------------------------------------------
-void ConfigurationLoadConfig::onEnter()
+void EnvironmentLoadConfig::onEnter()
 {
-    ConfigurationBase::onEnter();
+    EnvironmentBase::onEnter();
 
-    Configuration::getInstance()->loadConfigFile("configs/config-test-ok.plist");
-    std::string config = Configuration::getInstance()->getInfo();
+    Environment::getInstance()->loadConfigFile("configs/config-test-ok.plist");
+    std::string config = Environment::getInstance()->getInfo();
     AXLOGD("{}\n", config);
 }
 
-std::string ConfigurationLoadConfig::subtitle() const
+std::string EnvironmentLoadConfig::subtitle() const
 {
     return "Loading config file manually. See console";
 }
 
 //------------------------------------------------------------------
 //
-// ConfigurationQuery
+// EnvironmentQuery
 //
 //------------------------------------------------------------------
-void ConfigurationQuery::onEnter()
+void EnvironmentQuery::onEnter()
 {
-    ConfigurationBase::onEnter();
+    EnvironmentBase::onEnter();
 
-    AXLOGD("axmol version: %s", Configuration::getInstance()->getValue("axmol.version").asString());
-    AXLOGD("OpenGL version: %s", Configuration::getInstance()->getValue("gl.version").asString());
+    AXLOGD("axmol version: %s", Environment::getInstance()->getValue("axmol.version").asString());
+    AXLOGD("OpenGL version: %s", Environment::getInstance()->getValue("gl.version").asString());
 }
 
-std::string ConfigurationQuery::subtitle() const
+std::string EnvironmentQuery::subtitle() const
 {
     return "Check the console";
 }
 
 //------------------------------------------------------------------
 //
-// ConfigurationInvalid
+// EnvironmentInvalid
 //
 //------------------------------------------------------------------
-void ConfigurationInvalid::onEnter()
+void EnvironmentInvalid::onEnter()
 {
-    ConfigurationBase::onEnter();
+    EnvironmentBase::onEnter();
 
-    Configuration::getInstance()->loadConfigFile("configs/config-test-invalid.plist");
+    Environment::getInstance()->loadConfigFile("configs/config-test-invalid.plist");
 }
 
-std::string ConfigurationInvalid::subtitle() const
+std::string EnvironmentInvalid::subtitle() const
 {
     return "Loading an invalid config file";
 }
 
 //------------------------------------------------------------------
 //
-// ConfigurationDefault
+// EnvironmentDefault
 //
 //------------------------------------------------------------------
-void ConfigurationDefault::onEnter()
+void EnvironmentDefault::onEnter()
 {
-    ConfigurationBase::onEnter();
+    EnvironmentBase::onEnter();
 
-    std::string c_value = Configuration::getInstance()->getValue("invalid.key", Value("no key")).asString();
+    std::string c_value = Environment::getInstance()->getValue("invalid.key", Value("no key")).asString();
     if (c_value != "no key")
         AXLOGD("1. Test failed!");
     else
         AXLOGD("1. Test OK!");
 
-    bool b_value = Configuration::getInstance()->getValue("invalid.key", Value(true)).asBool();
+    bool b_value = Environment::getInstance()->getValue("invalid.key", Value(true)).asBool();
     if (!b_value)
         AXLOGD("2. Test failed!");
     else
         AXLOGD("2. Test OK!");
 
-    double d_value = Configuration::getInstance()->getValue("invalid.key", Value(42.42)).asDouble();
+    double d_value = Environment::getInstance()->getValue("invalid.key", Value(42.42)).asDouble();
     if (d_value != 42.42)
         AXLOGD("3. Test failed!");
     else
         AXLOGD("3. Test OK!");
 }
 
-std::string ConfigurationDefault::subtitle() const
+std::string EnvironmentDefault::subtitle() const
 {
     return "Tests defaults values";
 }
 
 //------------------------------------------------------------------
 //
-// ConfigurationSet
+// EnvironmentSet
 //
 //------------------------------------------------------------------
-void ConfigurationSet::onEnter()
+void EnvironmentSet::onEnter()
 {
-    ConfigurationBase::onEnter();
+    EnvironmentBase::onEnter();
 
-    Configuration* conf = Configuration::getInstance();
+    auto env = Environment::getInstance();
 
-    conf->setValue("this.is.an.int.value", Value(10));
-    conf->setValue("this.is.a.bool.value", Value(true));
-    conf->setValue("this.is.a.string.value", Value("hello world"));
+    env->setValue("this.is.an.int.value", Value(10));
+    env->setValue("this.is.a.bool.value", Value(true));
+    env->setValue("this.is.a.string.value", Value("hello world"));
 
-    auto str = conf->getInfo();
+    auto str = env->getInfo();
     AXLOGD("{}\n", str);
 }
 
-std::string ConfigurationSet::subtitle() const
+std::string EnvironmentSet::subtitle() const
 {
     return "Tests setting values manually";
 }

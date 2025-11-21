@@ -48,7 +48,7 @@
 #include "axmol/base/Director.h"
 #include "axmol/base/Scheduler.h"
 #include "axmol/platform/PlatformConfig.h"
-#include "axmol/base/Configuration.h"
+#include "axmol/base/Environment.h"
 #include "axmol/2d/Scene.h"
 #include "axmol/platform/FileUtils.h"
 #include "axmol/renderer/TextureCache.h"
@@ -813,8 +813,8 @@ void Console::createCommandAllocator()
 
 void Console::createCommandConfig()
 {
-    addCommand({"config", "Print the Configuration object. Args: [-h | help | ]",
-                AX_CALLBACK_2(Console::commandConfig, this)});
+    addCommand(
+        {"config", "Print the Environment object. Args: [-h | help | ]", AX_CALLBACK_2(Console::commandConfig, this)});
 }
 
 void Console::createCommandDebugMsg()
@@ -944,7 +944,7 @@ void Console::commandConfig(socket_native_type fd, std::string_view /*args*/)
 {
     Scheduler* sched = Director::getInstance()->getScheduler();
     sched->runOnAxmolThread([=]() {
-        Console::Utility::mydprintf(fd, "%s", Configuration::getInstance()->getInfo().c_str());
+        Console::Utility::mydprintf(fd, "%s", Environment::getInstance()->getInfo().c_str());
         Console::Utility::sendPrompt(fd);
     });
 }
