@@ -1,4 +1,5 @@
 /****************************************************************************
+ Copyright (c) 2018-2019 Xiamen Yaji Software Co., Ltd.
  Copyright (c) 2019-present Axmol Engine contributors (see AUTHORS.md).
 
  https://axmol.dev/
@@ -21,55 +22,39 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  ****************************************************************************/
+
 #pragma once
 
-#include "axmol/rhi/CommandBuffer.h"
-#include "axmol/rhi/d3d/DriverD3D.h"
-#include "axmol/platform/win32/ComPtr.h"
+#include "axmol/rhi/RenderContext.h"
+#include "axmol/rhi/metal/DriverMTL.h"
+#include <unordered_map>
 
-namespace ax::rhi::d3d
+namespace ax::rhi::mtl
 {
+
+class RenderPipelineImpl;
+class DepthStencilStateImpl;
+
 /**
- * @addtogroup _d3d
+ * @addtogroup _metal
  * @{
  */
 
-class BufferImpl;
-class DepthStencilStateImpl;
-class RenderPipelineImpl;
-class RenderTargetImpl;
-
-enum RasterFlag
-{
-    RF_CULL_MODE = 1,
-    RF_WINDING   = 1 << 1,
-    RF_SCISSOR   = 1 << 2
-};
-
-struct RasterStateDesc
-{
-    CullMode cullMode{CullMode::BACK};
-    Winding winding{Winding::CLOCK_WISE};
-    bool scissorEnable{FALSE};
-    unsigned int dirtyFlags{0};
-};
-
 /**
- * @brief A D3D11-based CommandBuffer implementation
- *
+ * @brief Store encoded commands for the GPU to execute.
+ * A command buffer stores encoded commands until the buffer is committed for execution by the GPU
  */
-class CommandBufferImpl : public CommandBuffer
+class RenderContextImpl : public RenderContext
 {
 public:
     /// @name Constructor, Destructor and Initializers
     /**
-     * @param driver The device for which d3d::DriverImpl object was created.
-     * @param surfaceContext hwnd or IUnkown*(SwapChainPanel)
+     * @param driver The device for which MTLCommandQueue object was created.
      */
-    CommandBufferImpl(DriverImpl* driver, void* surfaceContext);
-    ~CommandBufferImpl() override;
+    RenderContextImpl(DriverImpl* driver, void* surfaceContext);
+    ~RenderContextImpl();
 
-    bool resizeSwapchain(uint32_t width, uint32_t height) override;
+    bool updateSurface(void* surface, uint32_t width, uint32_t height) override;
 
     /**
      * Set depthStencil status
@@ -98,7 +83,7 @@ public:
      * MTLRenderCommandEncoder is cached if current RenderPassDesc is identical to previous one.
      * @param descriptor Specifies a group of render targets that hold the results of a render pass.
      */
-    void beginRenderPass(const RenderTarget* renderTarget, const RenderPassDesc& descriptor) override;
+    void beginRenderPass(RenderTarget* renderTarget, const RenderPassDesc& descriptor) override;
 
     /**
      * Update depthStencil status, improvment: for metal backend cache it
@@ -111,9 +96,9 @@ public:
      * Building a programmable pipeline involves an expensive evaluation of GPU state.
      * So a new render pipeline object will be created only if it hasn't been created before.
      * @param rt Specifies the render target.
-     * @param pipelineDesc Specifies the pipeline descriptor.
+     * @param desc Specifies the pipeline descriptor.
      */
-    void updatePipelineState(const RenderTarget* rt, const PipelineDesc& descriptor) override;
+    void updatePipelineState(const RenderTarget* rt, const PipelineDesc& desc) override;
 
     /**
      * Fixed-function state
@@ -201,6 +186,8 @@ public:
      */
     void endFrame() override;
 
+    void endEncoding();
+
     /**
      * Fixed-function state
      * @param x, y Specifies the lower left corner of the scissor box
@@ -209,46 +196,76 @@ public:
      */
     void setScissorRect(bool isEnabled, float x, float y, float width, float height) override;
 
-    /**
-     * Read pixels from RenderTarget
-     * @param callback A callback to deal with pixel data read.
-     */
-    void readPixels(RenderTarget* rt, std::function<void(const PixelBufferDesc&)> callback) override;
+    void readPixels(RenderTarget* rt,
+                    bool preserveAxisHint,
+                    std::function<void(const PixelBufferDesc&)> callback) override;
+
+    id<MTLRenderCommandEncoder> getRenderCommandEncoder() const { return _mtlRenderEncoder; }
+
+    static id<CAMetalDrawable> getCurrentDrawable();
+    static void resetCurrentDrawable();
 
 protected:
-    void readPixels(RenderTarget* rt, UINT x, UINT y, UINT width, UINT height, PixelBufferDesc& pbd);
+    /**
+     * Read a block of pixels from the given texture
+     * @param texture Specifies the texture to get the image.
+     * @param origX,origY Specify the window coordinates of the first pixel that is read from the given texture. This
+     * location is the lower left corner of a rectangular block of pixels.
+     * @param rectWidth,rectHeight Specify the dimensions of the pixel rectangle. rectWidth and rectHeight of one
+     * correspond to a single pixel.
+     * @param pbd, the output buffer for fill texels data
+     * @remark: !!!this function only can call after endFrame, then it's could be works well.
+     */
+    void readPixels(id<MTLTexture> texture,
+                    std::size_t origX,
+                    std::size_t origY,
+                    std::size_t rectWidth,
+                    std::size_t rectHeight,
+                    PixelBufferDesc& pbd);
 
-    void updateRasterizerState();
+    /**
+     * This property controls whether or not the drawables'
+     * metal textures may only be used for framebuffer attachments (YES) or
+     * whether they may also be used for texture sampling and pixel
+     * read/write operations (NO).
+     * @param frameBufferOnly A value of YES allows CAMetalLayer to allocate the MTLTexture objects in ways that are
+     * optimized for display purposes that makes them unsuitable for sampling. The recommended value for most
+     * applications is YES.
+     * @note This interface is specificaly designed for metal.
+     */
+    void setFrameBufferOnly(bool frameBufferOnly) override;
 
-    void prepareDrawing();
+private:
+    void prepareDrawing() const;
+    void setTextures() const;
+    void setUniformBuffer() const;
+    void afterDraw();
+    void flush();
+    void flushCaptureCommands();
 
-    DriverImpl* _driverImpl{nullptr};
-    IDXGISwapChain* _swapChain{nullptr};
-    ID3D11Texture2D* _depthStencilTexture{nullptr};
-    ComPtr<ID3D11RasterizerState> _rasterState{nullptr};
-    RasterStateDesc _rasterDesc{};
-    BufferImpl* _vertexBuffer{nullptr};
-    BufferImpl* _indexBuffer{nullptr};
-    BufferImpl* _instanceBuffer{nullptr};
-    DepthStencilStateImpl* _depthStencilState{nullptr};
-    RenderPipelineImpl* _renderPipeline{nullptr};
-    UINT _renderTargetWidth{0};
-    UINT _renderTargetHeight{0};
-    UINT _screenWidth{0};
-    UINT _screenHeight{0};
-    RenderPassDesc _renderPassDesc{};
+    static CAMetalLayer* _mtlLayer;
+    static id<CAMetalDrawable> _currentDrawable;
 
-    axstd::pod_vector<ID3D11ShaderResourceView*> _nullSRVs;
-    UINT _textureBounds{0};
+    // weak ref, like context, managed by DriverImpl
+    id<MTLCommandQueue> _mtlCmdQueue              = nil;
+    id<MTLCommandBuffer> _currentCmdBuffer        = nil;
+    id<MTLRenderCommandEncoder> _mtlRenderEncoder = nil;
+    id<MTLBuffer> _mtlIndexBuffer                 = nil;
+    id<MTLTexture> _drawableTexture               = nil;
 
-    UINT _swapChainFlags{0};
-    UINT _syncInterval{1};
-    UINT _presentFlags{0};
-    BOOL _allowTearing{FALSE};
+    DepthStencilStateImpl* _depthStencilStateImpl = nullptr;
+    RenderPipelineImpl* _renderPipelineImpl       = nullptr;
 
-    RenderScaleMode _renderScaleMode{};
+    unsigned int _renderTargetWidth  = 0;
+    unsigned int _renderTargetHeight = 0;
+
+    dispatch_semaphore_t _frameBoundarySemaphore;
+    RenderPassDesc _currentRenderPassDesc;
+    NSAutoreleasePool* _autoReleasePool = nil;
+
+    std::vector<std::pair<Texture*, std::function<void(const PixelBufferDesc&)>>> _captureCallbacks;
 };
 
-/** @} */
-
-}  // namespace ax::rhi::d3d
+// end of _metal group
+/// @}
+}  // namespace ax::rhi::mtl

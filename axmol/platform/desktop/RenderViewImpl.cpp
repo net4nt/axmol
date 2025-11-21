@@ -57,6 +57,8 @@ The RenderViewImpl for win32,linux,macos,wasm
 #    include "axmol/rhi/opengl/DriverGL.h"
 #    include "axmol/rhi/opengl/MacrosGL.h"
 #    include "axmol/rhi/opengl/OpenGLState.h"
+#elif AX_RENDER_API == AX_RENDER_API_VK
+#    include "axmol/rhi/vulkan/DriverVK.h"
 #endif  // #if (AX_TARGET_PLATFORM == AX_PLATFORM_MAC)
 
 /** glfw3native.h */
@@ -242,11 +244,11 @@ private:
 };
 RenderViewImpl* GLFWEventHandler::_view = nullptr;
 
-const std::string RenderViewImpl::EVENT_WINDOW_POSITIONED = "glview_window_positioned";
-const std::string RenderViewImpl::EVENT_WINDOW_RESIZED    = "glview_window_resized";
-const std::string RenderViewImpl::EVENT_WINDOW_FOCUSED    = "glview_window_focused";
-const std::string RenderViewImpl::EVENT_WINDOW_UNFOCUSED  = "glview_window_unfocused";
-const std::string RenderViewImpl::EVENT_WINDOW_CLOSE      = "glview_window_close";
+const std::string RenderViewImpl::EVENT_WINDOW_POSITIONED = "_ax_window_positioned";
+const std::string RenderViewImpl::EVENT_WINDOW_RESIZED    = "_ax_window_resized";
+const std::string RenderViewImpl::EVENT_WINDOW_FOCUSED    = "_ax_window_focused";
+const std::string RenderViewImpl::EVENT_WINDOW_UNFOCUSED  = "_ax_window_unfocused";
+const std::string RenderViewImpl::EVENT_WINDOW_CLOSE      = "_ax_window_close";
 
 ////////////////////////////////////////////////////
 
@@ -451,19 +453,23 @@ void* RenderViewImpl::getNativeWindow() const
 
 void* RenderViewImpl::getNativeDisplay() const
 {
-#if AX_TARGET_PLATFORM == AX_PLATFORM_WIN32
+#if AX_RENDER_API == AX_RENDER_API_VK
+    return _vkSurface;
+#else
+#    if AX_TARGET_PLATFORM == AX_PLATFORM_WIN32
     return glfwGetWin32Window(_mainWindow);
-#elif AX_TARGET_PLATFORM == AX_PLATFORM_MAC
-#    if AX_RENDER_API == AX_RENDER_API_MTL
+#    elif AX_TARGET_PLATFORM == AX_PLATFORM_MAC
+#        if AX_RENDER_API == AX_RENDER_API_MTL
     return (void*)glfwGetCocoaView(_mainWindow);
-#    else
+#        else
     return (void*)glfwGetNSGLContext(_mainWindow);
-#    endif
-#elif AX_TARGET_PLATFORM == AX_PLATFORM_LINUX
+#        endif
+#    elif AX_TARGET_PLATFORM == AX_PLATFORM_LINUX
     int platform = glfwGetPlatform();
     return platform == GLFW_PLATFORM_WAYLAND ? (void*)glfwGetWaylandDisplay() : (void*)glfwGetX11Display();
-#else
+#    else
     return nullptr;
+#    endif
 #endif
 }
 
@@ -620,6 +626,8 @@ bool RenderViewImpl::initWithRect(std::string_view viewName,
         return false;
     }
 
+    glfwSetWindowSizeLimits(_mainWindow, 1, 1, GLFW_DONT_CARE, GLFW_DONT_CARE);
+
 #if AX_RENDER_API == AX_RENDER_API_GL
     glfwMakeContextCurrent(_mainWindow);
 
@@ -645,6 +653,22 @@ bool RenderViewImpl::initWithRect(std::string_view viewName,
     int fbWidth, fbHeight;
     glfwGetFramebufferSize(_mainWindow, &fbWidth, &fbHeight);
     updateRenderSurface(fbWidth, fbHeight, SurfaceUpdateFlag::RenderSizeChanged | SurfaceUpdateFlag::SilentUpdate);
+
+#if AX_RENDER_API == AX_RENDER_API_VK
+    auto _createSurface = [](VkInstance inst, void* window, VkSurfaceKHR* surface) {
+        return glfwCreateWindowSurface(inst, static_cast<GLFWwindow*>(window), nullptr, surface);
+    };
+    auto driver = static_cast<ax::rhi::vk::DriverImpl*>(axdrv);
+    const rhi::vk::SurfaceCreateInfo createInfo{
+        .window = _mainWindow, .width = fbWidth, .height = fbHeight, .createFunc = _createSurface};
+    bool ok = driver->recreateSurface(createInfo);
+    if (!ok)
+    {
+        AXLOGE("Failed to create Vulkan window surface.");
+        return false;
+    }
+    _vkSurface = driver->getSurface();
+#endif
 
     int w, h;
     glfwGetWindowSize(_mainWindow, &w, &h);
@@ -755,6 +779,10 @@ bool RenderViewImpl::isGfxContextReady()
 
 void RenderViewImpl::end()
 {
+#if AX_RENDER_API == AX_RENDER_API_VK
+    _vkSurface = nullptr;
+#endif
+
     if (_mainWindow)
     {
         glfwSetWindowShouldClose(_mainWindow, 1);
@@ -998,8 +1026,6 @@ void RenderViewImpl::setWindowSizeLimits(int minwidth, int minheight, int maxwid
 void RenderViewImpl::onGLFWFramebufferSizeCallback(GLFWwindow* window, int fbWidth, int fbHeight)
 {
     AXLOGD("RenderViewImpl::onGLFWFramebufferSizeCallback: ({}, {})", fbWidth, fbHeight);
-    if (fbWidth == 0 || fbHeight == 0)
-        return;
 
     updateRenderSurface(fbWidth, fbHeight, SurfaceUpdateFlag::RenderSizeChanged);
 }
@@ -1007,8 +1033,6 @@ void RenderViewImpl::onGLFWFramebufferSizeCallback(GLFWwindow* window, int fbWid
 void RenderViewImpl::onGLFWWindowSizeCallback(GLFWwindow* /*window*/, int w, int h)
 {
     AXLOGD("RenderViewImpl::onGLFWWindowSizeCallback: ({}, {})", w, h);
-    if (w == 0 || h == 0)
-        return;
 
     updateScaledWindowSize(w, h, SurfaceUpdateFlag::WindowSizeChanged);
 
@@ -1042,9 +1066,6 @@ void RenderViewImpl::setWindowSize(float width, float height)
 
 void RenderViewImpl::updateScaledWindowSize(int w, int h, uint8_t updateFlag)
 {
-    if (w == 0 || h == 0)
-        return;
-
     updateRenderScale();
 
     double scaledWidth  = w / (double)_windowZoomFactor;

@@ -269,7 +269,7 @@ void Director::setRenderDefaults()
 // Draw the Scene
 void Director::drawScene()
 {
-    _renderer->beginFrame();
+    const auto canRender = _renderer->beginFrame();
 
     // calculate "global" dt
     calculateDeltaTime();
@@ -286,6 +286,9 @@ void Director::drawScene()
         _scheduler->update(_deltaTime);
         _eventDispatcher->dispatchEvent(_eventAfterUpdate);
     }
+
+    if (!canRender) [[unlikely]]
+        return;
 
     _renderer->clear(ClearFlag::ALL, _clearColor, 1, 0, -10000.0);
 
@@ -366,7 +369,7 @@ void Director::calculateDeltaTime()
     }
     else
     {
-        // delta time may passed by invoke mainLoop(dt)
+        // delta time may passed by invoke renderFrame(dt)
         if (!_deltaTimePassedByCaller)
         {
             auto now    = std::chrono::steady_clock::now();
@@ -1583,7 +1586,7 @@ void Director::processOperations()
 }
 #endif
 
-void Director::mainLoop()
+void Director::renderFrame()
 {
 #if defined(AX_PLATFORM_PC)
     processOperations();
@@ -1608,11 +1611,11 @@ void Director::mainLoop()
     }
 }
 
-void Director::mainLoop(float dt)
+void Director::renderFrame(float dt)
 {
     _deltaTime               = dt;
     _deltaTimePassedByCaller = true;
-    mainLoop();
+    renderFrame();
 }
 
 void Director::stopAnimation()
@@ -1633,12 +1636,6 @@ void Director::setAnimationInterval(float interval, SetIntervalReason reason)
         stopAnimation();
         startAnimation(reason);
     }
-}
-
-void Director::resizeSwapchain(uint32_t w, uint32_t h)
-{
-    if (_renderer)
-        _renderer->resizeSwapchain(w, h);
 }
 
 }  // namespace ax

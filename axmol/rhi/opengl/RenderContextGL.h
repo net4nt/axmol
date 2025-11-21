@@ -25,18 +25,25 @@
 
 #pragma once
 
-#include "axmol/rhi/CommandBuffer.h"
-#include "axmol/rhi/metal/DriverMTL.h"
-#include <unordered_map>
+#include "axmol/rhi/RHITypes.h"
+#include "axmol/rhi/RenderContext.h"
+#include "axmol/base/EventListenerCustom.h"
+#include "axmol/platform/GL.h"
 
-namespace ax::rhi::mtl
+#include "axmol/platform/StdC.h"
+
+#include <vector>
+
+namespace ax::rhi::gl
 {
 
+class BufferImpl;
 class RenderPipelineImpl;
+class ProgramImpl;
 class DepthStencilStateImpl;
 
 /**
- * @addtogroup _metal
+ * @addtogroup _opengl
  * @{
  */
 
@@ -44,28 +51,13 @@ class DepthStencilStateImpl;
  * @brief Store encoded commands for the GPU to execute.
  * A command buffer stores encoded commands until the buffer is committed for execution by the GPU
  */
-class CommandBufferImpl : public CommandBuffer
+class RenderContextImpl : public RenderContext
 {
 public:
-    /// @name Constructor, Destructor and Initializers
+    RenderContextImpl();
+    ~RenderContextImpl();
     /**
-     * @param driver The device for which MTLCommandQueue object was created.
-     */
-    CommandBufferImpl(DriverImpl* driver, void* surfaceContext);
-    ~CommandBufferImpl();
-
-    /**
-     * @brief Resize metal swapchain when window size changed
-     *
-     * @param width
-     * @param height
-     * @return true
-     * @return false
-     */
-    bool resizeSwapchain(uint32_t width, uint32_t height) override;
-
-    /**
-     * Set depthStencil status
+     * Set depthStencil status once
      * @param depthStencilState Specifies the depth and stencil status
      */
     void setDepthStencilState(DepthStencilState* depthStencilState) override;
@@ -80,18 +72,14 @@ public:
     /// @name Setters & Getters
     /**
      * @brief Indicate the begining of a frame
-     * Wait until the inflight command buffer has completed its work.
-     * Then create MTLCommandBuffer and enqueue it to MTLCommandQueue.
-     * Then start schedule available MTLBuffer
      */
     bool beginFrame() override;
 
     /**
-     * Create a MTLRenderCommandEncoder object for graphics rendering to an attachment in a RenderPassDesc.
-     * MTLRenderCommandEncoder is cached if current RenderPassDesc is identical to previous one.
+     * Begin a render pass, initial color, depth and stencil attachment.
      * @param descriptor Specifies a group of render targets that hold the results of a render pass.
      */
-    void beginRenderPass(const RenderTarget* renderTarget, const RenderPassDesc& descriptor) override;
+    void beginRenderPass(RenderTarget* rt, const RenderPassDesc& descriptor) override;
 
     /**
      * Update depthStencil status, improvment: for metal backend cache it
@@ -101,12 +89,9 @@ public:
 
     /**
      * Update render pipeline status
-     * Building a programmable pipeline involves an expensive evaluation of GPU state.
-     * So a new render pipeline object will be created only if it hasn't been created before.
-     * @param rt Specifies the render target.
-     * @param desc Specifies the pipeline descriptor.
+     * @param depthStencilState Specifies the depth and stencil status
      */
-    void updatePipelineState(const RenderTarget* rt, const PipelineDesc& desc) override;
+    void updatePipelineState(const RenderTarget* rt, const PipelineDesc& descriptor) override;
 
     /**
      * Fixed-function state
@@ -131,7 +116,7 @@ public:
 
     /**
      * Set a global buffer for all vertex shaders at the given bind point index 0.
-     * @param buffer The buffer to set in the buffer argument table.
+     * @param buffer The vertex buffer to be setted in the buffer argument table.
      */
     void setVertexBuffer(Buffer* buffer) override;
 
@@ -142,6 +127,10 @@ public:
      */
     void setIndexBuffer(Buffer* buffer) override;
 
+    /**
+     * Set matrix tranform when drawing instances of the same model
+     * @ buffer A buffer object that the device will read matrices from.
+     */
     void setInstanceBuffer(Buffer* buffer) override;
 
     /**
@@ -150,10 +139,9 @@ public:
      * @param start For each instance, the first index to draw
      * @param count For each instance, the number of indexes to draw
      * @see `drawElements(PrimitiveType primitiveType, IndexFormat indexType, unsigned int count, unsigned int offset)`
-     *
-     * TODO: Implement a wireframe mode for METAL devices. Refer to: https://forums.ogre3d.org/viewtopic.php?t=95089
      */
-    void drawArrays(PrimitiveType primitiveType, std::size_t start, std::size_t count, bool wireframe) override;
+    void drawArrays(PrimitiveType primitiveType, std::size_t start, std::size_t count, bool wireframe = false) override;
+
     void drawArraysInstanced(PrimitiveType primitiveType,
                              std::size_t start,
                              std::size_t count,
@@ -168,15 +156,24 @@ public:
      * @param offset Byte offset within indexBuffer to start reading indexes from.
      * @see `setIndexBuffer(Buffer* buffer)`
      * @see `drawArrays(PrimitiveType primitiveType, unsigned int start,  unsigned int count)`
-     *
-     * TODO: Implement a wireframe mode for METAL devices. Refer to: https://forums.ogre3d.org/viewtopic.php?t=95089
      */
     void drawElements(PrimitiveType primitiveType,
                       IndexFormat indexType,
                       std::size_t count,
                       std::size_t offset,
-                      bool wireframe) override;
+                      bool wireframe = false) override;
 
+    /**
+     * Draw primitives with an index list instanced.
+     * @param primitiveType The type of primitives that elements are assembled into.
+     * @param indexType The type if indexes, either 16 bit integer or 32 bit integer.
+     * @param count The number of indexes to read from the index buffer for each instance.
+     * @param offset Byte offset within indexBuffer to start reading indexes from.
+     * @param instance Count of
+     * instances to draw at once.
+     * @see `setIndexBuffer(Buffer* buffer)`
+     * @see `drawArrays(PrimitiveType primitiveType, unsigned int start,  unsigned int count)`
+     */
     void drawElementsInstanced(PrimitiveType primitiveType,
                                IndexFormat indexType,
                                std::size_t count,
@@ -194,8 +191,6 @@ public:
      */
     void endFrame() override;
 
-    void endEncoding();
-
     /**
      * Fixed-function state
      * @param x, y Specifies the lower left corner of the scissor box
@@ -204,80 +199,39 @@ public:
      */
     void setScissorRect(bool isEnabled, float x, float y, float width, float height) override;
 
-    /**
-     * Read pixels from RenderTarget
-     * @param callback A callback to deal with pixel data read.
-     */
-    void readPixels(RenderTarget* rt, std::function<void(const PixelBufferDesc&)> callback) override;
+    void readPixels(RenderTarget* rt,
+                    bool preserveAxisHint,
+                    std::function<void(const PixelBufferDesc&)> callback) override;
 
-    id<MTLRenderCommandEncoder> getRenderCommandEncoder() const { return _mtlRenderEncoder; }
-
-    static id<CAMetalDrawable> getCurrentDrawable();
-    static void resetCurrentDrawable();
-
-protected:
-    /**
-     * Read a block of pixels from the given texture
-     * @param texture Specifies the texture to get the image.
-     * @param origX,origY Specify the window coordinates of the first pixel that is read from the given texture. This
-     * location is the lower left corner of a rectangular block of pixels.
-     * @param rectWidth,rectHeight Specify the dimensions of the pixel rectangle. rectWidth and rectHeight of one
-     * correspond to a single pixel.
-     * @param pbd, the output buffer for fill texels data
-     * @remark: !!!this function only can call after endFrame, then it's could be works well.
-     */
-    void readPixels(id<MTLTexture> texture,
-                    std::size_t origX,
-                    std::size_t origY,
-                    std::size_t rectWidth,
-                    std::size_t rectHeight,
+    void readPixels(RenderTarget* rt,
+                    int x,
+                    int y,
+                    uint32_t width,
+                    uint32_t height,
+                    uint32_t bytesPerRow,
+                    bool preserveAxisHint,
                     PixelBufferDesc& pbd);
 
-    /**
-     * This property controls whether or not the drawables'
-     * metal textures may only be used for framebuffer attachments (YES) or
-     * whether they may also be used for texture sampling and pixel
-     * read/write operations (NO).
-     * @param frameBufferOnly A value of YES allows CAMetalLayer to allocate the MTLTexture objects in ways that are
-     * optimized for display purposes that makes them unsuitable for sampling. The recommended value for most
-     * applications is YES.
-     * @note This interface is specificaly designed for metal.
-     */
-    void setFrameBufferOnly(bool frameBufferOnly) override;
-
-private:
+protected:
     void prepareDrawing() const;
-    void setTextures() const;
-    void setUniformBuffer() const;
-    void afterDraw();
-    void flush();
-    void flushCaptureCommands();
-    void updateRenderCommandEncoder(const RenderTarget* renderTarget, const RenderPassDesc& renderPassParams);
+    void bindVertexBuffer(uint32_t& usedBits) const;
+    void bindUniforms(ProgramImpl* program) const;
+    void cleanResources();
 
-    static CAMetalLayer* _mtlLayer;
-    static id<CAMetalDrawable> _currentDrawable;
-
-    // weak ref, like context, managed by DriverImpl
-    id<MTLCommandQueue> _mtlCmdQueue              = nil;
-    id<MTLCommandBuffer> _currentCmdBuffer        = nil;
-    id<MTLRenderCommandEncoder> _mtlRenderEncoder = nil;
-    id<MTLBuffer> _mtlIndexBuffer                 = nil;
-    id<MTLTexture> _drawableTexture               = nil;
-
+    BufferImpl* _vertexBuffer                     = nullptr;
+    BufferImpl* _indexBuffer                      = nullptr;
+    BufferImpl* _instanceBuffer                   = nullptr;
+    RenderPipelineImpl* _renderPipeline           = nullptr;
+    CullMode _cullMode                            = CullMode::NONE;
     DepthStencilStateImpl* _depthStencilStateImpl = nullptr;
-    RenderPipelineImpl* _renderPipelineImpl       = nullptr;
+    Viewport _viewport;
+    GLboolean _alphaTestEnabled = false;
 
-    unsigned int _renderTargetWidth  = 0;
-    unsigned int _renderTargetHeight = 0;
-
-    dispatch_semaphore_t _frameBoundarySemaphore;
-    const RenderTarget* _currentRenderTarget = nil;  // weak ref
-    RenderPassDesc _currentRenderPassDesc;
-    NSAutoreleasePool* _autoReleasePool = nil;
-
-    std::vector<std::pair<Texture*, std::function<void(const PixelBufferDesc&)>>> _captureCallbacks;
+#if AX_ENABLE_CONTEXT_LOSS_RECOVERY
+    EventListenerCustom* _backToForegroundListener = nullptr;
+#endif
 };
 
-// end of _metal group
+// end of _opengl group
 /// @}
-}  // namespace ax::rhi::mtl
+}  // namespace ax::rhi::gl

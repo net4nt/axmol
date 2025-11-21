@@ -23,14 +23,17 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
+#include "axmol/platform/android/jni/AxmolEngineJni.h"
 #include <stdlib.h>
 #include <jni.h>
 #include <android/log.h>
 #include <string>
 #include "axmol/platform/android/jni/JniHelper.h"
 #include "axmol/platform/android/FileUtils-android.h"
-#include "axmol/platform/android/jni/Java_dev_axmol_lib_AxmolEngine.h"
-
+#include "axmol/platform/Application.h"
+#include "axmol/base/EventType.h"
+#include "axmol/base/EventCustom.h"
+#include "axmol/base/EventDispatcher.h"
 #include "axmol/base/text_utils.h"
 
 #define LOG_TAG   "Java_dev_axmol_lib_AxmolEngine.cpp"
@@ -41,20 +44,23 @@ static const char* className = "dev.axmol.lib.AxmolEngine";
 static EditTextCallback s_editTextCallback = nullptr;
 static void* s_ctx                         = nullptr;
 
-static std::string g_apkPath;
+static std::string s_apkPath;
 
 using namespace ax;
-using namespace std;
 
 extern "C" {
 
-JNIEXPORT void JNICALL Java_dev_axmol_lib_AxmolEngine_nativeSetContext(JNIEnv* env,
-                                                                       jclass,
-                                                                       jobject context,
-                                                                       jobject assetManager)
+// This is the first call from java after JNI_OnLoad
+JNIEXPORT void JNICALL Java_dev_axmol_lib_AxmolEngine_nativeInit(JNIEnv* env,
+                                                                 jclass,
+                                                                 jobject context,
+                                                                 jobject assetManager)
 {
     JniHelper::setClassLoaderFrom(context);
     FileUtilsAndroid::setAssetManagerFromJava(assetManager);
+
+    auto app = ax::Application::getInstance();
+    app->initContextAttrs();
 }
 
 JNIEXPORT void JNICALL Java_dev_axmol_lib_AxmolEngine_nativeSetEditTextDialogResult(JNIEnv* env,
@@ -92,7 +98,12 @@ JNIEXPORT void JNICALL Java_dev_axmol_lib_AxmolEngine_nativeCall0(JNIEnv* env, j
         operation(reinterpret_cast<void*>(static_cast<uintptr_t>(param)));
 }
 
-JNIEXPORT void JNICALL Java_dev_axmol_lib_AxmolEngine_nativeRunOnGLThread(JNIEnv* env, jclass, jobject runnable)
+JNIEXPORT int JNICALL Java_dev_axmol_lib_AxmolEngine_nativeGetRenderAPI(JNIEnv* env, jclass)
+{
+    return AX_RENDER_API;
+}
+
+JNIEXPORT void JNICALL Java_dev_axmol_lib_AxmolEngine_nativeRunOnAxmolThread(JNIEnv* env, jclass, jobject runnable)
 {
     using jobject_type = std::remove_pointer_t<jobject>;
     struct jobject_delete
@@ -111,16 +122,31 @@ JNIEXPORT void JNICALL Java_dev_axmol_lib_AxmolEngine_nativeRunOnGLThread(JNIEnv
         }
     });
 }
+
+JNIEXPORT jintArray JNICALL Java_dev_axmol_lib_AxmolEngine_nativeGetGLContextAttrs(JNIEnv* env, jclass)
+{
+    auto app                 = ax::Application::getInstance();
+    const auto& contextAttrs = Application::getContextAttrs();
+
+    int tmp[7] = {contextAttrs.redBits,           contextAttrs.greenBits, contextAttrs.blueBits,
+                  contextAttrs.alphaBits,         contextAttrs.depthBits, contextAttrs.stencilBits,
+                  contextAttrs.multisamplingCount};
+
+    jintArray glContextAttrsJava = env->NewIntArray(7);
+    env->SetIntArrayRegion(glContextAttrsJava, 0, 7, tmp);
+
+    return glContextAttrsJava;
+}
 }
 
 const char* getApkPath()
 {
-    if (g_apkPath.empty())
+    if (s_apkPath.empty())
     {
-        g_apkPath = JniHelper::callStaticStringMethod(className, "getAssetsPath");
+        s_apkPath = JniHelper::callStaticStringMethod(className, "getAssetsPath");
     }
 
-    return g_apkPath.c_str();
+    return s_apkPath.c_str();
 }
 
 std::string getPackageNameJNI()

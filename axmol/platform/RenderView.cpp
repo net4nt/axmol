@@ -176,9 +176,6 @@ const Vec2& RenderView::getDesignResolutionSize() const
 
 void RenderView::updateRenderSurface(float width, float height, uint8_t updateFlag)
 {
-    if (width == 0 || height == 0)
-        return;
-
     Vec2 value{width, height};
 
     if (updateFlag & SurfaceUpdateFlag::WindowSizeChanged)
@@ -220,10 +217,11 @@ void RenderView::maybeDispatchResizeEvent(uint8_t updateFlag)
 
     const bool readyToDispatch = (_surfaceUpdateFlags == requiredFlags);
 
-    if (readyToDispatch && !silentUpdate)
+    if (readyToDispatch)
     {
         _surfaceUpdateFlags = 0;
-        onSurfaceResized();
+        if (!silentUpdate)
+            onSurfaceResized();
     }
 }
 
@@ -517,8 +515,10 @@ void RenderView::onSurfaceResized()
 
     int screenWidth  = static_cast<uint32_t>(_renderSize.width);
     int screenHeight = static_cast<uint32_t>(_renderSize.height);
-    Director::getInstance()->resizeSwapchain(screenWidth, screenHeight);
 
+    auto renderer = Director::getInstance()->getRenderer();
+    if (renderer)
+        renderer->updateSurface(getNativeDisplay(), screenWidth, screenHeight);
 #ifdef AX_ENABLE_VR
     if (_vrRenderer) [[unlikely]]
         _vrRenderer->onRenderViewResized(this);

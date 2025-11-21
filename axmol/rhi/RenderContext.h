@@ -63,9 +63,9 @@ struct DepthStencilDesc;
 
 /**
  * @brief Store encoded commands for the GPU to execute.
- * A command buffer stores encoded commands until the buffer is committed for execution by the GPU
+ * A Render Context stores encoded commands until the buffer is committed for execution by the GPU
  */
-class CommandBuffer : public ax::Object
+class RenderContext : public ax::Object
 {
 public:
     /**
@@ -76,14 +76,14 @@ public:
     void setScreenRenderTarget(RenderTarget* rt) { _screenRT = rt; }
 
     /**
-     * @brief Resize swapchain when window size changed
-     *
+     * @brief Updates surface when the window resized or surface recretad
+     * @param surface
      * @param width
      * @param height
      * @return true
      * @return false
      */
-    virtual bool resizeSwapchain(uint32_t width, uint32_t height);
+    virtual bool updateSurface(void* surface, uint32_t width, uint32_t height);
 
     /**
      * Set depthStencil status once
@@ -108,7 +108,7 @@ public:
      * Begin a render pass, initial color, depth and stencil attachment.
      * @param desc Specifies a group of render targets that hold the results of a render pass.
      */
-    virtual void beginRenderPass(const RenderTarget* renderTarget, const RenderPassDesc& desc) = 0;
+    virtual void beginRenderPass(RenderTarget* renderTarget, const RenderPassDesc& desc) = 0;
 
     /**
      * Update depthStencil status, improvment: for metal backend cache it
@@ -234,10 +234,16 @@ public:
     virtual void setScissorRect(bool isEnabled, float x, float y, float width, float height) = 0;
 
     /**
-     * Get a screen snapshot
-     * @param callback A callback to deal with screen snapshot image.
+     * Read pixels from the specified render target.
+     *
+     * @param rt              The render target to read pixels from.
+     * @param preserveAxisHint A hint indicating whether to preserve the original axis orientation
+     *                         (e.g., avoid vertical flip). Note: support may vary across drivers/backends.
+     * @param callback        A callback invoked with the resulting pixel buffer description.
      */
-    virtual void readPixels(RenderTarget* rt, std::function<void(const PixelBufferDesc&)> callback) = 0;
+    virtual void readPixels(RenderTarget* rt,
+                            bool preserveAxisHint,
+                            std::function<void(const PixelBufferDesc&)> callback) = 0;
 
     /**
      * This property controls whether or not the drawables'
@@ -255,13 +261,13 @@ public:
      * Update both front and back stencil reference value.
      * @param value Specifies stencil reference value.
      */
-    void setStencilReferenceValue(unsigned int value);
+    virtual void setStencilReferenceValue(uint32_t value);
 
 protected:
-    virtual ~CommandBuffer() = default;
+    virtual ~RenderContext() = default;
 
-    const RenderTarget* _screenRT{nullptr};   // weak ref (managed by Renderer)
-    const RenderTarget* _currentRT{nullptr};  // weak ref (managed by Renderer)
+    RenderTarget* _screenRT{nullptr};         // weak ref (managed by Renderer)
+    RenderTarget* _currentRT{nullptr};        // weak ref (managed by Renderer)
     ProgramState* _programState{nullptr};     // weak ref
     VertexLayout* _vertexLayout{nullptr};     // weak ref
     unsigned int _stencilReferenceValue = 0;  ///< front stencil reference value

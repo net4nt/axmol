@@ -1,5 +1,4 @@
 /****************************************************************************
- Copyright (c) 2018-2019 Xiamen Yaji Software Co., Ltd.
  Copyright (c) 2019-present Axmol Engine contributors (see AUTHORS.md).
 
  https://axmol.dev/
@@ -22,31 +21,35 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  ****************************************************************************/
+#pragma once
+#include "axmol/rhi/DepthStencilState.h"
+#include <glad/vulkan.h>
+#include <unordered_map>
 
-#include "axmol/rhi/CommandBuffer.h"
-
-namespace ax::rhi
+namespace ax::rhi::vk
 {
-
-void CommandBuffer::updatePipelineState(const RenderTarget* rt, const PipelineDesc& desc)
+/**
+ * @brief A Vulkan-based DepthStencilState implementation
+ */
+class DepthStencilStateImpl : public DepthStencilState
 {
-    _programState = desc.programState;
-    _vertexLayout = desc.vertexLayout;
+public:
+    DepthStencilStateImpl();
 
-    assert(_programState);
-    assert(_vertexLayout);
-}
+    void update(const DepthStencilDesc& desc) override;
 
-void CommandBuffer::setStencilReferenceValue(uint32_t value)
-{
-    _stencilReferenceValue = value;
-}
+    uintptr_t getHash() const { return _hash; }
 
-bool CommandBuffer::resizeSwapchain(uint32_t /*width*/, uint32_t /*height*/)
-{
-    return true;
-}
+    // Return the Vulkan depth-stencil state create info
+    const VkPipelineDepthStencilStateCreateInfo& getVkDepthStencilState() const { return _activeInfo; }
 
-void CommandBuffer::setFrameBufferOnly(bool /*frameBufferOnly*/) {}
+private:
+    VkDevice _device{VK_NULL_HANDLE};
 
-}  // namespace ax::rhi
+    uintptr_t _hash{0};
+
+    VkPipelineDepthStencilStateCreateInfo _activeInfo{};
+    VkPipelineDepthStencilStateCreateInfo _disableInfo{};
+};
+
+}  // namespace ax::rhi::vk

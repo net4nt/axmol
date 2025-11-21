@@ -49,7 +49,7 @@ using Winding  = rhi::Winding;
 namespace rhi
 {
 class Buffer;
-class CommandBuffer;
+class RenderContext;
 class RenderPipeline;
 class RenderPass;
 class Texture;
@@ -64,6 +64,7 @@ class GroupCommand;
 class CallbackCommand;
 struct PipelineDesc;
 class Texture2D;
+class RenderView;
 
 /** Class that knows how to sort `RenderCommand` objects.
  Since the commands that have `z == 0` are "pushed back" in
@@ -131,6 +132,8 @@ Whenever possible prefer to use `TrianglesCommand` objects since the renderer wi
  */
 class AX_DLL Renderer
 {
+    friend class RenderView;
+
 public:
     /**The max number of vertices in a vertex buffer object.*/
     static const int VBO_SIZE = 65536;
@@ -406,13 +409,19 @@ public:
     bool getScissorTest() const;                ///< Get whether scissor test is enabled or not.
     const ScissorRect& getScissorRect() const;  ///< Get scissor rectangle.
 
-    rhi::CommandBuffer* getCommandBuffer() const { return _commandBuffer; }
+    rhi::RenderContext* getContext() const { return _context; }
 
     /** returns whether or not a rectangle is visible or not */
     bool checkVisibility(const Mat4& transform, const Vec2& size);
 
     /** read pixels from RenderTarget or screen framebuffer */
-    void readPixels(rhi::RenderTarget* rt, std::function<void(const rhi::PixelBufferDesc&)> callback);
+    void readPixels(rhi::RenderTarget* rt, std::function<void(const rhi::PixelBufferDesc&)> callback)
+    {
+        readPixels(rt, false, std::move(callback));
+    }
+    void readPixels(rhi::RenderTarget* rt,
+                    bool preserveAxisHint,
+                    std::function<void(const rhi::PixelBufferDesc&)> callback);
 
     void beginRenderPass();  /// Begin a render pass.
     void endRenderPass();
@@ -490,7 +499,7 @@ protected:
 
     void popStateBlock();
 
-    void resizeSwapchain(uint32_t width, uint32_t height);
+    void updateSurface(void* surface, uint32_t width, uint32_t height);
 
     rhi::RenderPipeline* _renderPipeline = nullptr;
 
@@ -516,7 +525,7 @@ protected:
     rhi::Buffer* _indexBuffer  = nullptr;
     TriangleCommandBufferManager _triangleCommandBufferManager;
 
-    rhi::CommandBuffer* _commandBuffer = nullptr;
+    rhi::RenderContext* _context = nullptr;
     rhi::RenderPassDesc _renderPassDesc;
 
     rhi::DepthStencilState* _depthStencilState = nullptr;
