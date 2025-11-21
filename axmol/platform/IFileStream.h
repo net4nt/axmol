@@ -1,9 +1,10 @@
 // Copyright (c) 2019-present Axmol Engine contributors (see AUTHORS.md)
 #pragma once
 
+#include <errno.h>
+#include <stdint.h>
 #include <string>
 
-#include "axmol/platform/PlatformConfig.h"
 #include "axmol/platform/PlatformMacros.h"
 
 namespace ax
