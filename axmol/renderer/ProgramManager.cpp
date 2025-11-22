@@ -222,8 +222,6 @@ Program* ProgramManager::loadProgram(std::string_view vsName,
     if (it != _cachedPrograms.end())
         return it->second;
 
-    AXLOGD("Loading shader: {} {}, {} ...", progId, vsName.data(), fsName.data());
-
     auto fileUtils  = FileUtils::getInstance();
     auto vertFile   = fileUtils->fullPathForFilename(vsName);
     auto fragFile   = fileUtils->fullPathForFilename(fsName);
@@ -233,6 +231,8 @@ Program* ProgramManager::loadProgram(std::string_view vsName,
 
     if (program)
     {
+        AXLOGD("Load program: {} {}, {} ok", progId, vsName, fsName);
+
         program->setProgramIds(progType, progId);
         if ((unsigned int)vlk < (unsigned int)VertexLayoutKind::Count)
         {
@@ -240,6 +240,10 @@ Program* ProgramManager::loadProgram(std::string_view vsName,
             program->setVertexLayout(layout);
         }
         _cachedPrograms.emplace(progId, program);
+    }
+    else
+    {
+        AXLOGD("Load program: {} {}, {} fail", progId, vsName, fsName);
     }
     return program;
 }
