@@ -59,7 +59,6 @@ public:
      * Constructor.
      */
     EventTouch();
-    EventTouch(EventCode eventCode, std::vector<Touch*> touches);
 
     /** Get event code.
      *
@@ -72,6 +71,17 @@ public:
      * @return The touches of the event.
      */
     const std::vector<Touch*>& getTouches() const { return _touches; }
+
+    /** Set the event code.
+     *
+     * @param eventCode A given EventCode.
+     */
+    void setEventCode(EventCode eventCode) { _eventCode = eventCode; };
+    /** Set the touches
+     *
+     * @param touches A given touches vector.
+     */
+    void setTouches(const std::vector<Touch*>& touches) { _touches = touches; };
 
 private:
     EventCode _eventCode;

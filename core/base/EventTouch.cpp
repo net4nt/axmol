@@ -36,8 +36,4 @@ EventTouch::EventTouch() : Event(Type::TOUCH)
     _touches.reserve(MAX_TOUCHES);
 }
 
-EventTouch::EventTouch(EventCode eventCode, std::vector<Touch*> touches)
-    : Event(Type::TOUCH), _eventCode(eventCode), _touches(std::move(touches))
-{}
-
 }  // namespace ax
