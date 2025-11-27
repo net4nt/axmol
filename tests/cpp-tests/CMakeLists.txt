@@ -386,7 +386,7 @@ list(APPEND GAME_SOURCE
    Source/Box2DTest/Box2dTest.cpp
 )
 
-if((WINDOWS OR MACOSX OR LINUX OR WASM) AND (NOT WINRT))
+if((WINDOWS OR MACOSX OR LINUX OR WASM) AND (NOT WINRT) AND AX_ENABLE_EXT_IMGUI)
     list(APPEND GAME_HEADER
         Source/Box2DTestBed/tests/test.h
         Source/Box2DTestBed/tests/settings.h
