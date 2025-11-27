@@ -26,11 +26,10 @@
 #ifndef _TESTS_H_
 #define _TESTS_H_
 
+#include "Box2DTest/Box2dTest.h"
 #include "feature-detect.h"
 
-#include "Box2DTest/Box2dTest.h"
-
-#    if AX_ENABLE_EXT_IMGUI
+#    if AX_ENABLE_EXT_IMGUI && AX_TARGET_PLATFORM != AX_PLATFORM_ANDROID
 #include "Box2DTestBed/Box2DTestBed.h"
 #    endif
 
