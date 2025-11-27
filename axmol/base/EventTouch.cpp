@@ -26,6 +26,8 @@
 #include "axmol/base/EventTouch.h"
 #include "axmol/base/Touch.h"
 
+#include <utility>
+
 namespace ax
 {
 
