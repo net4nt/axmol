@@ -129,7 +129,7 @@ RenderPipelineImpl::RenderPipelineImpl(DriverImpl* driver) : _driver(driver)
 
 RenderPipelineImpl::~RenderPipelineImpl()
 {
-    _driver->waitDeviceIdle();
+    _driver->waitForGPU();
 
     _activePSO.Reset();
     _activeRootSignature = nullptr;

@@ -54,6 +54,22 @@ enum class DynamicStateBits : uint32_t
 };
 AX_ENABLE_BITMASK_OPS(DynamicStateBits);
 
+struct GPUFence
+{
+    GPUFence() = default;
+
+    GPUFence(const GPUFence&)            = delete;
+    GPUFence& operator=(const GPUFence&) = delete;
+
+    explicit operator bool() const { return this->handle && this->event; }
+
+    uint64_t wait() const;
+
+    ID3D12Fence* handle{nullptr};
+    HANDLE event{nullptr};
+    uint64_t value{0};
+};
+
 class RenderContextImpl : public RenderContext
 {
 public:
@@ -150,16 +166,16 @@ private:
 
     RenderTargetImpl* _screenRT{nullptr};
 
-    Microsoft::WRL::ComPtr<IDXGISwapChain4> _swapchain;
-    Microsoft::WRL::ComPtr<ID3D12Device> _device;
-    Microsoft::WRL::ComPtr<ID3D12CommandQueue> _graphicsQueue;
+    ComPtr<IDXGISwapChain4> _swapchain;
+    ComPtr<ID3D12Device> _device;
+    ComPtr<ID3D12CommandQueue> _graphicsQueue;
 
-    std::array<Microsoft::WRL::ComPtr<ID3D12CommandAllocator>, MAX_FRAMES_IN_FLIGHT> _commandAllocators;
-    std::array<Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>, MAX_FRAMES_IN_FLIGHT> _commandLists;
-    std::array<Microsoft::WRL::ComPtr<ID3D12Fence>, MAX_FRAMES_IN_FLIGHT> _fences;
-    std::array<HANDLE, MAX_FRAMES_IN_FLIGHT> _fenceEvents{};
-    std::array<uint64_t, MAX_FRAMES_IN_FLIGHT> _fenceValues{};
-    std::array<uint64_t, MAX_FRAMES_IN_FLIGHT> _advanceFenceValues{};
+    std::array<ComPtr<ID3D12CommandAllocator>, MAX_FRAMES_IN_FLIGHT> _commandAllocators;
+    std::array<ComPtr<ID3D12GraphicsCommandList>, MAX_FRAMES_IN_FLIGHT> _commandLists;
+    std::array<GPUFence, MAX_FRAMES_IN_FLIGHT> _inflightFences;
+
+    uint64_t _frameFenceValue{0};
+    uint64_t _completedFenceValue{0};
 
     ComPtr<ID3D12DescriptorHeap> _srvHeaps[MAX_FRAMES_IN_FLIGHT];
 
@@ -192,8 +208,8 @@ private:
     struct UniformRingBuffer
     {
         // Upload heap resource (persistently mapped)
-        Microsoft::WRL::ComPtr<ID3D12Resource> resource = nullptr;
-        uint8_t* mapped                                 = nullptr;
+        ComPtr<ID3D12Resource> resource = nullptr;
+        uint8_t* mapped                 = nullptr;
 
         // Capacity & allocation state
         std::size_t capacity  = 0;  // total bytes
@@ -227,7 +243,7 @@ private:
     BufferImpl* _indexBuffer{nullptr};
     BufferImpl* _instanceBuffer{nullptr};
 
-    std::vector<std::function<void(uint64_t)>> _fenceCompletionOps;
+    std::vector<std::function<void(uint64_t)>> _frameCompletionOps;
 
     D3D12_VIEWPORT _cachedViewport{};
     D3D12_RECT _cachedScissor{};

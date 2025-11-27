@@ -176,7 +176,7 @@ public:
 
     void processDisposalQueue(uint64_t completeFence);
 
-    void waitDeviceIdle();
+    void waitForGPU() override;
 
 protected:
     void queueDisposalInternal(DisposableResource&& res);

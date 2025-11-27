@@ -37,7 +37,7 @@ RenderTargetImpl::RenderTargetImpl(DriverImpl* driver, bool defaultRenderTarget)
 
 RenderTargetImpl::~RenderTargetImpl()
 {
-    _driver->waitDeviceIdle();
+    _driver->waitForGPU();
     invalidate();
 }
 

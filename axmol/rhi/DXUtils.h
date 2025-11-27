@@ -31,5 +31,15 @@ int evalulateMaxTexSize(D3D_FEATURE_LEVEL fl);
 
 DXGI_FORMAT getUAVCompatibleFormat(DXGI_FORMAT format);
 
+void fatalError(std::string_view op, HRESULT hr);
+
 }  // namespace ax::rhi::dxutils
 /** @} */
+
+#define _AXASSERT_HR(expr)                                          \
+    do                                                              \
+    {                                                               \
+        HRESULT _hr = (expr);                                       \
+        if (FAILED(_hr))                                            \
+            ::ax::rhi::dxutils::fatalError(#expr " failed"sv, _hr); \
+    } while (0)

@@ -33,9 +33,6 @@
 
 namespace ax::rhi::d3d12
 {
-
-using Microsoft::WRL::ComPtr;
-
 class DriverImpl;
 struct DescriptorHandle;
 

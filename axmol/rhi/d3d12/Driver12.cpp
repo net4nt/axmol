@@ -32,7 +32,6 @@
 #include "axmol/rhi/d3d12/DepthStencilState12.h"
 #include "axmol/rhi/d3d12/VertexLayout12.h"
 #include "axmol/rhi/d3d12/Sampler12.h"
-#include "axmol/rhi/d3d12/Utils12.h"
 #include "axmol/base/Logging.h"
 #include "axmol/rhi/RHIUtils.h"
 #include "axmol/rhi/SamplerCache.h"
@@ -416,15 +415,17 @@ void DriverImpl::initializeDevice()
 
     ComPtr<IDXGIAdapter1> adapter;
     ComPtr<IDXGIFactory6> factory6;
-    uint32_t adapterIndex{0};
     hr = _dxgiFactory->QueryInterface(IID_PPV_ARGS(&factory6));
     if (SUCCEEDED(hr))
     {
         // IDXGIFactory6 is not availablee on all versions of windows 10, If it is available, use it
         // to enumerate the adapters based on the desired power preference.
-        while ((hr = factory6->EnumAdapterByGpuPreference(
-                    adapterIndex, gpuPref, IID_PPV_ARGS(adapter.ReleaseAndGetAddressOf()))) != DXGI_ERROR_NOT_FOUND)
+        for (uint32_t adapterIndex = 0;; ++adapterIndex)
         {
+            hr = factory6->EnumAdapterByGpuPreference(adapterIndex, gpuPref,
+                                                      IID_PPV_ARGS(adapter.ReleaseAndGetAddressOf()));
+            if (FAILED(hr))  // when start with Visual Studio graphics debugging, will fail
+                break;
             hr = D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&_device));
             if (SUCCEEDED(hr))
             {
@@ -434,10 +435,15 @@ void DriverImpl::initializeDevice()
         }
     }
     else
-    {
+    {  // fallback: win10 lower versions
         std::vector<std::pair<int, ComPtr<IDXGIAdapter1>>> adapters;
-        while (_dxgiFactory->EnumAdapters1(adapterIndex++, adapter.ReleaseAndGetAddressOf()) != DXGI_ERROR_NOT_FOUND)
+        uint32_t adapterIndex{0};
+        for (uint32_t adapterIndex = 0;; ++adapterIndex)
         {
+            hr = _dxgiFactory->EnumAdapters1(adapterIndex, adapter.ReleaseAndGetAddressOf());
+            if (FAILED(hr))
+                break;
+
             DXGI_ADAPTER_DESC desc;
             adapter->GetDesc(&desc);
 
@@ -459,30 +465,36 @@ void DriverImpl::initializeDevice()
             adapters.emplace_back(score, adapter);
         }
 
-        if (powerPreferrence == PowerPreference::HighPerformance)
+        if (!adapters.empty())
         {
-            std::stable_sort(adapters.begin(), adapters.end(),
-                             [](auto& lhs, auto& rhs) { return lhs.first > rhs.first; });
-        }
-        else if (powerPreferrence == PowerPreference::LowPower)
-        {
-            std::stable_sort(adapters.begin(), adapters.end(),
-                             [](auto& lhs, auto& rhs) { return lhs.first < rhs.first; });
-        }
-
-        for (auto& [_, adapter] : adapters)
-        {
-            hr = D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&_device));
-            if (SUCCEEDED(hr))
+            if (powerPreferrence == PowerPreference::HighPerformance)
             {
-                _adapter = std::move(adapter);
-                break;
+                std::stable_sort(adapters.begin(), adapters.end(),
+                                 [](auto& lhs, auto& rhs) { return lhs.first > rhs.first; });
+            }
+            else if (powerPreferrence == PowerPreference::LowPower)
+            {
+                std::stable_sort(adapters.begin(), adapters.end(),
+                                 [](auto& lhs, auto& rhs) { return lhs.first < rhs.first; });
+            }
+
+            for (auto& [_, adapter] : adapters)
+            {
+                hr = D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&_device));
+                if (SUCCEEDED(hr))
+                {
+                    _adapter = std::move(adapter);
+                    break;
+                }
             }
         }
     }
 
     if (!_adapter)
-        AX_D3D_FAST_FAIL(hr);
+    {
+        _AXASSERT_HR(D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&_device)));
+        _AXASSERT_HR(_dxgiFactory->EnumAdapterByLuid(_device->GetAdapterLuid(), IID_PPV_ARGS(&_adapter)));
+    }
 
     // Create graphics queue
     D3D12_COMMAND_QUEUE_DESC qdesc{};
@@ -803,11 +815,11 @@ void DriverImpl::processDisposalQueue(uint64_t completeFence)
         for (size_t i = 0; i < _disposalQueue.size();)
         {
             auto& res = _disposalQueue[i];
-            if (res.fenceValue < completeFence)
+            if (res.fenceValue <= completeFence)
             {
                 if (res.type == DisposableResource::Type::Resource)
                 {
-                    res.resource->Release();
+                    SafeRelease(res.resource);
                 }
                 else
                 {
@@ -827,7 +839,7 @@ void DriverImpl::processDisposalQueue(uint64_t completeFence)
 
 void DriverImpl::cleanPendingResources()
 {
-    waitDeviceIdle();
+    waitForGPU();
     processDisposalQueue(UINT64_MAX);
 }
 
@@ -1041,9 +1053,9 @@ bool DriverImpl::generateMipmaps(ID3D12GraphicsCommandList* cmd, ID3D12Resource*
     {
         CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_UPLOAD);
         auto bufDesc = CD3DX12_RESOURCE_DESC::Buffer(totalConstSize);
-        if (!CheckHR(getDevice()->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE, &bufDesc,
-                                                          D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
-                                                          IID_PPV_ARGS(&constUpload)),
+        if (!CheckHR(_device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE, &bufDesc,
+                                                      D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
+                                                      IID_PPV_ARGS(&constUpload)),
                      "Create constant upload buffer"))
             return false;
     }
@@ -1220,7 +1232,7 @@ D3D12BlobHandle DriverImpl::compileMipmapCS(bool isArray)
     return csBlob;
 }
 
-void DriverImpl::waitDeviceIdle()
+void DriverImpl::waitForGPU()
 {
     if (_idleFence && _idleEvent && _gfxQueue)
     {

@@ -136,7 +136,6 @@ elseif(AX_RENDER_API STREQUAL "d3d12")
     rhi/d3d12/RenderPipeline12.h
     rhi/d3d12/ShaderModule12.h
     rhi/d3d12/Texture12.h
-    rhi/d3d12/Utils12.h
     rhi/d3d12/Program12.h
     rhi/d3d12/VertexLayout12.h
     rhi/d3d12/DescriptorHeapAllocator12.h
@@ -153,7 +152,6 @@ elseif(AX_RENDER_API STREQUAL "d3d12")
     rhi/d3d12/RenderPipeline12.cpp
     rhi/d3d12/ShaderModule12.cpp
     rhi/d3d12/Texture12.cpp
-    rhi/d3d12/Utils12.cpp
     rhi/d3d12/Program12.cpp
     rhi/d3d12/VertexLayout12.cpp
     rhi/d3d12/DescriptorHeapAllocator12.cpp

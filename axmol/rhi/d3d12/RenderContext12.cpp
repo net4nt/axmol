@@ -167,6 +167,18 @@ static HRESULT runOnUIThread(const ComPtr<ICoreDispatcher>& dispatcher, _Fty&& f
 }
 #endif
 
+uint64_t GPUFence::wait() const
+{
+    const auto completeFenceValue = this->handle->GetCompletedValue();
+    if (completeFenceValue < this->value)
+    {
+        this->handle->SetEventOnCompletion(this->value, this->event);
+        WaitForSingleObject(this->event, INFINITE);
+        return this->value;
+    }
+    return completeFenceValue;
+}
+
 RenderContextImpl::RenderContextImpl(DriverImpl* driver, void* surfaceContext) : _driver(driver)
 {
     _device        = driver->getDevice();
@@ -342,17 +354,22 @@ RenderContextImpl::RenderContextImpl(DriverImpl* driver, void* surfaceContext) :
 
 RenderContextImpl::~RenderContextImpl()
 {
-    _driver->waitDeviceIdle();
+    _driver->waitForGPU();
 
     AX_SAFE_RELEASE_NULL(_screenRT);
     AX_SAFE_RELEASE_NULL(_renderPipeline);
 
     for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
     {
-        if (_fenceEvents[i])
+        if (_inflightFences[i].event)
         {
-            CloseHandle(_fenceEvents[i]);
-            _fenceEvents[i] = nullptr;
+            CloseHandle(_inflightFences[i].event);
+            _inflightFences[i].event = nullptr;
+        }
+
+        if (_inflightFences[i].handle)
+        {
+            SafeRelease(_inflightFences[i].handle);
         }
 
         if (_srvHeaps[i])
@@ -380,11 +397,10 @@ void RenderContextImpl::createCommandObjects()
         _commandLists[i]->Close();
 
         // Fence + event
-        hr = _device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_fences[i]));
+        hr = _device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_inflightFences[i].handle));
         AXASSERT(SUCCEEDED(hr), "CreateFence failed");
-        _fenceValues[i] = 0;
-        _fenceEvents[i] = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-        AXASSERT(_fenceEvents[i] != nullptr, "CreateEvent failed");
+        _inflightFences[i].event = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+        AXASSERT(!!_inflightFences[i], "CreateEvent failed");
     }
 }
 
@@ -428,32 +444,24 @@ void RenderContextImpl::setRenderPipeline(RenderPipeline* renderPipeline)
 
 uint64_t RenderContextImpl::getCompletedFenceValue() const
 {
-    return _fenceValues[_currentFrame];
+    return _completedFenceValue;
 }
 
 bool RenderContextImpl::beginFrame()
 {
     // Wait fence of current frame
-    auto fence = _fences[_currentFrame];
+    auto& currentFence   = _inflightFences[_currentFrame];
+    _completedFenceValue = currentFence.wait();
+    _driver->processDisposalQueue(_completedFenceValue);
 
-    const auto completeFenceValue = fence->GetCompletedValue();
-    const auto frameFenceValue    = _fenceValues[_currentFrame];
-    if (completeFenceValue < frameFenceValue)
+    if (!_frameCompletionOps.empty())
     {
-        fence->SetEventOnCompletion(frameFenceValue, _fenceEvents[_currentFrame]);
-        WaitForSingleObject(_fenceEvents[_currentFrame], INFINITE);
+        for (auto&& op : _frameCompletionOps)
+            op(_completedFenceValue);
+        _frameCompletionOps.clear();
     }
 
-    _advanceFenceValues[_currentFrame] = frameFenceValue + 1;
-
-    if (!_fenceCompletionOps.empty())
-    {
-        for (auto& op : _fenceCompletionOps)
-            op(completeFenceValue);
-        _fenceCompletionOps.clear();
-    }
-
-    _driver->processDisposalQueue(completeFenceValue);
+    currentFence.value = ++_frameFenceValue;
 
     if (_swapchainDirty)
     {
@@ -520,7 +528,7 @@ void RenderContextImpl::beginRenderPass(RenderTarget* renderTarget, const Render
     // Bind RTV/DSV and clear according to flags
     rtImpl->beginRenderPass(_currentCmdList, descriptor, _renderTargetWidth, _renderTargetHeight, _currentImageIndex);
 
-    rtImpl->setLastFenceValue(_advanceFenceValues[_currentFrame]);
+    rtImpl->setLastFenceValue(_frameFenceValue);
 }
 
 void RenderContextImpl::endRenderPass()
@@ -563,8 +571,8 @@ void RenderContextImpl::endFrame()
 #endif
 
     // Signal fence for this frame
-    _graphicsQueue->Signal(_fences[_currentFrame].Get(), _advanceFenceValues[_currentFrame]);
-    _fenceValues[_currentFrame] = _advanceFenceValues[_currentFrame];
+    auto& currentFence = _inflightFences[_currentFrame];
+    _graphicsQueue->Signal(currentFence.handle, currentFence.value);
 
     // Next frame index
     _currentFrame = (_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
@@ -849,8 +857,7 @@ void RenderContextImpl::prepareDrawing(ID3D12GraphicsCommandList* cmd)
 
     applyPendingDynamicStates();
 
-    const auto advanceFenceValue = _advanceFenceValues[_currentFrame];
-    _vertexBuffer->setLastFenceValue(advanceFenceValue);
+    _vertexBuffer->setLastFenceValue(_frameFenceValue);
 
     // bind vertex buffers
     if (!_instanceBuffer)
@@ -863,7 +870,7 @@ void RenderContextImpl::prepareDrawing(ID3D12GraphicsCommandList* cmd)
     }
     else
     {
-        _instanceBuffer->setLastFenceValue(advanceFenceValue);
+        _instanceBuffer->setLastFenceValue(_frameFenceValue);
         D3D12_VERTEX_BUFFER_VIEW views[2]{};
         views[0].BufferLocation = _vertexBuffer->internalResource()->GetGPUVirtualAddress();
         views[0].SizeInBytes    = static_cast<UINT>(_vertexBuffer->getSize());
@@ -919,7 +926,7 @@ void RenderContextImpl::prepareDrawing(ID3D12GraphicsCommandList* cmd)
                     maxSlot = slot;
 
                 auto textureImpl = static_cast<TextureImpl*>(bindingSet.texs[i]);
-                textureImpl->setLastFenceValue(advanceFenceValue);
+                textureImpl->setLastFenceValue(_frameFenceValue);
                 auto srvHandle = textureImpl->internalHandle().srv;
                 assert(!!srvHandle);
 
@@ -1057,7 +1064,7 @@ void RenderContextImpl::readPixels(RenderTarget* rt,
     }
     rt->retain();
 
-    _fenceCompletionOps.emplace_back([this, rt, preserveAxisHint, callback = std::move(callback)](uint64_t) mutable {
+    _frameCompletionOps.emplace_back([this, rt, preserveAxisHint, callback = std::move(callback)](uint64_t) mutable {
         readPixelsInternal(rt, preserveAxisHint, callback);
 
         rt->release();
