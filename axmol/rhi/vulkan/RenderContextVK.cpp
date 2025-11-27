@@ -184,7 +184,7 @@ RenderContextImpl::~RenderContextImpl()
 
     for (auto fence : _inFlightFences)
         vkDestroyFence(_device, fence, nullptr);
-    _inFlightFences.fill(VK_NULL_HANDLE);
+    _inFlightFences.fill({});
 #if !_AX_USE_DESCRIPTOR_CACHE
     for (auto pool : _descriptorPools)
         vkDestroyDescriptorPool(_device, pool, nullptr);
@@ -567,6 +567,11 @@ void RenderContextImpl::setRenderPipeline(RenderPipeline* renderPipeline)
     Object::assign(_renderPipeline, static_cast<RenderPipelineImpl*>(renderPipeline));
 }
 
+uint64_t RenderContextImpl::getCompletedFenceValue() const
+{
+    return _completedFenceValue;
+}
+
 bool RenderContextImpl::beginFrame()
 {
     if (_swapchainDirty) [[unlikely]]
@@ -581,9 +586,14 @@ bool RenderContextImpl::beginFrame()
         return false;  // if error not cleared, skip frame
 
     // wait for previous frame to finish
-    vkWaitForFences(_device, 1, &_inFlightFences[_currentFrame], VK_TRUE, UINT64_MAX);
-    vkResetFences(_device, 1, &_inFlightFences[_currentFrame]);
-    _driver->processDisposalQueue(1 << _currentFrame);
+    auto& currentFence = _inFlightFences[_currentFrame];
+    vkWaitForFences(_device, 1, &currentFence, VK_TRUE, UINT64_MAX);
+    vkResetFences(_device, 1, &currentFence);
+
+    _completedFenceValue = currentFence.fenceValue;
+    _driver->processDisposalQueue(_completedFenceValue);
+
+    currentFence.fenceValue = ++_frameFenceValue;
 
     // Reset uniform ring write head for this frame
     resetUniformRingForCurrentFrame();
@@ -693,6 +703,7 @@ void RenderContextImpl::endFrame()
     submitInfo.pSignalSemaphores    = &submissionSemaphore;
 
     vr = vkQueueSubmit(_graphicsQueue, 1, &submitInfo, _inFlightFences[_currentFrame]);
+
     AXASSERT(vr == VK_SUCCESS, "vkQueueSubmit failed");
 
     // Present: wait on render-finished semaphore
@@ -1085,21 +1096,25 @@ void RenderContextImpl::prepareDrawing()
 
         if (texs.size() == 1)
         {
-            auto* textureImpl                = static_cast<TextureImpl*>(texs[0]);
-            VkDescriptorImageInfo& imageInfo = imageInfos.emplace_back();
-            imageInfo.sampler                = textureImpl->getSampler();
-            imageInfo.imageView              = textureImpl->internalHandle().view;
-            imageInfo.imageLayout            = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            auto textureImpl      = static_cast<TextureImpl*>(texs[0]);
+            auto& imageInfo       = imageInfos.emplace_back();
+            imageInfo.sampler     = textureImpl->getSampler();
+            imageInfo.imageView   = textureImpl->internalHandle().view;
+            imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+            textureImpl->setLastFenceValue(_frameFenceValue);
         }
         else
         {
             for (auto tex : texs)
             {
-                auto textureImpl                 = static_cast<TextureImpl*>(tex);
-                VkDescriptorImageInfo& imageInfo = imageInfos.emplace_back();
-                imageInfo.sampler                = textureImpl->getSampler();
-                imageInfo.imageView              = textureImpl->internalHandle().view;
-                imageInfo.imageLayout            = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                auto textureImpl      = static_cast<TextureImpl*>(tex);
+                auto& imageInfo       = imageInfos.emplace_back();
+                imageInfo.sampler     = textureImpl->getSampler();
+                imageInfo.imageView   = textureImpl->internalHandle().view;
+                imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+                textureImpl->setLastFenceValue(_frameFenceValue);
             }
         }
 
@@ -1123,6 +1138,7 @@ void RenderContextImpl::prepareDrawing()
                             dslState->descriptorSetLayoutCount, descriptorSets.data(), 0, nullptr);
 
     // Bind vertex buffers
+    _vertexBuffer->setLastFenceValue(_frameFenceValue);
     if (!_instanceBuffer)
     {
         VkBuffer buffers[]     = {_vertexBuffer->internalHandle()};
@@ -1131,6 +1147,7 @@ void RenderContextImpl::prepareDrawing()
     }
     else
     {
+        _instanceBuffer->setLastFenceValue(_frameFenceValue);
         VkBuffer buffers[]     = {_vertexBuffer->internalHandle(), _instanceBuffer->internalHandle()};
         VkDeviceSize offsets[] = {0, 0};
         vkCmdBindVertexBuffers(_currentCmdBuffer, 0, 2, buffers, offsets);
@@ -1168,6 +1185,7 @@ void RenderContextImpl::drawElements(PrimitiveType primitiveType,
     prepareDrawing();
 
     AXASSERT(_indexBuffer, "Index buffer must be set for drawElements");
+    _indexBuffer->setLastFenceValue(_frameFenceValue);
     VkIndexType vkIndexType = toVkIndexType(indexType);
     vkCmdBindIndexBuffer(_currentCmdBuffer, _indexBuffer->internalHandle(), 0, vkIndexType);
 
@@ -1186,6 +1204,7 @@ void RenderContextImpl::drawElementsInstanced(PrimitiveType primitiveType,
     prepareDrawing();
 
     AXASSERT(_indexBuffer, "Index buffer must be set for drawElementsInstanced");
+    _indexBuffer->setLastFenceValue(_frameFenceValue);
     VkIndexType vkIndexType = toVkIndexType(indexType);
     vkCmdBindIndexBuffer(_currentCmdBuffer, _indexBuffer->internalHandle(), 0, vkIndexType);
 
