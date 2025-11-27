@@ -24,11 +24,16 @@
  ****************************************************************************/
 
 #include "axmol/rhi/RenderContext.h"
+#include "axmol/rhi/RenderTarget.h"
 
 namespace ax::rhi
 {
 
-void RenderContext::updatePipelineState(const RenderTarget* rt, const PipelineDesc& desc)
+RenderContext::~RenderContext() {}
+
+void RenderContext::updatePipelineState(const RenderTarget* rt,
+                                        const PipelineDesc& desc,
+                                        PrimitiveGroup /*primitiveGroup*/)
 {
     _programState = desc.programState;
     _vertexLayout = desc.vertexLayout;

@@ -34,6 +34,7 @@ namespace ax::rhi::mtl
 
 class RenderPipelineImpl;
 class DepthStencilStateImpl;
+class RenderTargetImpl;
 
 /**
  * @addtogroup _metal
@@ -53,6 +54,8 @@ public:
      */
     RenderContextImpl(DriverImpl* driver, void* surfaceContext);
     ~RenderContextImpl();
+
+    RenderTarget* getScreenRenderTarget() const override { return (RenderTarget*)_screenRT; }
 
     bool updateSurface(void* surface, uint32_t width, uint32_t height) override;
 
@@ -98,7 +101,7 @@ public:
      * @param rt Specifies the render target.
      * @param desc Specifies the pipeline descriptor.
      */
-    void updatePipelineState(const RenderTarget* rt, const PipelineDesc& desc) override;
+    void updatePipelineState(const RenderTarget* rt, const PipelineDesc& desc, PrimitiveGroup primitiveGroup) override;
 
     /**
      * Fixed-function state
@@ -246,6 +249,8 @@ private:
     static CAMetalLayer* _mtlLayer;
     static id<CAMetalDrawable> _currentDrawable;
 
+    RenderTargetImpl* _screenRT{nullptr};
+
     // weak ref, like context, managed by DriverImpl
     id<MTLCommandQueue> _mtlCmdQueue              = nil;
     id<MTLCommandBuffer> _currentCmdBuffer        = nil;
@@ -253,8 +258,8 @@ private:
     id<MTLBuffer> _mtlIndexBuffer                 = nil;
     id<MTLTexture> _drawableTexture               = nil;
 
-    DepthStencilStateImpl* _depthStencilStateImpl = nullptr;
-    RenderPipelineImpl* _renderPipelineImpl       = nullptr;
+    DepthStencilStateImpl* _depthStencilState = nullptr;
+    RenderPipelineImpl* _renderPipeline       = nullptr;
 
     unsigned int _renderTargetWidth  = 0;
     unsigned int _renderTargetHeight = 0;

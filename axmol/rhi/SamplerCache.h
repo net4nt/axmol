@@ -25,6 +25,7 @@
 #pragma once
 
 #include "axmol/tlx/hlookup.hpp"
+#include "axmol/tlx/pod_vector.hpp"
 #include "RHITypes.h"
 
 namespace ax::rhi
@@ -34,22 +35,39 @@ namespace ax::rhi
  * @{
  */
 
+class DriverBase;
+
 class SamplerCache
 {
 public:
+    static constexpr uint32_t MAX_SAMPLER_COUNT = 256;
+
     static SamplerCache* getInstance();
     static void destroyInstance();
 
+    SamplerCache();
     ~SamplerCache();
-
-    void removeAllSamplers();
 
     void invalidateAll();
 
+    SamplerHandle getSampler(SamplerIndex::enum_type samplerIndex);
     SamplerHandle getSampler(const SamplerDesc& desc);
 
+    SamplerIndex::enum_type registerSampler(const SamplerDesc& desc);
+
 private:
-    axstd::hash_map<uint32_t, SamplerHandle> _samplers;
+    void removeAllSamplers();
+    void createBuiltinSamplers();
+    void createBuiltinSampler(uint32_t samplerIndex, const SamplerDesc& desc);
+
+    axstd::pod_vector<SamplerHandle> _builtinSamplers;
+    axstd::hash_map<SamplerIndex::enum_type, SamplerHandle> _customSamplers;
+
+    axstd::hash_map<uint32_t, uint32_t> _samplersRegsitry;  // sampler desc => sampler index registry
+
+    DriverBase* _driver{nullptr};
+
+    uint32_t _nextSamplerIndex{0};
 };
 
 // end of _rhi group

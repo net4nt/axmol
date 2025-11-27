@@ -37,6 +37,7 @@
 #include "axmol/rhi/ProgramState.h"
 #include "axmol/rhi/VertexLayout.h"
 
+#include <limits>
 #include <memory>
 #include <vector>
 
@@ -73,7 +74,7 @@ public:
      *
      * @param rt
      */
-    void setScreenRenderTarget(RenderTarget* rt) { _screenRT = rt; }
+    virtual RenderTarget* getScreenRenderTarget() const = 0;
 
     /**
      * @brief Updates surface when the window resized or surface recretad
@@ -123,7 +124,9 @@ public:
      * @param rt Specifies the render target.
      * @param pipelineDesc Specifies the pipeline desc.
      */
-    virtual void updatePipelineState(const RenderTarget* rt, const PipelineDesc& desc) = 0;
+    virtual void updatePipelineState(const RenderTarget* rt,
+                                     const PipelineDesc& desc,
+                                     PrimitiveGroup primitiveGroup) = 0;
 
     /**
      * Fixed-function state
@@ -263,10 +266,11 @@ public:
      */
     virtual void setStencilReferenceValue(uint32_t value);
 
-protected:
-    virtual ~RenderContext() = default;
+    virtual uint64_t getCompletedFenceValue() const { return (std::numeric_limits<uint64_t>::max)(); }
 
-    RenderTarget* _screenRT{nullptr};         // weak ref (managed by Renderer)
+protected:
+    virtual ~RenderContext();
+
     RenderTarget* _currentRT{nullptr};        // weak ref (managed by Renderer)
     ProgramState* _programState{nullptr};     // weak ref
     VertexLayout* _vertexLayout{nullptr};     // weak ref

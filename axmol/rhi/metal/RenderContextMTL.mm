@@ -189,6 +189,8 @@ RenderContextImpl::RenderContextImpl(DriverImpl* driver, void* surfaceContext)
     _mtlLayer.drawableSize = fbSize;
 #endif
 
+    _screenRT = new RenderTargetImpl(true);
+
     UtilsMTL::updateDefaultDepthStencilAttachment(_mtlLayer);
 }
 
@@ -199,6 +201,10 @@ RenderContextImpl::~RenderContextImpl()
     id<MTLCommandBuffer> oneOffBuffer = [_mtlCmdQueue commandBuffer];
     [oneOffBuffer commit];
     [oneOffBuffer waitUntilCompleted];
+
+    AX_SAFE_RELEASE_NULL(_screenRT);
+    AX_SAFE_RELEASE_NULL(_renderPipeline);
+
     [oneOffBuffer release];
 
     dispatch_semaphore_signal(_frameBoundarySemaphore);
@@ -213,12 +219,12 @@ bool RenderContextImpl::updateSurface(void* /*surface*/, uint32_t width, uint32_
 
 void RenderContextImpl::setDepthStencilState(DepthStencilState* depthStencilState)
 {
-    _depthStencilStateImpl = static_cast<DepthStencilStateImpl*>(depthStencilState);
+    _depthStencilState = static_cast<DepthStencilStateImpl*>(depthStencilState);
 }
 
 void RenderContextImpl::setRenderPipeline(RenderPipeline* renderPipeline)
 {
-    _renderPipelineImpl = static_cast<RenderPipelineImpl*>(renderPipeline);
+    Object::assign(_renderPipeline, static_cast<RenderPipelineImpl*>(renderPipeline));
 }
 
 bool RenderContextImpl::beginFrame()
@@ -263,14 +269,16 @@ void RenderContextImpl::beginRenderPass(RenderTarget* renderTarget, const Render
 
 void RenderContextImpl::updateDepthStencilState(const DepthStencilDesc& desc)
 {
-    _depthStencilStateImpl->update(desc);
+    _depthStencilState->update(desc);
 }
 
-void RenderContextImpl::updatePipelineState(const RenderTarget* rt, const PipelineDesc& desc)
+void RenderContextImpl::updatePipelineState(const RenderTarget* rt,
+                                            const PipelineDesc& desc,
+                                            PrimitiveGroup primitiveGroup)
 {
-    RenderContext::updatePipelineState(rt, desc);
-    _renderPipelineImpl->update(rt, desc);
-    [_mtlRenderEncoder setRenderPipelineState:_renderPipelineImpl->getMTLRenderPipelineState()];
+    RenderContext::updatePipelineState(rt, desc, primitiveGroup);
+    _renderPipeline->update(rt, desc);
+    [_mtlRenderEncoder setRenderPipelineState:_renderPipeline->getMTLRenderPipelineState()];
 }
 
 void RenderContextImpl::setViewport(int x, int y, unsigned int w, unsigned int h)
@@ -493,7 +501,7 @@ void RenderContextImpl::prepareDrawing() const
     setUniformBuffer();
     setTextures();
 
-    auto mtlDepthStencilState = _depthStencilStateImpl->getMTLDepthStencilState();
+    auto mtlDepthStencilState = _depthStencilState->getMTLDepthStencilState();
     if (mtlDepthStencilState)
     {
         [_mtlRenderEncoder setDepthStencilState:mtlDepthStencilState];

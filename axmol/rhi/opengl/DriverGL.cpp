@@ -193,7 +193,7 @@ GLint DriverImpl::getDefaultFBO() const
 
 RenderContext* DriverImpl::createRenderContext(void*)
 {
-    return new RenderContextImpl();
+    return new RenderContextImpl(this);
 }
 
 Buffer* DriverImpl::createBuffer(std::size_t size, BufferType type, BufferUsage usage, const void* initial)
@@ -206,14 +206,9 @@ Texture* DriverImpl::createTexture(const TextureDesc& desc)
     return new TextureImpl(desc);
 }
 
-RenderTarget* DriverImpl::createDefaultRenderTarget()
-{
-    return new RenderTargetImpl(true, this);
-}
-
 RenderTarget* DriverImpl::createRenderTarget(Texture* colorAttachment, Texture* depthStencilAttachment)
 {
-    auto rtGL = new RenderTargetImpl(false, this);
+    auto rtGL = new RenderTargetImpl(this, false);
     rtGL->bindFrameBuffer();
     RenderTarget::ColorAttachment colors{{colorAttachment, 0}};
     rtGL->setColorAttachment(colors);

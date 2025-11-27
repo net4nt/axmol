@@ -45,7 +45,6 @@ enum class DynamicStateBits : uint32_t
     StencilRef = 1 << 2,
     CullMode   = 1 << 3,
     FrontFace  = 1 << 4,
-
 };
 
 AX_ENABLE_BITMASK_OPS(DynamicStateBits);
@@ -78,6 +77,8 @@ public:
     RenderContextImpl(DriverImpl* driver, VkSurfaceKHR surface);
     ~RenderContextImpl() override;
 
+    RenderTarget* getScreenRenderTarget() const override { return (RenderTarget*)_screenRT; }
+
     bool updateSurface(void* surface, uint32_t width, uint32_t height) override;
 
     void setDepthStencilState(DepthStencilState* depthStencilState) override;
@@ -86,7 +87,7 @@ public:
     bool beginFrame() override;
     void beginRenderPass(RenderTarget* renderTarget, const RenderPassDesc& descriptor) override;
     void updateDepthStencilState(const DepthStencilDesc& descriptor) override;
-    void updatePipelineState(const RenderTarget* rt, const PipelineDesc& descriptor) override;
+    void updatePipelineState(const RenderTarget* rt, const PipelineDesc& descriptor, PrimitiveGroup) override;
 
     void setViewport(int x, int y, unsigned int w, unsigned int h) override;
     void setCullMode(CullMode mode) override;
@@ -145,7 +146,9 @@ private:
     void createDescriptorPool();
 #endif
 
-    void readPixelsImpl(RenderTarget* rt, bool preserveAxisHint, std::function<void(const PixelBufferDesc&)>& callback);
+    void readPixelsInternal(RenderTarget* rt,
+                            bool preserveAxisHint,
+                            std::function<void(const PixelBufferDesc&)>& callback);
 
     void markDynamicStateDirty(DynamicStateBits bits) noexcept
     {
@@ -231,6 +234,8 @@ private:
 #pragma endregion
 
     std::vector<std::function<void()>> _postFrameOps;
+
+    RenderTargetImpl* _screenRT{nullptr};
 
     uint32_t _renderTargetWidth{0};
     uint32_t _renderTargetHeight{0};

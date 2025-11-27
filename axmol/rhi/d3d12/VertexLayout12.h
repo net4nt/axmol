@@ -1,0 +1,52 @@
+/****************************************************************************
+ Copyright (c) 2019-present Axmol Engine contributors (see AUTHORS.md).
+
+ https://axmol.dev/
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ ****************************************************************************/
+#pragma once
+
+#include "axmol/rhi/VertexLayout.h"
+#include "axmol/rhi/RHITypes.h"
+#include <d3d12.h>
+#include <vector>
+
+namespace ax::rhi::d3d12
+{
+/**
+ * @brief A D3D12-based VertexLayout implementation
+ */
+class VertexLayoutImpl : public VertexLayout
+{
+public:
+    explicit VertexLayoutImpl(VertexLayoutDesc&&);
+    ~VertexLayoutImpl() override = default;
+
+    /**
+     * @brief Get D3D12 input layout desc
+     */
+    const D3D12_INPUT_LAYOUT_DESC& getD3D12InputLayout() const { return _inputLayout; }
+
+private:
+    std::vector<D3D12_INPUT_ELEMENT_DESC> _elements;
+    D3D12_INPUT_LAYOUT_DESC _inputLayout{};
+};
+
+}  // namespace ax::rhi::d3d12

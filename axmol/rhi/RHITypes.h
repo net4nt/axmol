@@ -64,6 +64,7 @@ enum class ShaderStage
     UNKNOWN  = -1,
     FRAGMENT = 0,
     VERTEX,
+    COMPUTE,
     DEFAULT = FRAGMENT
 };
 
@@ -196,6 +197,14 @@ enum class PrimitiveType : uint32_t
     LINE_STRIP,
     TRIANGLE,
     TRIANGLE_STRIP
+};
+
+// d3d12 requires this hints for create properly PSO
+enum class PrimitiveGroup
+{
+    Point,    // D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT
+    Line,     // D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE
+    Triangle  // D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE
 };
 
 enum class StencilOp : uint32_t
@@ -375,6 +384,50 @@ struct SamplerDesc
 };
 static_assert(sizeof(SamplerDesc) == 4, "incompatible type: SamplerDesc");
 
+// The builtin sampler index
+struct SamplerIndex
+{
+    enum enum_type : uint32_t
+    {
+        // --- Linear sampling ---
+        LinearClamp,   // Linear, clamp to edge
+        LinearWrap,    // Linear, repeat
+        LinearMirror,  // Linear, mirror repeat
+        LinearBorder,  // Linear, border color
+
+        // --- Point sampling ---
+        PointClamp,   // Nearest, clamp to edge
+        PointWrap,    // Nearest, repeat
+        PointMirror,  // Nearest, mirror repeat
+        PointBorder,  // Nearest, border color
+
+        // --- Linear + Mipmap ---
+        LinearMipClamp,   // Linear min/mag, mip linear, clamp
+        LinearMipWrap,    // Linear min/mag, mip linear, wrap
+        LinearMipMirror,  // Linear min/mag, mip linear, mirror
+        LinearMipBorder,  // Linear min/mag, mip linear, border
+
+        // --- Anisotropic filtering ---
+        AnisoClamp,   // Anisotropic, clamp to edge
+        AnisoWrap,    // Anisotropic, repeat
+        AnisoMirror,  // Anisotropic, mirror repeat
+        AnisoBorder,  // Anisotropic, border color
+
+        // --- Depth comparison samplers (shadow maps) ---
+        ShadowCmpClamp,   // Compare sampler, clamp to edge
+        ShadowCmpWrap,    // Compare sampler, repeat
+        ShadowCmpMirror,  // Compare sampler, mirror repeat
+        ShadowCmpBorder,  // Compare sampler, border color
+
+        // --- Special cases ---
+        LinearNoMipClamp,  // Linear min/mag, no mip, clamp (UI, 2D sprites)
+        PointNoMipClamp,   // Point min/mag, no mip, clamp (pixel art)
+
+        //
+        Count
+    };
+};
+
 using SamplerHandle = void*;
 
 /**
@@ -414,8 +467,9 @@ struct BlendDesc
 
 struct UniformInfo
 {
-    int count    = 0;   // element count
-    int location = -1;  // see also @StageUniformLocation
+    uint16_t count        = 0;   // element count
+    uint16_t sampler_slot = 0;   // sampler slot
+    int location          = -1;  // see also @StageUniformLocation
 
     // in opengl, type means uniform data type, i.e. GL_FLOAT_VEC2, while in metal type means data basic type, i.e.
     // float

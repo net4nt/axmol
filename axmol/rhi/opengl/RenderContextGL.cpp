@@ -29,14 +29,16 @@
 #include "axmol/rhi/opengl/TextureGL.h"
 #include "axmol/rhi/opengl/DepthStencilStateGL.h"
 #include "axmol/rhi/opengl/ProgramGL.h"
-#include "axmol/base/EventDispatcher.h"
-#include "axmol/base/EventType.h"
-#include "axmol/base/Director.h"
 #include "axmol/rhi/opengl/MacrosGL.h"
 #include "axmol/rhi/opengl/UtilsGL.h"
 #include "axmol/rhi/opengl/RenderTargetGL.h"
 #include "axmol/rhi/opengl/DriverGL.h"
 #include "axmol/rhi/opengl/VertexLayoutGL.h"
+
+#include "axmol/base/EventDispatcher.h"
+#include "axmol/base/EventType.h"
+#include "axmol/base/Director.h"
+
 #include <algorithm>
 
 namespace ax::rhi::gl
@@ -49,11 +51,17 @@ namespace ax::rhi::gl
 #    define AX_HAVE_MAP_BUFFER_RANGE 0
 #endif
 
-RenderContextImpl::RenderContextImpl() {}
+RenderContextImpl::RenderContextImpl(DriverImpl* driver)
+{
+    _screenRT = new RenderTargetImpl(driver, true);
+}
 
 RenderContextImpl::~RenderContextImpl()
 {
     cleanResources();
+
+    AX_SAFE_RELEASE_NULL(_screenRT);
+    AX_SAFE_RELEASE_NULL(_renderPipeline);
 }
 
 bool RenderContextImpl::beginFrame()
@@ -134,7 +142,7 @@ void RenderContextImpl::setDepthStencilState(DepthStencilState* depthStencilStat
 
 void RenderContextImpl::setRenderPipeline(RenderPipeline* renderPipeline)
 {
-    _renderPipeline = static_cast<RenderPipelineImpl*>(renderPipeline);
+    Object::assign(_renderPipeline, static_cast<RenderPipelineImpl*>(renderPipeline));
 }
 
 /**
@@ -150,9 +158,11 @@ void RenderContextImpl::updateDepthStencilState(const DepthStencilDesc& desc)
  * Update render pipeline status
  * @param depthStencilState Specifies the depth and stencil status
  */
-void RenderContextImpl::updatePipelineState(const RenderTarget* rt, const PipelineDesc& desc)
+void RenderContextImpl::updatePipelineState(const RenderTarget* rt,
+                                            const PipelineDesc& desc,
+                                            PrimitiveGroup primitiveGroup)
 {
-    RenderContext::updatePipelineState(rt, desc);
+    RenderContext::updatePipelineState(rt, desc, primitiveGroup);
 
     _renderPipeline->update(rt, desc);
 }

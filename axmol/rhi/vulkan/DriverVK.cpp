@@ -31,7 +31,7 @@
 #include "axmol/rhi/vulkan/RenderPipelineVK.h"
 #include "axmol/rhi/vulkan/DepthStencilStateVK.h"
 #include "axmol/rhi/vulkan/VertexLayoutVK.h"
-#include "axmol/rhi/RHITypes.h"
+#include "axmol/rhi/RHIUtils.h"
 
 #include "axmol/base/Logging.h"
 
@@ -60,45 +60,8 @@ void DriverBase::destroyInstance()
 
 namespace ax::rhi::vk
 {
-
 namespace
 {
-
-static inline uint32_t makeMaskUpTo(uint32_t n)
-{
-    return (1u << (n + 1)) - 1u;
-}
-
-static std::string vendorToString(uint32_t vendorId)
-{
-    // Common PCI vendor IDs; Vulkan doesn't standardize vendor strings
-    switch (vendorId)
-    {
-    case 0x10DE:
-        return "NVIDIA";
-    case 0x8086:
-        return "Intel";
-    case 0x1002:
-        return "AMD";
-    case 0x13B5:
-        return "ARM";
-    case 0x5143:
-        return "Qualcomm";
-    case 0x106B:
-        return "Apple";
-    case 0x144D:
-        return "Samsung";
-    case 0x15AD:
-        return "VMware";
-    case 0x1AE0:
-        return "Google";
-    case 0x14E4:
-        return "Broadcom";
-    default:
-        return "Unknown";
-    }
-}
-
 static bool isValidationLayerAvailable(const char* layerName)
 {
     uint32_t layerCount = 0;
@@ -243,6 +206,8 @@ TextureImpl* createDepthStencilAttachment(DriverImpl* driver, const VkExtent2D& 
 DriverImpl::DriverImpl() {}
 DriverImpl::~DriverImpl()
 {
+    AX_SAFE_RELEASE_NULL(_currentRenderContext);
+
     cleanPendingResources();
 
     if (_commandPool)
@@ -284,7 +249,7 @@ void DriverImpl::init()
     VkPhysicalDeviceProperties props{};
     vkGetPhysicalDeviceProperties(_physical, &props);
 
-    _vendor   = vendorToString(props.vendorID);
+    _vendor   = RHIUtils::vendorToString(props.vendorID);
     _renderer = props.deviceName;
     _version  = fmt::format("Vulkan-{}.{}.{}", VK_VERSION_MAJOR(props.apiVersion), VK_VERSION_MINOR(props.apiVersion),
                             VK_VERSION_PATCH(props.apiVersion));
@@ -504,9 +469,9 @@ bool DriverImpl::recreateSurface(const SurfaceCreateInfo& info)
 
 RenderContext* DriverImpl::createRenderContext(void* surfaceContext)
 {
-    // Swapchain management is out-of-scope here; pass VK_NULL_HANDLE for now
-    _lastRenderContext = new RenderContextImpl(this, static_cast<VkSurfaceKHR>(surfaceContext));
-    return _lastRenderContext;
+    auto context = new RenderContextImpl(this, static_cast<VkSurfaceKHR>(surfaceContext));
+    Object::assign(_currentRenderContext, context);
+    return context;
 }
 
 Buffer* DriverImpl::createBuffer(std::size_t size, BufferType type, BufferUsage usage, const void* initial)
@@ -517,12 +482,6 @@ Buffer* DriverImpl::createBuffer(std::size_t size, BufferType type, BufferUsage 
 Texture* DriverImpl::createTexture(const TextureDesc& descriptor)
 {
     return new TextureImpl(this, descriptor);
-}
-
-RenderTarget* DriverImpl::createDefaultRenderTarget()
-{
-    // Default RT: will use swapchain image wrapped externally; here return an empty target
-    return new RenderTargetImpl(this, true);
 }
 
 RenderTarget* DriverImpl::createRenderTarget(Texture* colorAttachment, Texture* depthStencilAttachment)
@@ -816,8 +775,8 @@ void DriverImpl::destroyFramebuffer(VkFramebuffer fb)
 void DriverImpl::destroyRenderPass(VkRenderPass rp)
 {
     vkDestroyRenderPass(_device, rp, nullptr);
-    if (_lastRenderContext)
-        _lastRenderContext->removeCachedPipelines(rp);
+    if (_currentRenderContext)
+        _currentRenderContext->removeCachedPipelines(rp);
 }
 
 void DriverImpl::queueDisposal(VkSampler sampler)
@@ -843,7 +802,7 @@ void DriverImpl::queueDisposal(VkDeviceMemory memory)
 
 void DriverImpl::queueDisposalInternal(DisposableResource&& disposal)
 {
-    disposal.frameMask = 1 << (_lastRenderContext ? _lastRenderContext->getCurrentFrame() : 0);
+    disposal.frameMask = 1 << (_currentRenderContext ? _currentRenderContext->getCurrentFrame() : 0);
     _disposalQueue.emplace_back(disposal);
 }
 
@@ -891,8 +850,7 @@ void DriverImpl::cleanPendingResources()
     if (!_disposalQueue.empty())
     {
         vkDeviceWaitIdle(_device);
-        const auto allFramesMask = makeMaskUpTo(RenderContextImpl::MAX_FRAMES_IN_FLIGHT);
-        processDisposalQueue(allFramesMask);
+        processDisposalQueue(bitmask::low_bits<uint32_t>(RenderContextImpl::MAX_FRAMES_IN_FLIGHT));
     }
 }
 

@@ -41,6 +41,8 @@ class BufferImpl;
 class RenderPipelineImpl;
 class ProgramImpl;
 class DepthStencilStateImpl;
+class RenderTargetImpl;
+class DriverImpl;
 
 /**
  * @addtogroup _opengl
@@ -54,8 +56,11 @@ class DepthStencilStateImpl;
 class RenderContextImpl : public RenderContext
 {
 public:
-    RenderContextImpl();
+    RenderContextImpl(DriverImpl* driver);
     ~RenderContextImpl();
+
+    RenderTarget* getScreenRenderTarget() const override { return (RenderTarget*)_screenRT; }
+
     /**
      * Set depthStencil status once
      * @param depthStencilState Specifies the depth and stencil status
@@ -91,7 +96,9 @@ public:
      * Update render pipeline status
      * @param depthStencilState Specifies the depth and stencil status
      */
-    void updatePipelineState(const RenderTarget* rt, const PipelineDesc& descriptor) override;
+    void updatePipelineState(const RenderTarget* rt,
+                             const PipelineDesc& descriptor,
+                             PrimitiveGroup primitiveGroup) override;
 
     /**
      * Fixed-function state
@@ -217,6 +224,8 @@ protected:
     void bindVertexBuffer(uint32_t& usedBits) const;
     void bindUniforms(ProgramImpl* program) const;
     void cleanResources();
+
+    RenderTargetImpl* _screenRT{nullptr};
 
     BufferImpl* _vertexBuffer                     = nullptr;
     BufferImpl* _indexBuffer                      = nullptr;

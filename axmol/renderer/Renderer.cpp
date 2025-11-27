@@ -49,8 +49,28 @@
 #include "axmol/rhi/axmol-rhi.h"
 #include "axmol/rhi/RenderTarget.h"
 
+#if (AX_RENDER_API == AX_RENDER_API_MTL || AX_RENDER_API == AX_RENDER_API_VK || AX_RENDER_API == AX_RENDER_API_D3D12)
+#    define _AX_RENDER_API_MODERN 1
+#else
+#    define _AX_RENDER_API_MODERN 0
+#endif
+
 namespace ax
 {
+
+static constexpr rhi::PrimitiveGroup kPrimitiveTypeToGroup[] = {
+    /* POINT          */ rhi::PrimitiveGroup::Point,
+    /* LINE           */ rhi::PrimitiveGroup::Line,
+    /* LINE_LOOP      */ rhi::PrimitiveGroup::Line,
+    /* LINE_STRIP     */ rhi::PrimitiveGroup::Line,
+    /* TRIANGLE       */ rhi::PrimitiveGroup::Triangle,
+    /* TRIANGLE_STRIP */ rhi::PrimitiveGroup::Triangle,
+};
+
+static inline rhi::PrimitiveGroup toPrimitiveGroup(rhi::PrimitiveType type)
+{
+    return kPrimitiveTypeToGroup[static_cast<uint32_t>(type)];
+}
 
 // helper
 static bool compareRenderCommand(RenderCommand* a, RenderCommand* b)
@@ -189,7 +209,6 @@ Renderer::~Renderer()
 
     free(_triBatchesToDraw);
 
-    AX_SAFE_RELEASE(_defaultRT);
     AX_SAFE_RELEASE(_offscreenRT);
     AX_SAFE_RELEASE(_depthStencilState);
     AX_SAFE_RELEASE(_renderPipeline);
@@ -207,8 +226,7 @@ void Renderer::init()
     auto nativeDisplay = Director::getInstance()->getRenderView()->getNativeDisplay();
     _context           = driver->createRenderContext(nativeDisplay);
     _dsDesc.flags      = DepthStencilFlags::ALL;
-    _currentRT = _defaultRT = driver->createDefaultRenderTarget();
-    _context->setScreenRenderTarget(_defaultRT);
+    _currentRT = _defaultRT = _context->getScreenRenderTarget();
 
     _renderPipeline = driver->createRenderPipeline();
     _context->setRenderPipeline(_renderPipeline);
@@ -316,7 +334,7 @@ void Renderer::processRenderCommand(RenderCommand* command)
             drawBatchedTriangles();
 
             _queuedTotalIndexCount = _queuedTotalVertexCount = 0;
-#if AX_RENDER_API == AX_RENDER_API_MTL || AX_RENDER_API == AX_RENDER_API_VK
+#if _AX_RENDER_API_MODERN
             _queuedIndexCount = _queuedVertexCount = 0;
             _triangleCommandBufferManager.prepareNextBuffer();
             _vertexBuffer = _triangleCommandBufferManager.getVertexBuffer();
@@ -326,7 +344,7 @@ void Renderer::processRenderCommand(RenderCommand* command)
 
         // queue it
         _queuedTriangleCommands.emplace_back(cmd);
-#if AX_RENDER_API == AX_RENDER_API_MTL || AX_RENDER_API == AX_RENDER_API_VK
+#if _AX_RENDER_API_MODERN
         _queuedIndexCount += cmd->getIndexCount();
         _queuedVertexCount += cmd->getVertexCount();
 #endif
@@ -435,7 +453,7 @@ void Renderer::endFrame()
 {
     _context->endFrame();
 
-#if AX_RENDER_API == AX_RENDER_API_MTL || AX_RENDER_API == AX_RENDER_API_VK
+#if _AX_RENDER_API_MODERN
     _triangleCommandBufferManager.putbackAllBuffers();
     _vertexBuffer = _triangleCommandBufferManager.getVertexBuffer();
     _indexBuffer  = _triangleCommandBufferManager.getIndexBuffer();
@@ -610,7 +628,7 @@ void Renderer::drawBatchedTriangles()
         return;
 
     /************** 1: Setup up vertices/indices *************/
-#if AX_RENDER_API == AX_RENDER_API_MTL || AX_RENDER_API == AX_RENDER_API_VK
+#if _AX_RENDER_API_MODERN
     unsigned int vertexBufferFillOffset = _queuedTotalVertexCount - _queuedVertexCount;
     unsigned int indexBufferFillOffset  = _queuedTotalIndexCount - _queuedIndexCount;
 #else
@@ -674,7 +692,7 @@ void Renderer::drawBatchedTriangles()
         firstCommand   = false;
     }
     batchesTotal++;
-#if AX_RENDER_API == AX_RENDER_API_MTL || AX_RENDER_API == AX_RENDER_API_VK
+#if _AX_RENDER_API_MODERN
     _vertexBuffer->updateSubData(_verts, vertexBufferFillOffset * sizeof(_verts[0]), _filledVertex * sizeof(_verts[0]));
     _indexBuffer->updateSubData(_indices, indexBufferFillOffset * sizeof(_indices[0]),
                                 _filledIndex * sizeof(_indices[0]));
@@ -692,7 +710,7 @@ void Renderer::drawBatchedTriangles()
     for (int i = 0; i < batchesTotal; ++i)
     {
         auto& drawInfo = _triBatchesToDraw[i];
-        _context->updatePipelineState(_currentRT, drawInfo.cmd->getPipelineDesc());
+        _context->updatePipelineState(_currentRT, drawInfo.cmd->getPipelineDesc(), rhi::PrimitiveGroup::Triangle);
         _context->drawElements(rhi::PrimitiveType::TRIANGLE, rhi::IndexFormat::U_SHORT, drawInfo.indicesToDraw,
                                drawInfo.offset * sizeof(_indices[0]));
 
@@ -705,7 +723,7 @@ void Renderer::drawBatchedTriangles()
     /************** 3: Cleanup *************/
     _queuedTriangleCommands.clear();
 
-#if AX_RENDER_API == AX_RENDER_API_MTL || AX_RENDER_API == AX_RENDER_API_VK
+#if _AX_RENDER_API_MODERN
     _queuedIndexCount  = 0;
     _queuedVertexCount = 0;
 #endif
@@ -721,21 +739,22 @@ void Renderer::drawCustomCommand(RenderCommand* command)
     beginRenderPass();
     _context->setVertexBuffer(cmd->getVertexBuffer());
 
-    _context->updatePipelineState(_currentRT, cmd->getPipelineDesc());
+    const auto primitiveType = cmd->getPrimitiveType();
+    _context->updatePipelineState(_currentRT, cmd->getPipelineDesc(), toPrimitiveGroup(primitiveType));
 
     auto drawType = cmd->getDrawType();
     switch (drawType)
     {
     case CustomCommand::DrawType::ELEMENT:
         _context->setIndexBuffer(cmd->getIndexBuffer());
-        _context->drawElements(cmd->getPrimitiveType(), cmd->getIndexFormat(), cmd->getIndexDrawCount(),
+        _context->drawElements(primitiveType, cmd->getIndexFormat(), cmd->getIndexDrawCount(),
                                cmd->getIndexDrawOffset(), cmd->isWireframe());
         _drawnVertices += cmd->getIndexDrawCount();
         break;
     case CustomCommand::DrawType::ELEMENT_INSTANCED:
         _context->setIndexBuffer(cmd->getIndexBuffer());
         _context->setInstanceBuffer(cmd->getInstanceBuffer());
-        _context->drawElementsInstanced(cmd->getPrimitiveType(), cmd->getIndexFormat(), cmd->getIndexDrawCount(),
+        _context->drawElementsInstanced(primitiveType, cmd->getIndexFormat(), cmd->getIndexDrawCount(),
                                         cmd->getIndexDrawOffset(), cmd->getInstanceCount(), cmd->isWireframe());
         _drawnVertices += cmd->getIndexDrawCount() * cmd->getInstanceCount();
         break;
@@ -746,7 +765,7 @@ void Renderer::drawCustomCommand(RenderCommand* command)
         break;
     case CustomCommand::DrawType::ARRAY_INSTANCED:
         _context->setInstanceBuffer(cmd->getInstanceBuffer());
-        _context->drawArraysInstanced(cmd->getPrimitiveType(), cmd->getVertexDrawStart(), cmd->getVertexDrawCount(),
+        _context->drawArraysInstanced(primitiveType, cmd->getVertexDrawStart(), cmd->getVertexDrawCount(),
                                       cmd->getInstanceCount(), cmd->isWireframe());
         _drawnVertices += cmd->getVertexDrawCount() * cmd->getInstanceCount();
         break;
@@ -1051,6 +1070,11 @@ void Renderer::popStateBlock()
     setDepthWrite(block.depthWrite);
     setCullMode(block.cullMode);
     _stateBlockStack.pop_back();
+}
+
+uint64_t Renderer::getCompletedFenceValue() const
+{
+    return _context->getCompletedFenceValue();
 }
 
 }  // namespace ax

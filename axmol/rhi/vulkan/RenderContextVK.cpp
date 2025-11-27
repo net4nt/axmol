@@ -142,6 +142,8 @@ RenderContextImpl::RenderContextImpl(DriverImpl* driver, VkSurfaceKHR surface)
     _screenWidth  = extent.width;
     _screenHeight = extent.height;
 
+    _screenRT = new RenderTargetImpl(_driver, true);
+
     createCommandBuffers();
 #if !_AX_USE_DESCRIPTOR_CACHE
     createDescriptorPool();
@@ -171,6 +173,9 @@ RenderContextImpl::RenderContextImpl(DriverImpl* driver, VkSurfaceKHR surface)
 RenderContextImpl::~RenderContextImpl()
 {
     vkDeviceWaitIdle(_device);
+
+    AX_SAFE_RELEASE_NULL(_screenRT);
+    AX_SAFE_RELEASE_NULL(_renderPipeline);
 
     destroyUniformRingBuffers();
 
@@ -263,8 +268,6 @@ void RenderContextImpl::createUniformRingBuffers(std::size_t capacityBytes)
 // Destroy per-frame uniform ring buffers
 void RenderContextImpl::destroyUniformRingBuffers()
 {
-    vkDeviceWaitIdle(_device);
-
     auto device = _device;
     for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
     {
@@ -561,7 +564,7 @@ void RenderContextImpl::setDepthStencilState(DepthStencilState* depthStencilStat
 
 void RenderContextImpl::setRenderPipeline(RenderPipeline* renderPipeline)
 {
-    _renderPipeline = static_cast<RenderPipelineImpl*>(renderPipeline);
+    Object::assign(_renderPipeline, static_cast<RenderPipelineImpl*>(renderPipeline));
 }
 
 bool RenderContextImpl::beginFrame()
@@ -918,9 +921,11 @@ void RenderContextImpl::setInstanceBuffer(Buffer* buffer)
     _instanceBuffer = static_cast<BufferImpl*>(buffer);
 }
 
-void RenderContextImpl::updatePipelineState(const RenderTarget* rt, const PipelineDesc& desc)
+void RenderContextImpl::updatePipelineState(const RenderTarget* rt,
+                                            const PipelineDesc& desc,
+                                            PrimitiveGroup primitiveGroup)
 {
-    RenderContext::updatePipelineState(rt, desc);
+    RenderContext::updatePipelineState(rt, desc, primitiveGroup);
     AXASSERT(_renderPipeline, "RenderPipelineImpl not set");
     _renderPipeline->prepareUpdate(_depthStencilState);
     _renderPipeline->update(rt, desc);
@@ -1193,16 +1198,22 @@ void RenderContextImpl::readPixels(RenderTarget* rt,
                                    bool preserveAxisHint,
                                    std::function<void(const PixelBufferDesc&)> callback)
 {
-    AX_SAFE_RETAIN(rt);
+    if (!rt)
+    {
+        callback({});
+        return;
+    }
+    rt->retain();
 
     _postFrameOps.emplace_back([this, rt, preserveAxisHint, callback = std::move(callback)]() mutable {
-        readPixelsImpl(rt, preserveAxisHint, callback);
+        readPixelsInternal(rt, preserveAxisHint, callback);
+        rt->release();
     });
 }
 
-void RenderContextImpl::readPixelsImpl(RenderTarget* rt,
-                                       bool /*preserveAxisHint*/,
-                                       std::function<void(const PixelBufferDesc&)>& callback)
+void RenderContextImpl::readPixelsInternal(RenderTarget* rt,
+                                           bool /*preserveAxisHint*/,
+                                           std::function<void(const PixelBufferDesc&)>& callback)
 {
     PixelBufferDesc pbd{};
     auto* rtImpl = static_cast<RenderTargetImpl*>(rt);

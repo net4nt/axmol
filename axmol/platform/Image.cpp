@@ -1560,6 +1560,8 @@ bool Image::initWithPVRv2Data(uint8_t* data, ssize_t dataLen, bool ownData)
 
     auto env = Environment::getInstance();
 
+    const bool hardwarePVRTC = env->supportsPVRTC();
+
     // can not detect the premultiplied alpha from pvr file, use _PVRHaveAlphaPremultiplied instead.
     _hasPremultipliedAlpha = isCompressedImageHavePMA(CompressedImagePMAFlag::PVR);
 
@@ -1626,7 +1628,7 @@ bool Image::initWithPVRv2Data(uint8_t* data, ssize_t dataLen, bool ownData)
         switch (formatFlags)
         {
         case PVR2TexturePixelFormat::PVRTC2BPP_RGBA:
-            if (!Environment::getInstance()->supportsPVRTC())
+            if (!hardwarePVRTC)
             {
                 AXLOGD("Hardware PVR decoder not present. Using software decoder");
                 _unpack                             = true;
@@ -1641,7 +1643,7 @@ bool Image::initWithPVRv2Data(uint8_t* data, ssize_t dataLen, bool ownData)
             heightBlocks = height / 4;
             break;
         case PVR2TexturePixelFormat::PVRTC4BPP_RGBA:
-            if (!Environment::getInstance()->supportsPVRTC())
+            if (!hardwarePVRTC)
             {
                 AXLOGD("Hardware PVR decoder not present. Using software decoder");
                 _unpack                             = true;
@@ -1656,7 +1658,7 @@ bool Image::initWithPVRv2Data(uint8_t* data, ssize_t dataLen, bool ownData)
             heightBlocks = height / 4;
             break;
         case PVR2TexturePixelFormat::BGRA8888:
-            if (!Environment::getInstance()->supportsBGRA8888())
+            if (!env->supportsBGRA8888())
             {
                 AXLOGD("Image. BGRA8888 not supported on this device");
                 return false;
@@ -2340,7 +2342,7 @@ bool Image::initWithS3TCData(uint8_t* data, ssize_t dataLen, bool ownData)
 
         int size = ((width + 3) / 4) * ((height + 3) / 4) * blockSize;
 
-        if (Environment::getInstance()->supportsS3TC())
+        if (hardware)
         {  // decode texture through hardware
             _mipmaps[i].data     = (uint8_t*)pixelData + encodeOffset;
             _mipmaps[i].dataSize = size;
