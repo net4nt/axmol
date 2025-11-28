@@ -5989,7 +5989,7 @@ int axlua_get_PipelineDescriptor_programState(lua_State* tolua_S)
         return 0;
     }
 #endif
-    tolua_pushusertype(tolua_S, obj->programState, "axb.ProgramState");
+    tolua_pushusertype(tolua_S, obj->programState, "axrhi.ProgramState");
     return 1;
 
 #if _AX_DEBUG >= 1
@@ -6024,7 +6024,7 @@ int axlua_set_PipelineDescriptor_programState(lua_State* tolua_S)
     if (1 == argc)
     {
         ax::rhi::ProgramState* programState = nullptr;
-        luaval_to_object<ax::rhi::ProgramState>(tolua_S, 2, "axb.ProgramState", &programState,
+        luaval_to_object<ax::rhi::ProgramState>(tolua_S, 2, "axrhi.ProgramState", &programState,
                                                 "axlua_set_PipelineDescriptor_programState");
         self->programState = programState;
         return 0;
@@ -6080,7 +6080,7 @@ static int axlua_rhi_ProgramState_getUniformLocation(lua_State* tolua_S)
 #endif
 
 #if _AX_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S, 1, "axb.ProgramState", 0, &tolua_err))
+    if (!tolua_isusertype(tolua_S, 1, "axrhi.ProgramState", 0, &tolua_err))
         goto tolua_lerror;
 #endif
     obj = (ax::rhi::ProgramState*)tolua_tousertype(tolua_S, 1, 0);
@@ -6099,7 +6099,7 @@ static int axlua_rhi_ProgramState_getUniformLocation(lua_State* tolua_S)
             if (lua_isstring(tolua_S, -1))
             {
                 std::string arg0;
-                ok &= luaval_to_std_string(tolua_S, 2, &arg0, "axb.ProgramState:getUniformLocation");
+                ok &= luaval_to_std_string(tolua_S, 2, &arg0, "axrhi.ProgramState:getUniformLocation");
 
                 if (!ok)
                 {
@@ -6112,7 +6112,7 @@ static int axlua_rhi_ProgramState_getUniformLocation(lua_State* tolua_S)
             else if (lua_isnumber(tolua_S, -1))
             {
                 ax::rhi::Uniform arg0;
-                ok &= luaval_to_int(tolua_S, 2, (int*)&arg0, "axb.ProgramState:getUniformLocation");
+                ok &= luaval_to_int(tolua_S, 2, (int*)&arg0, "axrhi.ProgramState:getUniformLocation");
 
                 if (!ok)
                 {
@@ -6126,7 +6126,7 @@ static int axlua_rhi_ProgramState_getUniformLocation(lua_State* tolua_S)
     } while (0);
 
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n",
-               "axb.ProgramState:getUniformLocation", argc, 1);
+               "axrhi.ProgramState:getUniformLocation", argc, 1);
     return 0;
 
 #if _AX_DEBUG >= 1
@@ -6145,7 +6145,7 @@ static int axlua_ProgramState_setUniform(lua_State* tolua_S)
 
 #if _AX_DEBUG >= 1
     tolua_Error tolua_err;
-    if (!tolua_isusertype(tolua_S, 1, "axb.ProgramState", 0, &tolua_err))
+    if (!tolua_isusertype(tolua_S, 1, "axrhi.ProgramState", 0, &tolua_err))
         goto tolua_lerror;
 #endif
 
@@ -6170,7 +6170,7 @@ static int axlua_ProgramState_setUniform(lua_State* tolua_S)
         }
         else if (lua_istable(tolua_S, 2))
         {
-            ok &= luaval_to_uniformLocation(tolua_S, 2, location, "axb.ProgramState:setUniform");
+            ok &= luaval_to_uniformLocation(tolua_S, 2, location, "axrhi.ProgramState:setUniform");
         }
 
         if (ok & lua_istable(tolua_S, 3))
@@ -6205,7 +6205,7 @@ tolua_lerror:
 
 static void extendProgramState(lua_State* tolua_S)
 {
-    // lua_pushstring(tolua_S, "axb.ProgramState");
+    // lua_pushstring(tolua_S, "axrhi.ProgramState");
     // lua_rawget(tolua_S, LUA_REGISTRYINDEX);
 
     tolua_beginmodule(tolua_S, "axrhi");
