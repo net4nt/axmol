@@ -25,9 +25,9 @@
 
 #include <vector>
 #include <cassert>
-#include <wrl/client.h>
 #include <d3d12.h>
 
+#include "axmol/rhi/DXUtils.h"
 #include "axmol/rhi/Buffer.h"
 #include "axmol/tlx/byte_buffer.hpp"
 

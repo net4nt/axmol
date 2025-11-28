@@ -109,4 +109,6 @@ VertexLayoutImpl::VertexLayoutImpl(VertexLayoutDesc&& desc) : VertexLayout(std::
     _inputLayout.pInputElementDescs = _elements.data();
 }
 
+VertexLayoutImpl::~VertexLayoutImpl() {}
+
 }  // namespace ax::rhi::d3d12

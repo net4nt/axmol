@@ -27,7 +27,6 @@
 #include "axmol/rhi/d3d12/DescriptorHeapAllocator12.h"
 #include "axmol/rhi/DXUtils.h"
 #include <d3d12.h>
-#include <wrl/client.h>
 #include <vector>
 #include "axmol/tlx/pod_vector.hpp"
 

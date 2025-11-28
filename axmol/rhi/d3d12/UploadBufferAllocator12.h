@@ -23,16 +23,14 @@
  ****************************************************************************/
 #pragma once
 
+#include "axmol/rhi/DXUtils.h"
+
 #include <d3d12.h>
-#include <wrl/client.h>
 #include <deque>
 #include <stdint.h>
 
 namespace ax::rhi::d3d12
 {
-
-using Microsoft::WRL::ComPtr;
-
 // Returned span of upload memory within the ring or a one-off staging resource.
 struct UploadSpan
 {

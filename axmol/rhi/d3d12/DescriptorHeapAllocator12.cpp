@@ -66,7 +66,7 @@ void DescriptorHeapAllocator::grow()
     _nextCapacity = std::max<UINT>(_nextCapacity * 2, _nextCapacity + 64);
     initializeHeapBlock(_device, _type, _nextCapacity, _shaderVisible, _blocks.emplace_back());
 }
-#if 1
+
 static bool tryAcquireSlot(DescriptorHeapBlock& b, uint32_t& outIndex)
 {
     // Linear scan; for production consider a freelist or find-first-set
@@ -181,7 +181,5 @@ DescriptorHeapAllocator::Stats DescriptorHeapAllocator::stats() const
     }
     return s;
 }
-
-#endif
 
 }  // namespace ax::rhi::d3d12

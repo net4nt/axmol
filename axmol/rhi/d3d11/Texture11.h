@@ -24,10 +24,8 @@
 #pragma once
 
 #include "axmol/rhi/Texture.h"
-#include "axmol/base/EventListenerCustom.h"
-#include "axmol/platform/win32/ComPtr.h"
+#include "axmol/rhi/DXUtils.h"
 #include <d3d11.h>
-#include <dxgi.h>
 
 namespace ax::rhi::d3d11
 {
@@ -42,25 +40,25 @@ namespace ax::rhi::d3d11
  */
 struct TextureHandle
 {
-    explicit operator bool() const { return tex2d != nullptr; }
+    explicit operator bool() const { return resource != nullptr; }
 
     void destroy()
     {
         SafeRelease(srv);
-        SafeRelease(tex2d);
+        SafeRelease(resource);
     }
 
     TextureHandle detach()
     {
         auto ret = *this;
-        tex2d    = nullptr;
+        resource = nullptr;
         srv      = nullptr;
         return ret;
     }
 
-    operator ID3D11Resource*() { return tex2d; }
+    operator ID3D11Resource*() const { return resource; }
 
-    ID3D11Texture2D* tex2d{};
+    ID3D11Texture2D* resource{};
     ID3D11ShaderResourceView* srv{};  // Note: default color attachment not create srv yet.
 };
 

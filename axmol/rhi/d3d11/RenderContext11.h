@@ -25,7 +25,7 @@
 
 #include "axmol/rhi/RenderContext.h"
 #include "axmol/rhi/d3d11/Driver11.h"
-#include "axmol/platform/win32/ComPtr.h"
+#include "axmol/rhi/DXUtils.h"
 
 namespace ax::rhi::d3d11
 {

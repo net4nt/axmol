@@ -44,18 +44,8 @@ void updateDefaultRenderTargetAttachments(DriverImpl*, IDXGISwapChain*);
 TextureImpl* getDefaultColorAttachment();
 TextureImpl* getDefaultDepthStencilAttachment();
 
-void fatalError(std::string_view op, HRESULT hr);
-
 };  // namespace UtilsD3D
 
 /** @} */
 
 }  // namespace ax::rhi::d3d11
-
-#define AX_D3D_FAST_FAIL(expr)                                    \
-    do                                                            \
-    {                                                             \
-        HRESULT _hr = (expr);                                     \
-        if (FAILED(_hr))                                          \
-            ::ax::rhi::d3d11::fatalError(#expr " failed"sv, _hr); \
-    } while (0)

@@ -28,7 +28,7 @@
 #include <d3d11.h>
 
 #include "axmol/rhi/Buffer.h"
-#include "axmol/platform/win32/ComPtr.h"
+#include "axmol/rhi/DXUtils.h"
 #include "axmol/tlx/byte_buffer.hpp"
 
 namespace ax::rhi::d3d11

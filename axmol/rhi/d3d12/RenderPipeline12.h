@@ -24,9 +24,9 @@
 #pragma once
 
 #include "axmol/rhi/RenderPipeline.h"
+#include "axmol/rhi/DXUtils.h"
 #include "axmol/tlx/hlookup.hpp"
 #include <d3d12.h>
-#include <wrl/client.h>
 #include <unordered_map>
 
 namespace ax::rhi::d3d12
@@ -102,9 +102,9 @@ private:
     D3D12_INPUT_LAYOUT_DESC _inputLayout{};
 
     RootSignatureEntry* _activeRootSignature{nullptr};
-    Microsoft::WRL::ComPtr<ID3D12PipelineState> _activePSO;
+    ComPtr<ID3D12PipelineState> _activePSO;
 
-    axstd::hash_map<uintptr_t, Microsoft::WRL::ComPtr<ID3D12PipelineState>> _psoCache;
+    axstd::hash_map<uintptr_t, ComPtr<ID3D12PipelineState>> _psoCache;
     axstd::hash_map<uintptr_t, RootSignatureEntry> _rootSigCache;
 };
 

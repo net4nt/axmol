@@ -111,12 +111,12 @@ void DriverImpl::init()
     if (!_dxgiAdapter)
     {
         ComPtr<IDXGIDevice> dxgiDevice;
-        AX_D3D_FAST_FAIL(
+        _AXASSERT_HR(
             hr = _device->QueryInterface(__uuidof(IDXGIDevice), reinterpret_cast<void**>(dxgiDevice.GetAddressOf())));
 
-        AX_D3D_FAST_FAIL(hr = dxgiDevice->GetAdapter(&_dxgiAdapter));
+        _AXASSERT_HR(hr = dxgiDevice->GetAdapter(&_dxgiAdapter));
 
-        AX_D3D_FAST_FAIL(
+        _AXASSERT_HR(
             hr = _dxgiAdapter->GetParent(__uuidof(IDXGIFactory1), (void**)_dxgiFactory.ReleaseAndGetAddressOf()));
     }
 
@@ -144,10 +144,18 @@ void DriverImpl::init()
 
 DriverImpl::~DriverImpl()
 {
-    _dxgiFactory.Reset();
-    _dxgiAdapter.Reset();
     SafeRelease(_context);
+
+    ComPtr<ID3D11Debug> debug;
+    _device->QueryInterface(IID_PPV_ARGS(&debug));
+
     SafeRelease(_device);
+
+    _dxgiAdapter.Reset();
+    _dxgiFactory.Reset();
+
+    if (debug)
+        debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
 }
 
 void DriverImpl::initializeDevice()
@@ -189,7 +197,7 @@ L_ReleaseRuntime:
     }
 
     if (FAILED(hr)) [[unlikely]]
-        fatalError("initializeDevice"sv, hr);
+        dxutils::fatalError("initializeDevice"sv, hr);
 }
 
 void DriverImpl::initializeAdapter()

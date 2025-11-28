@@ -30,10 +30,7 @@ namespace ax::rhi::d3d11
 {
 RenderTargetImpl::RenderTargetImpl(ID3D11Device* device, bool defaultRenderTarget)
     : _device(device), RenderTarget(defaultRenderTarget)
-{
-    if (_defaultRenderTarget)
-        _dirtyFlags = TargetBufferFlags::ALL;
-}
+{}
 
 RenderTargetImpl::~RenderTargetImpl()
 {
@@ -47,90 +44,130 @@ void RenderTargetImpl::invalidate()
 
     SafeRelease(_dsv);
 
-    if (_defaultRenderTarget)  // release default render target attachments
-        UtilsD3D::updateDefaultRenderTargetAttachments(nullptr, nullptr);
-
     _dirtyFlags = TargetBufferFlags::ALL;
 }
 
-void RenderTargetImpl::update(ID3D11DeviceContext* context)
+void RenderTargetImpl::beginRenderPass(ID3D11DeviceContext* context)
 {
-    if (!_dirtyFlags)
-        return;
-
-    if (_defaultRenderTarget)
+    if (_dirtyFlags != TargetBufferFlags::NONE) [[unlikely]]
     {
-        _rtvCuont = 1;
-        context->OMGetRenderTargets(_rtvCuont, &_rtvs[0], &_dsv);
-    }
-    else
-    {
-        if (bitmask::any(_dirtyFlags, TargetBufferFlags::COLOR_ALL))
-        {  // color attachments
-            _rtvCuont = 0;
-            for (size_t i = 0; i < MAX_COLOR_ATTCHMENT; ++i)
+        if (_defaultRenderTarget)
+        {
+            if (bitmask::any(_dirtyFlags, TargetBufferFlags::COLOR))
             {
-                auto textureInfo = _color[i];
-                if (bitmask::any(_dirtyFlags, getMRTColorFlag(i)))
+                SafeRelease(_rtvs[0]);
+
+                ID3D11Resource* resource = static_cast<TextureImpl*>(_color[0].texture)->internalHandle();
+                _AXASSERT_HR(_device->CreateRenderTargetView(resource, nullptr, &_rtvs[0]));
+            }
+
+            if (bitmask::any(_dirtyFlags, TargetBufferFlags::COLOR))
+            {
+                SafeRelease(_dsv);
+
+                if (_depthStencil)
                 {
-                    if (textureInfo.texture)
+                    auto resource = static_cast<TextureImpl*>(_depthStencil.texture)->internalHandle();
+                    _AXASSERT_HR(_device->CreateDepthStencilView(resource, nullptr, &_dsv));
+                }
+            }
+
+            _rtvCuont = 1;
+        }
+        else
+        {
+            if (bitmask::any(_dirtyFlags, TargetBufferFlags::COLOR_ALL))
+            {  // color attachments
+                _rtvCuont = 0;
+                for (size_t i = 0; i < MAX_COLOR_ATTCHMENT; ++i)
+                {
+                    if (bitmask::any(_dirtyFlags, getMRTColorFlag(i)))
                     {
-                        ++_rtvCuont;
-                        _device->CreateRenderTargetView(
-                            static_cast<TextureImpl*>(textureInfo.texture)->internalHandle().tex2d, nullptr, &_rtvs[i]);
-                    }
-                    else if (_rtvs[i])
-                    {
+                        auto textureInfo = _color[i];
                         SafeRelease(_rtvs[i]);
+                        if (textureInfo.texture)
+                        {
+                            ++_rtvCuont;
+                            _device->CreateRenderTargetView(
+                                static_cast<TextureImpl*>(textureInfo.texture)->internalHandle(), nullptr, &_rtvs[i]);
+                        }
                     }
+                }
+            }
+
+            if (bitmask::any(_dirtyFlags, TargetBufferFlags::DEPTH_AND_STENCIL))
+            {
+                SafeRelease(_dsv);
+                if (_depthStencil)
+                {
+                    auto fmtInfo = dxutils::toDxgiFormatInfo(_depthStencil.texture->getPixelFormat());
+                    D3D11_DEPTH_STENCIL_VIEW_DESC desc{};
+                    desc.Format        = fmtInfo->fmtDsv;
+                    desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+                    _device->CreateDepthStencilView(static_cast<TextureImpl*>(_depthStencil.texture)->internalHandle(),
+                                                    &desc, &_dsv);
                 }
             }
         }
 
-        if (bitmask::any(_dirtyFlags, TargetBufferFlags::DEPTH_AND_STENCIL))
-        {
-            if (_depthStencil)
-            {
-                auto fmtInfo = dxutils::toDxgiFormatInfo(_depthStencil.texture->getPixelFormat());
-                D3D11_DEPTH_STENCIL_VIEW_DESC desc{};
-                desc.Format        = fmtInfo->fmtDsv;
-                desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-                _device->CreateDepthStencilView(
-                    static_cast<TextureImpl*>(_depthStencil.texture)->internalHandle().tex2d, &desc, &_dsv);
-            }
-            else if (_dsv)
-                SafeRelease(_dsv);
-        }
+        _dirtyFlags = TargetBufferFlags::NONE;
     }
 
-    _dirtyFlags = TargetBufferFlags::NONE;
+    context->OMSetRenderTargets(_rtvCuont, _rtvs.data(), _dsv);
+}
+
+void RenderTargetImpl::rebuildAttachmentsForSwapchain(IDXGISwapChain* swapchain, uint32_t width, uint32_t height)
+{
+    /// rebuild color attachment: texture
+    AX_SAFE_RELEASE(_color[0].texture);
+
+    ComPtr<ID3D11Texture2D> backBuffer;
+    _AXASSERT_HR(swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)backBuffer.GetAddressOf()));
+    _color[0].texture = new TextureImpl(_device, backBuffer.Get());
+
+    UINT fmtSupport = 0;
+    _device->CheckFormatSupport(DXGI_FORMAT_D24_UNORM_S8_UINT, &fmtSupport);
+    assert(fmtSupport & D3D11_FORMAT_SUPPORT_DEPTH_STENCIL);
+
+    /// rebuild depth-stencil attachment: texture
+    AX_SAFE_RELEASE(_depthStencil.texture);
+    SafeRelease(_dsv);
+
+    D3D11_TEXTURE2D_DESC depthDesc = {};
+    depthDesc.Width                = width;
+    depthDesc.Height               = height;
+    depthDesc.MipLevels            = 1;
+    depthDesc.ArraySize            = 1;
+    depthDesc.Format               = DXGI_FORMAT_D24_UNORM_S8_UINT;  // 24-bit depth, 8-bit stencil
+    depthDesc.Usage                = D3D11_USAGE_DEFAULT;
+    depthDesc.BindFlags            = D3D11_BIND_DEPTH_STENCIL;
+    depthDesc.SampleDesc.Count     = 1;
+    depthDesc.SampleDesc.Quality   = 0;
+
+    ComPtr<ID3D11Texture2D> depthStencilTexture;
+    _AXASSERT_HR(_device->CreateTexture2D(&depthDesc, nullptr, depthStencilTexture.GetAddressOf()));
+    _depthStencil.texture = new TextureImpl(_device, depthStencilTexture.Get());
+
+    _dirtyFlags = TargetBufferFlags::ALL;
 }
 
 RenderTargetImpl::Attachment RenderTargetImpl::getColorAttachment(int index) const
 {
-
-    auto textureImpl =
-        _defaultRenderTarget ? UtilsD3D::getDefaultColorAttachment() : static_cast<TextureImpl*>(_color[index].texture);
+    auto textureImpl = static_cast<TextureImpl*>(_defaultRenderTarget ? _color[0].texture : _color[index].texture);
     return textureImpl
-               ? RenderTargetImpl::Attachment{static_cast<ID3D11Texture2D*>(textureImpl->internalHandle().tex2d),
+               ? RenderTargetImpl::Attachment{static_cast<ID3D11Texture2D*>(textureImpl->internalHandle().resource),
                                               textureImpl->getDesc()}
                : RenderTargetImpl::Attachment{};
 }
 
 RenderTargetImpl::Attachment RenderTargetImpl::getDepthStencilAttachment() const
 {
-    auto textureImpl = _defaultRenderTarget ? UtilsD3D::getDefaultDepthStencilAttachment()
-                                            : static_cast<TextureImpl*>(_depthStencil.texture);
+    auto textureImpl = static_cast<TextureImpl*>(_depthStencil.texture);
 
     return textureImpl
-               ? RenderTargetImpl::Attachment{static_cast<ID3D11Texture2D*>(textureImpl->internalHandle().tex2d),
+               ? RenderTargetImpl::Attachment{static_cast<ID3D11Texture2D*>(textureImpl->internalHandle().resource),
                                               textureImpl->getDesc()}
                : RenderTargetImpl::Attachment{};
-}
-
-void RenderTargetImpl::apply(ID3D11DeviceContext* context) const
-{
-    context->OMSetRenderTargets(_rtvCuont, _rtvs.data(), _dsv);
 }
 
 }  // namespace ax::rhi::d3d11

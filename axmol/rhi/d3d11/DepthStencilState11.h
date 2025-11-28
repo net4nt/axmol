@@ -23,7 +23,7 @@
  ****************************************************************************/
 #pragma once
 #include <d3d11.h>
-#include "axmol/platform/win32/ComPtr.h"
+#include "axmol/rhi/DXUtils.h"
 #include "axmol/rhi/DepthStencilState.h"
 
 namespace ax::rhi::d3d11

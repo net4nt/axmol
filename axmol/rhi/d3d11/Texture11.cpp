@@ -124,7 +124,7 @@ TextureImpl::TextureImpl(ID3D11Device* device, const TextureDesc& desc) : _devic
 TextureImpl::TextureImpl(ID3D11Device* device, ID3D11Texture2D* texture) : _device(device)
 {
     texture->AddRef();
-    _nativeTexture.tex2d = texture;
+    _nativeTexture.resource = texture;
 
     D3D11_TEXTURE2D_DESC desc;
     texture->GetDesc(&desc);

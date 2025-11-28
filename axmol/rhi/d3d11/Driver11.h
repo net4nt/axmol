@@ -24,11 +24,9 @@
 #pragma once
 
 #include "axmol/rhi/DriverBase.h"
-#include "axmol/platform/win32/ComPtr.h"
+#include "axmol/rhi/DXUtils.h"
 
 #include <d3d11.h>
-#include <dxgi.h>
-
 #include <optional>
 
 namespace ax::rhi::d3d11
@@ -142,7 +140,7 @@ public:
     inline ID3D11DeviceContext* getContext() const { return _context; }
 
     const ComPtr<IDXGIFactory>& getDXGIFactory() const { return _dxgiFactory; }
-    const ComPtr<IDXGIAdapter> getDXGIAdapter() const { return _dxgiAdapter; }
+    const ComPtr<IDXGIAdapter>& getDXGIAdapter() const { return _dxgiAdapter; }
 
 protected:
     /**

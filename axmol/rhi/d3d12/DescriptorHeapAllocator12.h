@@ -23,9 +23,9 @@
  ****************************************************************************/
 #pragma once
 
+#include "axmol/rhi/DXUtils.h"
 #include <d3d12.h>
 #include <stdint.h>
-#include <wrl/client.h>
 #include <vector>
 #include <atomic>
 #include <mutex>
@@ -52,7 +52,7 @@ struct DescriptorHandle
 
 struct DescriptorHeapBlock
 {
-    Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> heap;
+    ComPtr<ID3D12DescriptorHeap> heap;
     D3D12_DESCRIPTOR_HEAP_TYPE type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
     bool shaderVisible              = false;
 

@@ -37,7 +37,7 @@ class VertexLayoutImpl : public VertexLayout
 {
 public:
     explicit VertexLayoutImpl(VertexLayoutDesc&&);
-    ~VertexLayoutImpl() override = default;
+    ~VertexLayoutImpl() override;
 
     /**
      * @brief Get D3D12 input layout desc

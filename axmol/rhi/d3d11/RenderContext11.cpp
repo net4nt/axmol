@@ -393,13 +393,13 @@ RenderContextImpl::RenderContextImpl(DriverImpl* driver, void* surfaceContext)
 #endif
 
     if (FAILED(hr))
-        fatalError("CreateSwapChain", hr);
+        dxutils::fatalError("CreateSwapChain", hr);
 
     _swapChain = swapChain.Detach();
 
     _screenRT = new RenderTargetImpl(device, true);
 
-    UtilsD3D::updateDefaultRenderTargetAttachments(_driverImpl, _swapChain);
+    _screenRT->rebuildAttachmentsForSwapchain(_swapChain, _screenWidth, _screenHeight);
 
     _nullSRVs.reserve(8);
 }
@@ -407,7 +407,6 @@ RenderContextImpl::RenderContextImpl(DriverImpl* driver, void* surfaceContext)
 RenderContextImpl::~RenderContextImpl()
 {
     // cleanup GPU resources
-    UtilsD3D::updateDefaultRenderTargetAttachments(nullptr, nullptr);
     _d3d11Context->OMSetRenderTargets(0, nullptr, nullptr);
 
     AX_SAFE_RELEASE_NULL(_screenRT);
@@ -438,7 +437,7 @@ bool RenderContextImpl::updateSurface(void* /*surface*/, uint32_t width, uint32_
 
     HRESULT hr = _swapChain->ResizeBuffers(0, width, height, _AX_SWAPCHAIN_FORMAT, _swapChainFlags);
 
-    UtilsD3D::updateDefaultRenderTargetAttachments(_driverImpl, _swapChain);
+    _screenRT->rebuildAttachmentsForSwapchain(_swapChain, width, height);
 
     if (FAILED(hr))
         return false;
@@ -478,8 +477,7 @@ void RenderContextImpl::beginRenderPass(RenderTarget* renderTarget, const Render
         _renderPassDesc = renderPassDesc;
     }
 
-    activeRT->update(_d3d11Context);
-    activeRT->apply(_d3d11Context);
+    activeRT->beginRenderPass(_d3d11Context);
 
     auto colorAttachment = activeRT->getColorAttachment(0);
     _renderTargetWidth   = colorAttachment.desc.width;
@@ -609,14 +607,8 @@ void RenderContextImpl::updateRasterizerState()
     desc.DepthClipEnable = TRUE;
     desc.ScissorEnable   = _rasterDesc.scissorEnable ? TRUE : FALSE;
 
-    ID3D11RasterizerState* rasterizerState = nullptr;
-    HRESULT hr                             = _driverImpl->getDevice()->CreateRasterizerState(&desc, &rasterizerState);
-    if (SUCCEEDED(hr))
-    {
-        _d3d11Context->RSSetState(rasterizerState);
-        _rasterState = rasterizerState;
-    }
-
+    _AXASSERT_HR(_driverImpl->getDevice()->CreateRasterizerState(&desc, _rasterState.ReleaseAndGetAddressOf()));
+    _d3d11Context->RSSetState(_rasterState.Get());
     _rasterDesc.dirtyFlags = 0;
 }
 

@@ -25,6 +25,7 @@
 
 #include "axmol/rhi/RenderTarget.h"
 #include <d3d11.h>
+#include <dxgi.h>
 #include <array>
 
 namespace ax::rhi::d3d11
@@ -51,15 +52,15 @@ public:
 
     void invalidate();
 
-    void update(ID3D11DeviceContext*);
-
-    void apply(ID3D11DeviceContext*) const;
+    void beginRenderPass(ID3D11DeviceContext*);
 
     ID3D11RenderTargetView* getRTV(size_t idx) const { return _rtvs[idx]; }
     ID3D11DepthStencilView* getDSV() const { return _dsv; }
 
     Attachment getColorAttachment(int index) const;
     Attachment getDepthStencilAttachment() const;
+
+    void rebuildAttachmentsForSwapchain(IDXGISwapChain* swapchain, uint32_t width, uint32_t height);
 
 private:
     ID3D11Device* _device = nullptr;

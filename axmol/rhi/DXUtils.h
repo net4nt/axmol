@@ -2,18 +2,13 @@
 #include "axmol/rhi/RHITypes.h"
 #include <dxgi.h>
 #include <d3dcommon.h>
-#include <wrl/client.h>
-
-namespace ax::rhi
-{
-using Microsoft::WRL::ComPtr;
-}
+#include "axmol/platform/win32/ComPtr.h"
 
 namespace ax::rhi::dxutils
 {
 
 /**
- * @addtogroup _d3d11
+ * @addtogroup _d3d
  * @{
  */
 
@@ -36,10 +31,10 @@ void fatalError(std::string_view op, HRESULT hr);
 }  // namespace ax::rhi::dxutils
 /** @} */
 
-#define _AXASSERT_HR(expr)                                          \
-    do                                                              \
-    {                                                               \
-        HRESULT _hr = (expr);                                       \
-        if (FAILED(_hr))                                            \
-            ::ax::rhi::dxutils::fatalError(#expr " failed"sv, _hr); \
+#define _AXASSERT_HR(hr)                                          \
+    do                                                            \
+    {                                                             \
+        HRESULT _hr = (hr);                                       \
+        if (FAILED(_hr))                                          \
+            ::ax::rhi::dxutils::fatalError(#hr " failed"sv, _hr); \
     } while (0)

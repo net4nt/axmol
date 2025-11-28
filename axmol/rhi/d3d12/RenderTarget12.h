@@ -28,7 +28,6 @@
 #include "axmol/rhi/d3d12/Texture12.h"
 #include <d3d12.h>
 #include <dxgi1_5.h>
-#include <wrl/client.h>
 #include <array>
 
 namespace ax::rhi::d3d12

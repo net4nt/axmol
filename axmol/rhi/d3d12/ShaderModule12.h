@@ -23,9 +23,8 @@
  ****************************************************************************/
 #pragma once
 #include "axmol/rhi/ShaderModule.h"
+#include "axmol/rhi/DXUtils.h"
 #include <d3d12.h>
-#include <d3dcompiler.h>
-#include <wrl/client.h>
 #include <span>
 
 namespace ax::rhi::d3d12
@@ -41,7 +40,7 @@ struct SLCReflectContext;
 
 struct D3D12BlobHandle
 {
-    Microsoft::WRL::ComPtr<IUnknown> blob;
+    ComPtr<IUnknown> blob;
     std::span<uint8_t> view;
 };
 
