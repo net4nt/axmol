@@ -23,7 +23,6 @@
  ****************************************************************************/
 #include "axmol/rhi/d3d11/Texture11.h"
 #include "axmol/rhi/d3d11/Driver11.h"
-#include "axmol/rhi/d3d11/Utils11.h"
 #include "axmol/rhi/DXUtils.h"
 #include "axmol/rhi/RHIUtils.h"
 #include "axmol/rhi/SamplerCache.h"

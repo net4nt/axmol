@@ -23,7 +23,6 @@
  ****************************************************************************/
 #include "axmol/rhi/d3d11/RenderTarget11.h"
 #include "axmol/rhi/d3d11/Texture11.h"
-#include "axmol/rhi/d3d11/Utils11.h"
 #include "axmol/rhi/DXUtils.h"
 
 namespace ax::rhi::d3d11

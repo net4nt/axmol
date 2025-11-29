@@ -26,7 +26,6 @@
 #include "axmol/rhi/d3d11/RenderPipeline11.h"
 #include "axmol/rhi/d3d11/DepthStencilState11.h"
 #include "axmol/rhi/d3d11/Buffer11.h"
-#include "axmol/rhi/d3d11/Utils11.h"
 #include "axmol/rhi/d3d11/Program11.h"
 #include "axmol/rhi/d3d11/VertexLayout11.h"
 #include <dxgi1_2.h>
