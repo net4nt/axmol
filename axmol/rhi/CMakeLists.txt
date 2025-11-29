@@ -106,7 +106,6 @@ elseif(AX_RENDER_API STREQUAL "d3d11")
     rhi/d3d11/RenderPipeline11.h
     rhi/d3d11/ShaderModule11.h
     rhi/d3d11/Texture11.h
-    rhi/d3d11/Utils11.h
     rhi/d3d11/Program11.h
     rhi/d3d11/VertexLayout11.h
     rhi/DXUtils.h
@@ -121,7 +120,6 @@ elseif(AX_RENDER_API STREQUAL "d3d11")
     rhi/d3d11/RenderPipeline11.cpp
     rhi/d3d11/ShaderModule11.cpp
     rhi/d3d11/Texture11.cpp
-    rhi/d3d11/Utils11.cpp
     rhi/d3d11/Program11.cpp
     rhi/d3d11/VertexLayout11.cpp
     rhi/DXUtils.cpp
