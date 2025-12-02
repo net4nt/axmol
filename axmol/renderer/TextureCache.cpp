@@ -793,10 +793,8 @@ void TextureCache::waitForQuit()
     if (_loadingThread)
         _loadingThread->join();
 
-    for (AsyncStruct* s : _asyncStructQueue)
+    for (auto s : _requestQueue)
         delete s;
-
-    _asyncStructQueue.clear();
     _requestQueue.clear();
 }
 
