@@ -792,6 +792,12 @@ void TextureCache::waitForQuit()
     ul.unlock();
     if (_loadingThread)
         _loadingThread->join();
+
+    for (AsyncStruct* s : _asyncStructQueue)
+        delete s;
+
+    _asyncStructQueue.clear();
+    _requestQueue.clear();
 }
 
 std::string TextureCache::getCachedTextureInfo() const
