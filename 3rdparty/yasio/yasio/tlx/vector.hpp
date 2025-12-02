@@ -1075,13 +1075,26 @@ private:
     _Reallocation_guard _Guard{_Al, _Newvec, _Newcapacity, _Appended_first, _Appended_first};
     auto& _Appended_last = _Guard._Constructed_last;
 
+    // If the target type is exactly the same as the source type:
+    //   The user explicitly requested filling with a value,
+    //   so call uninitialized_fill_n to populate new elements with _Val.
+    // Otherwise:
+    //   - If no_auto_fill is true:
+    //       Do not perform any initialization, just advance the iterator
+    //       to the new end position.
+    //   - If no_auto_fill is false:
+    //       Automatically construct new elements with default values,
+    //       using uninitialized_value_construct_n.
     if constexpr (std::is_same_v<_Ty2, _Ty>)
     {
       _Appended_last = _TLX uninitialized_fill_n(_Appended_first, _Newsize - _Oldsize, _Val, _Al);
     }
-    else if constexpr (!no_auto_fill)
+    else
     {
-      _Appended_last = _TLX uninitialized_value_construct_n(_Appended_first, _Newsize - _Oldsize, _Al);
+      if constexpr (no_auto_fill)
+        _Appended_last = _Appended_first + (_Newsize - _Oldsize);
+      else
+        _Appended_last = _TLX uninitialized_value_construct_n(_Appended_first, _Newsize - _Oldsize, _Al);
     }
 
     if constexpr (std::is_nothrow_move_constructible_v<_Ty> || !std::is_copy_constructible_v<_Ty>)
@@ -1123,13 +1136,28 @@ private:
         return;
       }
 
-      const pointer _Oldlast = _Mylast;
+      // If the target type is exactly the same as the source type:
+      //   The user explicitly requested filling with a value,
+      //   so call uninitialized_fill_n to populate new elements with _Val.
+      // Otherwise:
+      //   - If no_auto_fill is true:
+      //       Do not perform any initialization, just advance the iterator
+      //       to the new end position.
+      //   - If no_auto_fill is false:
+      //       Automatically construct new elements with default values,
+      //       using uninitialized_value_construct_n.
       if constexpr (std::is_same_v<_Ty2, _Ty>)
-        _Mylast = _TLX uninitialized_fill_n(_Oldlast, _Newsize - _Oldsize, _Val, _Al);
-      else if constexpr (!no_auto_fill)
-        _Mylast = _TLX uninitialized_value_construct_n(_Oldlast, _Newsize - _Oldsize, _Al);
+      {
+        _Mylast = _TLX uninitialized_fill_n(_Mylast, _Newsize - _Oldsize, _Val, _Al);
+      }
+      else
+      {
+        if constexpr (no_auto_fill)
+          _Mylast = _Myfirst + _Newsize;
+        else // fill by default construct
+          _Mylast = _TLX uninitialized_value_construct_n(_Mylast, _Newsize - _Oldsize, _Al);
+      }
     }
-
     // if _Newsize == _Oldsize, do nothing; avoid invalidating iterators
   }
 
@@ -1693,4 +1721,3 @@ struct pointer_traits<_TLX sequence_iterator<_Myvec>> {
   static constexpr element_type* to_address(const pointer _Iter) noexcept { return std::to_address(_Iter._Ptr); }
 };
 } // namespace std
-
