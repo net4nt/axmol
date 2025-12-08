@@ -2,7 +2,7 @@
 # Can runs on Windows,Linux
 param(
     $site_dist = $null,
-    $min_ver = '2.4' # The minimum version to build docs
+    $min_ver = '2.6' # The minimum version to build docs
 )
 
 $ErrorActionPreference = 'Stop'
