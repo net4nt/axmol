@@ -325,8 +325,8 @@ void DriverImpl::init()
     createDescriptorAllocators();
 
     // check device feature level
-    D3D_FEATURE_LEVEL featureLevels[] = {D3D_FEATURE_LEVEL_12_1, D3D_FEATURE_LEVEL_12_0, D3D_FEATURE_LEVEL_11_1,
-                                         D3D_FEATURE_LEVEL_11_0};
+    D3D_FEATURE_LEVEL featureLevels[] = {D3D_FEATURE_LEVEL_12_2, D3D_FEATURE_LEVEL_12_1, D3D_FEATURE_LEVEL_12_0,
+                                         D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0};
     D3D12_FEATURE_DATA_FEATURE_LEVELS featLevels = {};
     featLevels.NumFeatureLevels                  = _countof(featureLevels);
     featLevels.pFeatureLevelsRequested           = featureLevels;
@@ -337,6 +337,8 @@ void DriverImpl::init()
     {
         _featureLevel = featLevels.MaxSupportedFeatureLevel;
     }
+
+    AXLOGI("D3D12 Feature level: 0x{:04x}", static_cast<int>(_featureLevel));
 
     // adapter version
     LARGE_INTEGER version;
