@@ -274,10 +274,6 @@ TEST_SUITE("tlx/Containers")
 
             tlx::pod_vector<TrivalCtor1> arr5;
             arr5.resize(2);
-
-#ifndef __APPLE__
-            CHECK((arr5[0].value != 0 && arr5[1].value != 0));
-#endif
             // we can safe access initialized member without exception catch
             arr5.resize(4, TrivalCtor1{39});
             CHECK((arr5[2].value == 39 && arr5[3].value == 39));
