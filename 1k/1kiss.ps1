@@ -1674,7 +1674,7 @@ function preprocess_win() {
 function preprocess_linux() {
     $outputOptions = @()
     if ($Global:is_clang) {
-        $outputOptions += '-DCMAKE_C_COMPILER=clang', '-DCMAKE_CXX_COMPILER=clang++'
+        $outputOptions += "-DCMAKE_TOOLCHAIN_FILE=$PSScriptRoot/clang.cmake"
     }
     return , $outputOptions
 }
