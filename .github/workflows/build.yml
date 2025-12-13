@@ -36,7 +36,7 @@ jobs:
   win32:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
 
     - name: Build
       shell: pwsh
@@ -57,7 +57,7 @@ jobs:
   win32-dll:
         runs-on: windows-latest
         steps:
-        - uses: actions/checkout@v5
+        - uses: actions/checkout@v6
 
         - name: Build
           shell: pwsh
@@ -66,7 +66,7 @@ jobs:
         # build uwp debug avoid github CI fail with memory issue
         runs-on: windows-latest
         steps:
-        - uses: actions/checkout@v5
+        - uses: actions/checkout@v6
 
         - name: Build
           shell: pwsh
@@ -77,7 +77,7 @@ jobs:
           # Test winsdk < 10.0.22000.0 (missing C11 standard stdalign.h), axmol will auto fallback to C99 for resolving compiling issue.
           WINSDK_VER: '10.0.19041.0'
         steps:
-        - uses: actions/checkout@v5
+        - uses: actions/checkout@v6
 
         - name: Build
           shell: pwsh
@@ -85,7 +85,7 @@ jobs:
   linux:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
 
     - name: Install dependencies
       run: |
@@ -98,7 +98,7 @@ jobs:
   osx-arm64:
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
 
     - name: Build
       shell: pwsh
@@ -106,7 +106,7 @@ jobs:
   osx-x64:
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
 
     - name: Build
       shell: pwsh
@@ -123,7 +123,7 @@ jobs:
     env:
       BUILD_ARCH: ${{ matrix.arch }}
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
 
     - name: Build
       shell: pwsh
@@ -146,7 +146,7 @@ jobs:
     env:
       TARGET_OS: ${{ matrix.target_os }}
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
 
     - name: Build
       shell: pwsh
@@ -154,7 +154,7 @@ jobs:
   wasm:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
 
     - name: Build
       shell: pwsh
