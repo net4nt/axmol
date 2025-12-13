@@ -672,8 +672,8 @@ void ParticleSystemQuad::draw(Renderer* renderer, const Mat4& transform, uint32_
 void ParticleSystemQuad::setTotalParticles(int tp)
 {
     AXASSERT(tp <= 10000,
-        "Adding more than 10000 particles will crash the renderer, the mesh generated has an index format of "
-        "U_SHORT (uint16_t).");
+             "Adding more than 10000 particles will crash the renderer, the mesh generated has an index format of "
+             "U_SHORT (uint16_t).");
 
     tp = (std::min)(tp, 10000);
     // If we are setting the total number of particles to a number higher
@@ -684,7 +684,7 @@ void ParticleSystemQuad::setTotalParticles(int tp)
         size_t quadsSize   = sizeof(_quads[0]) * tp * 1;
         size_t indicesSize = sizeof(_indices[0]) * tp * 6 * 1;
 
-        _particleData.release();                     
+        _particleData.release();
 
         if (!_particleData.init(tp))
         {
@@ -725,27 +725,25 @@ void ParticleSystemQuad::setTotalParticles(int tp)
         // _particleData.init(), but relies on _totalParticles; before doing so, we have
         // to delete their previous memory first, as allocation would check if allocation
         // flag is false.
-        
-        bool hasOpacityFadeInAllocated = _isOpacityFadeInAllocated,
-             hasScaleInAllocated       = _isScaleInAllocated,
-             hasAnimAllocated          = _isAnimAllocated,
-             hasHSVAllocated           = _isHSVAllocated;
+
+        bool hasOpacityFadeInAllocated = _isOpacityFadeInAllocated, hasScaleInAllocated = _isScaleInAllocated,
+             hasAnimAllocated = _isAnimAllocated, hasHSVAllocated = _isHSVAllocated;
 
         deallocOpacityFadeInMem();
         deallocScaleInMem();
         deallocAnimationMem();
         deallocHSVMem();
 
-        bool isExtraAllocSuccessful = (!hasOpacityFadeInAllocated || allocOpacityFadeInMem() ) &&
-                                      (!hasScaleInAllocated       || allocScaleInMem()       ) &&
-                                      (!hasAnimAllocated          || allocAnimationMem()     ) &&
-                                      (!hasHSVAllocated           || allocHSVMem()           );
-        if (!isExtraAllocSuccessful){
+        bool isExtraAllocSuccessful = (!hasOpacityFadeInAllocated || allocOpacityFadeInMem()) &&
+                                      (!hasScaleInAllocated || allocScaleInMem()) &&
+                                      (!hasAnimAllocated || allocAnimationMem()) && (!hasHSVAllocated || allocHSVMem());
+        if (!isExtraAllocSuccessful)
+        {
             AXLOGW("Particle system: not enough memory");
             _particleData.release();
             return;
         }
-        
+
         // Init particles
         if (_batchNode)
         {
