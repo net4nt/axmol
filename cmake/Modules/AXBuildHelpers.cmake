@@ -695,6 +695,8 @@ macro(ax_setup_winrt_sources)
         ${_AX_ROOT}/${_AX_THIRDPARTY_NAME}/angle/_x/lib/${PLATFORM_NAME}/${ARCH_ALIAS}/libGLESv2.dll
         ${_AX_ROOT}/${_AX_THIRDPARTY_NAME}/angle/_x/lib/${PLATFORM_NAME}/${ARCH_ALIAS}/libEGL.dll
       )
+    elseif(AX_RENDER_API STREQUAL "d3d12")
+      list(APPEND prebuilt_dlls "${_winsdk_bin_dir}/dxcompiler.dll")
     endif()
   endif()
 
