@@ -40,7 +40,7 @@ function(ax_sync_target_res ax_target)
 endfunction()
 
 if(NOT COMMAND set_xcode_property)
-  # This little macro lets you set any XCode specific property, from ios.toolchain.cmake
+  # This little macro lets you set any Xcode specific property, from ios.toolchain.cmake
   function(set_xcode_property TARGET XCODE_PROPERTY XCODE_VALUE)
     set_property(TARGET ${TARGET} PROPERTY XCODE_ATTRIBUTE_${XCODE_PROPERTY} ${XCODE_VALUE})
   endfunction(set_xcode_property)
