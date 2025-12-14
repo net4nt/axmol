@@ -495,8 +495,9 @@ void RenderContextImpl::recreateSwapchain()
     AXASSERT(vr == VK_SUCCESS, "vkCreateSwapchainKHR failed");
 
     // Retrieve swapchain images
-    uint32_t swapImageCount;
+    uint32_t swapImageCount{1};
     vkGetSwapchainImagesKHR(_device, _swapchain, &swapImageCount, nullptr);
+    swapImageCount = std::clamp(swapImageCount, 1u, static_cast<uint32_t>(MAX_COLOR_ATTCHMENT));
     _swapchainImages.resize(swapImageCount);
     vkGetSwapchainImagesKHR(_device, _swapchain, &swapImageCount, _swapchainImages.data());
 
