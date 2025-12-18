@@ -142,7 +142,7 @@ jobs:
         - name: Build
           shell: pwsh
           run: .\tools\cmdline\axmol -p win32 -a x64 -dll
-  linux:
+  linux-ogl:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v6
@@ -190,7 +190,7 @@ jobs:
     - name: Build
       shell: pwsh
       run: ./tools/cmdline/axmol -p osx -a x64
-  android:
+  android-ogl:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -211,7 +211,7 @@ jobs:
         ./tools/cmdline/axmol -p android -a $env:BUILD_ARCH
     - uses: actions/upload-artifact@v6
       with:
-        name: android_${{ matrix.arch }}
+        name: android_${{ matrix.arch }}_ogl
         path: |
           templates/**/*.apk
           tests/**/*.apk
