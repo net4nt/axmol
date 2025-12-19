@@ -334,7 +334,7 @@ else {
                     $webkit2gtk_dev = 'libwebkit2gtk-4.0-dev'
                 }
 
-                sudo apt update
+                sudo apt-get update
                 # for vm, libxxf86vm-dev also required
 
                 $DEPENDS = @()
@@ -359,13 +359,13 @@ else {
                 $DEPENDS += 'libvlc-dev', 'libvlccore-dev', 'vlc'
 
                 # if vlc encouter codec error, install
-                # sudo apt install ubuntu-restricted-extras
+                # sudo apt-get install ubuntu-restricted-extras
                 println "Install packages: $DEPENDS ..."
                 if ("$env:GITHUB_ACTIONS" -eq 'true') {
-                    sudo apt install --allow-unauthenticated --yes $DEPENDS > /dev/null
+                    sudo apt-get install --allow-unauthenticated --yes $DEPENDS > /dev/null
                 }
                 else {
-                    sudo apt install --allow-unauthenticated --yes $DEPENDS
+                    sudo apt-get install --allow-unauthenticated --yes $DEPENDS
                 }
             }
             elseif ($LinuxDistro -eq 'Arch') {
