@@ -23,3 +23,20 @@
 - License: Apache-2.0
 - Platform: Android
 - Manged by: `1k/build.profiles`
+
+## emsdk
+
+- [![github](https://img.shields.io/github/v/tag/emscripten-core/emsdk?label=Upstream)](https://github.com/emscripten-core/emsdk)
+- Version: 4.0.22
+- License: Apache-2.0
+- Platform: Android
+- Manged by: `1k/build.profiles`
+
+## ninja-build
+
+- [![github](https://img.shields.io/github/v/release/ninja-build/ninja?label=Upstream)](https://github.com/ninja-build/ninja)
+- Version: 1.13.2
+- License: Apache-2.0
+- Platform: Android
+- Manged by: `1k/build.profiles`
+- Note: Axmol requires ninja-build only when building for the Android target platform
