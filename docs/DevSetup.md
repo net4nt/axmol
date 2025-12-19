@@ -19,7 +19,7 @@
   5. Ensure that the C / C++ compiler toolset is installed on your host machine.
      - Windows 10+: Visual Studio 2022/2026 with desktop workflow
      - macOS Monterey 12.5+: Xcode 14.2+
-     - Linux(Ubuntu 22.04+, Debian 11+, ArchLinux): GCC (G++)
+     - Linux(Ubuntu 22.04+, Debian 12+, ArchLinux): GCC (G++)
 
 ## Creating a new project
 

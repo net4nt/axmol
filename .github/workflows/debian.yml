@@ -25,7 +25,7 @@ run-name: 'build@c++${{ inputs.cxxstd || 20 }}'
 
 jobs:
   debian-ogl:
-    runs-on: debian-11
+    runs-on: debian-12
     steps:
     - uses: actions/checkout@v6
 
