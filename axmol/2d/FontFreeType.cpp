@@ -427,8 +427,6 @@ unsigned char* FontFreeType::getGlyphBitmap(char32_t charCode,
                                             const GlyphResolution*& outFallbackRes,
                                             bool& sharedBitmapData)
 {
-    unsigned char* ret = nullptr;
-
     // @remark: glyphIndex=0 means charactor is mssing on current font face
     auto glyphIndex = FT_Get_Char_Index(_fontFace, static_cast<FT_ULong>(charCode));
     if (glyphIndex == 0)

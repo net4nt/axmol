@@ -1067,8 +1067,8 @@ void Label::alignText()
 
     if (!tryTextPlacement(currentFontSize))
     {
-        int maxFontSize = currentFontSize - 1;
-        int minFontSize = 1;
+        int maxFontSize            = currentFontSize - 1;
+        int minFontSize            = 1;
         int lastSuccessfulFontSize = minFontSize;
 
         while (minFontSize <= maxFontSize)
@@ -1081,7 +1081,7 @@ void Label::alignText()
             if (tryTextPlacement(currentFontSize))
             {
                 lastSuccessfulFontSize = currentFontSize;
-                minFontSize = lastSuccessfulFontSize + 1;
+                minFontSize            = lastSuccessfulFontSize + 1;
             }
             else
             {
@@ -1118,8 +1118,8 @@ bool Label::tryTextPlacement(float fontSize)
         redoProcess = !multilineTextWrapByChar(atMinimumFontSizeLimit);
     }
 
-    if ((!redoProcess && _overflow == Overflow::SHRINK && !atMinimumFontSizeLimit)
-        && (isVerticalClamp() || isHorizontalClamp()))
+    if ((!redoProcess && _overflow == Overflow::SHRINK && !atMinimumFontSizeLimit) &&
+        (isVerticalClamp() || isHorizontalClamp()))
     {
         redoProcess = true;
     }
@@ -1130,8 +1130,8 @@ bool Label::tryTextPlacement(float fontSize)
 void Label::updateBatchNode()
 {
     const std::unordered_map<unsigned int, Texture2D*>& textures = _fontAtlas->getTextures();
-    const size_t textureCount = textures.size();
-    const size_t nodeCount = _batchNodes.size();
+    const size_t textureCount                                    = textures.size();
+    const size_t nodeCount                                       = _batchNodes.size();
 
     if (textureCount > nodeCount)
     {
@@ -2073,15 +2073,15 @@ void Label::draw(Renderer* renderer, const Mat4& transform, uint32_t flags)
         return;
     }
     // Don't do calculate the culling if the transform was not updated
-    bool transformUpdated = flags & FLAGS_TRANSFORM_DIRTY;
 #if AX_USE_CULLING
     auto visitingCamera = Camera::getVisitingCamera();
     auto defaultCamera  = Camera::getDefaultCamera();
     if (visitingCamera == defaultCamera)
     {
-        _insideBounds = (transformUpdated || visitingCamera->isViewProjectionUpdated())
-                            ? renderer->checkVisibility(transform, _contentSize)
-                            : _insideBounds;
+        const auto transformUpdated = flags & FLAGS_TRANSFORM_DIRTY;
+        _insideBounds               = (transformUpdated || visitingCamera->isViewProjectionUpdated())
+                                          ? renderer->checkVisibility(transform, _contentSize)
+                                          : _insideBounds;
     }
     else
     {

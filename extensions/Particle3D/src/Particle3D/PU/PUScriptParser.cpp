@@ -64,14 +64,13 @@ void PUScriptParser::parse(PUConcreteNodeList& nodes, const PUScriptTokenList& t
 
     PUConcreteNode* parent = 0;
     PUConcreteNode* node;
-    PUScriptToken* token                = 0;
     PUScriptTokenList::const_iterator i = tokens.begin(), end = tokens.end();
     //  int kkkk = 0;
     while (i != end)
     {
 
         //        kkkk ++;
-        token = (*i);
+        auto token = (*i);
 
         switch (state)
         {

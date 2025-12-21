@@ -7,7 +7,7 @@
 
 ## Usage
 
-call `openForScene(ax::Scene*)` in your `onEnter` overload and `close` in your `onExit` overload.   
+call `openForScene(ax::Scene*)` in your `onEnter` overload and `close` in your `onExit` overload.
 Dont forget to call Scene methods.
 
 ```cpp

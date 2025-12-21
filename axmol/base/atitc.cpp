@@ -33,8 +33,8 @@ static void atitc_decode_block(uint8_t** blockData,
                                uint64_t alpha,
                                ATITCDecodeFlag decodeFlag)
 {
-    unsigned int colorValue0 = 0, colorValue1 = 0, initAlpha = (!oneBitAlphaFlag * 255u) << 24;
-    unsigned int rb0 = 0, rb1 = 0, rb2 = 0, rb3 = 0, g0 = 0, g1 = 0, g2 = 0, g3 = 0;
+    unsigned int colorValue0, colorValue1, initAlpha = (!oneBitAlphaFlag * 255u) << 24;
+    unsigned int rb0, rb1, rb2, rb3, g0, g1, g2, g3;
     bool msb = 0;
 
     uint32_t colors[4], pixelsIndex = 0;
