@@ -464,13 +464,11 @@ void PUScriptParser::parse(PUConcreteNodeList& nodes, const PUScriptTokenList& t
 
 void PUScriptParser::parseChunk(PUConcreteNodeList& nodes, const PUScriptTokenList& tokens)
 {
-    PUConcreteNode* node = nullptr;
-    PUScriptToken* token = 0;
     for (PUScriptTokenList::const_iterator i = tokens.begin(); i != tokens.end(); ++i)
     {
-        token = *i;
+        auto token = *i;
 
-        node = nullptr;
+        PUConcreteNode* node = nullptr;
         switch (token->type)
         {
         case TID_VARIABLE:

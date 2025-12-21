@@ -414,16 +414,13 @@ void RenderView::handleTouchesOfEndOrCancel(EventTouch::EventCode eventCode,
                                             float xs[],
                                             float ys[])
 {
-    intptr_t id = 0;
-    float x     = 0.0f;
-    float y     = 0.0f;
     EventTouch touchEvent;
 
     for (int i = 0; i < num; ++i)
     {
-        id = ids[i];
-        x  = xs[i];
-        y  = ys[i];
+        auto id = ids[i];
+        auto x  = xs[i];
+        auto y  = ys[i];
 
         auto iter = g_touchIdReorderMap.find(id);
         if (iter == g_touchIdReorderMap.end())
