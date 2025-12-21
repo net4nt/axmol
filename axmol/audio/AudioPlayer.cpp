@@ -447,7 +447,6 @@ void AudioPlayer::rotateBufferThread(int offsetFrame)
     {
         BREAK_IF(decoder == nullptr || !decoder->open(fullPath));
 
-        uint32_t framesRead         = 0;
         const uint32_t framesToRead = _audioCache->_queBufferFrames;
         const uint32_t bufferSize   = decoder->framesToBytes(framesToRead);
 #if AX_USE_ALSOFT
@@ -496,7 +495,7 @@ void AudioPlayer::rotateBufferThread(int offsetFrame)
                         }
                     }
 
-                    framesRead = decoder->readFixedFrames(framesToRead, tmpBuffer);
+                    auto framesRead = decoder->readFixedFrames(framesToRead, tmpBuffer);
 
                     if (framesRead == 0)
                     {
