@@ -62,7 +62,7 @@
 
 ## flatbuffers
 - [![Upstream](https://img.shields.io/github/v/release/google/flatbuffers?label=Upstream)](https://github.com/google/flatbuffers)
-- Version: 25.9.23
+- Version: 25.12.19
 - License: Apache-2.0
 
 ## {fmt}
@@ -114,7 +114,7 @@
 ## lua
 - plainlua
   - [![Upstream](https://img.shields.io/github/v/release/lua/lua?label=Upstream)](https://github.com/lua/lua) http://www.lua.org/
-  - Version: 5.5.0-beta
+  - Version: 5.5.0
   - License: MIT (http://www.lua.org/license.html)
   
 - sol2
