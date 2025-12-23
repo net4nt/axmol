@@ -89,30 +89,31 @@ bool ArmatureDataManager::init()
 
 void ArmatureDataManager::removeArmatureFileInfo(std::string_view configFilePath)
 {
-    RelativeData* data = getRelativeData(configFilePath);
-
-    for (std::string str : data->armatures)
+    if (RelativeData* data = getRelativeData(configFilePath))
     {
-        removeArmatureData(str);
-    }
+        for (std::string str : data->armatures)
+        {
+            removeArmatureData(str);
+        }
 
-    for (std::string str : data->animations)
-    {
-        removeAnimationData(str);
-    }
+        for (std::string str : data->animations)
+        {
+            removeAnimationData(str);
+        }
 
-    for (std::string str : data->textures)
-    {
-        removeTextureData(str);
-    }
+        for (std::string str : data->textures)
+        {
+            removeTextureData(str);
+        }
 
-    for (std::string str : data->plistFiles)
-    {
-        SpriteFrameCacheHelper::getInstance()->removeSpriteFrameFromFile(str);
-    }
+        for (std::string str : data->plistFiles)
+        {
+            SpriteFrameCacheHelper::getInstance()->removeSpriteFrameFromFile(str);
+        }
 
-    _relativeDatas.erase(configFilePath);
-    DataReaderHelper::getInstance()->removeConfigFile(configFilePath);
+        _relativeDatas.erase(configFilePath);
+        DataReaderHelper::getInstance()->removeConfigFile(configFilePath);
+    }
 }
 
 void ArmatureDataManager::addArmatureData(std::string_view id,
@@ -260,7 +261,8 @@ void ArmatureDataManager::addRelativeData(std::string_view configFilePath)
 
 RelativeData* ArmatureDataManager::getRelativeData(std::string_view configFilePath)
 {
-    return &_relativeDatas[configFilePath];
+    auto it = _relativeDatas.find(configFilePath);
+    return it != _relativeDatas.end() ? &it->second : nullptr;
 }
 
 }  // namespace cocostudio

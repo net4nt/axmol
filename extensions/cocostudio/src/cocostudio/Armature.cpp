@@ -81,14 +81,7 @@ Armature* Armature::create(std::string_view name, Bone* parentBone)
     return nullptr;
 }
 
-Armature::Armature()
-    : _armatureData(nullptr)
-    , _batchNode(nullptr)
-    , _parentBone(nullptr)
-    , _version(0.f)
-    , _armatureTransformDirty(true)
-    , _animation(nullptr)
-{}
+Armature::Armature() {}
 
 Armature::~Armature()
 {
