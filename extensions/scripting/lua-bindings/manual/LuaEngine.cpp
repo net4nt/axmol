@@ -771,8 +771,7 @@ int LuaEngine::handleEvent(ScriptHandlerMgr::HandlerType type, void* data)
     case ScriptHandlerMgr::HandlerType::EVENT_MOUSE_MOVE:
     case ScriptHandlerMgr::HandlerType::EVENT_MOUSE_SCROLL:
         return handleEventMouse(type, data);
-    default:
-        break;
+    default:;
     }
 
     return 0;
@@ -788,12 +787,8 @@ int LuaEngine::handleEvent(ScriptHandlerMgr::HandlerType type,
     case ScriptHandlerMgr::HandlerType::TABLECELL_SIZE_FOR_INDEX:
     case ScriptHandlerMgr::HandlerType::TABLECELL_AT_INDEX:
     case ScriptHandlerMgr::HandlerType::TABLEVIEW_NUMS_OF_CELLS:
-    {
         return handleTableViewEvent(type, data, numResults, func);
-    }
-    break;
-    default:
-        break;
+    default:;
     }
 
     return 0;
