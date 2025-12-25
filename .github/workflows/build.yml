@@ -230,8 +230,7 @@ jobs:
       with:
         name: android_arm64_vk
         path: |
-          templates/**/*.apk
-          tests/**/*.apk
+          tests/**/outputs/**/*.apk
   ios-sim-x64:
     runs-on: macos-15
     strategy:
