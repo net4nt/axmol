@@ -46,7 +46,14 @@ if (Test-Path $destPath -PathType Any) { # dest already exist
         if ($fileItem.PSIsContainer -and !$fileItem.Target) {
             $fileItem.Delete($true)
         } else {
-            $fileItem.Delete()
+            try {
+                $fileItem.Delete()
+            } catch {
+                # Try again with runas
+                echo "fsync.ps1: Deleting $destPath requires administrator privilege. Trying again with elevated permission ..."
+                $instruction = "Remove-Item -Path '$destPath' -Force -Recurse"
+                Start-Process powershell -ArgumentList '-Command', $instruction -WorkingDirectory $PSScriptRoot -WindowStyle Hidden -Wait -Verb runas
+            }
         }
     }
 }
@@ -67,6 +74,7 @@ if ($linkOnly) {
                 New-Item -ItemType SymbolicLink -Path $destPath -Target $srcPath 2>$null
             } catch {
                 # Try again with runas
+                echo "fsync.ps1: Creating symlink requires administrator privilege. Trying again with elevated permission ..."
                 $instruction = "New-Item -ItemType SymbolicLink -Path '$destPath' -Target '$srcPath' 2>`$null"
                 Start-Process powershell -ArgumentList '-Command', $instruction -WorkingDirectory $PSScriptRoot -WindowStyle Hidden -Wait -Verb runas
             }
