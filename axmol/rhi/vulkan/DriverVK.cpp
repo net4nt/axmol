@@ -429,8 +429,12 @@ void DriverImpl::initializeDevice()
 
     // Enable extended dynamic state chain only if extensions are supported
     if (dynState3Props.dynamicPrimitiveTopologyUnrestricted &&
-        hasExtension(VK_EXT_EXTENDED_DYNAMIC_STATE_2_EXTENSION_NAME))
+        hasExtension(VK_EXT_EXTENDED_DYNAMIC_STATE_2_EXTENSION_NAME) &&
+        hasExtension(VK_EXT_EXTENDED_DYNAMIC_STATE_3_EXTENSION_NAME))
     {
+        deviceExtensions.push_back(VK_EXT_EXTENDED_DYNAMIC_STATE_2_EXTENSION_NAME);
+        deviceExtensions.push_back(VK_EXT_EXTENDED_DYNAMIC_STATE_3_EXTENSION_NAME);
+
         _vkCaps.dynamicPrimitiveTopologyUnrestricted = true;
 
         extDynState2.sType                 = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_DYNAMIC_STATE_2_FEATURES_EXT;
