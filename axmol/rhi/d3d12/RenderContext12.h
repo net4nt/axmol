@@ -72,7 +72,6 @@ struct GPUFence
 class RenderContextImpl : public RenderContext
 {
 public:
-    static constexpr int MAX_FRAMES_IN_FLIGHT   = 2;
     static constexpr int SWAPCHAIN_BUFFER_COUNT = 3;
 
     static constexpr uint32_t VI_BINDING_INDEX            = 0;
@@ -130,8 +129,6 @@ public:
 
     void setStencilReferenceValue(uint32_t value) override;
 
-    uint32_t getCurrentFrame() const { return _currentFrame; }
-
     uint64_t getCompletedFenceValue() const override;
 
 private:
@@ -146,8 +143,10 @@ private:
 
     void markDynamicStateDirty(DynamicStateBits bits) noexcept
     {
-        bitmask::set(_inFlightDynamicDirtyBits[0], bits);
-        bitmask::set(_inFlightDynamicDirtyBits[1], bits);
+        auto&& apply = [this, bits]<std::size_t... _Idx>(std::index_sequence<_Idx...>) {
+            (bitmask::set(_inFlightDynamicDirtyBits[_Idx], bits), ...);
+        };
+        apply(std::make_index_sequence<MAX_FRAMES_IN_FLIGHT>{});
     }
 
     void applyPendingDynamicStates();
@@ -178,9 +177,9 @@ private:
     ID3D12RootSignature* _boundRootSig{nullptr};
     ID3D12PipelineState* _boundPSO{nullptr};  // weak pointer
 
-    uint32_t _currentImageIndex{0};
+    uint32_t _imageIndex{0};
+    int _frameIndex{0};
 
-    uint32_t _currentFrame{0};
     uint32_t _renderTargetWidth{0};
     uint32_t _renderTargetHeight{0};
     uint32_t _screenWidth{0};
