@@ -522,9 +522,9 @@ void DriverImpl::createDescriptorAllocators()
     _samplerAllocator->setAllowGrow(false);
 }
 
-RenderContext* DriverImpl::createRenderContext(void* surfaceContext)
+RenderContext* DriverImpl::createRenderContext(SurfaceHandle surface)
 {
-    auto context = new RenderContextImpl(this, surfaceContext);
+    auto context = new RenderContextImpl(this, surface);
     Object::assign(_currentRenderContext, context);
     return context;
 }
@@ -647,12 +647,13 @@ SamplerHandle DriverImpl::createSampler(const SamplerDesc& desc)
     auto handle = allocateDescriptor(DisposableResource::Type::SamplerView);
     _device->CreateSampler(&sd, handle->cpu);
 
-    return reinterpret_cast<SamplerHandle>(handle);
+    return SamplerHandle(handle);
 }
 
 void DriverImpl::destroySampler(SamplerHandle& h)
 {
-    deallocateDescriptor(reinterpret_cast<DescriptorHandle*>(h), DisposableResource::Type::SamplerView);
+    deallocateDescriptor(static_cast<DescriptorHandle*>(h), DisposableResource::Type::SamplerView);
+    h = nullptr;
 }
 
 DescriptorHandle* DriverImpl::createSRV(ID3D12Resource* resource, const D3D12_SHADER_RESOURCE_VIEW_DESC* desc)

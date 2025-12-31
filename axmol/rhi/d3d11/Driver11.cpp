@@ -277,9 +277,9 @@ HRESULT DriverImpl::createD3DDevice(int requestDriverType, int createFlags)
                                &_context);
 }
 
-RenderContext* DriverImpl::createRenderContext(void* surfaceContext)
+RenderContext* DriverImpl::createRenderContext(SurfaceHandle surface)
 {
-    return new RenderContextImpl(this, surfaceContext);
+    return new RenderContextImpl(this, surface);
 }
 
 Buffer* DriverImpl::createBuffer(std::size_t size, BufferType type, BufferUsage usage, const void* initial)
@@ -387,12 +387,14 @@ SamplerHandle DriverImpl::createSampler(const SamplerDesc& desc)
 
     ID3D11SamplerState* sampler{nullptr};
     _device->CreateSamplerState(&sd, &sampler);
-    return sampler;
+    return SamplerHandle(sampler);
 }
 
 void DriverImpl::destroySampler(SamplerHandle& h)
 {
-    SafeRelease(reinterpret_cast<ID3D11SamplerState*&>(h));
+    auto samplerState = static_cast<ID3D11SamplerState*>(h);
+    SafeRelease(samplerState);
+    h = nullptr;
 }
 
 VertexLayout* DriverImpl::createVertexLayout(VertexLayoutDesc&& desc)

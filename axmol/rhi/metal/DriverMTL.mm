@@ -437,9 +437,9 @@ DriverImpl::DriverImpl()
 
 DriverImpl::~DriverImpl() {}
 
-RenderContext* DriverImpl::createRenderContext(void* surfaceContext)
+RenderContext* DriverImpl::createRenderContext(SurfaceHandle surface)
 {
-    return new RenderContextImpl(this, surfaceContext);
+    return new RenderContextImpl(this, surface);
 }
 
 Buffer* DriverImpl::createBuffer(std::size_t size, BufferType type, BufferUsage usage, const void* initial)
@@ -574,14 +574,14 @@ SamplerHandle DriverImpl::createSampler(const SamplerDesc& desc)
     id<MTLSamplerState> sampler = [_mtlDevice newSamplerStateWithDescriptor:samplerDesc];
     [samplerDesc release];
 
-    return (__bridge SamplerHandle)sampler;
+    return SamplerHandle{(__bridge void*)sampler};
 }
 
 void DriverImpl::destroySampler(SamplerHandle& sampler)
 {
     if (sampler)
     {
-        [reinterpret_cast<id<MTLSamplerState>>(sampler) release];
+        [static_cast<id<MTLSamplerState>>(sampler) release];
         sampler = nullptr;
     }
 }

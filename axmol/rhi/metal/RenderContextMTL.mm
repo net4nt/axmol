@@ -139,7 +139,7 @@ static MTLCullMode toMTLCullMode(CullMode mode)
 
 }  // namespace
 
-RenderContextImpl::RenderContextImpl(DriverImpl* driver, void* surfaceContext)
+RenderContextImpl::RenderContextImpl(DriverImpl* driver, SurfaceHandle surface)
 {
     _frameBoundarySemaphore = dispatch_semaphore_create(MAX_FRAMES_IN_FLIGHT);
     auto mtlDevice          = driver->getMTLDevice();
@@ -147,7 +147,7 @@ RenderContextImpl::RenderContextImpl(DriverImpl* driver, void* surfaceContext)
     auto& contextAttrs      = Application::getContextAttrs();
 #if AX_TARGET_PLATFORM == AX_PLATFORM_MAC
     CGSize fbSize;
-    NSView* contentView = (id)surfaceContext;
+    NSView* contentView = static_cast<NSView*>(surface);
     @autoreleasepool
     {
         const NSRect contentRect = [contentView frame];
@@ -165,7 +165,7 @@ RenderContextImpl::RenderContextImpl(DriverImpl* driver, void* surfaceContext)
     _mtlLayer.displaySyncEnabled = contextAttrs.vsync;
     [contentView setLayer:_mtlLayer];
 #else
-    UIView* view              = (id)surfaceContext;
+    UIView* view              = static_cast<UIView*>(surface);
     _mtlLayer                 = (CAMetalLayer*)[view layer];
     _mtlLayer.device          = mtlDevice;
     _mtlLayer.pixelFormat     = MTLPixelFormatBGRA8Unorm;
@@ -197,7 +197,7 @@ RenderContextImpl::~RenderContextImpl()
     dispatch_semaphore_signal(_frameBoundarySemaphore);
 }
 
-bool RenderContextImpl::updateSurface(void* /*surface*/, uint32_t width, uint32_t height)
+bool RenderContextImpl::updateSurface(SurfaceHandle /*surface*/, uint32_t width, uint32_t height)
 {
     [_mtlLayer setDrawableSize:CGSizeMake(width, height)];
     _screenRT->rebuildSwapchainAttachments();

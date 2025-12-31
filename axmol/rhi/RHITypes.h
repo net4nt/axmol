@@ -428,7 +428,61 @@ struct SamplerIndex
     };
 };
 
-using SamplerHandle = void*;
+union Handle64
+{
+    void* ptr;
+    uint64_t u64;
+
+    constexpr Handle64() : u64(0) {}
+    constexpr Handle64(std::nullptr_t) : u64(0) {}
+    constexpr Handle64(void* p) : ptr(p) {}
+    constexpr Handle64(uint64_t v) : u64(v) {}
+    constexpr Handle64(const Handle64&) = default;
+    constexpr Handle64(Handle64&&)      = default;
+
+    Handle64& operator=(std::nullptr_t)
+    {
+        reset();
+        return *this;
+    }
+    Handle64& operator=(void* p)
+    {
+        ptr = p;
+        return *this;
+    }
+    Handle64& operator=(uint64_t v)
+    {
+        u64 = v;
+        return *this;
+    }
+    Handle64& operator=(const Handle64&) = default;
+    Handle64& operator=(Handle64&&)      = default;
+
+    template <typename _Ty>
+    constexpr explicit operator _Ty() const
+    {
+        using _Uty = std::remove_cv_t<std::remove_reference_t<_Ty>>;
+        if constexpr (std::is_pointer_v<_Uty>)
+            return static_cast<_Ty>(ptr);
+        else
+            return static_cast<_Ty>(u64);
+    }
+
+    template <typename _Ty>
+    constexpr bool operator==(_Ty&& rhs) const
+    {
+        using _Uty = std::remove_cv_t<std::remove_reference_t<_Ty>>;
+        if constexpr (std::is_pointer_v<_Uty>)
+            return static_cast<_Uty>(ptr) == rhs;
+        else
+            return static_cast<_Uty>(u64) == rhs;
+    }
+
+    constexpr void reset() { u64 = 0; }
+};
+
+using SurfaceHandle = Handle64;
+using SamplerHandle = Handle64;
 
 /**
  * Store texture description.
