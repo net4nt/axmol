@@ -140,9 +140,10 @@ void ProgramImpl::compileProgram()
 
             GLint blockSize{0};
             glGetActiveUniformBlockiv(_program, blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
-            uboInfo.sizeBytes = blockSize;
-
-            uboInfo.cpuOffset = cpuOffset;
+            if (uboInfo.sizeBytes != blockSize)
+                uboInfo.sizeBytes = blockSize;
+            if (uboInfo.cpuOffset != cpuOffset)
+                uboInfo.cpuOffset = cpuOffset;
             cpuOffset += blockSize;
 
             blockInfoMap.emplace(blockIndex, &uboInfo);
@@ -150,6 +151,8 @@ void ProgramImpl::compileProgram()
             _uniformBuffers.push_back(
                 driver->createBuffer(uboInfo.sizeBytes, BufferType::UNIFORM, BufferUsage::DYNAMIC));
         }
+        if (_uniformBufferSize != cpuOffset)
+            _uniformBufferSize = cpuOffset;
 
         /*
          * Adjust offset, cpuOffset, elementSize from Graphics API
