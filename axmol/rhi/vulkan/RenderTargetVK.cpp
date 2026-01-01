@@ -87,7 +87,7 @@ void RenderTargetImpl::rebuildSwapchainAttachments(const tlx::pod_vector<VkImage
 
     cleanupResources();
 
-    _driver->cleanPendingResources();
+    _driver->destroyStaleResources();
 
     _swapchainImageViews.resize(images.size());
 

@@ -270,7 +270,7 @@ DriverImpl::~DriverImpl()
 {
     AX_SAFE_RELEASE_NULL(_currentRenderContext);
 
-    cleanPendingResources();
+    destroyStaleResources();
 
     _srvAllocator.reset();
     _rtvAllocator.reset();
@@ -828,7 +828,7 @@ void DriverImpl::processDisposalQueue(uint64_t completeFence)
     }
 }
 
-void DriverImpl::cleanPendingResources()
+void DriverImpl::destroyStaleResources()
 {
     waitForGPU();
     processDisposalQueue(UINT64_MAX);

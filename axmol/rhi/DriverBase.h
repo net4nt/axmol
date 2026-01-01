@@ -213,7 +213,7 @@ public:
      */
     inline int getMaxSamplesAllowed() const { return _caps.maxSamplesAllowed; }
 
-    virtual void cleanPendingResources() {}
+    virtual void destroyStaleResources() {}
 
     virtual void waitForGPU() {};
 

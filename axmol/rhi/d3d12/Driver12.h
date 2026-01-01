@@ -138,7 +138,7 @@ public:
 
     bool checkForFeatureSupported(FeatureType feature) override;
 
-    void cleanPendingResources() override;
+    void destroyStaleResources() override;
 
     ID3D12Device* getDevice() const { return _device.Get(); }
     ID3D12CommandQueue* getGraphicsQueue() const { return _gfxQueue.Get(); }

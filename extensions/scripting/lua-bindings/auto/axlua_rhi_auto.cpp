@@ -3144,7 +3144,7 @@ int lua_ax_rhi_DriverBase_getMaxSamplesAllowed(lua_State* tolua_S)
 
     return 0;
 }
-int lua_ax_rhi_DriverBase_cleanPendingResources(lua_State* tolua_S)
+int lua_ax_rhi_DriverBase_destroyStaleResources(lua_State* tolua_S)
 {
     int argc = 0;
     ax::rhi::DriverBase* obj = nullptr;
@@ -3164,7 +3164,7 @@ int lua_ax_rhi_DriverBase_cleanPendingResources(lua_State* tolua_S)
 #if _AX_DEBUG >= 1
     if (!obj)
     {
-        tolua_error(tolua_S,"invalid 'obj' in function 'lua_ax_rhi_DriverBase_cleanPendingResources'", nullptr);
+        tolua_error(tolua_S,"invalid 'obj' in function 'lua_ax_rhi_DriverBase_destroyStaleResources'", nullptr);
         return 0;
     }
 #endif
@@ -3174,19 +3174,19 @@ int lua_ax_rhi_DriverBase_cleanPendingResources(lua_State* tolua_S)
     {
         if(!ok)
         {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_ax_rhi_DriverBase_cleanPendingResources'", nullptr);
+            tolua_error(tolua_S,"invalid arguments in function 'lua_ax_rhi_DriverBase_destroyStaleResources'", nullptr);
             return 0;
         }
-        obj->cleanPendingResources();
+        obj->destroyStaleResources();
         lua_settop(tolua_S, 1);
         return 1;
     }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "axrhi.DriverBase:cleanPendingResources",argc, 0);
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "axrhi.DriverBase:destroyStaleResources",argc, 0);
     return 0;
 
 #if _AX_DEBUG >= 1
     tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_ax_rhi_DriverBase_cleanPendingResources'.",&tolua_err);
+    tolua_error(tolua_S,"#ferror in function 'lua_ax_rhi_DriverBase_destroyStaleResources'.",&tolua_err);
 #endif
 
     return 0;
@@ -3332,7 +3332,7 @@ int lua_register_ax_rhi_DriverBase(lua_State* tolua_S)
         tolua_function(tolua_S,"getMaxAttributes",lua_ax_rhi_DriverBase_getMaxAttributes);
         tolua_function(tolua_S,"getMaxTextureUnits",lua_ax_rhi_DriverBase_getMaxTextureUnits);
         tolua_function(tolua_S,"getMaxSamplesAllowed",lua_ax_rhi_DriverBase_getMaxSamplesAllowed);
-        tolua_function(tolua_S,"cleanPendingResources",lua_ax_rhi_DriverBase_cleanPendingResources);
+        tolua_function(tolua_S,"destroyStaleResources",lua_ax_rhi_DriverBase_destroyStaleResources);
         tolua_function(tolua_S,"waitForGPU",lua_ax_rhi_DriverBase_waitForGPU);
         tolua_function(tolua_S,"getInstance", lua_ax_rhi_DriverBase_getInstance);
         tolua_function(tolua_S,"destroyInstance", lua_ax_rhi_DriverBase_destroyInstance);

@@ -209,7 +209,7 @@ DriverImpl::~DriverImpl()
 {
     AX_SAFE_RELEASE_NULL(_currentRenderContext);
 
-    cleanPendingResources();
+    destroyStaleResources();
 
     if (_commandPool)
     {
@@ -933,7 +933,7 @@ void DriverImpl::processDisposalQueue(uint64_t completedFenceValue)
     }
 }
 
-void DriverImpl::cleanPendingResources()
+void DriverImpl::destroyStaleResources()
 {
     if (!_disposalQueue.empty())
     {

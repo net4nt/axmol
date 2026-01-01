@@ -254,7 +254,7 @@ bool RenderTargetImpl::rebuildSwapchainBuffers(IDXGISwapChain4* swapchain,
 
     if (swapchainFlags)
     {
-        _driver->cleanPendingResources();
+        _driver->destroyStaleResources();
         auto hr = swapchain->ResizeBuffers(RenderContextImpl::SWAPCHAIN_BUFFER_COUNT, width, height,
                                            DEFAULT_SWAPCHAIN_FORMAT, swapchainFlags.value());
         if (FAILED(hr))

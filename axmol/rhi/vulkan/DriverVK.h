@@ -121,7 +121,7 @@ public:
 
     bool checkForFeatureSupported(FeatureType feature) override;
 
-    void cleanPendingResources() override;
+    void destroyStaleResources() override;
 
     VkPhysicalDevice getPhysical() const { return _physical; }
     VkDevice getDevice() const { return _device; }
