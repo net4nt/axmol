@@ -26,7 +26,6 @@
 #include "axmol/rhi/RenderTarget.h"
 #include "axmol/rhi/vulkan/TextureVK.h"
 #include <glad/vulkan.h>
-#include <array>
 
 namespace ax::rhi::vk
 {
@@ -34,18 +33,13 @@ class DriverImpl;
 class RenderTargetImpl : public RenderTarget
 {
 public:
-    enum
-    {
-        DepthViewIndex = MAX_COLOR_ATTCHMENT,
-    };
-
     using Attachment = TextureImpl*;
 
     RenderTargetImpl(DriverImpl* driver, bool defaultRenderTarget);
     ~RenderTargetImpl();
 
     // Destroy the current live framebuffer and mark attachments dirty
-    void invalidate();
+    void cleanupResources();
 
     // Begin a render pass using this target
     void beginRenderPass(VkCommandBuffer cmd,
@@ -68,6 +62,8 @@ public:
                                      const VkExtent2D&,
                                      PixelFormat imagePF);
 
+    void setColorTexture(Texture* texture, int level = 0, int index = 0) override;
+
 private:
     void updateRenderPass(const RenderPassDesc& desc, uint32_t imageIndex);
     void updateFramebuffer(VkCommandBuffer cmd, uint32_t imageIndex);
@@ -77,12 +73,15 @@ private:
     DriverImpl* _driver{nullptr};
 
     // Current attachment views for building renderpass/framebuffer
-    std::array<VkImageView, MAX_COLOR_ATTCHMENT + 1> _attachmentViews{};
+    tlx::inlined_vector<VkImageView, INITIAL_COLOR_CAPACITY + 1> _attachmentViews{};
+
     // Seed values used to compute framebuffer/render pass hash per swapchain image
-    std::array<uint64_t, MAX_COLOR_ATTCHMENT> _renderHashSeeds{};
-    uint64_t _activeHashSeed{0};
+    // only used for screen render target
+    tlx::inlined_vector<uint64_t, INITIAL_COLOR_CAPACITY> _renderHashSeeds{};
 
     tlx::pod_vector<VkClearValue> _clearValues;
+
+    uint64_t _activeHashSeed{0};
 
     VkRenderPass _renderPass{VK_NULL_HANDLE};    // active render pass
     VkFramebuffer _framebuffer{VK_NULL_HANDLE};  // active framebuffer
