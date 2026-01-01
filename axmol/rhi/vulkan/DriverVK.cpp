@@ -230,7 +230,10 @@ DriverImpl::~DriverImpl()
 void DriverImpl::init()
 {
     // Load basic Vulkan functions without instance/device
-    gladLoaderLoadVulkan(nullptr, nullptr, nullptr);
+    auto gladVulkanVer = gladLoaderLoadVulkan(nullptr, nullptr, nullptr);
+    AXLOGI("axmol: vulkan gladVulkanVer: {}.{}", GLAD_VERSION_MAJOR(gladVulkanVer), GLAD_VERSION_MINOR(gladVulkanVer));
+
+    VK_VERIFY(gladVulkanVer != 0, "Vulkan is not supported on this device!");
 
     initializeFactory();
     initializeDevice();
@@ -251,14 +254,20 @@ void DriverImpl::initializeFactory()
 {
     auto& contextAttrs = Application::getContextAttrs();
 
-    VkApplicationInfo appInfo{};
-    appInfo.sType      = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-    appInfo.apiVersion = VK_API_VERSION_1_1;  // axmol requires vulkan-1.1
+    // vkEnumerateInstanceVersion is available since Vulkan 1.1; while Axmol can initialize on Android 7/8 devices
+    // limited to Vulkan 1.0, that version is known to be buggy. For maximum compatibility, GLES is recommended
+    // until dynamic RHI support is available.
+    const uint32_t apiVersion = vkEnumerateInstanceVersion ? VK_API_VERSION_1_1 : VK_API_VERSION_1_0;
 
-    appInfo.pEngineName        = "Axmol3";
-    appInfo.pApplicationName   = "Axmol";
-    appInfo.engineVersion      = VK_MAKE_VERSION(AX_VERSION_MAJOR, AX_VERSION_MINOR, AX_VERSION_PATCH);
-    appInfo.applicationVersion = appInfo.engineVersion;
+    constexpr auto engineVersion = VK_MAKE_VERSION(AX_VERSION_MAJOR, AX_VERSION_MINOR, AX_VERSION_PATCH);
+    VkApplicationInfo appInfo{
+        .sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO,
+        .pApplicationName   = "Axmol3",
+        .applicationVersion = engineVersion,
+        .pEngineName        = "Axmol3",
+        .engineVersion      = engineVersion,
+        .apiVersion         = apiVersion,
+    };
 
     // Collect required extensions
     tlx::pod_vector<const char*> extensions;
