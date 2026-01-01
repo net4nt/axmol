@@ -61,6 +61,13 @@ void RenderTargetImpl::cleanupResources()
     _activeHashSeed = 0;
 
     RenderTarget::cleanupResources();
+
+    for (auto imageView : _swapchainImageViews)
+    {
+        if (imageView != VK_NULL_HANDLE)
+            _driver->disposeImageView(imageView, 0);
+    }
+    _swapchainImageViews.clear();
 }
 
 void RenderTargetImpl::setColorTexture(Texture* texture, int level, int index)
@@ -70,18 +77,19 @@ void RenderTargetImpl::setColorTexture(Texture* texture, int level, int index)
 }
 
 void RenderTargetImpl::rebuildSwapchainAttachments(const tlx::pod_vector<VkImage>& images,
-                                                   const tlx::pod_vector<VkImageView>& imageViews,
                                                    const VkExtent2D& extent,
-                                                   PixelFormat imagePF)
+                                                   PixelFormat imagePF,
+                                                   VkFormat surfaceFormat)
 {
-    if (images.empty() || imageViews.empty())
-        return;
+    VK_VERIFY(!images.empty() && images.size() <= MAX_COLOR_COUNT, "Too many swapchain images");
 
-    VK_VERIFY(images.size() <= MAX_COLOR_COUNT, "Too many swapchain images");
+    _dirtyFlags = TargetBufferFlags::DEPTH_AND_STENCIL;
 
     cleanupResources();
 
-    _dirtyFlags = TargetBufferFlags::DEPTH_AND_STENCIL;
+    _driver->cleanPendingResources();
+
+    _swapchainImageViews.resize(images.size());
 
     /// create new attachments
     _color.resize(images.size());
@@ -98,13 +106,32 @@ void RenderTargetImpl::rebuildSwapchainAttachments(const tlx::pod_vector<VkImage
     colorDesc.pixelFormat  = imagePF;
     colorDesc.textureUsage = TextureUsage::RENDER_TARGET;
 
+    auto device = _driver->getDevice();
     for (auto i = 0; i < images.size(); ++i)
     {
-        VkImage swapchainImage = images[i];
-        VkImageView imageView  = imageViews[i];
+        VkImageView imageView{VK_NULL_HANDLE};
+
+        VkImageViewCreateInfo viewInfo{};
+        viewInfo.sType                           = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+        viewInfo.image                           = images[i];
+        viewInfo.viewType                        = VK_IMAGE_VIEW_TYPE_2D;
+        viewInfo.format                          = surfaceFormat;
+        viewInfo.components                      = {VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY,
+                                                    VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY};
+        viewInfo.subresourceRange.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
+        viewInfo.subresourceRange.baseMipLevel   = 0;
+        viewInfo.subresourceRange.levelCount     = 1;
+        viewInfo.subresourceRange.baseArrayLayer = 0;
+        viewInfo.subresourceRange.layerCount     = 1;
+
+        auto vr = vkCreateImageView(device, &viewInfo, nullptr, &imageView);
+        AXASSERT(vr == VK_SUCCESS, "vkCreateImageView failed");
+
+        _swapchainImageViews[i] = imageView;
+
         // Wrap the swapchain VkImage as TextureImpl (color attachment)
         // Important: TextureImpl(VkImage) does not own the image memory; it should create a VkImageView for sampling.
-        auto colorTex = new TextureImpl(_driver, swapchainImage, imageView);
+        auto colorTex = new TextureImpl(_driver, images[i], imageView);
         // Update descriptor (sampler, mip info, etc.). The TextureImpl should create view if missing.
         colorTex->updateTextureDesc(colorDesc);
         _color[i].texture = colorTex;

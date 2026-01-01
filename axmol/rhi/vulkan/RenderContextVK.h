@@ -182,7 +182,6 @@ private:
     VkCommandPool _commandPool{VK_NULL_HANDLE};
 
     tlx::pod_vector<VkImage> _swapchainImages;
-    tlx::pod_vector<VkImageView> _swapchainImageViews;
 
     uint32_t _imageIndex{0};
     int _frameIndex{0};

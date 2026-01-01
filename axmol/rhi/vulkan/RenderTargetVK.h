@@ -58,9 +58,9 @@ public:
     VkRenderPass getVkRenderPass() const { return _renderPass; }
 
     void rebuildSwapchainAttachments(const tlx::pod_vector<VkImage>& images,
-                                     const tlx::pod_vector<VkImageView>&,
                                      const VkExtent2D&,
-                                     PixelFormat imagePF);
+                                     PixelFormat imagePF,
+                                     VkFormat surfaceFormat);
 
     void setColorTexture(Texture* texture, int level = 0, int index = 0) override;
 
@@ -85,6 +85,8 @@ private:
 
     VkRenderPass _renderPass{VK_NULL_HANDLE};    // active render pass
     VkFramebuffer _framebuffer{VK_NULL_HANDLE};  // active framebuffer
+
+    tlx::pod_vector<VkImageView> _swapchainImageViews;
 
     // Caches keyed by (desc hash, attachment views hash)
     tlx::hash_map<uint64_t, VkRenderPass> _renderPassCache;

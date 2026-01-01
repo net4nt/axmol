@@ -198,13 +198,9 @@ RenderContextImpl::~RenderContextImpl()
         _commandPool = VK_NULL_HANDLE;
     }
 
-    for (auto view : _swapchainImageViews)
-        vkDestroyImageView(_device, view, nullptr);
-
     if (_swapchain != VK_NULL_HANDLE)
         vkDestroySwapchainKHR(_device, _swapchain, nullptr);
 
-    _swapchainImageViews.clear();
     _swapchainImages.clear();
 }
 
@@ -467,8 +463,6 @@ void RenderContextImpl::recreateSwapchain()
     // Destroy old swapchain and swapchain images if exists
     if (_swapchain != VK_NULL_HANDLE)
     {
-        for (auto view : _swapchainImageViews)
-            vkDestroyImageView(_device, view, nullptr);
         vkDestroySwapchainKHR(_device, _swapchain, nullptr);
     }
 
@@ -502,28 +496,7 @@ void RenderContextImpl::recreateSwapchain()
     _swapchainImages.resize(swapImageCount);
     vkGetSwapchainImagesKHR(_device, _swapchain, &swapImageCount, _swapchainImages.data());
 
-    // Create image views
-    _swapchainImageViews.resize(swapImageCount);
-    for (size_t i = 0; i < _swapchainImages.size(); ++i)
-    {
-        VkImageViewCreateInfo viewInfo{};
-        viewInfo.sType                           = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-        viewInfo.image                           = _swapchainImages[i];
-        viewInfo.viewType                        = VK_IMAGE_VIEW_TYPE_2D;
-        viewInfo.format                          = surfaceFormat.format;
-        viewInfo.components                      = {VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY,
-                                                    VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY};
-        viewInfo.subresourceRange.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
-        viewInfo.subresourceRange.baseMipLevel   = 0;
-        viewInfo.subresourceRange.levelCount     = 1;
-        viewInfo.subresourceRange.baseArrayLayer = 0;
-        viewInfo.subresourceRange.layerCount     = 1;
-
-        vr = vkCreateImageView(_device, &viewInfo, nullptr, &_swapchainImageViews[i]);
-        AXASSERT(vr == VK_SUCCESS, "vkCreateImageView failed");
-    }
-
-    _screenRT->rebuildSwapchainAttachments(_swapchainImages, _swapchainImageViews, extent, pixelFormat);
+    _screenRT->rebuildSwapchainAttachments(_swapchainImages, extent, pixelFormat, surfaceFormat.format);
 
     // re-create render finished semaphores
     if (!_renderFinishedSemaphores.empty())
