@@ -110,9 +110,8 @@ public:
      */
     // void updateInputAssemblyState(PrimitiveType primitiveType);
 
-    void removeCachedPSOsByRenderPass(VkRenderPass rp);
-
-    void removeCachedObjectsByProgram(Program* program);
+    void removeCachedObjects(VkRenderPass key);
+    void removeCachedObjects(Program* key);
 
 private:
     void initializePipelineDefaults(DriverImpl* driver);

@@ -131,6 +131,8 @@ public:
 
     uint64_t getCompletedFenceValue() const override;
 
+    void removeCachedPipelineObjects(Program* key);
+
 private:
     void createCommandObjects();
     void createDescriptorHeaps();

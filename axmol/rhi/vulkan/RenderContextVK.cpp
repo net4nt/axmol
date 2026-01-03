@@ -989,16 +989,16 @@ void RenderContextImpl::applyPendingDynamicStates()
     }
 }
 
-void RenderContextImpl::removeCachedPSOsByRenderPass(VkRenderPass rp)
+void RenderContextImpl::removeCachedPipelineObjects(VkRenderPass key)
 {
     if (_renderPipeline)
-        _renderPipeline->removeCachedPSOsByRenderPass(rp);
+        _renderPipeline->removeCachedObjects(key);
 }
 
-void RenderContextImpl::removeCachedObjectsByProgram(Program* program)
+void RenderContextImpl::removeCachedPipelineObjects(Program* key)
 {
     if (_renderPipeline)
-        _renderPipeline->removeCachedObjectsByProgram(program);
+        _renderPipeline->removeCachedObjects(key);
 }
 
 void RenderContextImpl::prepareDrawing()

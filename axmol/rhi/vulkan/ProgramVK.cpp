@@ -33,7 +33,7 @@ ProgramImpl::ProgramImpl(Data& vsData, Data& fsData) : Program(vsData, fsData) {
 
 ProgramImpl::~ProgramImpl()
 {
-    static_cast<DriverImpl*>(DriverBase::getInstance())->removeCachedObjectsByProgram(this);
+    static_cast<DriverImpl*>(DriverBase::getInstance())->removeCachedPipelineObjects(this);
 }
 
 }  // namespace ax::rhi::vk

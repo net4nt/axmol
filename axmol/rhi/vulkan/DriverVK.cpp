@@ -861,17 +861,17 @@ void DriverImpl::destroyFramebuffer(VkFramebuffer fb)
     vkDestroyFramebuffer(_device, fb, nullptr);
 }
 
-void DriverImpl::destroyRenderPass(VkRenderPass rp)
+void DriverImpl::destroyRenderPass(VkRenderPass key)
 {
-    vkDestroyRenderPass(_device, rp, nullptr);
     if (_currentRenderContext)
-        _currentRenderContext->removeCachedPSOsByRenderPass(rp);
+        _currentRenderContext->removeCachedPipelineObjects(key);
+    vkDestroyRenderPass(_device, key, nullptr);
 }
 
-void DriverImpl::removeCachedObjectsByProgram(Program* program)
+void DriverImpl::removeCachedPipelineObjects(Program* key)
 {
     if (_currentRenderContext)
-        _currentRenderContext->removeCachedObjectsByProgram(program);
+        _currentRenderContext->removeCachedPipelineObjects(key);
 }
 
 void DriverImpl::disposeSampler(VkSampler sampler, uint64_t fenceValue)

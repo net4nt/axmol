@@ -529,6 +529,12 @@ RenderContext* DriverImpl::createRenderContext(SurfaceHandle surface)
     return context;
 }
 
+void DriverImpl::removeCachedPipelineObjects(Program* key)
+{
+    if (_currentRenderContext)
+        _currentRenderContext->removeCachedPipelineObjects(key);
+}
+
 Buffer* DriverImpl::createBuffer(std::size_t size, BufferType type, BufferUsage usage, const void* initial)
 {
     return new BufferImpl(this, size, type, usage, initial);

@@ -1148,4 +1148,10 @@ void RenderContextImpl::readPixelsInternal(RenderTarget* rt,
     callback(pbd);
 }
 
+void RenderContextImpl::removeCachedPipelineObjects(Program* key)
+{
+    if (_renderPipeline)
+        _renderPipeline->removeCachedObjects(key);
+}
+
 }  // namespace ax::rhi::d3d12

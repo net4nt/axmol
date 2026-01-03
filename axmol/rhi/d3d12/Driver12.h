@@ -183,6 +183,8 @@ public:
     void setFrameIndex(int index) { _frameIndex = index; }
     int getFrameIndex() const { return _frameIndex; }
 
+    void removeCachedPipelineObjects(Program* key);
+
 protected:
     void queueDisposalInternal(DisposableResource&& res);
 

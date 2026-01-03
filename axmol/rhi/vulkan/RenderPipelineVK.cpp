@@ -542,9 +542,9 @@ VkDescriptorPool RenderPipelineImpl::allocateDescriptorPool()
     return pool;
 }
 
-void RenderPipelineImpl::removeCachedPSOsByRenderPass(VkRenderPass rp)
+void RenderPipelineImpl::removeCachedObjects(VkRenderPass key)
 {
-    auto range = _renderPassToPipelineMap.equal_range(rp);
+    auto range = _renderPassToPipelineMap.equal_range(key);
 
     if (range.first != range.second)
     {
@@ -562,9 +562,9 @@ void RenderPipelineImpl::removeCachedPSOsByRenderPass(VkRenderPass rp)
     }
 }
 
-void RenderPipelineImpl::removeCachedObjectsByProgram(Program* program)
+void RenderPipelineImpl::removeCachedObjects(Program* key)
 {
-    auto progId = program->getProgramId();
+    auto progId = key->getProgramId();
 
     _driver->waitForGPU();
 
